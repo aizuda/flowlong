@@ -18,8 +18,5 @@ dependencies {
     testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     testCompileOnly("mysql:mysql-connector-java")
     testCompileOnly("junit:junit")
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
 }
