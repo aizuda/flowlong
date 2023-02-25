@@ -39,6 +39,10 @@ subprojects {
         options.warnings = false
     }
 
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
     // 仓库配置
     repositories {
         mavenLocal()
@@ -64,6 +68,7 @@ subprojects {
 
             // 编译测试
             dependency("junit:junit:4.12")
+            dependency("org.junit.vintage:junit-vintage-engine:5.9.2")
         }
     }
 
