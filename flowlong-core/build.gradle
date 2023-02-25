@@ -19,3 +19,7 @@ dependencies {
     testCompileOnly("mysql:mysql-connector-java")
     testCompileOnly("junit:junit")
 }
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
