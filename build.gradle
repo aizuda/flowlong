@@ -1,0 +1,104 @@
+// 编译脚本
+buildscript {
+    ext {
+        springBootVersion = "2.7.0"
+    }
+
+    // 仓库配置
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo.spring.io/release' }
+        maven { url 'https://repo.spring.io/milestone' }
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+description = "FlowLong BPM"
+
+// 项目配置
+allprojects {
+    group "com.flowlong"
+    version "0.0.1"
+}
+
+// 子模块配置
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+    apply plugin: "io.spring.dependency-management"
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.warnings = false
+    }
+
+    // 仓库配置
+    repositories {
+        mavenLocal()
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/spring' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://repo.spring.io/release' }
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url 'https://repo.spring.io/snapshot' }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        jcenter()
+    }
+
+    // 依赖管理
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
+
+        dependencies {
+            dependency("commons-dbutils:commons-dbutils:1.7")
+            dependency("mysql:mysql-connector-java:8.0.32")
+
+            // 编译测试
+            dependency("junit:junit:4.12")
+        }
+    }
+
+    // 依赖配置
+    dependencies {
+        // 日志
+        api("org.slf4j:slf4j-api")
+
+        // lombok
+        compileOnly("org.projectlombok:lombok")
+        annotationProcessor("org.projectlombok:lombok")
+        testAnnotationProcessor("org.projectlombok:lombok")
+        testCompileOnly("org.projectlombok:lombok")
+    }
+
+    // 编译环境 JDK1.8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = "$project.group"
+                artifactId = "$project.name"
+                version = "$project.version"
+                from components.java
+                versionMapping {
+                    usage('java-api') {
+                        fromResolutionOf('runtimeClasspath')
+                    }
+                    usage('java-runtime') {
+                        fromResolutionResult()
+                    }
+                }
+            }
+        }
+    }
+}

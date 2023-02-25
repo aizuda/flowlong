@@ -1,0 +1,60 @@
+/* Copyright 2023-2025 www.flowlong.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.flowlong.bpm.engine.assist;
+
+import com.flowlong.bpm.engine.FlowLongException;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+/**
+ * 流数据帮助类
+ *
+ * @author hubin
+ * @since 1.0
+ */
+public class StreamUtils {
+
+    public static InputStream getResourceAsStream(String name) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream stream = classLoader.getResourceAsStream(name);
+        if (null == stream) {
+            stream = StreamUtils.class.getClassLoader().getResourceAsStream(name);
+        }
+        if (stream == null) {
+            throw new FlowLongException("resource " + name + " does not exist");
+        }
+        return stream;
+    }
+
+    public static byte[] readBytes(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        transfer(in, out);
+        return out.toByteArray();
+    }
+
+    public static long transfer(InputStream in, OutputStream out)
+            throws IOException {
+        long total = 0;
+        byte[] buffer = new byte[4096];
+        for (int count; (count = in.read(buffer)) != -1; ) {
+            out.write(buffer, 0, count);
+            total += count;
+        }
+        return total;
+    }
+}

@@ -1,0 +1,8 @@
+description "Spring Boot 启动模块"
+
+dependencies {
+    api project(":flowlong-core")
+
+    testCompileOnly("org.springframework.boot:spring-boot-starter-test")
+    testCompileOnly("junit:junit")
+}
