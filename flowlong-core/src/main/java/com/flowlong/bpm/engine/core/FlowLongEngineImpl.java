@@ -42,6 +42,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     protected FlowLongContext flowLongContext;
 
+    @Override
     public FlowLongEngine configure(FlowLongContext flowLongContext) {
         this.flowLongContext = flowLongContext;
 //        CacheManager cacheManager = ServiceContext.find(CacheManager.class);
@@ -201,7 +202,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     public List<Task> executeTask(String taskId, String operator, Map<String, Object> args) {
         //完成任务，并且构造执行对象
         Execution execution = execute(taskId, operator, args);
-        if (execution == null) return Collections.emptyList();
+        if (execution == null) {
+            return Collections.emptyList();
+        }
         ProcessModel model = execution.getProcess().getModel();
         if (model != null) {
             NodeModel nodeModel = model.getNode(execution.getTask().getTaskName());
@@ -219,7 +222,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName) {
         Execution execution = execute(taskId, operator, args);
-        if (execution == null) return Collections.emptyList();
+        if (execution == null) {
+            return Collections.emptyList();
+        }
         ProcessModel model = execution.getProcess().getModel();
         Assert.notNull(model, "当前任务未找到流程定义模型");
         if (StringUtils.isEmpty(nodeName)) {

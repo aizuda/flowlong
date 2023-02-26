@@ -35,7 +35,9 @@ public class ClassUtils {
      * @return
      */
     public static long castLong(Object count) {
-        if (count == null) return -1L;
+        if (count == null) {
+            return -1L;
+        }
         if (count instanceof Long) {
             return (Long) count;
         } else if (count instanceof BigDecimal) {

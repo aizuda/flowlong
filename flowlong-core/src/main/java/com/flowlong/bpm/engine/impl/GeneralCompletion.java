@@ -31,10 +31,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneralCompletion implements Completion {
 
+    @Override
     public void complete(HisTask task) {
         log.info("The task[{}] has been user[{}] has completed", task.getId(), task.getOperator());
     }
 
+    @Override
     public void complete(HisInstance order) {
         log.info("The order[{}] has completed", order.getId());
     }

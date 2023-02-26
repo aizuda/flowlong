@@ -55,7 +55,9 @@ public class DecisionModel extends NodeModel {
             expression = flowLongContext.getExpression();
         }
         log.info("expression is " + expression);
-        if (expression == null) throw new FlowLongException("表达式解析器为空，请检查配置.");
+        if (expression == null) {
+            throw new FlowLongException("表达式解析器为空，请检查配置.");
+        }
         String next = null;
         if (StringUtils.isNotEmpty(expr)) {
             next = expression.eval(String.class, expr, execution.getArgs());

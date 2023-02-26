@@ -37,7 +37,9 @@ public class JsonUtils {
      * @return
      */
     public static String toJson(Object object) {
-        if (object == null) return "";
+        if (object == null) {
+            return "";
+        }
         try {
             return mapper.writeValueAsString(object);
         } catch (Exception e) {

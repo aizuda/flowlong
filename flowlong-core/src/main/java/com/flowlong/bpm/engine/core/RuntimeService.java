@@ -49,6 +49,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
      *
      * @see RuntimeService#createInstance(Process, String, Map, String, String)
      */
+    @Override
     public Instance createInstance(Process process, String operator, Map<String, Object> args) {
         return createInstance(process, operator, args, null, null);
     }
@@ -56,6 +57,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 创建活动实例
      */
+    @Override
     public Instance createInstance(Process process, String operator, Map<String, Object> args,
                                    String parentId, String parentNodeName) {
         Instance instance = new Instance();
@@ -92,6 +94,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
      * @param instanceId 实例id
      * @param args       变量数据
      */
+    @Override
     public void addVariable(String instanceId, Map<String, Object> args) {
         Instance instance = access().getInstance(instanceId);
         Map<String, Object> data = instance.getVariableMap();
@@ -103,6 +106,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 创建实例的抄送
      */
+    @Override
     public void createCCInstance(String instanceId, String creator, String... actorIds) {
         for (String actorId : actorIds) {
             CCInstance ccinstance = new CCInstance();
@@ -118,6 +122,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 流程实例数据会保存至活动实例表、历史实例表
      */
+    @Override
     public void saveInstance(Instance instance) {
         HisInstance history = new HisInstance(instance, STATE_ACTIVE);
         access().saveInstance(instance);
@@ -127,6 +132,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 更新活动实例的last_Updator、last_Update_Time、expire_Time、version、variable
      */
+    @Override
     public void updateInstance(Instance instance) {
         access().updateInstance(instance);
     }
@@ -134,6 +140,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 更新抄送记录状态为已阅
      */
+    @Override
     public void updateCCStatus(String instanceId, String... actorIds) {
         List<CCInstance> ccInstances = access().getCCInstance(instanceId, actorIds);
         Assert.notNull(ccInstances);
@@ -147,6 +154,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 删除指定的抄送记录
      */
+    @Override
     public void deleteCCInstance(String instanceId, String actorId) {
         List<CCInstance> ccinstances = access().getCCInstance(instanceId, actorId);
         Assert.notNull(ccinstances);
@@ -158,6 +166,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
+    @Override
     public void complete(String instanceId) {
         Instance instance = access().getInstance(instanceId);
         HisInstance history = access().getHistInstance(instanceId);
@@ -177,6 +186,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
      *
      * @see RuntimeService#terminate(String, String)
      */
+    @Override
     public void terminate(String instanceId) {
         terminate(instanceId, null);
     }
@@ -184,6 +194,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
     /**
      * 强制中止活动实例,并强制完成活动任务
      */
+    @Override
     public void terminate(String instanceId, String operator) {
         List<Task> tasks = flowLongContext.getQueryService().getActiveTasks(new QueryFilter().setInstanceId(instanceId));
         for (Task task : tasks) {
@@ -207,6 +218,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
      * @param instanceId 实例id
      * @return 活动实例对象
      */
+    @Override
     public Instance resume(String instanceId) {
         HisInstance hisInstance = access().getHistInstance(instanceId);
         Instance instance = hisInstance.undo();
@@ -232,6 +244,7 @@ public class RuntimeService extends AccessService implements IRuntimeService {
      *
      * @param id 实例id
      */
+    @Override
     public void cascadeRemove(String id) {
         HisInstance hisInstance = access().getHistInstance(id);
         Assert.notNull(hisInstance);

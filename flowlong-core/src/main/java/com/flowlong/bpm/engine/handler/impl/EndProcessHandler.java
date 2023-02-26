@@ -59,10 +59,14 @@ public class EndProcessHandler implements IFlowLongHandler {
          */
         if (StringUtils.isNotEmpty(instance.getParentId())) {
             Instance parentInstance = engine.queryService().getInstance(instance.getParentId());
-            if (parentInstance == null) return;
+            if (parentInstance == null) {
+                return;
+            }
             Process process = engine.processService().getProcessById(parentInstance.getProcessId());
             ProcessModel pm = process.getModel();
-            if (pm == null) return;
+            if (pm == null) {
+                return;
+            }
             SubProcessModel spm = (SubProcessModel) pm.getNode(instance.getParentNodeName());
             Execution newExecution = new Execution(engine, process, parentInstance, execution.getArgs());
             newExecution.setChildInstanceId(instance.getId());

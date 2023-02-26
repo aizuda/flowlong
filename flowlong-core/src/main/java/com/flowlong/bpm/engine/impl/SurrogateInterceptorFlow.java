@@ -42,7 +42,9 @@ public class SurrogateInterceptorFlow implements FlowLongInterceptor {
                 continue;
             }
             for (String actor : task.getActorIds()) {
-                if (StringUtils.isEmpty(actor)) continue;
+                if (StringUtils.isEmpty(actor)) {
+                    continue;
+                }
                 String agent = engine.managerService().getSurrogate(actor, execution.getProcess().getName());
                 if (StringUtils.isNotEmpty(agent) && !actor.equals(agent)) {
                     engine.taskService().addTaskActor(task.getId(), agent);

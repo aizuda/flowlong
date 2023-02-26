@@ -42,18 +42,22 @@ public class MemoryCache<K, V> implements Cache<K, V> {
         this.map = backingMap;
     }
 
+    @Override
     public V get(K key) throws CacheExceptionFlow {
         return map.get(key);
     }
 
+    @Override
     public V put(K key, V value) throws CacheExceptionFlow {
         return map.put(key, value);
     }
 
+    @Override
     public V remove(K key) throws CacheExceptionFlow {
         return map.remove(key);
     }
 
+    @Override
     public void clear() throws CacheExceptionFlow {
         map.clear();
     }

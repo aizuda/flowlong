@@ -26,6 +26,7 @@ public class PostgresqlDialect implements Dialect {
     /**
      * Postgresql分页通过limit实现
      */
+    @Override
     public String getPageSql(String sql, Page<?> page) {
         StringBuffer pageSql = new StringBuffer(sql.length() + 100);
         pageSql.append(getPageBefore(sql, page));

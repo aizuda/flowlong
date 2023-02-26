@@ -79,8 +79,9 @@ public class ProcessModel extends BaseElement {
     public List<TaskModel> getTaskModels() {
         if (taskModels.isEmpty()) {
             synchronized (lock) {
-                if (taskModels.isEmpty())
+                if (taskModels.isEmpty()) {
                     buildModels(taskModels, getStart().getNextModels(TaskModel.class), TaskModel.class);
+                }
             }
         }
         return taskModels;

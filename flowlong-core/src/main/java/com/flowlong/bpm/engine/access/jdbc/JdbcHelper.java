@@ -122,8 +122,12 @@ public abstract class JdbcHelper {
     public static Connection getConnection(DataSource ds) throws SQLException {
         //通过ThreadLocale中获取Connection，如果为空，则通过dataSource返回新的连接对象
         Connection conn = (Connection) TransactionObjectHolder.get();
-        if (conn != null) return conn;
-        if (ds != null) return ds.getConnection();
+        if (conn != null) {
+            return conn;
+        }
+        if (ds != null) {
+            return ds.getConnection();
+        }
         return getDataSource().getConnection();
     }
 
@@ -321,14 +325,23 @@ public abstract class JdbcHelper {
         DatabaseMetaData databaseMetaData = conn.getMetaData();
         String databaseProductName = databaseMetaData.getDatabaseProductName();
         String dbType = databaseTypeMappings.getProperty(databaseProductName);
-        if (StringUtils.isEmpty(dbType)) return null;
-        if (dbType.equalsIgnoreCase("mysql")) return new MySqlDialect();
-        else if (dbType.equalsIgnoreCase("oracle")) return new OracleDialect();
-        else if (dbType.equalsIgnoreCase("postgres")) return new PostgresqlDialect();
-        else if (dbType.equalsIgnoreCase("mssql")) return new SQLServerDialect();
-        else if (dbType.equalsIgnoreCase("db2")) return new Db2Dialect();
-        else if (dbType.equalsIgnoreCase("h2")) return new H2Dialect();
-        else return null;
+        if (StringUtils.isEmpty(dbType)) {
+            return null;
+        }
+        if (dbType.equalsIgnoreCase("mysql")) {
+            return new MySqlDialect();
+        } else if (dbType.equalsIgnoreCase("oracle")) {
+            return new OracleDialect();
+        } else if (dbType.equalsIgnoreCase("postgres")) {
+            return new PostgresqlDialect();
+        } else if (dbType.equalsIgnoreCase("mssql")) {
+            return new SQLServerDialect();
+        } else if (dbType.equalsIgnoreCase("db2")) {
+            return new Db2Dialect();
+        } else if (dbType.equalsIgnoreCase("h2")) {
+            return new H2Dialect();
+        }
+        return null;
     }
 
     /**

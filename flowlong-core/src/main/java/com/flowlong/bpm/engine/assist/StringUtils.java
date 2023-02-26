@@ -59,7 +59,9 @@ public class StringUtils {
      * @return 逗号分隔的字符串
      */
     public static String getStringByArray(String... strArray) {
-        if (strArray == null) return "";
+        if (strArray == null) {
+            return "";
+        }
         StringBuilder buffer = new StringBuilder(strArray.length * 10);
         for (String str : strArray) {
             buffer.append(str).append(",");
@@ -75,7 +77,9 @@ public class StringUtils {
      * @return 替换后的xml
      */
     public static String textXML(String xml) {
-        if (xml == null) return "";
+        if (xml == null) {
+            return "";
+        }
         String content = xml;
         content = content.replaceAll("<", "&lt;");
         content = content.replaceAll(">", "&gt;");
@@ -92,11 +96,14 @@ public class StringUtils {
      * @return 组装好的排序sql
      */
     public static String buildPageOrder(String order, String orderby) {
-        if (isEmpty(orderby) || isEmpty(order)) return "";
+        if (isEmpty(orderby) || isEmpty(order)) {
+            return "";
+        }
         String[] orderByArray = org.apache.commons.lang.StringUtils.split(orderby, ',');
         String[] orderArray = org.apache.commons.lang.StringUtils.split(order, ',');
-        if (orderArray.length != orderByArray.length)
+        if (orderArray.length != orderByArray.length) {
             throw new FlowLongException("分页多重排序参数中,排序字段与排序方向的个数不相等");
+        }
         StringBuilder orderStr = new StringBuilder(30);
         orderStr.append(" order by ");
 

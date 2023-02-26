@@ -190,7 +190,9 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
         if (StringUtils.isNotEmpty(preInterceptors)) {
             for (String interceptor : preInterceptors.split(",")) {
                 FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
-                if (instance != null) this.preInterceptorList.add(instance);
+                if (instance != null) {
+                    this.preInterceptorList.add(instance);
+                }
             }
         }
     }
@@ -204,7 +206,9 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
         if (StringUtils.isNotEmpty(postInterceptors)) {
             for (String interceptor : postInterceptors.split(",")) {
                 FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
-                if (instance != null) this.postInterceptorList.add(instance);
+                if (instance != null) {
+                    this.postInterceptorList.add(instance);
+                }
             }
         }
     }

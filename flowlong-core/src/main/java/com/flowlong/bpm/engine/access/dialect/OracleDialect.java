@@ -26,6 +26,7 @@ public class OracleDialect implements Dialect {
     /**
      * oracle分页通过rownum实现
      */
+    @Override
     public String getPageSql(String sql, Page<?> page) {
         StringBuffer pageSql = new StringBuffer(sql.length() + 100);
         pageSql.append("select * from ( select row_.*, rownum rownum_ from ( ");

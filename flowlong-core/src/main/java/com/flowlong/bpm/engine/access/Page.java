@@ -40,7 +40,7 @@ public class Page<T> {
 
     public Page() {
         this.pageSize = ConfigHelper.getNumerProperty("jdbc.pageSize");
-        if (pageSize <= 0) pageSize = PAGE_SIZE;
+        if (pageSize <= 0){ pageSize = PAGE_SIZE;}
     }
 
     public Page(int pageSize) {

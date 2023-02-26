@@ -47,6 +47,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 完成指定任务
      */
+    @Override
     public Task complete(String taskId) {
         return complete(taskId, null, null);
     }
@@ -54,6 +55,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 完成指定任务
      */
+    @Override
     public Task complete(String taskId, String operator) {
         return complete(taskId, operator, null);
     }
@@ -64,6 +66,7 @@ public class TaskService extends AccessService implements ITaskService {
      *
      * @see FlowLongEngineImpl#executeTask(String, String, java.util.Map)
      */
+    @Override
     public Task complete(String taskId, String operator, Map<String, Object> args) {
         Task task = access().getTask(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -97,6 +100,7 @@ public class TaskService extends AccessService implements ITaskService {
      *
      * @param task 任务对象
      */
+    @Override
     public void updateTask(Task task) {
         access().updateTask(task);
     }
@@ -108,6 +112,7 @@ public class TaskService extends AccessService implements ITaskService {
      * @param model     自定义节点模型
      * @return 历史任务对象
      */
+    @Override
     public HisTask history(Execution execution, CustomModel model) {
         HisTask hisTask = new HisTask();
         hisTask.setId(StringUtils.getPrimaryKey());
@@ -129,6 +134,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 提取指定任务，设置完成时间及操作人，状态不改变
      */
+    @Override
     public Task take(String taskId, String operator) {
         Task task = access().getTask(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -144,6 +150,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 唤醒指定的历史任务
      */
+    @Override
     public Task resume(String taskId, String operator) {
         HisTask histTask = access().getHistTask(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
@@ -166,6 +173,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 向指定任务添加参与者
      */
+    @Override
     public void addTaskActor(String taskId, String... actors) {
         addTaskActor(taskId, null, actors);
     }
@@ -174,12 +182,19 @@ public class TaskService extends AccessService implements ITaskService {
      * 向指定任务添加参与者
      * 该方法根据performType类型判断是否需要创建新的活动任务
      */
+    @Override
     public void addTaskActor(String taskId, Integer performType, String... actors) {
         Task task = access().getTask(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!task.isMajor()) return;
-        if (performType == null) performType = task.getPerformType();
-        if (performType == null) performType = 0;
+        if (!task.isMajor()) {
+            return;
+        }
+        if (performType == null) {
+            performType = task.getPerformType();
+        }
+        if (performType == null) {
+            performType = 0;
+        }
         switch (performType) {
             case 0:
                 assignTask(task.getId(), actors);
@@ -214,10 +229,13 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 向指定任务移除参与者
      */
+    @Override
     public void removeTaskActor(String taskId, String... actors) {
         Task task = access().getTask(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (actors == null || actors.length == 0) return;
+        if (actors == null || actors.length == 0) {
+            return;
+        }
         if (task.isMajor()) {
             access().removeTaskActor(task.getId(), actors);
             Map<String, Object> taskData = task.getVariableMap();
@@ -228,14 +246,18 @@ public class TaskService extends AccessService implements ITaskService {
                 boolean isMatch;
                 for (String actor : actorArray) {
                     isMatch = false;
-                    if (StringUtils.isEmpty(actor)) continue;
+                    if (StringUtils.isEmpty(actor)) {
+                        continue;
+                    }
                     for (String removeActor : actors) {
                         if (actor.equals(removeActor)) {
                             isMatch = true;
                             break;
                         }
                     }
-                    if (isMatch) continue;
+                    if (isMatch) {
+                        continue;
+                    }
                     newActor.append(actor).append(",");
                 }
                 newActor.deleteCharAt(newActor.length() - 1);
@@ -249,6 +271,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 撤回指定的任务
      */
+    @Override
     public Task withdrawTask(String taskId, String operator) {
         HisTask hist = access().getHistTask(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
@@ -277,6 +300,7 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 驳回任务
      */
+    @Override
     public Task rejectTask(ProcessModel model, Task currentTask) {
         String parentTaskId = currentTask.getParentTaskId();
         if (StringUtils.isEmpty(parentTaskId) || parentTaskId.equals(START)) {
@@ -305,10 +329,14 @@ public class TaskService extends AccessService implements ITaskService {
      * @param actorIds 参与者id集合
      */
     private void assignTask(String taskId, String... actorIds) {
-        if (actorIds == null || actorIds.length == 0) return;
+        if (actorIds == null || actorIds.length == 0) {
+            return;
+        }
         for (String actorId : actorIds) {
             //修复当actorId为null的bug
-            if (StringUtils.isEmpty(actorId)) continue;
+            if (StringUtils.isEmpty(actorId)) {
+                continue;
+            }
             TaskActor taskActor = new TaskActor();
             taskActor.setId(StringUtils.getPrimaryKey());
             taskActor.setTaskId(taskId);
@@ -321,6 +349,7 @@ public class TaskService extends AccessService implements ITaskService {
      * 根据已有任务、任务类型、参与者创建新的任务
      * 适用于转派，动态协办处理
      */
+    @Override
     public List<Task> createNewTask(String taskId, int taskType, String... actors) {
         Task task = access().getTask(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
@@ -343,6 +372,7 @@ public class TaskService extends AccessService implements ITaskService {
      * @param taskId 任务id
      * @return TaskModel
      */
+    @Override
     public TaskModel getTaskModel(String taskId) {
         Task task = access().getTask(taskId);
         Assert.notNull(task);
@@ -366,6 +396,7 @@ public class TaskService extends AccessService implements ITaskService {
      * @param execution 执行对象
      * @return List<Task> 任务列表
      */
+    @Override
     public List<Task> createTask(TaskModel taskModel, Execution execution) {
         List<Task> tasks = new ArrayList<>();
 
@@ -510,16 +541,21 @@ public class TaskService extends AccessService implements ITaskService {
     /**
      * 判断当前操作人operator是否允许执行taskId指定的任务
      */
+    @Override
     public boolean isAllowed(Task task, String operator) {
+        // 如果当前操作人不为空
         if (StringUtils.isNotEmpty(operator)) {
+            // 如果是admin或者auto，直接返回true
             if (FlowLongEngine.ADMIN.equalsIgnoreCase(operator)
                     || FlowLongEngine.AUTO.equalsIgnoreCase(operator)) {
                 return true;
             }
+            // 如果为其他，当前做错人和任务执行人对比
             if (StringUtils.isNotEmpty(task.getOperator())) {
                 return operator.equals(task.getOperator());
             }
         }
+
         List<TaskActor> actors = access().getTaskActorsByTaskId(task.getId());
         if (actors == null || actors.isEmpty()) {
             return true;
