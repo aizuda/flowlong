@@ -26,6 +26,7 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
+import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisTaskMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.TaskActorMapper;
@@ -48,7 +49,7 @@ import java.util.*;
  * @since 1.0
  */
 @AllArgsConstructor
-public class TaskServiceImpl extends AbstractService implements TaskService {
+public class TaskServiceImpl implements TaskService {
     private static final String START = "start";
 
     private FlowLongContext flowLongContext;
@@ -89,7 +90,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         }
         HisTask history = new HisTask(task);
         history.setFinishTime(DateUtils.getTime());
-        history.setTaskState(STATE_FINISH);
+        history.setTaskState(FlowState.finish);
         history.setOperator(operator);
         if (history.getActorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
@@ -135,7 +136,7 @@ public class TaskServiceImpl extends AbstractService implements TaskService {
         hisTask.setFinishTime(currentTime);
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
-        hisTask.setTaskState(STATE_FINISH);
+        hisTask.setTaskState(FlowState.finish);
         hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
         hisTask.setParentTaskId(execution.getTask() == null ? START : execution.getTask().getId());
         hisTask.setVariable(JsonUtils.toJson(execution.getArgs()));

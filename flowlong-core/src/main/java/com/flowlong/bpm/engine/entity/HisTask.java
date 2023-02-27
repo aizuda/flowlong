@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -91,6 +92,10 @@ public class HisTask implements Serializable {
      * 任务附属变量
      */
     private String variable;
+
+    public void setTaskState(FlowState flowState) {
+        this.taskState = flowState.getValue();
+    }
 
     public HisTask() {
 

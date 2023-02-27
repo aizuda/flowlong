@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,4 +38,7 @@ public class CCInstance implements Serializable {
     private String finishTime;
     private Integer status;
 
+    public void setStatus(FlowState flowState) {
+        this.status = flowState.getValue();
+    }
 }

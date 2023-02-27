@@ -14,8 +14,9 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.StreamUtils;
+import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -88,6 +89,10 @@ public class Process implements Serializable {
      * 流程定义字节数组
      */
     private byte[] bytes;
+
+    public void setState(FlowState flowState) {
+        this.state = flowState.getValue();
+    }
 
     /**
      * setter name/displayName/instanceUrl

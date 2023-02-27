@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.core.service;
 import com.flowlong.bpm.engine.ManagerService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Surrogate;
 import lombok.AllArgsConstructor;
@@ -28,13 +29,13 @@ import lombok.AllArgsConstructor;
  * @since 1.0
  */
 @AllArgsConstructor
-public class ManagerServiceImpl extends AbstractService implements ManagerService {
+public class ManagerServiceImpl implements ManagerService {
     private SurrogateMapper surrogateMapper;
 
     @Override
     public void saveOrUpdate(Surrogate surrogate) {
         Assert.notNull(surrogate);
-        surrogate.setState(STATE_ACTIVE);
+        surrogate.setState(FlowState.active);
         if (StringUtils.isEmpty(surrogate.getId())) {
             surrogate.setId(StringUtils.getPrimaryKey());
             surrogateMapper.insert(surrogate);

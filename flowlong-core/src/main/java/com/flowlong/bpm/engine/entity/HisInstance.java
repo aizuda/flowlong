@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -79,13 +80,17 @@ public class HisInstance implements Serializable {
      */
     private String variable;
 
+    public void setInstanceState(FlowState flowState) {
+        this.instanceState = flowState.getValue();
+    }
+
     public HisInstance() {
 
     }
 
-    public HisInstance(Instance instance, Integer instanceState) {
+    public HisInstance(Instance instance, FlowState flowState) {
         this.id = instance.getId();
-        this.instanceState = instanceState;
+        this.instanceState = flowState.getValue();
         this.processId = instance.getProcessId();
         this.createTime = instance.getCreateTime();
         this.expireTime = instance.getExpireTime();

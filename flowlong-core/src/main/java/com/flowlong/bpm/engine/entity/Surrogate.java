@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -63,4 +64,7 @@ public class Surrogate implements Serializable {
      */
     private Integer state;
 
+    public void setState(FlowState flowState) {
+        this.state = flowState.getValue();
+    }
 }

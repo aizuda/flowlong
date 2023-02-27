@@ -21,6 +21,7 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
@@ -39,7 +40,7 @@ import java.util.Map;
  * @since 1.0
  */
 @AllArgsConstructor
-public class RuntimeServiceImpl extends AbstractService implements RuntimeService {
+public class RuntimeServiceImpl implements RuntimeService {
     private FlowLongContext flowLongContext;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
@@ -116,7 +117,7 @@ public class RuntimeServiceImpl extends AbstractService implements RuntimeServic
             ccinstance.setInstanceId(instanceId);
             ccinstance.setActorId(actorId);
             ccinstance.setCreator(creator);
-            ccinstance.setStatus(STATE_ACTIVE);
+            ccinstance.setStatus(FlowState.active);
             ccinstance.setCreateTime(DateUtils.getTime());
             ccInstanceMapper.insert(ccinstance);
         }
@@ -128,7 +129,7 @@ public class RuntimeServiceImpl extends AbstractService implements RuntimeServic
     @Override
     public void saveInstance(Instance instance) {
         instanceMapper.insert(instance);
-        hisInstanceMapper.insert(new HisInstance(instance, STATE_ACTIVE));
+        hisInstanceMapper.insert(new HisInstance(instance, FlowState.active));
     }
 
     /**
@@ -146,7 +147,7 @@ public class RuntimeServiceImpl extends AbstractService implements RuntimeServic
     public void complete(String instanceId) {
         HisInstance history = new HisInstance();
         history.setId(instanceId);
-        history.setInstanceState(STATE_FINISH);
+        history.setInstanceState(FlowState.finish);
         history.setEndTime(DateUtils.getTime());
         instanceMapper.deleteById(instanceId);
         Completion completion = flowLongContext.getCompletion();
@@ -175,7 +176,7 @@ public class RuntimeServiceImpl extends AbstractService implements RuntimeServic
             flowLongContext.getTaskService().complete(task.getId(), operator);
         }
         Instance instance = instanceMapper.selectById(instanceId);
-        HisInstance history = new HisInstance(instance, STATE_TERMINATION);
+        HisInstance history = new HisInstance(instance, FlowState.termination);
         history.setEndTime(DateUtils.getTime());
         instanceMapper.deleteById(instanceId);
         hisInstanceMapper.updateById(history);

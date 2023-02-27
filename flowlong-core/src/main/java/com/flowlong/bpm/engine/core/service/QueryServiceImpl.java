@@ -29,7 +29,7 @@ import java.util.List;
  * @since 1.0
  */
 @AllArgsConstructor
-public class QueryServiceImpl extends AbstractService implements QueryService {
+public class QueryServiceImpl implements QueryService {
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
     private TaskMapper taskMapper;

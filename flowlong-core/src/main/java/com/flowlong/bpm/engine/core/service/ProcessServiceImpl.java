@@ -16,10 +16,6 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.cache.FlowLongCache;
-import com.flowlong.bpm.engine.entity.HisInstance;
-import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
@@ -27,9 +23,14 @@ import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.cache.CacheManager;
 import com.flowlong.bpm.engine.cache.CacheManagerAware;
+import com.flowlong.bpm.engine.cache.FlowLongCache;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
+import com.flowlong.bpm.engine.entity.HisInstance;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
-public class ProcessServiceImpl extends AbstractService implements ProcessService, CacheManagerAware {
+public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     private String DEFAULT_SEPARATOR = ".";
     /**
      * 流程定义对象cache名称
@@ -203,21 +204,21 @@ public class ProcessServiceImpl extends AbstractService implements ProcessServic
                 throw new FlowLongException("process [" + model.getName() + "] does not exist");
             }
             Integer version = processList.get(0).getVersion();
-            Process entity = new Process();
-            entity.setId(StringUtils.getPrimaryKey());
+            Process process = new Process();
+            process.setId(StringUtils.getPrimaryKey());
             if (version == null || version < 0) {
-                entity.setVersion(0);
+                process.setVersion(0);
             } else {
-                entity.setVersion(version + 1);
+                process.setVersion(version + 1);
             }
-            entity.setState(STATE_ACTIVE);
-            entity.setModel(model);
-            entity.setBytes(bytes);
-            entity.setCreateTime(DateUtils.getTime());
-            entity.setCreator(creator);
-            saveProcess(entity);
-            cache(entity);
-            return entity.getId();
+            process.setState(FlowState.active);
+            process.setModel(model);
+            process.setBytes(bytes);
+            process.setCreateTime(DateUtils.getTime());
+            process.setCreator(creator);
+            saveProcess(process);
+            cache(process);
+            return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new FlowLongException(e);
@@ -262,7 +263,7 @@ public class ProcessServiceImpl extends AbstractService implements ProcessServic
     public void undeploy(String id) {
         Process process = new Process();
         process.setId(id);
-        process.setState(STATE_FINISH);
+        process.setState(FlowState.finish);
         if (processMapper.updateById(process) > 0) {
             cache(process);
         }

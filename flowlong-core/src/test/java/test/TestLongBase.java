@@ -15,9 +15,7 @@
 package test;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.mysql.cj.jdbc.MysqlDataSource;
 
 /**
  * 测试辅助基类，提供execute的递归方法及LongEngine实例
@@ -28,14 +26,9 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 public class TestLongBase {
     protected String processId;
     protected FlowLongEngine engine = getEngine();
-    protected QueryService queryService = engine.queryService();
 
     protected FlowLongEngine getEngine() {
-        MysqlDataSource ds = new MysqlDataSource();
-        ds.setURL("jdbc:mysql://地址:3306/flowlong?characterEncoding=utf8&useSSL=false");
-        ds.setUser("root");
-        ds.setPassword("密码");
-        return new FlowLongContext().build(ds);
+        return new FlowLongContext().build();
     }
 
     protected void deployByResource(String resourceName) {

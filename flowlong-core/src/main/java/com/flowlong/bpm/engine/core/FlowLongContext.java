@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,7 +65,7 @@ public class FlowLongContext {
      * @return FlowLongEngine
      * @throws FlowLongException
      */
-    public FlowLongEngine build(DataSource dataSource) throws FlowLongException {
+    public FlowLongEngine build() throws FlowLongException {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
@@ -100,10 +99,6 @@ public class FlowLongContext {
             log.info("FlowLongEngine be found:" + configEngine.getClass());
         }
         return configEngine.configure(this);
-    }
-
-    public boolean isCMB() {
-        return false;
     }
 
 }
