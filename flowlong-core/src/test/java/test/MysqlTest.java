@@ -11,7 +11,7 @@ public class MysqlTest {
 
     @Test
     void test() {
-
+        System.out.println("123");
     }
 
 }

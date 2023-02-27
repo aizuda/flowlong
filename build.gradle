@@ -73,9 +73,6 @@ subprojects {
             dependency("com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}")
             dependency("com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}")
 
-            // 编译测试
-            dependency("junit:junit:4.12")
-            dependency("org.junit.vintage:junit-vintage-engine:5.9.2")
         }
     }
 
@@ -89,6 +86,9 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok")
         testAnnotationProcessor("org.projectlombok:lombok")
         testCompileOnly("org.projectlombok:lombok")
+
+        // junit
+        testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     }
 
     // 编译环境 JDK1.8
