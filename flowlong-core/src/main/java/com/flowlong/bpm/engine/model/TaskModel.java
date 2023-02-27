@@ -237,7 +237,7 @@ public class TaskModel extends WorkModel {
      * @deprecated
      */
     public List<TaskModel> getNextTaskModels() {
-        List<TaskModel> models = new ArrayList<TaskModel>();
+        List<TaskModel> models = new ArrayList<>();
         for (TransitionModel tm : this.getOutputs()) {
             addNextModels(models, tm, TaskModel.class);
         }

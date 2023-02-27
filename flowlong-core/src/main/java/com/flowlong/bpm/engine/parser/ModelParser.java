@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.parser;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.XmlUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.model.NodeModel;

@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.impl;
 
-import com.flowlong.bpm.engine.INoGenerator;
+import com.flowlong.bpm.engine.NoGenerator;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import org.joda.time.DateTime;
 
@@ -27,7 +27,7 @@ import java.util.Random;
  * @author hubin
  * @since 1.0
  */
-public class DefaultNoGenerator implements INoGenerator {
+public class DefaultNoGenerator implements NoGenerator {
 
     @Override
     public String generate(ProcessModel model) {

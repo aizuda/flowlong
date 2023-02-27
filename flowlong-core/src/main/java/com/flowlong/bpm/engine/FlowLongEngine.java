@@ -45,37 +45,37 @@ public interface FlowLongEngine {
     /**
      * 获取process服务
      *
-     * @return IProcessService 流程定义服务
+     * @return ProcessService 流程定义服务
      */
-    IProcessService processService();
+    ProcessService processService();
 
     /**
      * 获取查询服务
      *
-     * @return IQueryService 常用查询服务
+     * @return QueryService 常用查询服务
      */
-    IQueryService queryService();
+    QueryService queryService();
 
     /**
      * 获取实例服务
      *
-     * @return IQueryService 流程实例服务
+     * @return QueryService 流程实例服务
      */
-    IRuntimeService runtimeService();
+    RuntimeService runtimeService();
 
     /**
      * 获取任务服务
      *
-     * @return ITaskService 任务服务
+     * @return TaskService 任务服务
      */
-    ITaskService taskService();
+    TaskService taskService();
 
     /**
      * 获取管理服务
      *
-     * @return IManagerService 管理服务
+     * @return ManagerService 管理服务
      */
-    IManagerService managerService();
+    ManagerService managerService();
 
     /**
      * 根据流程定义ID启动流程实例

@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.ModelInstance;
 import com.flowlong.bpm.engine.assist.ClassUtils;

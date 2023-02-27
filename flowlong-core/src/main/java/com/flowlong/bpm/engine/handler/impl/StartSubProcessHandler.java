@@ -15,14 +15,13 @@
 package com.flowlong.bpm.engine.handler.impl;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.FlowLongException;
-import com.flowlong.bpm.engine.access.QueryFilter;
-import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.handler.IFlowLongHandler;
-import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import com.flowlong.bpm.engine.model.SubProcessModel;
 
 import java.util.concurrent.*;
@@ -33,7 +32,7 @@ import java.util.concurrent.*;
  * @author hubin
  * @since 1.0
  */
-public class StartSubProcessHandler implements IFlowLongHandler {
+public class StartSubProcessHandler implements FlowLongHandler {
     private SubProcessModel model;
     /**
      * 是否以future方式执行启动子流程任务
@@ -77,12 +76,12 @@ public class StartSubProcessHandler implements IFlowLongHandler {
             instance = engine.startInstanceByExecution(child);
         }
         Assert.notNull(instance, "子流程创建失败");
-        execution.addTasks(engine.queryService().getActiveTasks(new QueryFilter().setInstanceId(instance.getId())));
+        execution.addTasks(engine.queryService().getActiveTasksByInstanceId(instance.getId()));
     }
 
     /**
      * Future模式的任务执行
-     *
+     * <p>
      * 通过call返回任务结果集
      */
     class ExecuteTask implements Callable<Instance> {

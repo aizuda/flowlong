@@ -21,19 +21,20 @@ package com.flowlong.bpm.engine.cache;
  * @since 1.0
  */
 public interface CacheManager {
+
     /**
      * 根据cache的名称获取cache。如果不存在，默认新建并返回
      *
      * @param name
-     * @return Cache
+     * @return FlowLongCache
      * @throws CacheExceptionFlow
      */
-    public <K, V> Cache<K, V> getCache(String name) throws CacheExceptionFlow;
+    <K, V> FlowLongCache<K, V> getCache(String name) throws CacheExceptionFlow;
 
     /**
      * 销毁cache
      *
      * @throws CacheExceptionFlow
      */
-    public void destroy() throws CacheExceptionFlow;
+    void destroy() throws CacheExceptionFlow;
 }

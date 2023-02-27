@@ -30,7 +30,7 @@ public class TestCC extends TestLongBase {
 
     @Before
     public void before() {
-        this.deployByResource("test/task/simple/process.long");
+        this.deployByResource("test/cc/process.long");
     }
 
     @Test

@@ -16,7 +16,9 @@ package com.flowlong.bpm.engine.handler.impl;
 
 import com.flowlong.bpm.engine.model.*;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 合并分支操作的处理器
@@ -54,10 +56,9 @@ public class MergeBranchHandler extends AbstractMergeHandler {
      * @see AbstractMergeHandler#findActiveNodes()
      */
     @Override
-    protected String[] findActiveNodes() {
+    protected List<String> findActiveNodes() {
         StringBuilder buffer = new StringBuilder(20);
         findForkTaskNames(model, buffer);
-        String[] taskNames = buffer.toString().split(",");
-        return taskNames;
+        return Arrays.stream(buffer.toString().split(",")).collect(Collectors.toList());
     }
 }

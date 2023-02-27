@@ -43,7 +43,7 @@ public class HisInstance implements Serializable {
      */
     private String processId;
     /**
-     * 流程实例状态（0：结束；1：活动）
+     * 流程实例状态（0，结束 1，活动）
      */
     private Integer instanceState;
     /**

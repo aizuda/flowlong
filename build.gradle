@@ -2,6 +2,7 @@
 buildscript {
     ext {
         springBootVersion = "2.7.0"
+        mybatisPlusVersion = "3.5.3.1"
     }
 
     // 仓库配置
@@ -65,6 +66,12 @@ subprojects {
         dependencies {
             dependency("commons-dbutils:commons-dbutils:1.7")
             dependency("mysql:mysql-connector-java:8.0.32")
+
+            // orm db
+            dependency("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
+            dependency("com.baomidou:mybatis-plus-core:${mybatisPlusVersion}")
+            dependency("com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}")
+            dependency("com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}")
 
             // 编译测试
             dependency("junit:junit:4.12")

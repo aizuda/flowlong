@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.cache;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 
 /**
  * cache异常

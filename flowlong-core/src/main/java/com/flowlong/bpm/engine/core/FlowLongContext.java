@@ -15,12 +15,12 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.*;
-import com.flowlong.bpm.engine.access.jdbc.JdbcAccess;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
 import com.flowlong.bpm.engine.impl.GeneralCompletion;
 import com.flowlong.bpm.engine.parser.NodeParser;
 import com.flowlong.bpm.engine.parser.impl.*;
-import com.flowlong.bpm.engine.scheduling.IScheduler;
+import com.flowlong.bpm.engine.scheduling.FlowLongScheduler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -40,18 +40,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @Getter
 @Setter
 public class FlowLongContext {
-    private IProcessService processService;
-    private IQueryService queryService;
-    private IRuntimeService runtimeService;
-    private ITaskService taskService;
-    private IManagerService managerService;
-    private JdbcAccess jdbcAccess;
+    private ProcessService processService;
+    private QueryService queryService;
+    private RuntimeService runtimeService;
+    private TaskService taskService;
+    private ManagerService managerService;
     private Expression expression;
 
     /**
      * 调度器接口
      */
-    private IScheduler scheduler;
+    private FlowLongScheduler scheduler;
     private List<FlowLongInterceptor> interceptors;
     private TaskAccessStrategy taskAccessStrategy;
     /**
@@ -82,12 +81,12 @@ public class FlowLongContext {
         nodeParserMap.put("fork", new ForkParser());
         nodeParserMap.put("join", new JoinParser());
         nodeParserMap.put("end", new EndParser());
-        jdbcAccess = new JdbcAccess(dataSource);
-        processService = new ProcessService(this, jdbcAccess);
-        queryService = new QueryService(jdbcAccess);
-        runtimeService = new RuntimeService(this, jdbcAccess);
-        taskService = new TaskService(this, jdbcAccess);
-        managerService = new ManagerService(jdbcAccess);
+        // TODO 待完善
+//        processService = new ProcessServiceImpl(this);
+//        queryService = new QueryServiceImpl();
+//        runtimeService = new RuntimeServiceImpl(this);
+//        taskService = new TaskServiceImpl(this);
+//        managerService = new ManagerServiceImpl();
         taskAccessStrategy = new GeneralAccessStrategy();
         completion = new GeneralCompletion();
         /**

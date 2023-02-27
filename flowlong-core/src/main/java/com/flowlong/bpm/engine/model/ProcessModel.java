@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.INoGenerator;
+import com.flowlong.bpm.engine.NoGenerator;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.impl.DefaultNoGenerator;
@@ -53,7 +53,7 @@ public class ProcessModel extends BaseElement {
     /**
      * 实例编号生成器对象
      */
-    private INoGenerator generator;
+    private NoGenerator generator;
 
     /**
      * 返回当前流程定义的所有工作任务节点模型
@@ -144,7 +144,7 @@ public class ProcessModel extends BaseElement {
      * @param nodeNames 节点名称数组
      * @return
      */
-    public <T> boolean containsNodeNames(Class<T> T, String... nodeNames) {
+    public <T> boolean containsNodeNames(Class<T> T, List<String> nodeNames) {
         for (NodeModel node : nodes) {
             if (!T.isInstance(node)) {
                 continue;
@@ -189,15 +189,15 @@ public class ProcessModel extends BaseElement {
     public void setInstanceNoClass(String instanceNoClass) {
         this.instanceNoClass = instanceNoClass;
         if (StringUtils.isNotEmpty(instanceNoClass)) {
-            generator = (INoGenerator) ClassUtils.newInstance(instanceNoClass);
+            generator = (NoGenerator) ClassUtils.newInstance(instanceNoClass);
         }
     }
 
-    public INoGenerator getGenerator() {
+    public NoGenerator getGenerator() {
         return generator == null ? new DefaultNoGenerator() : generator;
     }
 
-    public void setGenerator(INoGenerator generator) {
+    public void setGenerator(NoGenerator generator) {
         this.generator = generator;
     }
 }

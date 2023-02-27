@@ -15,15 +15,14 @@
 package com.flowlong.bpm.engine.handler.impl;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.FlowLongException;
-import com.flowlong.bpm.engine.access.QueryFilter;
 import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.handler.IFlowLongHandler;
+import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.SubProcessModel;
 
@@ -35,7 +34,7 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
-public class EndProcessHandler implements IFlowLongHandler {
+public class EndProcessHandler implements FlowLongHandler {
 
     /**
      * 结束当前流程实例，如果存在父流程，则触发父流程继续执行
@@ -44,7 +43,7 @@ public class EndProcessHandler implements IFlowLongHandler {
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
         Instance instance = execution.getInstance();
-        List<Task> tasks = engine.queryService().getActiveTasks(new QueryFilter().setInstanceId(instance.getId()));
+        List<Task> tasks = engine.queryService().getTasksByInstanceId(instance.getId());
         for (Task task : tasks) {
             if (task.isMajor()) throw new FlowLongException("存在未完成的主办任务,请确认.");
             engine.taskService().complete(task.getId(), FlowLongEngine.AUTO);

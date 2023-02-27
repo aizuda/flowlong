@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.cache.memory;
 
-import com.flowlong.bpm.engine.cache.Cache;
+import com.flowlong.bpm.engine.cache.FlowLongCache;
 import com.flowlong.bpm.engine.cache.CacheExceptionFlow;
 import com.flowlong.bpm.engine.cache.CacheManager;
 import com.flowlong.bpm.engine.assist.StringUtils;
@@ -29,23 +29,23 @@ import java.util.concurrent.ConcurrentMap;
  * @since 1.0
  */
 public class MemoryCacheManager implements CacheManager {
-    private final ConcurrentMap<String, Cache> caches;
+    private final ConcurrentMap<String, FlowLongCache> caches;
 
     public MemoryCacheManager() {
-        this.caches = new ConcurrentHashMap<String, Cache>();
+        this.caches = new ConcurrentHashMap<String, FlowLongCache>();
     }
 
     @Override
-    public <K, V> Cache<K, V> getCache(String name) throws CacheExceptionFlow {
+    public <K, V> FlowLongCache<K, V> getCache(String name) throws CacheExceptionFlow {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Cache名称不能为空.");
         }
-        Cache cache;
+        FlowLongCache cache;
 
         cache = caches.get(name);
         if (cache == null) {
             cache = new MemoryCache<Object, Object>(new ConcurrentHashMap<Object, Object>());
-            Cache existing = caches.putIfAbsent(name, cache);
+            FlowLongCache existing = caches.putIfAbsent(name, cache);
             if (existing != null) {
                 cache = existing;
             }

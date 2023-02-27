@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;

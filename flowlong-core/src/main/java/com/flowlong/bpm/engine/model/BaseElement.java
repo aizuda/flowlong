@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine.model;
 
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.handler.IFlowLongHandler;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,11 +43,11 @@ public class BaseElement implements Serializable {
     /**
      * 将执行对象execution交给具体的处理器处理
      *
-     * @param handler         处理器 {@see IFlowLongHandler}
+     * @param handler         处理器 {@see FlowLongHandler}
      * @param flowLongContext 流程引擎上下文
      * @param execution       执行对象
      */
-    protected void fire(IFlowLongHandler handler, FlowLongContext flowLongContext, Execution execution) {
+    protected void fire(FlowLongHandler handler, FlowLongContext flowLongContext, Execution execution) {
         handler.handle(flowLongContext, execution);
     }
 

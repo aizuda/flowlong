@@ -21,6 +21,7 @@ package com.flowlong.bpm.engine.cache;
  * @since 1.0
  */
 public interface CacheManagerAware {
+
     /**
      * 设置cache管理器
      *

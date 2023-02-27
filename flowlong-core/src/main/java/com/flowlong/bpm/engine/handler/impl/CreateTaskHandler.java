@@ -14,12 +14,12 @@
  */
 package com.flowlong.bpm.engine.handler.impl;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.handler.IFlowLongHandler;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
-public class CreateTaskHandler implements IFlowLongHandler {
+public class CreateTaskHandler implements FlowLongHandler {
     /**
      * 任务模型
      */

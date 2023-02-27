@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.assist;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

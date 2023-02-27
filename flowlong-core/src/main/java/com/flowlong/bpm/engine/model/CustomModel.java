@@ -14,13 +14,13 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.FlowLongException;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.ReflectUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.handler.IFlowLongHandler;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -67,8 +67,8 @@ public class CustomModel extends WorkModel {
             throw new FlowLongException("自定义模型[class=" + clazz + "]实例化对象失败");
         }
 
-        if (invokeObject instanceof IFlowLongHandler) {
-            IFlowLongHandler handler = (IFlowLongHandler) invokeObject;
+        if (invokeObject instanceof FlowLongHandler) {
+            FlowLongHandler handler = (FlowLongHandler) invokeObject;
             handler.handle(flowLongContext, execution);
         } else {
             Method method = ReflectUtils.findMethod(invokeObject.getClass(), methodName);

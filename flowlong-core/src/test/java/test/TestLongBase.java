@@ -15,8 +15,7 @@
 package test;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.IProcessService;
-import com.flowlong.bpm.engine.IQueryService;
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
@@ -29,7 +28,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 public class TestLongBase {
     protected String processId;
     protected FlowLongEngine engine = getEngine();
-    protected IQueryService queryService = engine.queryService();
+    protected QueryService queryService = engine.queryService();
 
     protected FlowLongEngine getEngine() {
         MysqlDataSource ds = new MysqlDataSource();

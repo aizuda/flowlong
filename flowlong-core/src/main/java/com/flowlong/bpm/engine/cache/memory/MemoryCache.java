@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.cache.memory;
 
-import com.flowlong.bpm.engine.cache.Cache;
+import com.flowlong.bpm.engine.cache.FlowLongCache;
 import com.flowlong.bpm.engine.cache.CacheExceptionFlow;
 import com.flowlong.bpm.engine.assist.Assert;
 
@@ -26,7 +26,7 @@ import java.util.Map;
  * @author hubin
  * @since 1.0
  */
-public class MemoryCache<K, V> implements Cache<K, V> {
+public class MemoryCache<K, V> implements FlowLongCache<K, V> {
     /**
      * map cache
      */

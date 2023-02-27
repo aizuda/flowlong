@@ -298,27 +298,27 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public IProcessService processService() {
+    public ProcessService processService() {
         return this.flowLongContext.getProcessService();
     }
 
     @Override
-    public IQueryService queryService() {
+    public QueryService queryService() {
         return this.flowLongContext.getQueryService();
     }
 
     @Override
-    public IRuntimeService runtimeService() {
+    public RuntimeService runtimeService() {
         return this.flowLongContext.getRuntimeService();
     }
 
     @Override
-    public ITaskService taskService() {
+    public TaskService taskService() {
         return this.flowLongContext.getTaskService();
     }
 
     @Override
-    public IManagerService managerService() {
+    public ManagerService managerService() {
         return this.flowLongContext.getManagerService();
     }
 }

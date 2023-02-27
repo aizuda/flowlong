@@ -14,6 +14,9 @@
  */
 package com.flowlong.bpm.engine.handler.impl;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * actor all方式的合并处理器
  *
@@ -41,7 +44,7 @@ public class MergeActorHandler extends AbstractMergeHandler {
      * @see AbstractMergeHandler#findActiveNodes()
      */
     @Override
-    protected String[] findActiveNodes() {
-        return new String[]{taskName};
+    protected List<String> findActiveNodes() {
+        return Arrays.asList(taskName);
     }
 }

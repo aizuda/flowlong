@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core;
 
+import com.flowlong.bpm.engine.Expression;
 import de.odysseus.el.ExpressionFactoryImpl;
 import de.odysseus.el.util.SimpleContext;
 
