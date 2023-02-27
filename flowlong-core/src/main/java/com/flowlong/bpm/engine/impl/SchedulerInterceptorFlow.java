@@ -51,7 +51,9 @@ public class SchedulerInterceptorFlow implements FlowLongInterceptor {
      */
     @Override
     public void intercept(FlowLongContext flowLongContext, Execution execution) {
-        if (!isScheduled) return;
+        if (!isScheduled) {
+            return;
+        }
         for (Task task : execution.getTasks()) {
             String id = execution.getProcess().getId()
                     + "-" + execution.getInstance().getId()

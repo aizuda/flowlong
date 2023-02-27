@@ -37,6 +37,7 @@ public class ManagerService extends AccessService implements IManagerService {
         this.dbAccess = dbAccess;
     }
 
+    @Override
     public void saveOrUpdate(Surrogate surrogate) {
         Assert.notNull(surrogate);
         surrogate.setState(STATE_ACTIVE);
@@ -48,26 +49,31 @@ public class ManagerService extends AccessService implements IManagerService {
         }
     }
 
+    @Override
     public void deleteSurrogate(String id) {
         Surrogate surrogate = getSurrogate(id);
         Assert.notNull(surrogate);
         access().deleteSurrogate(surrogate);
     }
 
+    @Override
     public Surrogate getSurrogate(String id) {
         return access().getSurrogate(id);
     }
 
+    @Override
     public List<Surrogate> getSurrogate(QueryFilter filter) {
         Assert.notNull(filter);
         return access().getSurrogate(null, filter);
     }
 
+    @Override
     public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getSurrogate(page, filter);
     }
 
+    @Override
     public String getSurrogate(String operator, String processName) {
         Assert.notEmpty(operator);
         QueryFilter filter = new QueryFilter().
@@ -77,7 +83,9 @@ public class ManagerService extends AccessService implements IManagerService {
             filter.setName(processName);
         }
         List<Surrogate> surrogates = getSurrogate(filter);
-        if (surrogates == null || surrogates.isEmpty()) return operator;
+        if (surrogates == null || surrogates.isEmpty()) {
+            return operator;
+        }
         StringBuffer buffer = new StringBuffer(50);
         for (Surrogate surrogate : surrogates) {
             String result = getSurrogate(surrogate.getSurrogate(), processName);

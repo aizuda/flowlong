@@ -26,6 +26,7 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 public class SQLServerDialect implements Dialect {
     private static final String STR_ORDERBY = " order by ";
 
+    @Override
     public String getPageSql(String sql, Page<?> page) {
         int orderIdx = sql.indexOf(STR_ORDERBY);
         String orderStr = null;

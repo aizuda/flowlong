@@ -40,6 +40,7 @@ public class MergeActorHandler extends AbstractMergeHandler {
      *
      * @see AbstractMergeHandler#findActiveNodes()
      */
+    @Override
     protected String[] findActiveNodes() {
         return new String[]{taskName};
     }

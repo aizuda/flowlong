@@ -106,6 +106,7 @@ public abstract class AbstractDBAccess implements DBAccess {
      */
     public abstract void saveOrUpdate(Map<String, Object> map);
 
+    @Override
     public void initialize(Object accessObject) {
 
     }
@@ -148,7 +149,9 @@ public abstract class AbstractDBAccess implements DBAccess {
      * @return 方言对象
      */
     protected Dialect getDialect() {
-        if (dialect != null) return dialect;
+        if (dialect != null) {
+            return dialect;
+        }
 //        dialect = ServiceContext.getContext().find(Dialect.class);
         if (dialect == null) {
             try {
@@ -163,6 +166,7 @@ public abstract class AbstractDBAccess implements DBAccess {
     /**
      * 由于process中涉及blob字段，未对各种框架统一，所以process操作交给具体的实现类处理
      */
+    @Override
     public void saveProcess(Process process) {
         if (isORM()) {
             saveOrUpdate(buildMap(process, SAVE));
@@ -178,6 +182,7 @@ public abstract class AbstractDBAccess implements DBAccess {
     /**
      * 由于process中涉及blob字段，未对各种框架统一，所以process操作交给具体的实现类处理
      */
+    @Override
     public void updateProcess(Process process) {
         if (isORM()) {
             saveOrUpdate(buildMap(process, UPDATE));
@@ -189,6 +194,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteProcess(Process process) {
         if (!isORM()) {
             Object[] args = new Object[]{process.getId()};
@@ -197,6 +203,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateProcessType(String id, String type) {
         if (isORM()) {
             Process process = getProcess(id);
@@ -209,6 +216,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveTask(Task task) {
         if (isORM()) {
             saveOrUpdate(buildMap(task, SAVE));
@@ -223,6 +231,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveInstance(Instance instance) {
         if (isORM()) {
             saveOrUpdate(buildMap(instance, SAVE));
@@ -236,6 +245,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveCCInstance(CCInstance ccinstance) {
         if (isORM()) {
             saveOrUpdate(buildMap(ccinstance, SAVE));
@@ -246,6 +256,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveTaskActor(TaskActor taskActor) {
         if (isORM()) {
             saveOrUpdate(buildMap(taskActor, SAVE));
@@ -255,6 +266,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateTask(Task task) {
         if (isORM()) {
             saveOrUpdate(buildMap(task, UPDATE));
@@ -265,6 +277,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateInstance(Instance instance) {
         if (isORM()) {
             saveOrUpdate(buildMap(instance, UPDATE));
@@ -275,6 +288,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateCCInstance(CCInstance ccinstance) {
         if (isORM()) {
             saveOrUpdate(buildMap(ccinstance, UPDATE));
@@ -285,6 +299,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteTask(Task task) {
         if (!isORM()) {
             Object[] args = new Object[]{task.getId()};
@@ -294,6 +309,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteInstance(Instance instance) {
         if (!isORM()) {
             int[] type = new int[]{Types.VARCHAR};
@@ -301,6 +317,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteCCInstance(CCInstance ccinstance) {
         if (!isORM()) {
             int[] type = new int[]{Types.VARCHAR, Types.VARCHAR};
@@ -308,6 +325,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void removeTaskActor(String taskId, String... actors) {
         if (!isORM()) {
             for (String actorId : actors) {
@@ -317,6 +335,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveHistory(HisInstance instance) {
         if (isORM()) {
             saveOrUpdate(buildMap(instance, SAVE));
@@ -329,6 +348,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateHistory(HisInstance instance) {
         if (isORM()) {
             saveOrUpdate(buildMap(instance, UPDATE));
@@ -339,6 +359,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteHistoryInstance(HisInstance hisInstance) {
         if (!isORM()) {
             Object[] args = new Object[]{hisInstance.getId()};
@@ -347,12 +368,15 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void saveHistory(HisTask task) {
         if (isORM()) {
             saveOrUpdate(buildMap(task, SAVE));
             if (task.getActorIds() != null) {
                 for (String actorId : task.getActorIds()) {
-                    if (StringUtils.isEmpty(actorId)) continue;
+                    if (StringUtils.isEmpty(actorId)) {
+                        continue;
+                    }
                     HisTaskActor hist = new HisTaskActor();
                     hist.setActorId(actorId);
                     hist.setTaskId(task.getId());
@@ -368,13 +392,16 @@ public abstract class AbstractDBAccess implements DBAccess {
             saveOrUpdate(buildMap(TASK_HISTORY_INSERT, args, type));
             if (task.getActorIds() != null) {
                 for (String actorId : task.getActorIds()) {
-                    if (StringUtils.isEmpty(actorId)) continue;
+                    if (StringUtils.isEmpty(actorId)) {
+                        continue;
+                    }
                     saveOrUpdate(buildMap(TASK_ACTOR_HISTORY_INSERT, new Object[]{task.getId(), actorId}, new int[]{Types.VARCHAR, Types.VARCHAR}));
                 }
             }
         }
     }
 
+    @Override
     public void deleteHistoryTask(HisTask hisTask) {
         if (!isORM()) {
             Object[] args = new Object[]{hisTask.getId()};
@@ -384,6 +411,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateInstanceVariable(Instance instance) {
         updateInstance(instance);
         HisInstance hist = getHistInstance(instance.getId());
@@ -391,6 +419,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         updateHistory(hist);
     }
 
+    @Override
     public void saveSurrogate(Surrogate surrogate) {
         if (isORM()) {
             saveOrUpdate(buildMap(surrogate, SAVE));
@@ -404,6 +433,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void updateSurrogate(Surrogate surrogate) {
         if (isORM()) {
             saveOrUpdate(buildMap(surrogate, UPDATE));
@@ -416,6 +446,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public void deleteSurrogate(Surrogate surrogate) {
         if (!isORM()) {
             Object[] args = new Object[]{surrogate.getId()};
@@ -424,11 +455,13 @@ public abstract class AbstractDBAccess implements DBAccess {
         }
     }
 
+    @Override
     public Surrogate getSurrogate(String id) {
         String where = " where id = ?";
         return queryObject(Surrogate.class, SURROGATE_QUERY + where, id);
     }
 
+    @Override
     public List<Surrogate> getSurrogate(Page<Surrogate> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(SURROGATE_QUERY);
         sql.append(" where 1=1 and state = 1 ");
@@ -463,46 +496,55 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, Surrogate.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public Task getTask(String taskId) {
         String where = " where id = ?";
         return queryObject(Task.class, QUERY_task + where, taskId);
     }
 
+    @Override
     public List<Task> getNextActiveTasks(String parentTaskId) {
         String where = " where parent_task_id = ?";
         return queryList(Task.class, QUERY_task + where, parentTaskId);
     }
 
+    @Override
     public List<Task> getNextActiveTasks(String instanceId, String taskName, String parentTaskId) {
         String sql = QUERY_task + " where parent_task_id in ( select ht.id from flw_his_task ht where ht.instance_id=? and ht.task_name=? and ht.parent_task_id=? )";
         return queryList(Task.class, sql, instanceId, taskName, parentTaskId);
     }
 
+    @Override
     public HisTask getHistTask(String taskId) {
         String where = " where id = ?";
         return queryObject(HisTask.class, QUERY_HIST_task + where, taskId);
     }
 
+    @Override
     public HisInstance getHistInstance(String instanceId) {
         String where = " where id = ?";
         return queryObject(HisInstance.class, QUERY_HIST_INSTANCE + where, instanceId);
     }
 
+    @Override
     public List<TaskActor> getTaskActorsByTaskId(String taskId) {
         String where = " where task_id = ?";
         return queryList(TaskActor.class, QUERY_task_ACTOR + where, taskId);
     }
 
+    @Override
     public List<HisTaskActor> getHistTaskActorsByTaskId(String taskId) {
         String where = " where task_id = ?";
         return queryList(HisTaskActor.class, QUERY_HIST_task_ACTOR + where, taskId);
     }
 
+    @Override
     public Instance getInstance(String instanceId) {
         String where = " where id = ?";
         return queryObject(Instance.class, QUERY_INSTANCE + where, instanceId);
     }
 
+    @Override
     public List<CCInstance> getCCInstance(String instanceId, String... actorIds) {
         StringBuilder where = new StringBuilder(QUERY_CCINSTANCE);
         where.append(" where 1 = 1 ");
@@ -519,11 +561,13 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(CCInstance.class, where.toString(), ArrayUtils.add(actorIds, 0, instanceId));
     }
 
+    @Override
     public Process getProcess(String id) {
         String where = " where id = ?";
         return queryObject(Process.class, QUERY_PROCESS + where, id);
     }
 
+    @Override
     public List<Process> getProcess(Page<Process> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(QUERY_PROCESS);
         sql.append(" where 1=1 ");
@@ -570,6 +614,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, Process.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<Instance> getActiveInstances(Page<Instance> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(QUERY_INSTANCE);
         sql.append(" left join flw_process p on p.id = o.process_id ");
@@ -638,6 +683,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, Instance.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(QUERY_task);
         boolean isFetchActor = filter.getOperators() != null && filter.getOperators().length > 0;
@@ -692,6 +738,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, Task.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<HisInstance> getHistoryInstances(Page<HisInstance> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(QUERY_HIST_INSTANCE);
         sql.append(" left join flw_process p on p.id = o.process_id ");
@@ -754,6 +801,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, HisInstance.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<HisTask> getHistoryTasks(Page<HisTask> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder(QUERY_HIST_task);
         boolean isFetchActor = filter.getOperators() != null && filter.getOperators().length > 0;
@@ -799,6 +847,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, HisTask.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
         sql.append(" select distinct o.process_id, t.instance_id, t.id as id, t.id as task_id, p.display_name as process_name, p.instance_url, o.parent_id, o.creator, ");
@@ -873,6 +922,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, WorkItem.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<HisInstance> getCCWorks(Page<HisInstance> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
         sql.append(" select id,process_id,instance_state,priority,cc.creator,cc.create_time,end_time,parent_id,expire_time,instance_no,variable ");
@@ -924,6 +974,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, HisInstance.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
         StringBuilder sql = new StringBuilder();
         sql.append(" select distinct o.process_id, t.instance_id, t.id as id, t.id as task_id, p.display_name as process_name, p.instance_url, o.parent_id, o.creator, ");
@@ -997,6 +1048,7 @@ public abstract class AbstractDBAccess implements DBAccess {
         return queryList(page, filter, WorkItem.class, sql.toString(), paramList.toArray());
     }
 
+    @Override
     public <T> List<T> queryList(Page<T> page, QueryFilter filter, Class<T> clazz, String sql, Object... args) {
         String orderBy = StringUtils.buildPageOrder(filter.getOrder(), filter.getOrderBy());
         String querySQL = sql + orderBy;
@@ -1012,7 +1064,9 @@ public abstract class AbstractDBAccess implements DBAccess {
         try {
             Object count = queryCount(countSQL, args);
             List<T> list = queryList(clazz, querySQL, args);
-            if (list == null) list = Collections.emptyList();
+            if (list == null) {
+                list = Collections.emptyList();
+            }
             page.setResult(list);
             page.setTotalCount(ClassUtils.castLong(count));
             return list;
@@ -1025,6 +1079,7 @@ public abstract class AbstractDBAccess implements DBAccess {
     /**
      * 运行脚本
      */
+    @Override
     public void runScript() {
         String autoStr = ConfigHelper.getProperty("schema.auto");
         if (autoStr == null || !autoStr.equalsIgnoreCase("true")) {

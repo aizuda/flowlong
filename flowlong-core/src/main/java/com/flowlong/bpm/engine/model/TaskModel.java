@@ -108,7 +108,7 @@ public class TaskModel extends WorkModel {
             /**
              * any方式，直接执行输出变迁
              */
-            runOutTransition(flowLongContext,  execution);
+            runOutTransition(flowLongContext, execution);
         } else {
             /**
              * all方式，需要判断是否已全部合并
@@ -116,7 +116,9 @@ public class TaskModel extends WorkModel {
              * 那么此时需要判断之前分配的所有任务都执行完成后，才可执行下一步，否则不处理
              */
             fire(new MergeActorHandler(getName()), flowLongContext, execution);
-            if (execution.isMerged()) runOutTransition(flowLongContext,  execution);
+            if (execution.isMerged()) {
+                runOutTransition(flowLongContext, execution);
+            }
         }
     }
 

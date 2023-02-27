@@ -62,7 +62,9 @@ public class TransitionModel extends BaseElement implements ModelInstance {
 
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-        if (!enabled) return;
+        if (!enabled) {
+            return;
+        }
         if (target instanceof TaskModel) {
             //如果目标节点模型为TaskModel，则创建task
             fire(new CreateTaskHandler((TaskModel) target), flowLongContext, execution);

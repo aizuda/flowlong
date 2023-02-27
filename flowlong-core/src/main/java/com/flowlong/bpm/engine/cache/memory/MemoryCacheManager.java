@@ -35,6 +35,7 @@ public class MemoryCacheManager implements CacheManager {
         this.caches = new ConcurrentHashMap<String, Cache>();
     }
 
+    @Override
     public <K, V> Cache<K, V> getCache(String name) throws CacheExceptionFlow {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Cache名称不能为空.");
@@ -52,6 +53,7 @@ public class MemoryCacheManager implements CacheManager {
         return cache;
     }
 
+    @Override
     public void destroy() throws CacheExceptionFlow {
         while (!caches.isEmpty()) {
             caches.clear();

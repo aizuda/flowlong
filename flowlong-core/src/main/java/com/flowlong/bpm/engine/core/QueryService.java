@@ -35,17 +35,22 @@ public class QueryService extends AccessService implements IQueryService {
         this.dbAccess = dbAccess;
     }
 
+    @Override
     public Instance getInstance(String instanceId) {
         return access().getInstance(instanceId);
     }
 
+    @Override
     public Task getTask(String taskId) {
         return access().getTask(taskId);
     }
 
+    @Override
     public String[] getTaskActorsByTaskId(String taskId) {
         List<TaskActor> actors = access().getTaskActorsByTaskId(taskId);
-        if (actors == null || actors.isEmpty()) return null;
+        if (actors == null || actors.isEmpty()) {
+            return null;
+        }
         String[] actorIds = new String[actors.size()];
         for (int i = 0; i < actors.size(); i++) {
             TaskActor ta = actors.get(i);
@@ -54,9 +59,12 @@ public class QueryService extends AccessService implements IQueryService {
         return actorIds;
     }
 
+    @Override
     public String[] getHistoryTaskActorsByTaskId(String taskId) {
         List<HisTaskActor> actors = access().getHistTaskActorsByTaskId(taskId);
-        if (actors == null || actors.isEmpty()) return null;
+        if (actors == null || actors.isEmpty()) {
+            return null;
+        }
         String[] actorIds = new String[actors.size()];
         for (int i = 0; i < actors.size(); i++) {
             HisTaskActor ta = actors.get(i);
@@ -65,81 +73,97 @@ public class QueryService extends AccessService implements IQueryService {
         return actorIds;
     }
 
+    @Override
     public HisInstance getHistInstance(String instanceId) {
         return access().getHistInstance(instanceId);
     }
 
+    @Override
     public HisTask getHistTask(String taskId) {
         return access().getHistTask(taskId);
     }
 
+    @Override
     public List<Task> getActiveTasks(QueryFilter filter) {
         Assert.notNull(filter);
         return access().getActiveTasks(null, filter);
     }
 
+    @Override
     public List<Task> getActiveTasks(Page<Task> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getActiveTasks(page, filter);
     }
 
+    @Override
     public List<Instance> getActiveInstances(QueryFilter filter) {
         Assert.notNull(filter);
         return access().getActiveInstances(null, filter);
     }
 
+    @Override
     public List<Instance> getActiveInstances(Page<Instance> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getActiveInstances(page, filter);
     }
 
+    @Override
     public List<HisInstance> getHistoryInstances(QueryFilter filter) {
         Assert.notNull(filter);
         return access().getHistoryInstances(null, filter);
     }
 
+    @Override
     public List<HisInstance> getHistoryInstances(Page<HisInstance> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getHistoryInstances(page, filter);
     }
 
+    @Override
     public List<HisTask> getHistoryTasks(QueryFilter filter) {
         Assert.notNull(filter);
         return access().getHistoryTasks(null, filter);
     }
 
+    @Override
     public List<HisTask> getHistoryTasks(Page<HisTask> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getHistoryTasks(page, filter);
     }
 
+    @Override
     public List<WorkItem> getWorkItems(Page<WorkItem> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getWorkItems(page, filter);
     }
 
+    @Override
     public List<HisInstance> getCCWorks(Page<HisInstance> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getCCWorks(page, filter);
     }
 
+    @Override
     public List<WorkItem> getHistoryWorkItems(Page<WorkItem> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getHistoryWorkItems(page, filter);
     }
 
+    @Override
     public <T> T nativeQueryObject(Class<T> T, String sql, Object... args) {
         Assert.notEmpty(sql);
         Assert.notNull(T);
         return access().queryObject(T, sql, args);
     }
 
+    @Override
     public <T> List<T> nativeQueryList(Class<T> T, String sql, Object... args) {
         Assert.notEmpty(sql);
         Assert.notNull(T);
         return access().queryList(T, sql, args);
     }
 
+    @Override
     public <T> List<T> nativeQueryList(Page<T> page, Class<T> T, String sql,
                                        Object... args) {
         Assert.notEmpty(sql);

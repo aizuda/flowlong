@@ -53,6 +53,7 @@ public class MergeBranchHandler extends AbstractMergeHandler {
      *
      * @see AbstractMergeHandler#findActiveNodes()
      */
+    @Override
     protected String[] findActiveNodes() {
         StringBuilder buffer = new StringBuilder(20);
         findForkTaskNames(model, buffer);

@@ -71,6 +71,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
         this.dbAccess = dbAccess;
     }
 
+    @Override
     public void check(Process process, String idOrName) {
         Assert.notNull(process, "指定的流程定义[id/name=" + idOrName + "]不存在");
         if (process.getState() != null && process.getState() == 0) {
@@ -82,6 +83,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     /**
      * 保存process实体对象
      */
+    @Override
     public void saveProcess(Process process) {
         access().saveProcess(process);
     }
@@ -89,6 +91,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     /**
      * 更新process的类别
      */
+    @Override
     public void updateType(String id, String type) {
         Process entity = getProcessById(id);
         entity.setType(type);
@@ -100,6 +103,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      * 根据id获取process对象
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
+    @Override
     public Process getProcessById(String id) {
         Assert.notEmpty(id);
         Process entity = null;
@@ -132,6 +136,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      * 根据name获取process对象
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
+    @Override
     public Process getProcessByName(String name) {
         return getProcessByVersion(name, null);
     }
@@ -140,6 +145,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      * 根据name获取process对象
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
+    @Override
     public Process getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
         if (version == null) {
@@ -177,6 +183,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      *
      * @param input 定义输入流
      */
+    @Override
     public String deploy(InputStream input) {
         return deploy(input, null);
     }
@@ -187,6 +194,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      * @param input   定义输入流
      * @param creator 创建人
      */
+    @Override
     public String deploy(InputStream input, String creator) {
         Assert.notNull(input);
         try {
@@ -220,6 +228,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
      *
      * @param input 定义输入流
      */
+    @Override
     public void redeploy(String id, InputStream input) {
         Assert.notNull(input);
         Process entity = access().getProcess(id);
@@ -248,6 +257,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     /**
      * 根据processId卸载流程
      */
+    @Override
     public void undeploy(String id) {
         Process entity = access().getProcess(id);
         entity.setState(STATE_FINISH);
@@ -258,6 +268,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     /**
      * 级联删除指定流程定义的所有数据
      */
+    @Override
     public void cascadeRemove(String id) {
         Process entity = access().getProcess(id);
         List<HisInstance> hisInstances = access().getHistoryInstances(null, new QueryFilter().setProcessId(id));
@@ -272,14 +283,18 @@ public class ProcessService extends AccessService implements IProcessService, Ca
     /**
      * 查询流程定义
      */
+    @Override
     public List<Process> getProcess(QueryFilter filter) {
-        if (filter == null) filter = new QueryFilter();
+        if (filter == null) {
+            filter = new QueryFilter();
+        }
         return access().getProcess(null, filter);
     }
 
     /**
      * 分页查询流程定义
      */
+    @Override
     public List<Process> getProcess(Page<Process> page, QueryFilter filter) {
         Assert.notNull(filter);
         return access().getProcess(page, filter);
@@ -325,6 +340,7 @@ public class ProcessService extends AccessService implements IProcessService, Ca
         }
     }
 
+    @Override
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }

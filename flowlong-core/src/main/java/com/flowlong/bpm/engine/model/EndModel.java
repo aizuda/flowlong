@@ -37,6 +37,7 @@ public class EndModel extends NodeModel {
     /**
      * 结束节点无输出变迁
      */
+    @Override
     public List<TransitionModel> getOutputs() {
         return Collections.emptyList();
     }
