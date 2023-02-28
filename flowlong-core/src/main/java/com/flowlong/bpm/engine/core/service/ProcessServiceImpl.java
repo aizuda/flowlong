@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.core.service;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
@@ -24,7 +25,6 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.cache.CacheManager;
 import com.flowlong.bpm.engine.cache.CacheManagerAware;
 import com.flowlong.bpm.engine.cache.FlowLongCache;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
@@ -33,7 +33,9 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.List;
@@ -45,6 +47,8 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
+@Service
+@AllArgsConstructor
 public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     private String DEFAULT_SEPARATOR = ".";
     /**
@@ -67,15 +71,9 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
      * 名称cache(key=id,value=name对象)
      */
     private FlowLongCache<String, String> nameCache;
-    private FlowLongContext flowLongContext;
     private ProcessMapper processMapper;
     private HisInstanceMapper hisInstanceMapper;
-
-    public ProcessServiceImpl(FlowLongContext flowLongContext, ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper) {
-        this.flowLongContext = flowLongContext;
-        this.processMapper = processMapper;
-        this.hisInstanceMapper = hisInstanceMapper;
-    }
+    private RuntimeService runtimeService;
 
     @Override
     public void check(Process process, String idOrName) {
@@ -196,7 +194,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Assert.notNull(input);
         try {
             byte[] bytes = StreamUtils.readBytes(input);
-            ProcessModel model = ModelParser.parse(bytes, flowLongContext);
+            ProcessModel model = ModelParser.parse(bytes);
             // 查询流程信息
             List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getVersion)
                     .eq(Process::getName, model.getName()).orderByDesc(Process::getVersion));
@@ -237,7 +235,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Assert.notNull(entity);
         try {
             byte[] bytes = StreamUtils.readBytes(input);
-            ProcessModel model = ModelParser.parse(bytes, flowLongContext);
+            ProcessModel model = ModelParser.parse(bytes);
             String oldProcessName = entity.getName();
             entity.setModel(model);
             entity.setBytes(bytes);
@@ -277,7 +275,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Process process = processMapper.selectById(id);
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, id));
         for (HisInstance hisInstance : hisInstances) {
-            flowLongContext.getRuntimeService().cascadeRemove(hisInstance.getId());
+            runtimeService.cascadeRemove(hisInstance.getId());
         }
         if (processMapper.deleteById(id) > 0) {
             clear(process);
@@ -293,7 +291,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         FlowLongCache<String, String> nameCache = ensureAvailableNameCache();
         FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
         if (entity.getModel() == null && entity.getDBContent() != null) {
-            entity.setModel(ModelParser.parse(entity.getDBContent(), flowLongContext));
+            entity.setModel(ModelParser.parse(entity.getDBContent()));
         }
         String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
         if (nameCache != null && entityCache != null) {

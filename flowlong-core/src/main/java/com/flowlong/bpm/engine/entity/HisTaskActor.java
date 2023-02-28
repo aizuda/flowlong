@@ -18,8 +18,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 /**
  * 历史任务参与者实体类
  *
@@ -29,14 +27,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class HisTaskActor implements Serializable {
-    /**
-     * 关联的任务ID
-     */
-    private String taskId;
-    /**
-     * 关联的参与者ID（参与者可以为用户、部门、角色）
-     */
-    private String actorId;
+public class HisTaskActor extends TaskActor {
 
 }

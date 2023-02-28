@@ -14,21 +14,24 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
-import com.flowlong.bpm.engine.Completion;
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.RuntimeService;
+import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.listener.InstanceListener;
+import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
@@ -39,12 +42,15 @@ import java.util.Map;
  * @author hubin
  * @since 1.0
  */
+@Service
 @AllArgsConstructor
 public class RuntimeServiceImpl implements RuntimeService {
-    private FlowLongContext flowLongContext;
+    private QueryService queryService;
+    private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
     private CCInstanceMapper ccInstanceMapper;
+    private InstanceListener instanceListener;
 
     /**
      * 创建活动实例
@@ -86,7 +92,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
 
         instance.setVariable(JsonUtils.toJson(args));
-        saveInstance(instance);
+        this.saveInstance(instance);
         return instance;
     }
 
@@ -145,14 +151,17 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void complete(String instanceId) {
-        HisInstance history = new HisInstance();
-        history.setId(instanceId);
-        history.setInstanceState(FlowState.finish);
-        history.setEndTime(DateUtils.getTime());
+        HisInstance his = new HisInstance();
+        his.setId(instanceId);
+        his.setInstanceState(FlowState.finish);
+        his.setEndTime(DateUtils.getTime());
         instanceMapper.deleteById(instanceId);
-        Completion completion = flowLongContext.getCompletion();
-        if (completion != null) {
-            completion.complete(history);
+        this.instanceNotify(TaskListener.EVENT_COMPLETE, his);
+    }
+
+    protected void instanceNotify(String event, HisInstance hisInstance) {
+        if (null != instanceListener) {
+            instanceListener.notify(event, hisInstance);
         }
     }
 
@@ -163,7 +172,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(String instanceId) {
-        terminate(instanceId, null);
+        this.terminate(instanceId, null);
     }
 
     /**
@@ -171,19 +180,16 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(String instanceId, String operator) {
-        List<Task> tasks = flowLongContext.getQueryService().getActiveTasksByInstanceId(instanceId);
+        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
         for (Task task : tasks) {
-            flowLongContext.getTaskService().complete(task.getId(), operator);
+            taskService.complete(task.getId(), operator);
         }
         Instance instance = instanceMapper.selectById(instanceId);
-        HisInstance history = new HisInstance(instance, FlowState.termination);
-        history.setEndTime(DateUtils.getTime());
+        HisInstance his = new HisInstance(instance, FlowState.termination);
+        his.setEndTime(DateUtils.getTime());
         instanceMapper.deleteById(instanceId);
-        hisInstanceMapper.updateById(history);
-        Completion completion = flowLongContext.getCompletion();
-        if (completion != null) {
-            completion.complete(history);
-        }
+        hisInstanceMapper.updateById(his);
+        this.instanceNotify(TaskListener.EVENT_TERMINATE, his);
     }
 
     /**

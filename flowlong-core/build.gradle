@@ -9,6 +9,7 @@ dependencies {
     implementation 'commons-beanutils:commons-beanutils:1.8.3'
     implementation 'joda-time:joda-time:2.3'
 
+    compileOnly("org.springframework:spring-context")
     compileOnly("com.baomidou:mybatis-plus-extension")
     compileOnly 'de.odysseus.juel:juel:2.1.3'
 

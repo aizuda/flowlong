@@ -12,39 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.entity;
+package com.flowlong.bpm.engine.listener;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.io.Serializable;
+import com.flowlong.bpm.engine.entity.Task;
 
 /**
- * 任务参与者实体类
+ * 流程任务监听
  *
  * @author hubin
  * @since 1.0
  */
-@Getter
-@Setter
-@ToString
-public class TaskActor implements Serializable {
-    /**
-     * 主键ID
-     */
-    protected String id;
-    /**
-     * 租户ID
-     */
-    protected String tenantId;
-    /**
-     * 关联的任务ID
-     */
-    protected String taskId;
-    /**
-     * 关联的参与者ID（参与者可以为用户、部门、角色）
-     */
-    protected String actorId;
+public interface TaskListener extends FlowLongListener<Task> {
 
 }

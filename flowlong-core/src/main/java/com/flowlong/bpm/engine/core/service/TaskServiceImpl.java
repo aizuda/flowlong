@@ -15,16 +15,12 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.Assignment;
-import com.flowlong.bpm.engine.Completion;
-import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.TaskService;
+import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisTaskMapper;
@@ -34,11 +30,13 @@ import com.flowlong.bpm.engine.core.mapper.TaskMapper;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.CustomModel;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -48,11 +46,13 @@ import java.util.*;
  * @author hubin
  * @since 1.0
  */
+@Service
 @AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private static final String START = "start";
-
-    private FlowLongContext flowLongContext;
+    private TaskAccessStrategy taskAccessStrategy;
+    private ProcessService processService;
+    private TaskListener taskListener;
     private InstanceMapper instanceMapper;
     private TaskMapper taskMapper;
     private TaskActorMapper taskActorMapper;
@@ -102,9 +102,8 @@ public class TaskServiceImpl implements TaskService {
         }
         hisTaskMapper.insert(history);
         taskMapper.deleteById(task);
-        Completion completion = flowLongContext.getCompletion();
-        if (completion != null) {
-            completion.complete(history);
+        if (null != taskListener) {
+            taskListener.notify(TaskListener.EVENT_COMPLETE, history);
         }
         return task;
     }
@@ -349,7 +348,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.notNull(task);
         Instance instance = instanceMapper.selectById(task.getInstanceId());
         Assert.notNull(instance);
-        Process process = flowLongContext.getProcessService().getProcessById(instance.getProcessId());
+        Process process = processService.getProcessById(instance.getProcessId());
         ProcessModel model = process.getModel();
         NodeModel nodeModel = model.getNode(task.getTaskName());
         Assert.notNull(nodeModel, "任务id无法找到节点模型.");
@@ -531,8 +530,7 @@ public class TaskServiceImpl implements TaskService {
         if (actors == null || actors.isEmpty()) {
             return true;
         }
-        return !StringUtils.isEmpty(operator)
-                && flowLongContext.getTaskAccessStrategy().isAllowed(operator, actors);
+        return !StringUtils.isEmpty(operator) && taskAccessStrategy.isAllowed(operator, actors);
     }
 
 }

@@ -36,59 +36,59 @@ public class Instance implements Serializable {
     /**
      * 主键ID
      */
-    private String id;
+    protected String id;
     /**
      * 租户ID
      */
-    private String tenantId;
+    protected String tenantId;
     /**
      * 版本
      */
-    private Integer version = 0;
+    protected Integer version = 0;
     /**
      * 流程定义ID
      */
-    private String processId;
+    protected String processId;
     /**
      * 流程实例创建者ID
      */
-    private String creator;
+    protected String creator;
     /**
      * 流程实例创建时间
      */
-    private String createTime;
+    protected String createTime;
     /**
      * 流程实例为子流程时，该字段标识父流程实例ID
      */
-    private String parentId;
+    protected String parentId;
     /**
      * 流程实例为子流程时，该字段标识父流程哪个节点模型启动的子流程
      */
-    private String parentNodeName;
+    protected String parentNodeName;
     /**
      * 流程实例期望完成时间
      */
-    private String expireTime;
+    protected String expireTime;
     /**
      * 流程实例上一次更新时间
      */
-    private String lastUpdateTime;
+    protected String lastUpdateTime;
     /**
      * 流程实例上一次更新人员ID
      */
-    private String lastUpdator;
+    protected String lastUpdator;
     /**
      * 流程实例优先级
      */
-    private Integer priority;
+    protected Integer priority;
     /**
      * 流程实例编号
      */
-    private String instanceNo;
+    protected String instanceNo;
     /**
      * 流程实例附属变量
      */
-    private String variable;
+    protected String variable;
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {

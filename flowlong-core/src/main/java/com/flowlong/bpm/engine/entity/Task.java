@@ -39,79 +39,79 @@ public class Task implements Serializable, Cloneable {
     /**
      * 主键ID
      */
-    private String id;
+    protected String id;
     /**
      * 租户ID
      */
-    private String tenantId;
+    protected String tenantId;
     /**
      * 版本
      */
-    private Integer version = 0;
+    protected Integer version = 0;
     /**
      * 流程实例ID
      */
-    private String instanceId;
+    protected String instanceId;
     /**
      * 任务名称
      */
-    private String taskName;
+    protected String taskName;
     /**
      * 任务显示名称
      */
-    private String displayName;
+    protected String displayName;
     /**
      * 参与方式（0：普通任务；1：参与者会签任务）
      */
-    private Integer performType;
+    protected Integer performType;
     /**
      * 任务类型（0：主办任务；1：协办任务）
      */
-    private Integer taskType;
+    protected Integer taskType;
     /**
      * 任务处理者ID
      */
-    private String operator;
+    protected String operator;
     /**
      * 任务创建时间
      */
-    private String createTime;
+    protected String createTime;
     /**
      * 任务完成时间
      */
-    private String finishTime;
+    protected String finishTime;
     /**
      * 期望任务完成时间
      */
-    private String expireTime;
+    protected String expireTime;
     /**
      * 期望的完成时间date类型
      */
-    private Date expireDate;
+    protected Date expireDate;
     /**
      * 提醒时间date类型
      */
-    private Date remindDate;
+    protected Date remindDate;
     /**
      * 任务关联的表单url
      */
-    private String actionUrl;
+    protected String actionUrl;
     /**
      * 任务参与者列表
      */
-    private String[] actorIds;
+    protected String[] actorIds;
     /**
      * 父任务Id
      */
-    private String parentTaskId;
+    protected String parentTaskId;
     /**
      * 任务附属变量
      */
-    private String variable;
+    protected String variable;
     /**
      * 保持模型对象
      */
-    private TaskModel model;
+    protected TaskModel model;
 
     public Task() {
 

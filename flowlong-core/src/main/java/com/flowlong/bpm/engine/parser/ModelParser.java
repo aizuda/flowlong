@@ -14,9 +14,9 @@
  */
 package com.flowlong.bpm.engine.parser;
 
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.XmlUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TransitionModel;
@@ -42,12 +42,11 @@ public class ModelParser {
     /**
      * 流程文件字节码解析为流程模型
      *
-     * @param bytes           流程定义字节
-     * @param flowLongContext 流程引擎上下文
+     * @param bytes 流程定义字节
      */
-    public static ProcessModel parse(byte[] bytes, FlowLongContext flowLongContext) {
+    public static ProcessModel parse(byte[] bytes) {
         return ModelParser.parse(bytes, element -> {
-            NodeParser nodeParser = flowLongContext.getNodeParserMap().get(element.getNodeName());
+            NodeParser nodeParser = FlowLongContext.getNodeParser(element.getNodeName());
             return null == nodeParser ? null : nodeParser.parse(element);
         });
     }

@@ -39,56 +39,56 @@ public class Process implements Serializable {
     /**
      * 主键ID
      */
-    private String id;
+    protected String id;
     /**
      * 租户ID
      */
-    private String tenantId;
+    protected String tenantId;
     /**
      * 版本
      */
-    private Integer version;
+    protected Integer version;
     /**
      * 流程定义名称
      */
-    private String name;
+    protected String name;
     /**
      * 流程定义显示名称
      */
-    private String displayName;
+    protected String displayName;
     /**
      * 流程定义类型（预留字段）
      */
-    private String type;
+    protected String type;
     /**
      * 当前流程的实例url（一般为流程第一步的url）
      * 该字段可以直接打开流程申请的表单
      */
-    private String instanceUrl;
+    protected String instanceUrl;
     /**
      * 是否可用的开关
      */
-    private Integer state;
+    protected Integer state;
     /**
      * 创建时间
      */
-    private String createTime;
+    protected String createTime;
     /**
      * 创建人
      */
-    private String creator;
+    protected String creator;
     /**
      * 流程定义模型
      */
-    private ProcessModel model;
+    protected ProcessModel model;
     /**
      * 流程定义xml
      */
-    private Blob content;
+    protected Blob content;
     /**
      * 流程定义字节数组
      */
-    private byte[] bytes;
+    protected byte[] bytes;
 
     public void setState(FlowState flowState) {
         this.state = flowState.getValue();

@@ -34,35 +34,35 @@ public class Surrogate implements Serializable {
     /**
      * 主键ID
      */
-    private String id;
+    protected String id;
     /**
      * 流程name
      */
-    private String processName;
+    protected String processName;
     /**
      * 授权人
      */
-    private String operator;
+    protected String operator;
     /**
      * 代理人
      */
-    private String surrogate;
+    protected String surrogate;
     /**
      * 操作时间
      */
-    private String odate;
+    protected String odate;
     /**
      * 开始时间
      */
-    private String sdate;
+    protected String sdate;
     /**
      * 结束时间
      */
-    private String edate;
+    protected String edate;
     /**
      * 状态
      */
-    private Integer state;
+    protected Integer state;
 
     public void setState(FlowState flowState) {
         this.state = flowState.getValue();

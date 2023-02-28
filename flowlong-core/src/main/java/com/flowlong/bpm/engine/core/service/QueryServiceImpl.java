@@ -19,6 +19,7 @@ import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.*;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
+@Service
 @AllArgsConstructor
 public class QueryServiceImpl implements QueryService {
     private InstanceMapper instanceMapper;

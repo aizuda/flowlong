@@ -16,8 +16,6 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
-import com.flowlong.bpm.engine.impl.GeneralCompletion;
 import com.flowlong.bpm.engine.parser.NodeParser;
 import com.flowlong.bpm.engine.parser.impl.*;
 import com.flowlong.bpm.engine.scheduling.FlowLongScheduler;
@@ -30,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * FlowLong流程引擎配置处理类
+ * FlowLong流程引擎上下文
  *
  * @author hubin
  * @since 1.0
@@ -53,41 +51,38 @@ public class FlowLongContext {
     private List<FlowLongInterceptor> interceptors;
     private TaskAccessStrategy taskAccessStrategy;
     /**
-     * 完成触发接口
+     * 初始化内置节点解析类 MAP
      */
-    private Completion completion;
-    private Map<String, NodeParser> nodeParserMap = new ConcurrentHashMap<>();
+    private static Map<String, NodeParser> NODE_PARSER_MAP = new ConcurrentHashMap<String, NodeParser>() {{
+        put("start", new StartParser());
+        put("task", new TaskParser());
+        put("custom", new CustomParser());
+        put("decision", new DecisionParser());
+        put("subprocess", new SubProcessParser());
+        put("fork", new ForkParser());
+        put("join", new JoinParser());
+        put("end", new EndParser());
+    }};
 
-    /**
-     * 构造LongEngine对象，用于api集成
-     * 通过SpringHelper调用
-     *
-     * @return FlowLongEngine
-     * @throws FlowLongException
-     */
+    public static NodeParser getNodeParser(String key) {
+        return NODE_PARSER_MAP.get(key);
+    }
+
     public FlowLongEngine build() throws FlowLongException {
+        // 默认初始化流程引擎上下文
+        return this.build(null);
+    }
+
+    public FlowLongEngine build(Map<String, NodeParser> nodeParserMap) throws FlowLongException {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
         /**
-         * 初始化内置节点解析类
+         * 预留注入自定义节点处理类
          */
-        nodeParserMap.put("start", new StartParser());
-        nodeParserMap.put("task", new TaskParser());
-        nodeParserMap.put("custom", new CustomParser());
-        nodeParserMap.put("decision", new DecisionParser());
-        nodeParserMap.put("subprocess", new SubProcessParser());
-        nodeParserMap.put("fork", new ForkParser());
-        nodeParserMap.put("join", new JoinParser());
-        nodeParserMap.put("end", new EndParser());
-        // TODO 待完善
-//        processService = new ProcessServiceImpl(this);
-//        queryService = new QueryServiceImpl();
-//        runtimeService = new RuntimeServiceImpl(this);
-//        taskService = new TaskServiceImpl(this);
-//        managerService = new ManagerServiceImpl();
-        taskAccessStrategy = new GeneralAccessStrategy();
-        completion = new GeneralCompletion();
+        if (null != nodeParserMap) {
+            NODE_PARSER_MAP.putAll(nodeParserMap);
+        }
         /**
          * 由服务上下文返回流程引擎
          */

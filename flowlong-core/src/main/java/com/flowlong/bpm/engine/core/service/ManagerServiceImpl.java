@@ -21,6 +21,7 @@ import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Surrogate;
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 /**
  * 管理服务类
@@ -28,6 +29,7 @@ import lombok.AllArgsConstructor;
  * @author hubin
  * @since 1.0
  */
+@Service
 @AllArgsConstructor
 public class ManagerServiceImpl implements ManagerService {
     private SurrogateMapper surrogateMapper;

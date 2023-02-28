@@ -31,12 +31,12 @@ import java.io.Serializable;
 @Setter
 @ToString
 public class CCInstance implements Serializable {
-    private String instanceId;
-    private String actorId;
-    private String creator;
-    private String createTime;
-    private String finishTime;
-    private Integer status;
+    protected String instanceId;
+    protected String actorId;
+    protected String creator;
+    protected String createTime;
+    protected String finishTime;
+    protected Integer status;
 
     public void setStatus(FlowState flowState) {
         this.status = flowState.getValue();

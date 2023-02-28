@@ -30,55 +30,15 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-public class HisInstance implements Serializable {
-    /**
-     * 主键ID
-     */
-    private String id;
-    /**
-     * 租户ID
-     */
-    private String tenantId;
-    /**
-     * 流程定义ID
-     */
-    private String processId;
+public class HisInstance extends Instance {
     /**
      * 流程实例状态（0，结束 1，活动）
      */
-    private Integer instanceState;
-    /**
-     * 流程实例创建者ID
-     */
-    private String creator;
-    /**
-     * 流程实例创建时间
-     */
-    private String createTime;
+    protected Integer instanceState;
     /**
      * 流程实例结束时间
      */
-    private String endTime;
-    /**
-     * 流程实例为子流程时，该字段标识父流程实例ID
-     */
-    private String parentId;
-    /**
-     * 流程实例期望完成时间
-     */
-    private String expireTime;
-    /**
-     * 流程实例优先级
-     */
-    private Integer priority;
-    /**
-     * 流程实例编号
-     */
-    private String instanceNo;
-    /**
-     * 流程实例附属变量
-     */
-    private String variable;
+    protected String endTime;
 
     public void setInstanceState(FlowState flowState) {
         this.instanceState = flowState.getValue();
