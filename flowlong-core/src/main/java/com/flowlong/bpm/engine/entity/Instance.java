@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,6 +33,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
+@TableName("flw_instance")
 public class Instance implements Serializable {
     /**
      * 主键ID

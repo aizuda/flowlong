@@ -14,6 +14,8 @@
  */
 package com.flowlong.bpm.engine.assist;
 
+import java.util.Objects;
+
 /**
  * 断言帮助类
  *
@@ -29,6 +31,10 @@ public abstract class Assert {
      */
     public static void isTrue(boolean expression, String message) {
         illegalArgument(!expression, message);
+    }
+
+    public static void isZero(int result, String message) {
+        isTrue(Objects.equals(0, result), message);
     }
 
     /**

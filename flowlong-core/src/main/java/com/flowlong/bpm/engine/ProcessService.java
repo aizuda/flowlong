@@ -36,13 +36,6 @@ public interface ProcessService {
     void check(Process process, String idOrName);
 
     /**
-     * 保存流程定义
-     *
-     * @param process 流程定义对象
-     */
-    void saveProcess(Process process);
-
-    /**
      * 更新流程定义的类别
      *
      * @param id   流程定义id

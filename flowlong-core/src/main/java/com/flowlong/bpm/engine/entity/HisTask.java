@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
@@ -31,6 +32,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@TableName("flw_his_task")
 public class HisTask extends Task {
     /**
      * 任务状态（0：结束；1：活动）

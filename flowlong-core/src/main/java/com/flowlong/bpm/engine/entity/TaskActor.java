@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@TableName("flw_task_actor")
 public class TaskActor implements Serializable {
     /**
      * 主键ID

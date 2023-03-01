@@ -14,17 +14,15 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.flowlong.bpm.engine.assist.StreamUtils;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.FlowState;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.InputStream;
 import java.io.Serializable;
-import java.sql.Blob;
 
 /**
  * 流程定义实体类
@@ -35,6 +33,7 @@ import java.sql.Blob;
 @Getter
 @Setter
 @ToString
+@TableName("flw_process")
 public class Process implements Serializable {
     /**
      * 主键ID
@@ -45,9 +44,13 @@ public class Process implements Serializable {
      */
     protected String tenantId;
     /**
-     * 版本
+     * 创建人
      */
-    protected Integer version;
+    protected String createBy;
+    /**
+     * 创建时间
+     */
+    protected String createTime;
     /**
      * 流程定义名称
      */
@@ -61,6 +64,10 @@ public class Process implements Serializable {
      */
     protected String type;
     /**
+     * 版本
+     */
+    protected Integer version;
+    /**
      * 当前流程的实例url（一般为流程第一步的url）
      * 该字段可以直接打开流程申请的表单
      */
@@ -70,56 +77,24 @@ public class Process implements Serializable {
      */
     protected Integer state;
     /**
-     * 创建时间
+     * 流程定义xml
      */
-    protected String createTime;
-    /**
-     * 创建人
-     */
-    protected String creator;
+    protected byte[] content;
     /**
      * 流程定义模型
      */
-    protected ProcessModel model;
-    /**
-     * 流程定义xml
-     */
-    protected Blob content;
-    /**
-     * 流程定义字节数组
-     */
-    protected byte[] bytes;
+    @TableField(exist = false)
+    protected ProcessModel processModel;
 
     public void setState(FlowState flowState) {
         this.state = flowState.getValue();
     }
 
-    /**
-     * setter name/displayName/instanceUrl
-     *
-     * @param processModel
-     */
-    public void setModel(ProcessModel processModel) {
-        this.model = processModel;
+    public void setProcessModel(ProcessModel processModel) {
+        this.processModel = processModel;
         this.name = processModel.getName();
         this.displayName = processModel.getDisplayName();
         this.instanceUrl = processModel.getInstanceUrl();
-    }
-
-    public byte[] getDBContent() {
-        if (this.content != null) {
-            try {
-                return this.content.getBytes(1L, Long.valueOf(this.content.length()).intValue());
-            } catch (Exception e) {
-                try {
-                    InputStream is = content.getBinaryStream();
-                    return StreamUtils.readBytes(is);
-                } catch (Exception e1) {
-                    throw new FlowLongException("couldn't extract stream out of blob", e1);
-                }
-            }
-        }
-        return bytes;
     }
 
 }

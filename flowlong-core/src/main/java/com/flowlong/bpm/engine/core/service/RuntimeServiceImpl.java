@@ -81,7 +81,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         instance.setCreator(operator);
         instance.setLastUpdator(instance.getCreator());
         instance.setProcessId(process.getId());
-        ProcessModel model = process.getModel();
+        ProcessModel model = process.getProcessModel();
         if (model != null && args != null) {
             if (StringUtils.isNotEmpty(model.getExpireTime())) {
                 String expireTime = DateUtils.parseTime(args.get(model.getExpireTime()));

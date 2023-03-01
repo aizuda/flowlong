@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
@@ -34,6 +35,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
+@TableName("flw_task")
 public class Task implements Serializable, Cloneable {
     public static final String KEY_ACTOR = "S-ACTOR";
     /**

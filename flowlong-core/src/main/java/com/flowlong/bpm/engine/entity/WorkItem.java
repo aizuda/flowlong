@@ -30,6 +30,9 @@ import java.io.Serializable;
 @Setter
 @ToString
 public class WorkItem implements Serializable {
+    /**
+     * 主键ID
+     */
     protected String id;
     /**
      * 流程定义ID

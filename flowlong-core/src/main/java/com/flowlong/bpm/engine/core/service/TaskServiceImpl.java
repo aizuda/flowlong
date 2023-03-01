@@ -360,7 +360,7 @@ public class TaskServiceImpl implements TaskService {
         Instance instance = instanceMapper.selectById(task.getInstanceId());
         Assert.notNull(instance);
         Process process = processMapper.selectById(instance.getProcessId());
-        ProcessModel model = process.getModel();
+        ProcessModel model = process.getProcessModel();
         NodeModel nodeModel = model.getNode(task.getTaskName());
         Assert.notNull(nodeModel, "任务id无法找到节点模型.");
         if (nodeModel instanceof TaskModel) {

@@ -142,7 +142,7 @@ public class Execution implements Serializable {
      * @return
      */
     public ProcessModel getModel() {
-        return process.getModel();
+        return process.getProcessModel();
     }
 
     /**

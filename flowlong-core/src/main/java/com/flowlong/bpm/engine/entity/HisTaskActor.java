@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,6 +28,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@TableName("flw_his_task_actor")
 public class HisTaskActor extends TaskActor {
 
 }

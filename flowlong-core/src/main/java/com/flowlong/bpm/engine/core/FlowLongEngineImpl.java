@@ -139,8 +139,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     protected Instance startProcess(Process process, String operator, Map<String, Object> args) {
         Execution execution = execute(process, operator, args, null, null);
-        if (process.getModel() != null) {
-            StartModel start = process.getModel().getStart();
+        if (process.getProcessModel() != null) {
+            StartModel start = process.getProcessModel().getStart();
             Assert.notNull(start, "流程定义[name=" + process.getName() + ", version=" + process.getVersion() + "]没有开始节点");
             start.execute(flowLongContext, execution);
         }
@@ -154,7 +154,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public Instance startInstanceByExecution(Execution execution) {
         Process process = execution.getProcess();
-        StartModel start = process.getModel().getStart();
+        StartModel start = process.getProcessModel().getStart();
         Assert.notNull(start, "流程定义[id=" + process.getId() + "]没有开始节点");
 
         Execution current = execute(process, execution.getOperator(), execution.getArgs(),
@@ -210,7 +210,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (execution == null) {
             return Collections.emptyList();
         }
-        ProcessModel model = execution.getProcess().getModel();
+        ProcessModel model = execution.getProcess().getProcessModel();
         if (model != null) {
             NodeModel nodeModel = model.getNode(execution.getTask().getTaskName());
             //将执行对象交给该任务对应的节点模型执行
@@ -230,7 +230,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (execution == null) {
             return Collections.emptyList();
         }
-        ProcessModel model = execution.getProcess().getModel();
+        ProcessModel model = execution.getProcess().getProcessModel();
         Assert.notNull(model, "当前任务未找到流程定义模型");
         if (StringUtils.isEmpty(nodeName)) {
             Task newTask = taskService().rejectTask(model, execution.getTask());

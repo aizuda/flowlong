@@ -20,10 +20,6 @@ import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.cache.CacheManager;
-import com.flowlong.bpm.engine.cache.CacheManagerAware;
-import com.flowlong.bpm.engine.cache.FlowLongCache;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
@@ -46,7 +42,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
-public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
+public class ProcessServiceImpl implements ProcessService {
     private String DEFAULT_SEPARATOR = ".";
     /**
      * 流程定义对象cache名称
@@ -56,18 +52,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
      * 流程id、name的cache名称
      */
     private String CACHE_NAME = "long.process.name";
-    /**
-     * cache manager
-     */
-    private CacheManager cacheManager;
-    /**
-     * 实体cache(key=name,value=entity对象)
-     */
-    private FlowLongCache<String, Process> entityCache;
-    /**
-     * 名称cache(key=id,value=name对象)
-     */
-    private FlowLongCache<String, String> nameCache;
     private ProcessMapper processMapper;
     private HisInstanceMapper hisInstanceMapper;
 
@@ -86,14 +70,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     }
 
     /**
-     * 保存process实体对象
-     */
-    @Override
-    public void saveProcess(Process process) {
-        processMapper.insert(process);
-    }
-
-    /**
      * 更新process的类别
      */
     @Override
@@ -102,7 +78,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         process.setId(id);
         process.setType(type);
         processMapper.updateById(process);
-        this.cache(process);
     }
 
     /**
@@ -114,14 +89,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Assert.notEmpty(id);
         Process entity = null;
         String processName;
-        FlowLongCache<String, String> nameCache = ensureAvailableNameCache();
-        FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
-        if (nameCache != null && entityCache != null) {
-            processName = nameCache.get(id);
-            if (StringUtils.isNotEmpty(processName)) {
-                entity = entityCache.get(processName);
-            }
-        }
         if (entity != null) {
             if (log.isDebugEnabled()) {
                 log.debug("obtain process[id={}] from cache.", id);
@@ -133,7 +100,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
             if (log.isDebugEnabled()) {
                 log.debug("obtain process[id={}] from database.", id);
             }
-            cache(entity);
         }
         return entity;
     }
@@ -162,14 +128,6 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
                 throw new FlowLongException("process [" + name + "] does not exist");
             }
             process = processList.get(0);
-            cache(process);
-        }
-        if (null == process) {
-            String processName = name + DEFAULT_SEPARATOR + 0;
-            FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
-            if (entityCache != null) {
-                process = entityCache.get(processName);
-            }
         }
         return process;
     }
@@ -185,38 +143,37 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     }
 
     /**
-     * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
+     * 根据流程定义xml的输入流解析为字节数组，保存至流程表 flw_process
      *
-     * @param input   定义输入流
-     * @param creator 创建人
+     * @param input    定义输入流
+     * @param createBy 创建人
      */
     @Override
-    public String deploy(InputStream input, String creator) {
+    public String deploy(InputStream input, String createBy) {
         Assert.notNull(input);
         try {
             byte[] bytes = StreamUtils.readBytes(input);
-            ProcessModel model = ModelParser.parse(bytes);
-            // 查询流程信息
+            ProcessModel processModel = ModelParser.parse(bytes);
+            /**
+             * 查询流程信息获取最后版本号
+             */
             List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getVersion)
-                    .eq(Process::getName, model.getName()).orderByDesc(Process::getVersion));
-            if (CollectionUtils.isEmpty(processList)) {
-                throw new FlowLongException("process [" + model.getName() + "] does not exist");
+                    .eq(Process::getName, processModel.getName()).orderByDesc(Process::getVersion));
+            Integer version = 0;
+            if (CollectionUtils.isNotEmpty(processList)) {
+                version = processList.get(0).getVersion();
             }
-            Integer version = processList.get(0).getVersion();
+            /**
+             * 当前版本 +1 添加一条新的流程记录
+             */
             Process process = new Process();
-            process.setId(StringUtils.getPrimaryKey());
-            if (version == null || version < 0) {
-                process.setVersion(0);
-            } else {
-                process.setVersion(version + 1);
-            }
+            process.setVersion(version + 1);
             process.setState(FlowState.active);
-            process.setModel(model);
-            process.setBytes(bytes);
+            process.setProcessModel(processModel);
+            process.setContent(bytes);
+            process.setCreateBy(createBy);
             process.setCreateTime(DateUtils.getTime());
-            process.setCreator(creator);
-            saveProcess(process);
-            cache(process);
+            Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -237,17 +194,9 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         try {
             byte[] bytes = StreamUtils.readBytes(input);
             ProcessModel model = ModelParser.parse(bytes);
-            String oldProcessName = entity.getName();
-            entity.setModel(model);
-            entity.setBytes(bytes);
+            entity.setProcessModel(model);
+            entity.setContent(bytes);
             processMapper.updateById(entity);
-            if (!oldProcessName.equalsIgnoreCase(entity.getName())) {
-                FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
-                if (entityCache != null) {
-                    entityCache.remove(oldProcessName + DEFAULT_SEPARATOR + entity.getVersion());
-                }
-            }
-            cache(entity);
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());
@@ -263,9 +212,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Process process = new Process();
         process.setId(id);
         process.setState(FlowState.finish);
-        if (processMapper.updateById(process) > 0) {
-            cache(process);
-        }
+        processMapper.updateById(process);
     }
 
     /**
@@ -274,89 +221,11 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     @Override
     public void cascadeRemove(String id) {
         Process process = processMapper.selectById(id);
-        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, id));
+        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
+                .eq(HisInstance::getProcessId, id));
         for (HisInstance hisInstance : hisInstances) {
             // runtimeService.cascadeRemove(hisInstance.getId());
         }
-        if (processMapper.deleteById(id) > 0) {
-            clear(process);
-        }
-    }
-
-    /**
-     * 缓存实体
-     *
-     * @param entity 流程定义对象
-     */
-    private void cache(Process entity) {
-        FlowLongCache<String, String> nameCache = ensureAvailableNameCache();
-        FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
-        if (entity.getModel() == null && entity.getDBContent() != null) {
-            entity.setModel(ModelParser.parse(entity.getDBContent()));
-        }
-        String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
-        if (nameCache != null && entityCache != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("cache process id is[{}],name is[{}]", entity.getId(), processName);
-            }
-            entityCache.put(processName, entity);
-            nameCache.put(entity.getId(), processName);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("no cache implementation class");
-            }
-        }
-    }
-
-    /**
-     * 清除实体
-     *
-     * @param entity 流程定义对象
-     */
-    private void clear(Process entity) {
-        FlowLongCache<String, String> nameCache = ensureAvailableNameCache();
-        FlowLongCache<String, Process> entityCache = ensureAvailableEntityCache();
-        String processName = entity.getName() + DEFAULT_SEPARATOR + entity.getVersion();
-        if (nameCache != null && entityCache != null) {
-            nameCache.remove(entity.getId());
-            entityCache.remove(processName);
-        }
-    }
-
-    @Override
-    public void setCacheManager(CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
-    }
-
-    private FlowLongCache<String, Process> ensureAvailableEntityCache() {
-        FlowLongCache<String, Process> entityCache = ensureEntityCache();
-        if (entityCache == null && this.cacheManager != null) {
-            entityCache = this.cacheManager.getCache(CACHE_ENTITY);
-        }
-        return entityCache;
-    }
-
-    private FlowLongCache<String, String> ensureAvailableNameCache() {
-        FlowLongCache<String, String> nameCache = ensureNameCache();
-        if (nameCache == null && this.cacheManager != null) {
-            nameCache = this.cacheManager.getCache(CACHE_NAME);
-        }
-        return nameCache;
-    }
-
-    public FlowLongCache<String, Process> ensureEntityCache() {
-        return entityCache;
-    }
-
-    public void setEntityCache(FlowLongCache<String, Process> entityCache) {
-        this.entityCache = entityCache;
-    }
-
-    public FlowLongCache<String, String> ensureNameCache() {
-        return nameCache;
-    }
-
-    public void setNameCache(FlowLongCache<String, String> nameCache) {
-        this.nameCache = nameCache;
+        processMapper.deleteById(id);
     }
 }

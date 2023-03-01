@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.FlowState;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
+@TableName("flw_his_instance")
 public class HisInstance extends Instance {
     /**
      * 流程实例状态（0，结束 1，活动）
