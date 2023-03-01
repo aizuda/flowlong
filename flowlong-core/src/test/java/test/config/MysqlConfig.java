@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
-import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.mysql.cj.jdbc.Driver;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -52,7 +52,15 @@ public class MysqlConfig {
     }
 
     @Bean
-    public FlowLongEngine flowLongEngine() {
-        return new FlowLongContext().build();
+    public FlowLongEngine flowLongEngine(ProcessService processService, QueryService queryService,
+                                         RuntimeService runtimeService, TaskService taskService,
+                                         ManagerService managerService) {
+        FlowLongContext flc = new FlowLongContext();
+        flc.setProcessService(processService);
+        flc.setQueryService(queryService);
+        flc.setRuntimeService(runtimeService);
+        flc.setTaskService(taskService);
+        flc.setManagerService(managerService);
+        return flc.build();
     }
 }

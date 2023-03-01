@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.core;
 
-import com.flowlong.bpm.engine.*;
+import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
@@ -55,6 +55,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 //            cacheService.setCacheManager(cacheManager);
 //        }
         return this;
+    }
+
+    @Override
+    public FlowLongContext getContext() {
+        return this.flowLongContext;
     }
 
     /**
@@ -297,28 +302,4 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return execution;
     }
 
-    @Override
-    public ProcessService processService() {
-        return this.flowLongContext.getProcessService();
-    }
-
-    @Override
-    public QueryService queryService() {
-        return this.flowLongContext.getQueryService();
-    }
-
-    @Override
-    public RuntimeService runtimeService() {
-        return this.flowLongContext.getRuntimeService();
-    }
-
-    @Override
-    public TaskService taskService() {
-        return this.flowLongContext.getTaskService();
-    }
-
-    @Override
-    public ManagerService managerService() {
-        return this.flowLongContext.getManagerService();
-    }
 }

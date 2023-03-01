@@ -15,9 +15,7 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.RuntimeService;
-import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
@@ -25,15 +23,16 @@ import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
+import com.flowlong.bpm.engine.entity.CCInstance;
+import com.flowlong.bpm.engine.entity.HisInstance;
+import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,14 +42,19 @@ import java.util.Map;
  * @since 1.0
  */
 @Service
-@AllArgsConstructor
 public class RuntimeServiceImpl implements RuntimeService {
-    private QueryService queryService;
-    private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
     private CCInstanceMapper ccInstanceMapper;
     private InstanceListener instanceListener;
+
+    public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener, InstanceMapper instanceMapper,
+                              HisInstanceMapper hisInstanceMapper, CCInstanceMapper ccInstanceMapper) {
+        this.instanceMapper = instanceMapper;
+        this.hisInstanceMapper = hisInstanceMapper;
+        this.ccInstanceMapper = ccInstanceMapper;
+        this.instanceListener = instanceListener;
+    }
 
     /**
      * 创建活动实例
@@ -180,10 +184,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(String instanceId, String operator) {
-        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
-        for (Task task : tasks) {
-            taskService.complete(task.getId(), operator);
-        }
+//        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
+//        for (Task task : tasks) {
+//            taskService.complete(task.getId(), operator);
+//        }
         Instance instance = instanceMapper.selectById(instanceId);
         HisInstance his = new HisInstance(instance, FlowState.termination);
         his.setEndTime(DateUtils.getTime());

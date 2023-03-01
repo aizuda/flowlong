@@ -15,7 +15,10 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.*;
+import com.flowlong.bpm.engine.Assignment;
+import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.TaskAccessStrategy;
+import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
@@ -23,10 +26,7 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
 import com.flowlong.bpm.engine.core.FlowState;
-import com.flowlong.bpm.engine.core.mapper.HisTaskMapper;
-import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
-import com.flowlong.bpm.engine.core.mapper.TaskActorMapper;
-import com.flowlong.bpm.engine.core.mapper.TaskMapper;
+import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -35,7 +35,7 @@ import com.flowlong.bpm.engine.model.CustomModel;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -47,16 +47,27 @@ import java.util.*;
  * @since 1.0
  */
 @Service
-@AllArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private static final String START = "start";
     private TaskAccessStrategy taskAccessStrategy;
-    private ProcessService processService;
+    private ProcessMapper processMapper;
     private TaskListener taskListener;
     private InstanceMapper instanceMapper;
     private TaskMapper taskMapper;
     private TaskActorMapper taskActorMapper;
     private HisTaskMapper hisTaskMapper;
+
+    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy,
+                           @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper,
+                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper) {
+        this.taskAccessStrategy = taskAccessStrategy;
+        this.processMapper = processMapper;
+        this.taskListener = taskListener;
+        this.instanceMapper = instanceMapper;
+        this.taskMapper = taskMapper;
+        this.taskActorMapper = taskActorMapper;
+        this.hisTaskMapper = hisTaskMapper;
+    }
 
     /**
      * 完成指定任务
@@ -348,7 +359,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.notNull(task);
         Instance instance = instanceMapper.selectById(task.getInstanceId());
         Assert.notNull(instance);
-        Process process = processService.getProcessById(instance.getProcessId());
+        Process process = processMapper.selectById(instance.getProcessId());
         ProcessModel model = process.getModel();
         NodeModel nodeModel = model.getNode(task.getTaskName());
         Assert.notNull(nodeModel, "任务id无法找到节点模型.");

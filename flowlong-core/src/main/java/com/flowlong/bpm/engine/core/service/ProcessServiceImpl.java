@@ -17,7 +17,6 @@ package com.flowlong.bpm.engine.core.service;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
-import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
@@ -33,7 +32,6 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +46,6 @@ import java.util.List;
  */
 @Slf4j
 @Service
-@AllArgsConstructor
 public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     private String DEFAULT_SEPARATOR = ".";
     /**
@@ -73,7 +70,11 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
     private FlowLongCache<String, String> nameCache;
     private ProcessMapper processMapper;
     private HisInstanceMapper hisInstanceMapper;
-    private RuntimeService runtimeService;
+
+    public ProcessServiceImpl(ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper) {
+        this.processMapper = processMapper;
+        this.hisInstanceMapper = hisInstanceMapper;
+    }
 
     @Override
     public void check(Process process, String idOrName) {
@@ -275,7 +276,7 @@ public class ProcessServiceImpl implements ProcessService, CacheManagerAware {
         Process process = processMapper.selectById(id);
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, id));
         for (HisInstance hisInstance : hisInstances) {
-            runtimeService.cascadeRemove(hisInstance.getId());
+            // runtimeService.cascadeRemove(hisInstance.getId());
         }
         if (processMapper.deleteById(id) > 0) {
             clear(process);

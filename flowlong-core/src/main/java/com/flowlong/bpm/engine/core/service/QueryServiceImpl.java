@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.*;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.List;
  * @since 1.0
  */
 @Service
-@AllArgsConstructor
 public class QueryServiceImpl implements QueryService {
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
@@ -38,6 +36,17 @@ public class QueryServiceImpl implements QueryService {
     private TaskActorMapper taskActorMapper;
     private HisTaskMapper hisTaskMapper;
     private HisTaskActorMapper hisTaskActorMapper;
+
+    public QueryServiceImpl(InstanceMapper instanceMapper, HisInstanceMapper hisInstanceMapper,
+                            TaskMapper taskMapper, TaskActorMapper taskActorMapper,
+                            HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+        this.instanceMapper = instanceMapper;
+        this.hisInstanceMapper = hisInstanceMapper;
+        this.taskMapper = taskMapper;
+        this.taskActorMapper = taskActorMapper;
+        this.hisTaskMapper = hisTaskMapper;
+        this.hisTaskActorMapper = hisTaskActorMapper;
+    }
 
     @Override
     public Instance getInstance(String instanceId) {

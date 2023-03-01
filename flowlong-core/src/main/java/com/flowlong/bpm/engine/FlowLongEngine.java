@@ -14,8 +14,8 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.TaskModel;
@@ -42,40 +42,52 @@ public interface FlowLongEngine {
      */
     FlowLongEngine configure(FlowLongContext config);
 
+    FlowLongContext getContext();
+
     /**
      * 获取process服务
      *
      * @return ProcessService 流程定义服务
      */
-    ProcessService processService();
+    default ProcessService processService() {
+        return getContext().getProcessService();
+    }
 
     /**
      * 获取查询服务
      *
      * @return QueryService 常用查询服务
      */
-    QueryService queryService();
+    default QueryService queryService() {
+        return getContext().getQueryService();
+    }
 
     /**
      * 获取实例服务
      *
      * @return QueryService 流程实例服务
      */
-    RuntimeService runtimeService();
+    default RuntimeService runtimeService() {
+        return getContext().getRuntimeService();
+    }
 
     /**
      * 获取任务服务
      *
      * @return TaskService 任务服务
      */
-    TaskService taskService();
+    default TaskService taskService() {
+        return getContext().getTaskService();
+    }
 
     /**
      * 获取管理服务
      *
      * @return ManagerService 管理服务
      */
-    ManagerService managerService();
+    default ManagerService managerService() {
+        return getContext().getManagerService();
+    }
 
     /**
      * 根据流程定义ID启动流程实例
@@ -197,10 +209,10 @@ public interface FlowLongEngine {
     /**
      * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
      *
-     * @param instanceId  流程实例id
-     * @param operator 操作人id
-     * @param args     参数列表
-     * @param model    节点模型
+     * @param instanceId 流程实例id
+     * @param operator   操作人id
+     * @param args       参数列表
+     * @param model      节点模型
      * @return List<Task> 任务集合
      */
     List<Task> createFreeTask(String instanceId, String operator, Map<String, Object> args, TaskModel model);

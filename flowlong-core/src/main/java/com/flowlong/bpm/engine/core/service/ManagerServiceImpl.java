@@ -20,7 +20,6 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Surrogate;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,9 +29,12 @@ import org.springframework.stereotype.Service;
  * @since 1.0
  */
 @Service
-@AllArgsConstructor
 public class ManagerServiceImpl implements ManagerService {
     private SurrogateMapper surrogateMapper;
+
+    public ManagerServiceImpl(SurrogateMapper surrogateMapper) {
+        this.surrogateMapper = surrogateMapper;
+    }
 
     @Override
     public void saveOrUpdate(Surrogate surrogate) {
