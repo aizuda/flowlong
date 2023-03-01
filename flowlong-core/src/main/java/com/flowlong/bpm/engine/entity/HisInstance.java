@@ -20,8 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 /**
  * 历史流程实例实体类
  *
@@ -56,7 +54,7 @@ public class HisInstance extends Instance {
         this.processId = instance.getProcessId();
         this.createTime = instance.getCreateTime();
         this.expireTime = instance.getExpireTime();
-        this.creator = instance.getCreator();
+        this.createBy = instance.getCreateBy();
         this.parentId = instance.getParentId();
         this.priority = instance.getPriority();
         this.instanceNo = instance.getInstanceNo();
@@ -73,9 +71,9 @@ public class HisInstance extends Instance {
         instance.setId(this.id);
         instance.setProcessId(this.processId);
         instance.setParentId(this.parentId);
-        instance.setCreator(this.creator);
+        instance.createBy = instance.getCreateBy();
         instance.setCreateTime(this.createTime);
-        instance.setLastUpdator(this.creator);
+        instance.setLastUpdator(this.createBy);
         instance.setLastUpdateTime(this.endTime);
         instance.setExpireTime(this.expireTime);
         instance.setInstanceNo(this.instanceNo);

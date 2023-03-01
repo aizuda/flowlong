@@ -14,55 +14,35 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.FlowState;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.io.Serializable;
 
 /**
- * 委托代理实体类
+ * 流程表实体基类
  *
  * @author hubin
  * @since 1.0
  */
 @Getter
 @Setter
-@ToString
-@TableName("flw_surrogate")
-public class Surrogate extends BaseEntity {
+public class BaseEntity implements Serializable {
     /**
-     * 流程name
+     * 主键ID
      */
-    protected String processName;
+    protected Long id;
     /**
-     * 授权人
+     * 租户ID
      */
-    protected String operator;
+    protected String tenantId;
     /**
-     * 代理人
+     * 创建人
      */
-    protected String surrogate;
+    protected String createBy;
     /**
-     * 操作时间
+     * 创建时间
      */
-    protected String odate;
-    /**
-     * 开始时间
-     */
-    protected String sdate;
-    /**
-     * 结束时间
-     */
-    protected String edate;
-    /**
-     * 状态
-     */
-    protected Integer state;
+    protected String createTime;
 
-    public void setState(FlowState flowState) {
-        this.state = flowState.getValue();
-    }
 }

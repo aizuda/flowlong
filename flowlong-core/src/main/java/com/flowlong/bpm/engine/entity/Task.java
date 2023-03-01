@@ -36,16 +36,8 @@ import java.util.Map;
 @Setter
 @ToString
 @TableName("flw_task")
-public class Task implements Serializable, Cloneable {
+public class Task extends BaseEntity {
     public static final String KEY_ACTOR = "S-ACTOR";
-    /**
-     * 主键ID
-     */
-    protected String id;
-    /**
-     * 租户ID
-     */
-    protected String tenantId;
     /**
      * 版本
      */
@@ -74,10 +66,6 @@ public class Task implements Serializable, Cloneable {
      * 任务处理者ID
      */
     protected String operator;
-    /**
-     * 任务创建时间
-     */
-    protected String createTime;
     /**
      * 任务完成时间
      */
@@ -117,10 +105,6 @@ public class Task implements Serializable, Cloneable {
 
     public Task() {
 
-    }
-
-    public Task(String id) {
-        this.id = id;
     }
 
     public boolean isMajor() {

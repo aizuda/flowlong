@@ -34,15 +34,7 @@ import java.util.Map;
 @Setter
 @ToString
 @TableName("flw_instance")
-public class Instance implements Serializable {
-    /**
-     * 主键ID
-     */
-    protected String id;
-    /**
-     * 租户ID
-     */
-    protected String tenantId;
+public class Instance extends BaseEntity {
     /**
      * 版本
      */
@@ -51,14 +43,6 @@ public class Instance implements Serializable {
      * 流程定义ID
      */
     protected String processId;
-    /**
-     * 流程实例创建者ID
-     */
-    protected String creator;
-    /**
-     * 流程实例创建时间
-     */
-    protected String createTime;
     /**
      * 流程实例为子流程时，该字段标识父流程实例ID
      */

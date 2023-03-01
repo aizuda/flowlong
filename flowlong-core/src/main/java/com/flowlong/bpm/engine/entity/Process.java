@@ -34,23 +34,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @TableName("flw_process")
-public class Process implements Serializable {
-    /**
-     * 主键ID
-     */
-    protected String id;
-    /**
-     * 租户ID
-     */
-    protected String tenantId;
-    /**
-     * 创建人
-     */
-    protected String createBy;
-    /**
-     * 创建时间
-     */
-    protected String createTime;
+public class Process extends BaseEntity {
     /**
      * 流程定义名称
      */
