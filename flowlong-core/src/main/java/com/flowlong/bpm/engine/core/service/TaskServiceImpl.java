@@ -24,7 +24,6 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
@@ -48,7 +47,6 @@ import java.util.*;
  */
 @Service
 public class TaskServiceImpl implements TaskService {
-    private static final String START = "start";
     private TaskAccessStrategy taskAccessStrategy;
     private ProcessMapper processMapper;
     private TaskListener taskListener;
@@ -73,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
      * 完成指定任务
      */
     @Override
-    public Task complete(String taskId) {
+    public Task complete(Long taskId) {
         return complete(taskId, null, null);
     }
 
@@ -81,18 +79,16 @@ public class TaskServiceImpl implements TaskService {
      * 完成指定任务
      */
     @Override
-    public Task complete(String taskId, String operator) {
+    public Task complete(Long taskId, String operator) {
         return complete(taskId, operator, null);
     }
 
     /**
      * 完成指定任务
      * 该方法仅仅结束活动任务，并不能驱动流程继续执行
-     *
-     * @see FlowLongEngineImpl#executeTask(String, String, java.util.Map)
      */
     @Override
-    public Task complete(String taskId, String operator, Map<String, Object> args) {
+    public Task complete(Long taskId, String operator, Map<String, Object> args) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         task.setVariable(JsonUtils.toJson(args));
@@ -100,9 +96,9 @@ public class TaskServiceImpl implements TaskService {
             throw new FlowLongException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
         }
         HisTask history = new HisTask(task);
-        history.setFinishTime(DateUtils.getTime());
+        history.setFinishTime(new Date());
         history.setTaskState(FlowState.finish);
-        history.setOperator(operator);
+        history.setCreateBy(operator);
         if (history.getActorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
             String[] actorIds = new String[actors.size()];
@@ -139,16 +135,14 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public HisTask history(Execution execution, CustomModel model) {
         HisTask hisTask = new HisTask();
-        hisTask.setId(StringUtils.getPrimaryKey());
         hisTask.setInstanceId(execution.getInstance().getId());
-        String currentTime = DateUtils.getTime();
-        hisTask.setCreateTime(currentTime);
-        hisTask.setFinishTime(currentTime);
+        hisTask.setCreateTime(new Date());
+        hisTask.setFinishTime(hisTask.getCreateTime());
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
         hisTask.setTaskState(FlowState.finish);
         hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
-        hisTask.setParentTaskId(execution.getTask() == null ? START : execution.getTask().getId());
+        hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         hisTask.setVariable(JsonUtils.toJson(execution.getArgs()));
         hisTaskMapper.insert(hisTask);
         return hisTask;
@@ -158,7 +152,7 @@ public class TaskServiceImpl implements TaskService {
      * 提取指定任务，设置完成时间及操作人，状态不改变
      */
     @Override
-    public Task take(String taskId, String operator) {
+    public Task take(Long taskId, String operator) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         if (!isAllowed(task, operator)) {
@@ -166,8 +160,8 @@ public class TaskServiceImpl implements TaskService {
         }
         Task newTask = new Task();
         newTask.setId(taskId);
-        newTask.setOperator(operator);
-        newTask.setFinishTime(DateUtils.getTime());
+        newTask.setCreateBy(operator);
+        newTask.setFinishTime(new Date());
         taskMapper.updateById(newTask);
         return task;
     }
@@ -176,19 +170,18 @@ public class TaskServiceImpl implements TaskService {
      * 唤醒指定的历史任务
      */
     @Override
-    public Task resume(String taskId, String operator) {
+    public Task resume(Long taskId, String operator) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
         boolean isAllowed = true;
-        if (StringUtils.isNotEmpty(histTask.getOperator())) {
-            isAllowed = histTask.getOperator().equals(operator);
+        if (StringUtils.isNotEmpty(histTask.getCreateBy())) {
+            isAllowed = histTask.getCreateBy().equals(operator);
         }
         if (isAllowed) {
             Task task = histTask.undoTask();
-            task.setId(StringUtils.getPrimaryKey());
-            task.setCreateTime(DateUtils.getTime());
+            task.setCreateTime(new Date());
             taskMapper.insert(task);
-            assignTask(task.getId(), task.getOperator());
+            assignTask(task.getId(), task.getCreateBy());
             return task;
         } else {
             throw new FlowLongException("当前参与者[" + operator + "]不允许唤醒历史任务[taskId=" + taskId + "]");
@@ -199,7 +192,7 @@ public class TaskServiceImpl implements TaskService {
      * 向指定任务添加参与者
      */
     @Override
-    public void addTaskActor(String taskId, String... actors) {
+    public void addTaskActor(Long taskId, String... actors) {
         addTaskActor(taskId, null, actors);
     }
 
@@ -208,7 +201,7 @@ public class TaskServiceImpl implements TaskService {
      * 该方法根据performType类型判断是否需要创建新的活动任务
      */
     @Override
-    public void addTaskActor(String taskId, Integer performType, String... actors) {
+    public void addTaskActor(Long taskId, Integer performType, String... actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         if (!task.isMajor()) {
@@ -233,9 +226,8 @@ public class TaskServiceImpl implements TaskService {
                 try {
                     for (String actor : actors) {
                         Task newTask = (Task) task.clone();
-                        newTask.setId(StringUtils.getPrimaryKey());
-                        newTask.setCreateTime(DateUtils.getTime());
-                        newTask.setOperator(actor);
+                        newTask.setCreateTime(new Date());
+                        newTask.setCreateBy(actor);
                         Map<String, Object> taskData = task.getVariableMap();
                         taskData.put(Task.KEY_ACTOR, actor);
                         task.setVariable(JsonUtils.toJson(taskData));
@@ -255,7 +247,7 @@ public class TaskServiceImpl implements TaskService {
      * 撤回指定的任务
      */
     @Override
-    public Task withdrawTask(String taskId, String operator) {
+    public Task withdrawTask(Long taskId, String operator) {
         HisTask hist = hisTaskMapper.selectById(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
 //        List<Task> tasks;
@@ -271,10 +263,9 @@ public class TaskServiceImpl implements TaskService {
 //        hisTaskMapper.deleteBatchIds(tasks.stream().map(t -> t.getId()).collect(Collectors.toList()));
 
         Task task = hist.undoTask();
-        task.setId(StringUtils.getPrimaryKey());
-        task.setCreateTime(DateUtils.getTime());
+        task.setCreateTime(new Date());
         taskMapper.insert(task);
-        assignTask(task.getId(), task.getOperator());
+        assignTask(task.getId(), task.getCreateBy());
         return task;
     }
 
@@ -283,8 +274,8 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Task rejectTask(ProcessModel model, Task currentTask) {
-        String parentTaskId = currentTask.getParentTaskId();
-        if (StringUtils.isEmpty(parentTaskId) || parentTaskId.equals(START)) {
+        Long parentTaskId = currentTask.getParentTaskId();
+        if (Objects.equals(parentTaskId, 0L)) {
             throw new FlowLongException("上一步任务ID为空，无法驳回至上一步处理");
         }
         NodeModel current = model.getNode(currentTask.getTaskName());
@@ -295,11 +286,10 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = history.undoTask();
-        task.setId(StringUtils.getPrimaryKey());
-        task.setCreateTime(DateUtils.getTime());
-        task.setOperator(history.getOperator());
+        task.setCreateTime(new Date());
+        task.setCreateBy(history.getCreateBy());
         taskMapper.insert(task);
-        assignTask(task.getId(), task.getOperator());
+        assignTask(task.getId(), task.getCreateBy());
         return task;
     }
 
@@ -309,7 +299,7 @@ public class TaskServiceImpl implements TaskService {
      * @param taskId   任务id
      * @param actorIds 参与者id集合
      */
-    private void assignTask(String taskId, String... actorIds) {
+    private void assignTask(Long taskId, String... actorIds) {
         if (actorIds == null || actorIds.length == 0) {
             return;
         }
@@ -319,7 +309,6 @@ public class TaskServiceImpl implements TaskService {
                 continue;
             }
             TaskActor taskActor = new TaskActor();
-            taskActor.setId(StringUtils.getPrimaryKey());
             taskActor.setTaskId(taskId);
             taskActor.setActorId(actorId);
             taskActorMapper.insert(taskActor);
@@ -331,14 +320,14 @@ public class TaskServiceImpl implements TaskService {
      * 适用于转派，动态协办处理
      */
     @Override
-    public List<Task> createNewTask(String taskId, int taskType, String... actors) {
+    public List<Task> createNewTask(Long taskId, int taskType, String... actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         List<Task> tasks = new ArrayList<Task>();
         try {
             Task newTask = (Task) task.clone();
             newTask.setTaskType(taskType);
-            newTask.setCreateTime(DateUtils.getTime());
+            newTask.setCreateTime(new Date());
             newTask.setParentTaskId(taskId);
             tasks.add(saveTask(newTask, actors));
         } catch (CloneNotSupportedException e) {
@@ -394,14 +383,13 @@ public class TaskServiceImpl implements TaskService {
         args.put(Task.KEY_ACTOR, StringUtils.getStringByArray(actors));
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
-        task.setExpireDate(expireDate);
-        task.setExpireTime(DateUtils.parseTime(expireDate));
+        task.setExpireTime(expireDate);
         task.setVariable(JsonUtils.toJson(args));
 
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
             task = saveTask(task, actors);
-            task.setRemindDate(remindDate);
+//            task.setRemindDate(remindDate);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
             //任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
@@ -413,7 +401,7 @@ public class TaskServiceImpl implements TaskService {
                     singleTask = task;
                 }
                 singleTask = saveTask(singleTask, actor);
-                singleTask.setRemindDate(remindDate);
+//                singleTask.setRemindDate(remindDate);
                 tasks.add(singleTask);
             }
         }
@@ -432,15 +420,14 @@ public class TaskServiceImpl implements TaskService {
         task.setInstanceId(execution.getInstance().getId());
         task.setTaskName(model.getName());
         task.setDisplayName(model.getDisplayName());
-        task.setCreateTime(DateUtils.getTime());
+        task.setCreateTime(new Date());
         if (model.isMajor()) {
             task.setTaskType(TaskModel.TaskType.Major.ordinal());
         } else {
             task.setTaskType(TaskModel.TaskType.Aidant.ordinal());
         }
-        task.setParentTaskId(execution.getTask() == null ?
-                START : execution.getTask().getId());
-        task.setModel(model);
+        task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
+        task.setTaskModel(model);
         return task;
     }
 
@@ -448,7 +435,6 @@ public class TaskServiceImpl implements TaskService {
      * 由DBAccess实现类持久化task对象
      */
     private Task saveTask(Task task, String... actors) {
-        task.setId(StringUtils.getPrimaryKey());
         task.setPerformType(TaskModel.PerformType.ANY.ordinal());
         taskMapper.insert(task);
         assignTask(task.getId(), actors);
@@ -532,8 +518,8 @@ public class TaskServiceImpl implements TaskService {
                 return true;
             }
             // 如果为其他，当前做错人和任务执行人对比
-            if (StringUtils.isNotEmpty(task.getOperator())) {
-                return operator.equals(task.getOperator());
+            if (StringUtils.isNotEmpty(task.getCreateBy())) {
+                return operator.equals(task.getCreateBy());
             }
         }
 

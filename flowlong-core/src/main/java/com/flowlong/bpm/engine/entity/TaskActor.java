@@ -35,7 +35,7 @@ public class TaskActor implements Serializable {
     /**
      * 主键ID
      */
-    protected String id;
+    protected Long id;
     /**
      * 租户ID
      */
@@ -43,7 +43,7 @@ public class TaskActor implements Serializable {
     /**
      * 关联的任务ID
      */
-    protected String taskId;
+    protected Long taskId;
     /**
      * 关联的参与者ID（参与者可以为用户、部门、角色）
      */

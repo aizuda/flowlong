@@ -35,7 +35,7 @@ public interface QueryService {
      * @param instanceId 流程实例id
      * @return Instance 流程实例对象
      */
-    Instance getInstance(String instanceId);
+    Instance getInstance(Long instanceId);
 
     /**
      * 根据流程实例ID获取历史流程实例对象
@@ -43,7 +43,7 @@ public interface QueryService {
      * @param instanceId 历史流程实例id
      * @return HistoryInstance 历史流程实例对象
      */
-    HisInstance getHistInstance(String instanceId);
+    HisInstance getHistInstance(Long instanceId);
 
     /**
      * 根据任务ID获取任务对象
@@ -51,7 +51,7 @@ public interface QueryService {
      * @param taskId 任务id
      * @return Task 任务对象
      */
-    Task getTask(String taskId);
+    Task getTask(Long taskId);
 
     /**
      * 根据任务ID获取历史任务对象
@@ -59,7 +59,7 @@ public interface QueryService {
      * @param taskId 历史任务id
      * @return HistoryTask 历史任务对象
      */
-    HisTask getHistTask(String taskId);
+    HisTask getHistTask(Long taskId);
 
 
     /**
@@ -68,9 +68,9 @@ public interface QueryService {
      * @param instanceId 流程实例ID
      * @return
      */
-    List<Task> getTasksByInstanceId(String instanceId);
+    List<Task> getTasksByInstanceId(Long instanceId);
 
-    List<Task> getActiveTasksByInstanceId(String instanceId);
+    List<Task> getActiveTasksByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取活动任务参与者数组
@@ -78,7 +78,7 @@ public interface QueryService {
      * @param taskId 任务id
      * @return String[] 参与者id数组
      */
-    String[] getTaskActorsByTaskId(String taskId);
+    String[] getTaskActorsByTaskId(Long taskId);
 
     /**
      * 根据任务ID获取历史任务参与者数组
@@ -86,6 +86,6 @@ public interface QueryService {
      * @param taskId 历史任务id
      * @return String[] 历史参与者id数组
      */
-    String[] getHistoryTaskActorsByTaskId(String taskId);
+    String[] getHistoryTaskActorsByTaskId(Long taskId);
 
 }

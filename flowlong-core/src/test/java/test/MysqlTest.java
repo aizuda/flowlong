@@ -22,7 +22,7 @@ public class MysqlTest {
     /**
      * 流程ID
      */
-    protected String processId;
+    protected Long processId;
 
     protected void deployByResource(String resourceName) {
         this.processId = flowLongEngine.processService().deployByResource(resourceName);

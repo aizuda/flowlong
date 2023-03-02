@@ -15,8 +15,8 @@
 package com.flowlong.bpm.engine.impl;
 
 import com.flowlong.bpm.engine.FlowLongInterceptor;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.TaskModel;
 import com.flowlong.bpm.engine.scheduling.FlowLongScheduler;
@@ -58,14 +58,14 @@ public class SchedulerInterceptor implements FlowLongInterceptor {
             String id = execution.getProcess().getId()
                     + "-" + execution.getInstance().getId()
                     + "-" + task.getId();
-            Date expireDate = task.getExpireDate();
+            Date expireDate = task.getExpireTime();
             if (expireDate != null) {
                 schedule(flowLongContext, id, task, expireDate, JobEntity.JobType.EXECUTER.ordinal(), execution.getArgs());
             }
-            Date remindDate = task.getRemindDate();
-            if (remindDate != null) {
-                schedule(flowLongContext, id, task, remindDate, JobEntity.JobType.REMINDER.ordinal(), execution.getArgs());
-            }
+//            Date remindDate = task.getRemindDate();
+//            if (remindDate != null) {
+//                schedule(flowLongContext, id, task, remindDate, JobEntity.JobType.REMINDER.ordinal(), execution.getArgs());
+//            }
         }
     }
 
@@ -75,9 +75,9 @@ public class SchedulerInterceptor implements FlowLongInterceptor {
             entity.setModelName(task.getTaskName());
             entity.setJobType(jobType);
             if (jobType == JobEntity.JobType.REMINDER.ordinal()) {
-                TaskModel model = (TaskModel) task.getModel();
-                if (model != null && NumberUtils.isNumber(model.getReminderRepeat())) {
-                    entity.setPeriod(Integer.parseInt(model.getReminderRepeat()));
+                TaskModel taskModel = task.getTaskModel();
+                if (taskModel != null && NumberUtils.isNumber(taskModel.getReminderRepeat())) {
+                    entity.setPeriod(Integer.parseInt(taskModel.getReminderRepeat()));
                 }
             }
             if (scheduler == null) {

@@ -18,7 +18,6 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
@@ -32,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -61,10 +61,10 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public void check(Process process, String idOrName) {
-        Assert.notNull(process, "指定的流程定义[id/name=" + idOrName + "]不存在");
+    public void check(Process process, Long id) {
+        Assert.notNull(process, "指定的流程定义[id=" + id + "]不存在");
         if (process.getState() != null && process.getState() == 0) {
-            throw new IllegalArgumentException("指定的流程定义[id/name=" + idOrName +
+            throw new IllegalArgumentException("指定的流程定义[id=" + id +
                     ",version=" + process.getVersion() + "]为非活动状态");
         }
     }
@@ -73,7 +73,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 更新process的类别
      */
     @Override
-    public void updateType(String id, String type) {
+    public void updateType(Long id, String type) {
         Process process = new Process();
         process.setId(id);
         process.setType(type);
@@ -85,10 +85,8 @@ public class ProcessServiceImpl implements ProcessService {
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
     @Override
-    public Process getProcessById(String id) {
-        Assert.notEmpty(id);
+    public Process getProcessById(Long id) {
         Process entity = null;
-        String processName;
         if (entity != null) {
             if (log.isDebugEnabled()) {
                 log.debug("obtain process[id={}] from cache.", id);
@@ -138,7 +136,7 @@ public class ProcessServiceImpl implements ProcessService {
      * @param input 定义输入流
      */
     @Override
-    public String deploy(InputStream input) {
+    public Long deploy(InputStream input) {
         return deploy(input, null);
     }
 
@@ -149,7 +147,7 @@ public class ProcessServiceImpl implements ProcessService {
      * @param createBy 创建人
      */
     @Override
-    public String deploy(InputStream input, String createBy) {
+    public Long deploy(InputStream input, String createBy) {
         Assert.notNull(input);
         try {
             byte[] bytes = StreamUtils.readBytes(input);
@@ -172,7 +170,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setProcessModel(processModel);
             process.setContent(bytes);
             process.setCreateBy(createBy);
-            process.setCreateTime(DateUtils.getTime());
+            process.setCreateTime(new Date());
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
@@ -187,7 +185,7 @@ public class ProcessServiceImpl implements ProcessService {
      * @param input 定义输入流
      */
     @Override
-    public void redeploy(String id, InputStream input) {
+    public void redeploy(Long id, InputStream input) {
         Assert.notNull(input);
         Process entity = processMapper.selectById(id);
         Assert.notNull(entity);
@@ -208,7 +206,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 根据processId卸载流程
      */
     @Override
-    public void undeploy(String id) {
+    public void undeploy(Long id) {
         Process process = new Process();
         process.setId(id);
         process.setState(FlowState.finish);
@@ -219,7 +217,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 级联删除指定流程定义的所有数据
      */
     @Override
-    public void cascadeRemove(String id) {
+    public void cascadeRemove(Long id) {
         Process process = processMapper.selectById(id);
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
                 .eq(HisInstance::getProcessId, id));

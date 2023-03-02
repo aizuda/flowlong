@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * 历史流程实例实体类
  *
@@ -32,13 +34,13 @@ import lombok.ToString;
 @TableName("flw_his_instance")
 public class HisInstance extends Instance {
     /**
-     * 流程实例状态（0，结束 1，活动）
+     * 状态 0，结束 1，活动
      */
     protected Integer instanceState;
     /**
-     * 流程实例结束时间
+     * 结束时间
      */
-    protected String endTime;
+    protected Date endTime;
 
     public void setInstanceState(FlowState flowState) {
         this.instanceState = flowState.getValue();
@@ -73,7 +75,7 @@ public class HisInstance extends Instance {
         instance.setParentId(this.parentId);
         instance.createBy = instance.getCreateBy();
         instance.setCreateTime(this.createTime);
-        instance.setLastUpdator(this.createBy);
+        instance.setLastUpdateBy(this.createBy);
         instance.setLastUpdateTime(this.endTime);
         instance.setExpireTime(this.expireTime);
         instance.setInstanceNo(this.instanceNo);

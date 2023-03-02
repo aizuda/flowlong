@@ -56,7 +56,7 @@ public class Execution implements Serializable {
     /**
      * 子流程实例节点名称
      */
-    private String childInstanceId;
+    private Long childInstanceId;
     /**
      * 执行参数
      */
@@ -261,11 +261,11 @@ public class Execution implements Serializable {
         return parentNodeName;
     }
 
-    public String getChildInstanceId() {
+    public Long getChildInstanceId() {
         return childInstanceId;
     }
 
-    public void setChildInstanceId(String childInstanceId) {
+    public void setChildInstanceId(Long childInstanceId) {
         this.childInstanceId = childInstanceId;
     }
 }

@@ -16,7 +16,6 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
@@ -24,10 +23,7 @@ import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本的流程引擎实现类
@@ -66,7 +62,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID启动流程实例
      */
     @Override
-    public Instance startInstanceById(String id) {
+    public Instance startInstanceById(Long id) {
         return startInstanceById(id, null, null);
     }
 
@@ -74,7 +70,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，操作人ID启动流程实例
      */
     @Override
-    public Instance startInstanceById(String id, String operator) {
+    public Instance startInstanceById(Long id, String operator) {
         return startInstanceById(id, operator, null);
     }
 
@@ -82,7 +78,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，操作人ID，参数列表启动流程实例
      */
     @Override
-    public Instance startInstanceById(String id, String operator, Map<String, Object> args) {
+    public Instance startInstanceById(Long id, String operator, Map<String, Object> args) {
         if (args == null) {
             args = new HashMap<>();
         }
@@ -133,7 +129,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             args = new HashMap<>();
         }
         Process process = processService().getProcessByVersion(name, version);
-        processService().check(process, name);
+        // processService().check(process, name);
         return startProcess(process, operator, args);
     }
 
@@ -174,7 +170,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @return Execution
      */
     protected Execution execute(Process process, String operator, Map<String, Object> args,
-                                String parentId, String parentNodeName) {
+                                Long parentId, String parentNodeName) {
         Instance instance = runtimeService().createInstance(process, operator, args, parentId, parentNodeName);
         if (log.isDebugEnabled()) {
             log.debug("创建流程实例对象:" + instance);
@@ -188,7 +184,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务主键ID执行任务
      */
     @Override
-    public List<Task> executeTask(String taskId) {
+    public List<Task> executeTask(Long taskId) {
         return executeTask(taskId, null);
     }
 
@@ -196,7 +192,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务主键ID，操作人ID执行任务
      */
     @Override
-    public List<Task> executeTask(String taskId, String operator) {
+    public List<Task> executeTask(Long taskId, String operator) {
         return executeTask(taskId, operator, null);
     }
 
@@ -204,7 +200,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务主键ID，操作人ID，参数列表执行任务
      */
     @Override
-    public List<Task> executeTask(String taskId, String operator, Map<String, Object> args) {
+    public List<Task> executeTask(Long taskId, String operator, Map<String, Object> args) {
         //完成任务，并且构造执行对象
         Execution execution = execute(taskId, operator, args);
         if (execution == null) {
@@ -225,7 +221,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
      */
     @Override
-    public List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName) {
+    public List<Task> executeAndJumpTask(Long taskId, String operator, Map<String, Object> args, String nodeName) {
         Execution execution = execute(taskId, operator, args);
         if (execution == null) {
             return Collections.emptyList();
@@ -252,11 +248,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
      */
     @Override
-    public List<Task> createFreeTask(String instanceId, String operator, Map<String, Object> args, TaskModel model) {
+    public List<Task> createFreeTask(Long instanceId, String operator, Map<String, Object> args, TaskModel model) {
         Instance instance = queryService().getInstance(instanceId);
         Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
-        instance.setLastUpdator(operator);
-        instance.setLastUpdateTime(DateUtils.getTime());
+        instance.setLastUpdateBy(operator);
+        instance.setLastUpdateTime(new Date());
         Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
         execution.setOperator(operator);
@@ -271,7 +267,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param args     参数列表
      * @return Execution
      */
-    protected Execution execute(String taskId, String operator, Map<String, Object> args) {
+    protected Execution execute(Long taskId, String operator, Map<String, Object> args) {
         if (args == null) args = new HashMap<>();
         Task task = taskService().complete(taskId, operator, args);
         if (log.isDebugEnabled()) {
@@ -279,8 +275,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         Instance instance = queryService().getInstance(task.getInstanceId());
         Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
-        instance.setLastUpdator(operator);
-        instance.setLastUpdateTime(DateUtils.getTime());
+        instance.setLastUpdateBy(operator);
+        instance.setLastUpdateTime(new Date());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
         if (!task.isMajor()) {

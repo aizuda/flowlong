@@ -56,7 +56,7 @@ public class EndProcessHandler implements FlowLongHandler {
         /**
          * 如果存在父流程，则重新构造Execution执行对象，交给父流程的SubProcessModel模型execute
          */
-        if (StringUtils.isNotEmpty(instance.getParentId())) {
+        if (null != instance.getParentId()) {
             Instance parentInstance = engine.queryService().getInstance(instance.getParentId());
             if (parentInstance == null) {
                 return;

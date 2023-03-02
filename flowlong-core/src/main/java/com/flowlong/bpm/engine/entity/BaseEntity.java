@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 流程表实体基类
@@ -43,6 +44,6 @@ public class BaseEntity implements Serializable {
     /**
      * 创建时间
      */
-    protected String createTime;
+    protected Date createTime;
 
 }

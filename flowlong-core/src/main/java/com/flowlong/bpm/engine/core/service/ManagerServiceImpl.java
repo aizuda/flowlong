@@ -40,8 +40,7 @@ public class ManagerServiceImpl implements ManagerService {
     public void saveOrUpdate(Surrogate surrogate) {
         Assert.notNull(surrogate);
         surrogate.setState(FlowState.active);
-        if (StringUtils.isEmpty(surrogate.getId())) {
-            surrogate.setId(StringUtils.getPrimaryKey());
+        if (null == surrogate.getId()) {
             surrogateMapper.insert(surrogate);
         } else {
             surrogateMapper.updateById(surrogate);

@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 /**
  * 历史任务实体类
  *
@@ -78,7 +76,7 @@ public class HisTask extends Task {
         task.setParentTaskId(this.getParentTaskId());
         task.setVariable(this.getVariable());
         task.setPerformType(this.getPerformType());
-        task.setOperator(this.getOperator());
+        task.setCreateBy(this.getCreateBy());
         return task;
     }
 

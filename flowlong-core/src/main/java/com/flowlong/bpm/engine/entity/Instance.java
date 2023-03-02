@@ -20,8 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -36,33 +36,17 @@ import java.util.Map;
 @TableName("flw_instance")
 public class Instance extends BaseEntity {
     /**
-     * 版本
-     */
-    protected Integer version = 0;
-    /**
      * 流程定义ID
      */
-    protected String processId;
+    protected Long processId;
     /**
      * 流程实例为子流程时，该字段标识父流程实例ID
      */
-    protected String parentId;
+    protected Long parentId;
     /**
      * 流程实例为子流程时，该字段标识父流程哪个节点模型启动的子流程
      */
     protected String parentNodeName;
-    /**
-     * 流程实例期望完成时间
-     */
-    protected String expireTime;
-    /**
-     * 流程实例上一次更新时间
-     */
-    protected String lastUpdateTime;
-    /**
-     * 流程实例上一次更新人员ID
-     */
-    protected String lastUpdator;
     /**
      * 流程实例优先级
      */
@@ -72,9 +56,25 @@ public class Instance extends BaseEntity {
      */
     protected String instanceNo;
     /**
-     * 流程实例附属变量
+     * 变量json
      */
     protected String variable;
+    /**
+     * 版本
+     */
+    protected Integer version;
+    /**
+     * 流程实例期望完成时间
+     */
+    protected Date expireTime;
+    /**
+     * 流程实例上一次更新人员ID
+     */
+    protected String lastUpdateBy;
+    /**
+     * 流程实例上一次更新时间
+     */
+    protected Date lastUpdateTime;
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {

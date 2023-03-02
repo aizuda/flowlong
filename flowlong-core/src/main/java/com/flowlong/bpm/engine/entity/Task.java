@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.model.TaskModel;
@@ -21,7 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -39,13 +39,13 @@ import java.util.Map;
 public class Task extends BaseEntity {
     public static final String KEY_ACTOR = "S-ACTOR";
     /**
-     * 版本
-     */
-    protected Integer version = 0;
-    /**
      * 流程实例ID
      */
-    protected String instanceId;
+    protected Long instanceId;
+    /**
+     * 父任务Id
+     */
+    protected Long parentTaskId;
     /**
      * 任务名称
      */
@@ -55,53 +55,43 @@ public class Task extends BaseEntity {
      */
     protected String displayName;
     /**
-     * 参与方式（0：普通任务；1：参与者会签任务）
-     */
-    protected Integer performType;
-    /**
      * 任务类型（0：主办任务；1：协办任务）
      */
     protected Integer taskType;
     /**
-     * 任务处理者ID
+     * 参与方式（0：普通任务；1：参与者会签任务）
      */
-    protected String operator;
-    /**
-     * 任务完成时间
-     */
-    protected String finishTime;
-    /**
-     * 期望任务完成时间
-     */
-    protected String expireTime;
-    /**
-     * 期望的完成时间date类型
-     */
-    protected Date expireDate;
-    /**
-     * 提醒时间date类型
-     */
-    protected Date remindDate;
+    protected Integer performType;
     /**
      * 任务关联的表单url
      */
     protected String actionUrl;
     /**
-     * 任务参与者列表
-     */
-    protected String[] actorIds;
-    /**
-     * 父任务Id
-     */
-    protected String parentTaskId;
-    /**
-     * 任务附属变量
+     * 变量json
      */
     protected String variable;
     /**
+     * 版本，默认 1
+     */
+    protected Integer version;
+    /**
+     * 期望任务完成时间
+     */
+    protected Date expireTime;
+    /**
+     * 任务完成时间
+     */
+    protected Date finishTime;
+    /**
+     * 任务参与者列表
+     */
+    @TableField(exist = false)
+    protected String[] actorIds;
+    /**
      * 保持模型对象
      */
-    protected TaskModel model;
+    @TableField(exist = false)
+    protected TaskModel taskModel;
 
     public Task() {
 
@@ -121,7 +111,6 @@ public class Task extends BaseEntity {
         return actorIds;
     }
 
-    @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {
         Map<String, Object> map = JsonUtils.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();

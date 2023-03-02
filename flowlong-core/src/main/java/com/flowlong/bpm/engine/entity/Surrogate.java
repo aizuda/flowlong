@@ -21,6 +21,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 委托代理实体类
@@ -34,33 +35,37 @@ import java.io.Serializable;
 @TableName("flw_surrogate")
 public class Surrogate extends BaseEntity {
     /**
-     * 流程name
+     * 流程ID
+     */
+    protected Long processId;
+    /**
+     * 流程名称
      */
     protected String processName;
     /**
      * 授权人
      */
-    protected String operator;
+    protected String empower;
     /**
      * 代理人
      */
     protected String surrogate;
     /**
-     * 操作时间
-     */
-    protected String odate;
-    /**
-     * 开始时间
-     */
-    protected String sdate;
-    /**
-     * 结束时间
-     */
-    protected String edate;
-    /**
      * 状态
      */
     protected Integer state;
+    /**
+     * 开始时间
+     */
+    protected Date startTime;
+    /**
+     * 结束时间
+     */
+    protected Date endTime;
+    /**
+     * 操作时间
+     */
+    protected Date operationTime;
 
     public void setState(FlowState flowState) {
         this.state = flowState.getValue();

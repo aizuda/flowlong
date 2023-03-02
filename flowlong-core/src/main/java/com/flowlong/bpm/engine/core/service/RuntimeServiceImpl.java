@@ -16,7 +16,6 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.RuntimeService;
-import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowState;
@@ -33,6 +32,7 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -58,8 +58,6 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     /**
      * 创建活动实例
-     *
-     * @see RuntimeServiceImpl#createInstance(Process, String, Map, String, String)
      */
     @Override
     public Instance createInstance(Process process, String operator, Map<String, Object> args) {
@@ -70,22 +68,20 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public Instance createInstance(Process process, String operator, Map<String, Object> args,
-                                   String parentId, String parentNodeName) {
+    public Instance createInstance(Process process, String createBy, Map<String, Object> args,
+                                   Long parentId, String parentNodeName) {
         Instance instance = new Instance();
-        instance.setId(StringUtils.getPrimaryKey());
         instance.setParentId(parentId);
         instance.setParentNodeName(parentNodeName);
-        instance.setCreateTime(DateUtils.getTime());
+        instance.setCreateTime(new Date());
         instance.setLastUpdateTime(instance.getCreateTime());
-        instance.setCreator(operator);
-        instance.setLastUpdator(instance.getCreator());
+        instance.setCreateBy(createBy);
+        instance.setLastUpdateBy(instance.getCreateBy());
         instance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();
         if (model != null && args != null) {
             if (StringUtils.isNotEmpty(model.getExpireTime())) {
-                String expireTime = DateUtils.parseTime(args.get(model.getExpireTime()));
-                instance.setExpireTime(expireTime);
+                instance.setExpireTime(new Date(model.getExpireTime()));
             }
             String instanceNo = (String) args.get(FlowLongEngine.ID);
             if (StringUtils.isNotEmpty(instanceNo)) {
@@ -107,7 +103,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param args       变量数据
      */
     @Override
-    public void addVariable(String instanceId, Map<String, Object> args) {
+    public void addVariable(Long instanceId, Map<String, Object> args) {
         Instance instance = instanceMapper.selectById(instanceId);
         Map<String, Object> data = instance.getVariableMap();
         data.putAll(args);
@@ -121,14 +117,14 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建实例的抄送
      */
     @Override
-    public void createCCInstance(String instanceId, String creator, String... actorIds) {
+    public void createCCInstance(Long instanceId, String createBy, String... actorIds) {
         for (String actorId : actorIds) {
             CCInstance ccinstance = new CCInstance();
             ccinstance.setInstanceId(instanceId);
             ccinstance.setActorId(actorId);
-            ccinstance.setCreator(creator);
+            ccinstance.setCreateBy(createBy);
             ccinstance.setStatus(FlowState.active);
-            ccinstance.setCreateTime(DateUtils.getTime());
+            ccinstance.setCreateTime(new Date());
             ccInstanceMapper.insert(ccinstance);
         }
     }
@@ -154,11 +150,11 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public void complete(String instanceId) {
+    public void complete(Long instanceId) {
         HisInstance his = new HisInstance();
         his.setId(instanceId);
         his.setInstanceState(FlowState.finish);
-        his.setEndTime(DateUtils.getTime());
+        his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         this.instanceNotify(TaskListener.EVENT_COMPLETE, his);
     }
@@ -190,7 +186,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 //        }
         Instance instance = instanceMapper.selectById(instanceId);
         HisInstance his = new HisInstance(instance, FlowState.termination);
-        his.setEndTime(DateUtils.getTime());
+        his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         hisInstanceMapper.updateById(his);
         this.instanceNotify(TaskListener.EVENT_TERMINATE, his);

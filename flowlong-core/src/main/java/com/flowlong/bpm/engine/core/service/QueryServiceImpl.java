@@ -49,17 +49,38 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public Instance getInstance(String instanceId) {
+    public Instance getInstance(Long instanceId) {
         return instanceMapper.selectById(instanceId);
     }
 
     @Override
-    public Task getTask(String taskId) {
+    public Task getTask(Long taskId) {
         return taskMapper.selectById(taskId);
     }
 
     @Override
-    public String[] getTaskActorsByTaskId(String taskId) {
+    public HisInstance getHistInstance(Long instanceId) {
+        return hisInstanceMapper.selectById(instanceId);
+    }
+
+    @Override
+    public HisTask getHistTask(Long taskId) {
+        return hisTaskMapper.selectById(taskId);
+    }
+
+    @Override
+    public List<Task> getTasksByInstanceId(Long instanceId) {
+        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+    }
+
+    @Override
+    public List<Task> getActiveTasksByInstanceId(Long instanceId) {
+        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId)
+                .eq(Task::getTaskModel, 1));
+    }
+
+    @Override
+    public String[] getTaskActorsByTaskId(Long taskId) {
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
         if (actors == null || actors.isEmpty()) {
             return null;
@@ -73,7 +94,7 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public String[] getHistoryTaskActorsByTaskId(String taskId) {
+    public String[] getHistoryTaskActorsByTaskId(Long taskId) {
         List<HisTaskActor> actors = hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery().eq(HisTaskActor::getTaskId, taskId));
         if (actors == null || actors.isEmpty()) {
             return null;
@@ -84,26 +105,5 @@ public class QueryServiceImpl implements QueryService {
             actorIds[i] = ta.getActorId();
         }
         return actorIds;
-    }
-
-    @Override
-    public HisInstance getHistInstance(String instanceId) {
-        return hisInstanceMapper.selectById(instanceId);
-    }
-
-    @Override
-    public HisTask getHistTask(String taskId) {
-        return hisTaskMapper.selectById(taskId);
-    }
-
-    @Override
-    public List<Task> getTasksByInstanceId(String instanceId) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
-    }
-
-    @Override
-    public List<Task> getActiveTasksByInstanceId(String instanceId) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId)
-                .eq(Task::getModel, 1));
     }
 }

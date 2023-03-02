@@ -44,7 +44,7 @@ public interface TaskService {
      * @param taskId 任务id
      * @return Task 任务对象
      */
-    Task complete(String taskId);
+    Task complete(Long taskId);
 
     /**
      * 完成指定的任务，删除活动任务记录，创建历史任务
@@ -53,7 +53,7 @@ public interface TaskService {
      * @param operator 操作人
      * @return Task 任务对象
      */
-    Task complete(String taskId, String operator);
+    Task complete(Long taskId, String operator);
 
     /**
      * 根据任务主键ID，操作人ID完成任务
@@ -63,7 +63,7 @@ public interface TaskService {
      * @param args     参数集合
      * @return Task 任务对象
      */
-    Task complete(String taskId, String operator, Map<String, Object> args);
+    Task complete(Long taskId, String operator, Map<String, Object> args);
 
     /**
      * 更新任务对象
@@ -89,7 +89,7 @@ public interface TaskService {
      * @param operator 操作人id
      * @return Task 任务对象
      */
-    Task take(String taskId, String operator);
+    Task take(Long taskId, String operator);
 
     /**
      * 根据历史任务主键id，操作人唤醒历史任务
@@ -99,7 +99,7 @@ public interface TaskService {
      * @param operator 操作人id
      * @return Task 唤醒后的任务对象
      */
-    Task resume(String taskId, String operator);
+    Task resume(Long taskId, String operator);
 
     /**
      * 向指定的任务id添加参与者
@@ -107,7 +107,7 @@ public interface TaskService {
      * @param taskId 任务id
      * @param actors 参与者
      */
-    void addTaskActor(String taskId, String... actors);
+    void addTaskActor(Long taskId, String... actors);
 
     /**
      * 向指定的任务id添加参与者
@@ -116,7 +116,7 @@ public interface TaskService {
      * @param performType 参与类型
      * @param actors      参与者
      */
-    void addTaskActor(String taskId, Integer performType, String... actors);
+    void addTaskActor(Long taskId, Integer performType, String... actors);
 
     /**
      * 根据任务主键id、操作人撤回任务
@@ -125,7 +125,7 @@ public interface TaskService {
      * @param operator 操作人
      * @return Task 任务对象
      */
-    Task withdrawTask(String taskId, String operator);
+    Task withdrawTask(Long taskId, String operator);
 
     /**
      * 根据当前任务对象驳回至上一步处理
@@ -162,7 +162,7 @@ public interface TaskService {
      * @param actors   参与者集合
      * @return List<Task> 创建任务集合
      */
-    List<Task> createNewTask(String taskId, int taskType, String... actors);
+    List<Task> createNewTask(Long taskId, int taskType, String... actors);
 
     /**
      * 根据任务id获取任务模型

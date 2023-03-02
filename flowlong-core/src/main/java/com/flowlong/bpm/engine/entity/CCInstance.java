@@ -32,15 +32,25 @@ import java.io.Serializable;
 @Setter
 @ToString
 @TableName("flw_cc_instance")
-public class CCInstance implements Serializable {
-    protected String instanceId;
+public class CCInstance extends BaseEntity {
+    /**
+     * 流程实例ID
+     */
+    protected Long instanceId;
+    /**
+     * 参与者ID
+     */
     protected String actorId;
-    protected String creator;
-    protected String createTime;
+    /**
+     * 状态 0，结束 1，活动
+     */
+    protected Integer state;
+    /**
+     * 完成时间
+     */
     protected String finishTime;
-    protected Integer status;
 
     public void setStatus(FlowState flowState) {
-        this.status = flowState.getValue();
+        this.state = flowState.getValue();
     }
 }

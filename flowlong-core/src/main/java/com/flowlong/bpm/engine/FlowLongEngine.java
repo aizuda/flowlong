@@ -94,9 +94,8 @@ public interface FlowLongEngine {
      *
      * @param id 流程定义ID
      * @return Instance 流程实例
-     * @see #startInstanceById(String, String, Map)
      */
-    Instance startInstanceById(String id);
+    Instance startInstanceById(Long id);
 
     /**
      * 根据流程定义ID，操作人ID启动流程实例
@@ -104,9 +103,8 @@ public interface FlowLongEngine {
      * @param id       流程定义ID
      * @param operator 操作人ID
      * @return Instance 流程实例
-     * @see #startInstanceById(String, String, Map)
      */
-    Instance startInstanceById(String id, String operator);
+    Instance startInstanceById(Long id, String operator);
 
     /**
      * 根据流程定义ID，操作人ID，参数列表启动流程实例
@@ -116,7 +114,7 @@ public interface FlowLongEngine {
      * @param args     参数列表
      * @return Instance 流程实例
      */
-    Instance startInstanceById(String id, String operator, Map<String, Object> args);
+    Instance startInstanceById(Long id, String operator, Map<String, Object> args);
 
     /**
      * 根据流程名称启动流程实例
@@ -169,9 +167,8 @@ public interface FlowLongEngine {
      *
      * @param taskId 任务主键ID
      * @return List<Task> 任务集合
-     * @see #executeTask(String, String, Map)
      */
-    List<Task> executeTask(String taskId);
+    List<Task> executeTask(Long taskId);
 
     /**
      * 根据任务主键ID，操作人ID执行任务
@@ -179,9 +176,8 @@ public interface FlowLongEngine {
      * @param taskId   任务主键ID
      * @param operator 操作人主键ID
      * @return List<Task> 任务集合
-     * @see #executeTask(String, String, Map)
      */
-    List<Task> executeTask(String taskId, String operator);
+    List<Task> executeTask(Long taskId, String operator);
 
     /**
      * 根据任务主键ID，操作人ID，参数列表执行任务
@@ -191,7 +187,7 @@ public interface FlowLongEngine {
      * @param args     参数列表
      * @return List<Task> 任务集合
      */
-    List<Task> executeTask(String taskId, String operator, Map<String, Object> args);
+    List<Task> executeTask(Long taskId, String operator, Map<String, Object> args);
 
     /**
      * 根据任务主键ID，操作人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
@@ -204,7 +200,7 @@ public interface FlowLongEngine {
      * @param nodeName 跳转的节点名称
      * @return List<Task> 任务集合
      */
-    List<Task> executeAndJumpTask(String taskId, String operator, Map<String, Object> args, String nodeName);
+    List<Task> executeAndJumpTask(Long taskId, String operator, Map<String, Object> args, String nodeName);
 
     /**
      * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
@@ -215,5 +211,5 @@ public interface FlowLongEngine {
      * @param model      节点模型
      * @return List<Task> 任务集合
      */
-    List<Task> createFreeTask(String instanceId, String operator, Map<String, Object> args, TaskModel model);
+    List<Task> createFreeTask(Long instanceId, String operator, Map<String, Object> args, TaskModel model);
 }

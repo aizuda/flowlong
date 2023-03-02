@@ -41,13 +41,13 @@ public interface RuntimeService {
      * 根据流程、操作人员、父流程实例ID创建流程实例
      *
      * @param process        流程定义对象
-     * @param operator       操作人员ID
+     * @param createBy       操作人员ID
      * @param args           参数列表
      * @param parentId       父流程实例ID
      * @param parentNodeName 父流程节点模型
      * @return 活动流程实例对象
      */
-    Instance createInstance(Process process, String operator, Map<String, Object> args, String parentId, String parentNodeName);
+    Instance createInstance(Process process, String createBy, Map<String, Object> args, Long parentId, String parentNodeName);
 
     /**
      * 向指定实例id添加全局变量数据
@@ -55,7 +55,7 @@ public interface RuntimeService {
      * @param instanceId 实例id
      * @param args    变量数据
      */
-    void addVariable(String instanceId, Map<String, Object> args);
+    void addVariable(Long instanceId, Map<String, Object> args);
 
     /**
      * 创建抄送实例
@@ -64,14 +64,14 @@ public interface RuntimeService {
      * @param actorIds 参与者id
      * @param creator  创建人id
      */
-    void createCCInstance(String instanceId, String creator, String... actorIds);
+    void createCCInstance(Long instanceId, String creator, String... actorIds);
 
     /**
      * 流程实例正常完成
      *
      * @param instanceId 流程实例id
      */
-    void complete(String instanceId);
+    void complete(Long instanceId);
 
     /**
      * 保存流程实例

@@ -30,10 +30,10 @@ public interface ProcessService {
     /**
      * 检查流程定义对象
      *
-     * @param process  流程定义对象
-     * @param idOrName 流程定义id/name
+     * @param process 流程定义对象
+     * @param id      流程定义ID
      */
-    void check(Process process, String idOrName);
+    void check(Process process, Long id);
 
     /**
      * 更新流程定义的类别
@@ -41,7 +41,7 @@ public interface ProcessService {
      * @param id   流程定义id
      * @param type 类别
      */
-    void updateType(String id, String type);
+    void updateType(Long id, String type);
 
     /**
      * 根据主键ID获取流程定义对象
@@ -49,7 +49,7 @@ public interface ProcessService {
      * @param id 流程定义id
      * @return Process 流程定义对象
      */
-    Process getProcessById(String id);
+    Process getProcessById(Long id);
 
     /**
      * 根据流程name获取流程定义对象
@@ -74,7 +74,7 @@ public interface ProcessService {
      * @param input 流程定义输入流
      * @return String 流程定义id
      */
-    String deploy(InputStream input);
+    Long deploy(InputStream input);
 
     /**
      * 根据本地 resource 资源名称部署流程
@@ -82,7 +82,7 @@ public interface ProcessService {
      * @param resourceName
      * @return
      */
-    default String deployByResource(String resourceName) {
+    default Long deployByResource(String resourceName) {
         return this.deploy(StreamUtils.getResourceAsStream(resourceName));
     }
 
@@ -93,7 +93,7 @@ public interface ProcessService {
      * @param creator 创建人
      * @return String 流程定义id
      */
-    String deploy(InputStream input, String creator);
+    Long deploy(InputStream input, String creator);
 
     /**
      * 根据InputStream输入流，部署流程定义
@@ -101,14 +101,14 @@ public interface ProcessService {
      * @param id    流程定义id
      * @param input 流程定义输入流
      */
-    void redeploy(String id, InputStream input);
+    void redeploy(Long id, InputStream input);
 
     /**
      * 卸载指定的流程定义，只更新状态
      *
      * @param id 流程定义id
      */
-    void undeploy(String id);
+    void undeploy(Long id);
 
     /**
      * 谨慎使用.数据恢复非常痛苦，你懂得~~
@@ -121,5 +121,5 @@ public interface ProcessService {
      *
      * @param id
      */
-    void cascadeRemove(String id);
+    void cascadeRemove(Long id);
 }
