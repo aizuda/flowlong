@@ -34,7 +34,7 @@ public abstract class Assert {
     }
 
     public static void isZero(int result, String message) {
-        isTrue(Objects.equals(0, result), message);
+        illegalArgument(Objects.equals(0, result), message);
     }
 
     /**

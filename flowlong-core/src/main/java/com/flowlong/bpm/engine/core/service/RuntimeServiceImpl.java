@@ -16,8 +16,8 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.RuntimeService;
-import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,6 +59,11 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     /**
      * 创建活动实例
+     *
+     * @param process  流程定义对象
+     * @param operator 操作人员ID
+     * @param args     参数列表
+     * @return
      */
     @Override
     public Instance createInstance(Process process, String operator, Map<String, Object> args) {
@@ -66,6 +72,13 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     /**
      * 创建活动实例
+     *
+     * @param process        流程定义对象
+     * @param createBy       操作人员ID
+     * @param args           参数列表
+     * @param parentId       父流程实例ID
+     * @param parentNodeName 父流程节点模型
+     * @return
      */
     @Override
     public Instance createInstance(Process process, String createBy, Map<String, Object> args,
@@ -91,9 +104,29 @@ public class RuntimeServiceImpl implements RuntimeService {
             }
         }
 
-        instance.setVariable(JsonUtils.toJson(args));
+        instance.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
         this.saveInstance(instance);
         return instance;
+    }
+
+    /**
+     * 创建抄送实例
+     *
+     * @param instanceId 流程实例ID
+     * @param createBy   创建人ID
+     * @param actorIds   参与者ID集合
+     */
+    @Override
+    public void createCCInstance(Long instanceId, String createBy, List<String> actorIds) {
+        for (String actorId : actorIds) {
+            CCInstance ccinstance = new CCInstance();
+            ccinstance.setInstanceId(instanceId);
+            ccinstance.setActorId(actorId);
+            ccinstance.setCreateBy(createBy);
+            ccinstance.setStatus(FlowState.active);
+            ccinstance.setCreateTime(new Date());
+            ccInstanceMapper.insert(ccinstance);
+        }
     }
 
     /**
@@ -109,28 +142,14 @@ public class RuntimeServiceImpl implements RuntimeService {
         data.putAll(args);
         Instance temp = new Instance();
         temp.setId(instanceId);
-        temp.setVariable(JsonUtils.toJson(data));
+        temp.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
         instanceMapper.updateById(temp);
     }
 
     /**
-     * 创建实例的抄送
-     */
-    @Override
-    public void createCCInstance(Long instanceId, String createBy, String... actorIds) {
-        for (String actorId : actorIds) {
-            CCInstance ccinstance = new CCInstance();
-            ccinstance.setInstanceId(instanceId);
-            ccinstance.setActorId(actorId);
-            ccinstance.setCreateBy(createBy);
-            ccinstance.setStatus(FlowState.active);
-            ccinstance.setCreateTime(new Date());
-            ccInstanceMapper.insert(ccinstance);
-        }
-    }
-
-    /**
      * 流程实例数据会保存至活动实例表、历史实例表
+     *
+     * @param instance 流程实例对象
      */
     @Override
     public void saveInstance(Instance instance) {

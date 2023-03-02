@@ -60,11 +60,11 @@ public interface ProcessService {
     Process getProcessByName(String name);
 
     /**
-     * 根据流程name、version获取流程定义对象
+     * 根据流程名称或版本号查找流程定义对象
      *
      * @param name    流程定义名称
      * @param version 版本号
-     * @return Process 流程定义对象
+     * @return {@link Process}
      */
     Process getProcessByVersion(String name, Integer version);
 

@@ -36,9 +36,10 @@ public class MysqlTest {
     @Test
     public void test() {
         Map<String, Object> args = new HashMap<>();
+        // 设置工作流任务节点 assignee 属性
         args.put("task1.operator", new String[]{"1"});
-        Instance instance = flowLongEngine.startInstanceByName("simple", 0, "2", args);
-        flowLongEngine.runtimeService().createCCInstance(instance.getId(), "test");
+        Instance instance = flowLongEngine.startInstanceByName("simple", 1, "2", args);
+        flowLongEngine.runtimeService().createCCInstance(instance.getId(), "test", "1000");
 //		engine.runtimeService().updateCCStatus("b0fcc08da45d4e88819d9c287917b525", "test");
 //		engine.runtimeService().deleteCCInstance("01b960b9d5df4be7b8565b9f64bc1856", "test");
     }

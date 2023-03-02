@@ -15,11 +15,12 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.exception.FlowLongException;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.Map;
  * @author hubin
  * @since 1.0
  */
+@Getter
+@Setter
 public class Execution implements Serializable {
     /**
      * FlowLongEngine holder
@@ -128,51 +131,6 @@ public class Execution implements Serializable {
     }
 
     /**
-     * 获取流程定义对象
-     *
-     * @return
-     */
-    public Process getProcess() {
-        return process;
-    }
-
-    /**
-     * 获取流程模型对象
-     *
-     * @return
-     */
-    public ProcessModel getModel() {
-        return process.getProcessModel();
-    }
-
-    /**
-     * 获取流程实例对象
-     *
-     * @return
-     */
-    public Instance getInstance() {
-        return instance;
-    }
-
-    /**
-     * 获取执行参数
-     *
-     * @return
-     */
-    public Map<String, Object> getArgs() {
-        return args;
-    }
-
-    /**
-     * 返回任务结果集
-     *
-     * @return
-     */
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    /**
      * 添加任务集合
      *
      * @param tasks
@@ -188,84 +146,5 @@ public class Execution implements Serializable {
      */
     public void addTask(Task task) {
         this.tasks.add(task);
-    }
-
-    /**
-     * 返回当前操作人ID
-     *
-     * @return
-     */
-    public String getOperator() {
-        return operator;
-    }
-
-    /**
-     * 设置当前操作人ID
-     *
-     * @param operator
-     */
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    /**
-     * 返回任务
-     *
-     * @return
-     */
-    public Task getTask() {
-        return task;
-    }
-
-    /**
-     * 设置任务
-     *
-     * @param task
-     */
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
-    /**
-     * 判断是否已经成功合并
-     *
-     * @return
-     */
-    public boolean isMerged() {
-        return isMerged;
-    }
-
-    /**
-     * 设置是否为已合并
-     *
-     * @param isMerged
-     */
-    public void setMerged(boolean isMerged) {
-        this.isMerged = isMerged;
-    }
-
-    /**
-     * 获取引擎
-     *
-     * @return
-     */
-    public FlowLongEngine getEngine() {
-        return engine;
-    }
-
-    public Instance getParentInstance() {
-        return parentInstance;
-    }
-
-    public String getParentNodeName() {
-        return parentNodeName;
-    }
-
-    public Long getChildInstanceId() {
-        return childInstanceId;
-    }
-
-    public void setChildInstanceId(Long childInstanceId) {
-        this.childInstanceId = childInstanceId;
     }
 }

@@ -21,9 +21,9 @@ import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.JsonUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
@@ -91,7 +91,7 @@ public class TaskServiceImpl implements TaskService {
     public Task complete(Long taskId, String operator, Map<String, Object> args) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        task.setVariable(JsonUtils.toJson(args));
+        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
         if (!isAllowed(task, operator)) {
             throw new FlowLongException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
         }
@@ -143,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setTaskState(FlowState.finish);
         hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
         hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
-        hisTask.setVariable(JsonUtils.toJson(execution.getArgs()));
+        hisTask.setVariable(FlowLongContext.JSON_HANDLER.toJson(execution.getArgs()));
         hisTaskMapper.insert(hisTask);
         return hisTask;
     }
@@ -219,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
                 Map<String, Object> data = task.getVariableMap();
                 String oldActor = (String) data.get(Task.KEY_ACTOR);
                 data.put(Task.KEY_ACTOR, oldActor + "," + StringUtils.getStringByArray(actors));
-                task.setVariable(JsonUtils.toJson(data));
+                task.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
                 taskMapper.updateById(task);
                 break;
             case 1:
@@ -230,7 +230,7 @@ public class TaskServiceImpl implements TaskService {
                         newTask.setCreateBy(actor);
                         Map<String, Object> taskData = task.getVariableMap();
                         taskData.put(Task.KEY_ACTOR, actor);
-                        task.setVariable(JsonUtils.toJson(taskData));
+                        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
                         taskMapper.insert(newTask);
                         assignTask(newTask.getId(), actor);
                     }
@@ -384,7 +384,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
         task.setExpireTime(expireDate);
-        task.setVariable(JsonUtils.toJson(args));
+        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
 
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task

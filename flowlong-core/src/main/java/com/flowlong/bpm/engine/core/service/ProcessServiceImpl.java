@@ -112,22 +112,23 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     /**
-     * 根据name获取process对象
-     * 先通过cache获取，如果返回空，就从数据库读取并put
+     * 根据流程名称或版本号查找流程定义对象
+     *
+     * @param name    流程定义名称
+     * @param version 版本号
+     * @return {@link Process}
      */
     @Override
     public Process getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
-        Process process = null;
-        if (version == null) {
-            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
-                    .eq(Process::getName, name).orderByDesc(Process::getVersion));
-            if (CollectionUtils.isEmpty(processList)) {
-                throw new FlowLongException("process [" + name + "] does not exist");
-            }
-            process = processList.get(0);
+        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
+                .eq(Process::getName, name)
+                .eq(null != version, Process::getVersion, version)
+                .orderByDesc(Process::getVersion));
+        if (CollectionUtils.isEmpty(processList)) {
+            throw new FlowLongException("process [" + name + "] does not exist");
         }
-        return process;
+        return processList.get(0);
     }
 
     /**
@@ -166,7 +167,7 @@ public class ProcessServiceImpl implements ProcessService {
              */
             Process process = new Process();
             process.setVersion(version + 1);
-            process.setState(FlowState.active);
+            process.setFlowState(FlowState.active);
             process.setProcessModel(processModel);
             process.setContent(bytes);
             process.setCreateBy(createBy);
@@ -209,7 +210,7 @@ public class ProcessServiceImpl implements ProcessService {
     public void undeploy(Long id) {
         Process process = new Process();
         process.setId(id);
-        process.setState(FlowState.finish);
+        process.setFlowState(FlowState.finish);
         processMapper.updateById(process);
     }
 

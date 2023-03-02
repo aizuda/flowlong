@@ -125,22 +125,17 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public Instance startInstanceByName(String name, Integer version, String operator, Map<String, Object> args) {
-        if (args == null) {
-            args = new HashMap<>();
-        }
         Process process = processService().getProcessByVersion(name, version);
-        // processService().check(process, name);
-        return startProcess(process, operator, args);
+        return this.startProcess(process, operator, args);
     }
 
     protected Instance startProcess(Process process, String operator, Map<String, Object> args) {
-        Execution execution = execute(process, operator, args, null, null);
+        Execution execution = this.execute(process, operator, args, null, null);
         if (process.getProcessModel() != null) {
             StartModel start = process.getProcessModel().getStart();
             Assert.notNull(start, "流程定义[name=" + process.getName() + ", version=" + process.getVersion() + "]没有开始节点");
             start.execute(flowLongContext, execution);
         }
-
         return execution.getInstance();
     }
 

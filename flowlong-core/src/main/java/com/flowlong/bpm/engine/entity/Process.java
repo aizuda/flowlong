@@ -22,8 +22,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 /**
  * 流程定义实体类
  *
@@ -70,7 +68,7 @@ public class Process extends BaseEntity {
     @TableField(exist = false)
     protected ProcessModel processModel;
 
-    public void setState(FlowState flowState) {
+    public void setFlowState(FlowState flowState) {
         this.state = flowState.getValue();
     }
 

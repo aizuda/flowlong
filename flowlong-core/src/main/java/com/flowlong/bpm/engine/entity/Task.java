@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.assist.JsonUtils;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -112,7 +112,7 @@ public class Task extends BaseEntity {
     }
 
     public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonUtils.fromJson(this.variable, Map.class);
+        Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
     }

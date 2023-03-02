@@ -17,6 +17,8 @@ package com.flowlong.bpm.engine;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -53,18 +55,22 @@ public interface RuntimeService {
      * 向指定实例id添加全局变量数据
      *
      * @param instanceId 实例id
-     * @param args    变量数据
+     * @param args       变量数据
      */
     void addVariable(Long instanceId, Map<String, Object> args);
 
     /**
      * 创建抄送实例
      *
-     * @param instanceId  流程实例id
-     * @param actorIds 参与者id
-     * @param creator  创建人id
+     * @param instanceId 流程实例ID
+     * @param createBy   创建人ID
+     * @param actorIds   参与者ID集合
      */
-    void createCCInstance(Long instanceId, String creator, String... actorIds);
+    void createCCInstance(Long instanceId, String createBy, List<String> actorIds);
+
+    default void createCCInstance(Long instanceId, String createBy, String actorId) {
+        this.createCCInstance(instanceId, createBy, Arrays.asList(actorId));
+    }
 
     /**
      * 流程实例正常完成
@@ -90,8 +96,8 @@ public interface RuntimeService {
     /**
      * 流程实例强制终止
      *
-     * @param instanceId  流程实例id
-     * @param operator 处理人员
+     * @param instanceId 流程实例id
+     * @param operator   处理人员
      */
     void terminate(String instanceId, String operator);
 

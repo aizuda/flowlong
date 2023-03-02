@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.assist.JsonUtils;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -78,7 +78,7 @@ public class Instance extends BaseEntity {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = JsonUtils.fromJson(this.variable, Map.class);
+        Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
     }

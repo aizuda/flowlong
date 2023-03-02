@@ -40,7 +40,7 @@ public abstract class AbstractMergeHandler implements FlowLongHandler {
          */
         QueryService queryService = execution.getEngine().queryService();
         Instance instance = execution.getInstance();
-        ProcessModel model = execution.getModel();
+        ProcessModel model = execution.getProcess().getProcessModel();
         List<String> activeNodes = findActiveNodes();
         boolean isSubProcessMerged = false;
         boolean isTaskMerged = false;

@@ -16,6 +16,8 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.handler.JsonHandler;
+import com.flowlong.bpm.engine.handler.impl.JacksonHandler;
 import com.flowlong.bpm.engine.parser.NodeParser;
 import com.flowlong.bpm.engine.parser.impl.*;
 import com.flowlong.bpm.engine.scheduling.FlowLongScheduler;
@@ -50,6 +52,13 @@ public class FlowLongContext {
     private FlowLongScheduler scheduler;
     private List<FlowLongInterceptor> interceptors;
     private TaskAccessStrategy taskAccessStrategy;
+
+    /**
+     * JSON 处理器，默认 jackson 实现
+     * 使用其它json框架可以初始化的赋值该静态属性
+     */
+    public static JsonHandler JSON_HANDLER = new JacksonHandler();
+
     /**
      * 初始化内置节点解析类 MAP
      */
