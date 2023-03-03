@@ -76,7 +76,8 @@ public interface ProcessService {
      * 根据本地 resource 资源名称部署流程
      *
      * @param resourceName 资源名称
-     * @return 部署流程ID
+     * @param repeat       是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return 流程定义ID
      */
     default Long deployByResource(String resourceName, boolean repeat) {
         return this.deploy(StreamUtils.getResourceAsStream(resourceName), repeat);
@@ -85,8 +86,9 @@ public interface ProcessService {
     /**
      * 根据InputStream输入流，部署流程定义
      *
-     * @param input 流程定义输入流
-     * @return String 流程定义id
+     * @param input  流程定义输入流
+     * @param repeat 是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return 流程定义ID
      */
     Long deploy(InputStream input, boolean repeat);
 
