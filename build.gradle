@@ -54,7 +54,7 @@ subprojects {
         maven { url 'https://repo.spring.io/milestone' }
         maven { url 'https://repo.spring.io/snapshot' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        jcenter()
+        mavenCentral()
     }
 
     // 依赖管理
