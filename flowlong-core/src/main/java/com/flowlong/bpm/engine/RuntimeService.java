@@ -68,9 +68,36 @@ public interface RuntimeService {
      */
     void createCCInstance(Long instanceId, String createBy, List<String> actorIds);
 
+    /**
+     * 创建抄送实例
+     *
+     * @param instanceId 流程实例ID
+     * @param createBy   创建人ID
+     * @param actorId    参与者ID
+     */
     default void createCCInstance(Long instanceId, String createBy, String actorId) {
         this.createCCInstance(instanceId, createBy, Arrays.asList(actorId));
     }
+
+    /**
+     * 更新抄送记录为已阅
+     *
+     * @param instanceId 流程实例ID
+     * @param actorIds   参与者ID
+     */
+    void updateCCStatus(Long instanceId, List<String> actorIds);
+
+    default void updateCCStatus(Long instanceId, String actorId) {
+        this.updateCCStatus(instanceId, Arrays.asList(actorId));
+    }
+
+    /**
+     * 删除抄送记录
+     *
+     * @param instanceId 流程实例id
+     * @param actorId 参与者id
+     */
+    void deleteCCInstance(Long instanceId, String actorId);
 
     /**
      * 流程实例正常完成

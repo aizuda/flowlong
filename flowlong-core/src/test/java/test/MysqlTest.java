@@ -1,8 +1,8 @@
 package test;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.entity.Instance;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,9 +39,12 @@ public class MysqlTest {
         // 设置工作流任务节点 assignee 属性
         args.put("task1.operator", new String[]{"1"});
         Instance instance = flowLongEngine.startInstanceByName("simple", 1, "2", args);
-        flowLongEngine.runtimeService().createCCInstance(instance.getId(), "test", "1000");
-//		engine.runtimeService().updateCCStatus("b0fcc08da45d4e88819d9c287917b525", "test");
-//		engine.runtimeService().deleteCCInstance("01b960b9d5df4be7b8565b9f64bc1856", "test");
+        RuntimeService runtimeService = flowLongEngine.runtimeService();
+        // 创建抄送实例，暂时先 debug 观察数据库表结构数据变化
+        final String actorId = "1000";
+        runtimeService.createCCInstance(instance.getId(), "test", actorId);
+		runtimeService.updateCCStatus(instance.getId(), actorId);
+		runtimeService.deleteCCInstance(instance.getId(), actorId);
     }
 
 }

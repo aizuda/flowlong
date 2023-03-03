@@ -14,8 +14,10 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.RuntimeService;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
@@ -123,10 +125,27 @@ public class RuntimeServiceImpl implements RuntimeService {
             ccinstance.setInstanceId(instanceId);
             ccinstance.setActorId(actorId);
             ccinstance.setCreateBy(createBy);
-            ccinstance.setStatus(FlowState.active);
+            ccinstance.setFlowState(FlowState.active);
             ccinstance.setCreateTime(new Date());
             ccInstanceMapper.insert(ccinstance);
         }
+    }
+
+    @Override
+    public void updateCCStatus(Long instanceId, List<String> actorIds) {
+        CCInstance ccInstance = new CCInstance();
+        ccInstance.setFlowState(FlowState.finish);
+        ccInstance.setFinishTime(DateUtils.getTime());
+        ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
+                .eq(CCInstance::getInstanceId, instanceId)
+                .in(CCInstance::getActorId, actorIds));
+    }
+
+    @Override
+    public void deleteCCInstance(Long instanceId, String actorId) {
+        ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaUpdate()
+                .eq(CCInstance::getInstanceId, instanceId)
+                .eq(CCInstance::getActorId, actorId));
     }
 
     /**

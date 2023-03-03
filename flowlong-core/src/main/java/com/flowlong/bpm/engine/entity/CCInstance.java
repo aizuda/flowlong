@@ -50,7 +50,7 @@ public class CCInstance extends BaseEntity {
      */
     protected String finishTime;
 
-    public void setStatus(FlowState flowState) {
+    public void setFlowState(FlowState flowState) {
         this.state = flowState.getValue();
     }
 }
