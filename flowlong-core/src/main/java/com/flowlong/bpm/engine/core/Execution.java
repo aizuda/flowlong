@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,10 @@ import java.util.Map;
 
 /**
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -65,9 +69,9 @@ public class Execution implements Serializable {
      */
     private Map<String, Object> args;
     /**
-     * 操作人
+     * 创建人
      */
-    private String operator;
+    private String createBy;
     /**
      * 任务
      */
@@ -98,7 +102,7 @@ public class Execution implements Serializable {
         this.args = execution.getArgs();
         this.parentInstance = execution.getInstance();
         this.parentNodeName = parentNodeName;
-        this.operator = execution.getOperator();
+        this.createBy = execution.getCreateBy();
     }
 
     /**

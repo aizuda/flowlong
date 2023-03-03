@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,10 @@ import java.util.*;
 /**
  * 任务执行业务类
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
@@ -79,8 +83,8 @@ public class TaskServiceImpl implements TaskService {
      * 完成指定任务
      */
     @Override
-    public Task complete(Long taskId, String operator) {
-        return complete(taskId, operator, null);
+    public Task complete(Long taskId, String createBy) {
+        return complete(taskId, createBy, null);
     }
 
     /**
@@ -88,17 +92,17 @@ public class TaskServiceImpl implements TaskService {
      * 该方法仅仅结束活动任务，并不能驱动流程继续执行
      */
     @Override
-    public Task complete(Long taskId, String operator, Map<String, Object> args) {
+    public Task complete(Long taskId, String createBy, Map<String, Object> args) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
-        if (!isAllowed(task, operator)) {
-            throw new FlowLongException("当前参与者[" + operator + "]不允许执行任务[taskId=" + taskId + "]");
+        if (!isAllowed(task, createBy)) {
+            throw new FlowLongException("当前参与者[" + createBy + "]不允许执行任务[taskId=" + taskId + "]");
         }
         HisTask history = new HisTask(task);
         history.setFinishTime(new Date());
         history.setTaskState(FlowState.finish);
-        history.setCreateBy(operator);
+        history.setCreateBy(createBy);
         if (history.getActorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
             String[] actorIds = new String[actors.size()];
@@ -116,7 +120,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 更新任务对象的finish_Time、operator、expire_Time、version、variable
+     * 更新任务对象的finish_Time、createBy、expire_Time、version、variable
      *
      * @param task 任务对象
      */
@@ -149,18 +153,18 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 提取指定任务，设置完成时间及操作人，状态不改变
+     * 提取指定任务，设置完成时间及创建人，状态不改变
      */
     @Override
-    public Task take(Long taskId, String operator) {
+    public Task take(Long taskId, String createBy) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!isAllowed(task, operator)) {
-            throw new FlowLongException("当前参与者[" + operator + "]不允许提取任务[taskId=" + taskId + "]");
+        if (!isAllowed(task, createBy)) {
+            throw new FlowLongException("当前参与者[" + createBy + "]不允许提取任务[taskId=" + taskId + "]");
         }
         Task newTask = new Task();
         newTask.setId(taskId);
-        newTask.setCreateBy(operator);
+        newTask.setCreateBy(createBy);
         newTask.setFinishTime(new Date());
         taskMapper.updateById(newTask);
         return task;
@@ -170,12 +174,12 @@ public class TaskServiceImpl implements TaskService {
      * 唤醒指定的历史任务
      */
     @Override
-    public Task resume(Long taskId, String operator) {
+    public Task resume(Long taskId, String createBy) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
         boolean isAllowed = true;
         if (StringUtils.isNotEmpty(histTask.getCreateBy())) {
-            isAllowed = histTask.getCreateBy().equals(operator);
+            isAllowed = histTask.getCreateBy().equals(createBy);
         }
         if (isAllowed) {
             Task task = histTask.undoTask();
@@ -184,7 +188,7 @@ public class TaskServiceImpl implements TaskService {
             assignTask(task.getId(), task.getCreateBy());
             return task;
         } else {
-            throw new FlowLongException("当前参与者[" + operator + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+            throw new FlowLongException("当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
         }
     }
 
@@ -247,7 +251,7 @@ public class TaskServiceImpl implements TaskService {
      * 撤回指定的任务
      */
     @Override
-    public Task withdrawTask(Long taskId, String operator) {
+    public Task withdrawTask(Long taskId, String createBy) {
         HisTask hist = hisTaskMapper.selectById(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
 //        List<Task> tasks;
@@ -506,20 +510,20 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 判断当前操作人operator是否允许执行taskId指定的任务
+     * 判断当前创建人createBy是否允许执行taskId指定的任务
      */
     @Override
-    public boolean isAllowed(Task task, String operator) {
-        // 如果当前操作人不为空
-        if (StringUtils.isNotEmpty(operator)) {
+    public boolean isAllowed(Task task, String createBy) {
+        // 如果当前创建人不为空
+        if (StringUtils.isNotEmpty(createBy)) {
             // 如果是admin或者auto，直接返回true
-            if (FlowLongEngine.ADMIN.equalsIgnoreCase(operator)
-                    || FlowLongEngine.AUTO.equalsIgnoreCase(operator)) {
+            if (FlowLongEngine.ADMIN.equalsIgnoreCase(createBy)
+                    || FlowLongEngine.AUTO.equalsIgnoreCase(createBy)) {
                 return true;
             }
             // 如果为其他，当前做错人和任务执行人对比
             if (StringUtils.isNotEmpty(task.getCreateBy())) {
-                return operator.equals(task.getCreateBy());
+                return createBy.equals(task.getCreateBy());
             }
         }
 
@@ -527,7 +531,7 @@ public class TaskServiceImpl implements TaskService {
         if (actors == null || actors.isEmpty()) {
             return true;
         }
-        return !StringUtils.isEmpty(operator) && taskAccessStrategy.isAllowed(operator, actors);
+        return !StringUtils.isEmpty(createBy) && taskAccessStrategy.isAllowed(createBy, actors);
     }
 
 }

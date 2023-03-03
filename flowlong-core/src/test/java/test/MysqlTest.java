@@ -25,7 +25,7 @@ public class MysqlTest {
     protected Long processId;
 
     protected void deployByResource(String resourceName) {
-        this.processId = flowLongEngine.processService().deployByResource(resourceName);
+        this.processId = flowLongEngine.processService().deployByResource(resourceName, false);
     }
 
     @BeforeEach
@@ -33,18 +33,21 @@ public class MysqlTest {
         this.deployByResource("test/cc/process.long");
     }
 
+    /**
+     * 抄送测试
+     */
     @Test
-    public void test() {
+    public void testCc() {
         Map<String, Object> args = new HashMap<>();
         // 设置工作流任务节点 assignee 属性
-        args.put("task1.operator", new String[]{"1"});
-        Instance instance = flowLongEngine.startInstanceByName("simple", 1, "2", args);
+        args.put("task1.assignee", "1");
+        Instance instance = flowLongEngine.startInstanceByName("simple", 1, "testUser", args);
         RuntimeService runtimeService = flowLongEngine.runtimeService();
         // 创建抄送实例，暂时先 debug 观察数据库表结构数据变化
         final String actorId = "1000";
         runtimeService.createCCInstance(instance.getId(), "test", actorId);
-		runtimeService.updateCCStatus(instance.getId(), actorId);
-		runtimeService.deleteCCInstance(instance.getId(), actorId);
+        runtimeService.updateCCStatus(instance.getId(), actorId);
+        runtimeService.deleteCCInstance(instance.getId(), actorId);
     }
 
 }

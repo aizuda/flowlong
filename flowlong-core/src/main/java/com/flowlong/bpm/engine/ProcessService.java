@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import java.io.InputStream;
 
 /**
  * 流程定义业务类
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -69,31 +73,32 @@ public interface ProcessService {
     Process getProcessByVersion(String name, Integer version);
 
     /**
-     * 根据InputStream输入流，部署流程定义
-     *
-     * @param input 流程定义输入流
-     * @return String 流程定义id
-     */
-    Long deploy(InputStream input);
-
-    /**
      * 根据本地 resource 资源名称部署流程
      *
-     * @param resourceName
-     * @return
+     * @param resourceName 资源名称
+     * @return 部署流程ID
      */
-    default Long deployByResource(String resourceName) {
-        return this.deploy(StreamUtils.getResourceAsStream(resourceName));
+    default Long deployByResource(String resourceName, boolean repeat) {
+        return this.deploy(StreamUtils.getResourceAsStream(resourceName), repeat);
     }
 
     /**
      * 根据InputStream输入流，部署流程定义
      *
-     * @param input   流程定义输入流
-     * @param creator 创建人
+     * @param input 流程定义输入流
      * @return String 流程定义id
      */
-    Long deploy(InputStream input, String creator);
+    Long deploy(InputStream input, boolean repeat);
+
+    /**
+     * 根据InputStream输入流，部署流程定义
+     *
+     * @param input    流程定义输入流
+     * @param createBy 创建人
+     * @param repeat   是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return 流程定义ID
+     */
+    Long deploy(InputStream input, String createBy, boolean repeat);
 
     /**
      * 根据InputStream输入流，部署流程定义

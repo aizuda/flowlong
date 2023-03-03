@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ import java.util.*;
 
 /**
  * 基本的流程引擎实现类
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -67,24 +71,24 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程定义ID，操作人ID启动流程实例
+     * 根据流程定义ID，创建人ID启动流程实例
      */
     @Override
-    public Instance startInstanceById(Long id, String operator) {
-        return startInstanceById(id, operator, null);
+    public Instance startInstanceById(Long id, String createBy) {
+        return startInstanceById(id, createBy, null);
     }
 
     /**
-     * 根据流程定义ID，操作人ID，参数列表启动流程实例
+     * 根据流程定义ID，创建人ID，参数列表启动流程实例
      */
     @Override
-    public Instance startInstanceById(Long id, String operator, Map<String, Object> args) {
+    public Instance startInstanceById(Long id, String createBy, Map<String, Object> args) {
         if (args == null) {
             args = new HashMap<>();
         }
         Process process = processService().getProcessById(id);
         processService().check(process, id);
-        return startProcess(process, operator, args);
+        return startProcess(process, createBy, args);
     }
 
     /**
@@ -108,29 +112,29 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程名称、版本号、操作人启动流程实例
+     * 根据流程名称、版本号、创建人启动流程实例
      *
      * @since 1.0
      */
     @Override
     public Instance startInstanceByName(String name, Integer version,
-                                        String operator) {
-        return startInstanceByName(name, version, operator, null);
+                                        String createBy) {
+        return startInstanceByName(name, version, createBy, null);
     }
 
     /**
-     * 根据流程名称、版本号、操作人、参数列表启动流程实例
+     * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
      * @since 1.0
      */
     @Override
-    public Instance startInstanceByName(String name, Integer version, String operator, Map<String, Object> args) {
+    public Instance startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args) {
         Process process = processService().getProcessByVersion(name, version);
-        return this.startProcess(process, operator, args);
+        return this.startProcess(process, createBy, args);
     }
 
-    protected Instance startProcess(Process process, String operator, Map<String, Object> args) {
-        Execution execution = this.execute(process, operator, args, null, null);
+    protected Instance startProcess(Process process, String createBy, Map<String, Object> args) {
+        Execution execution = this.execute(process, createBy, args, null, null);
         if (process.getProcessModel() != null) {
             StartModel start = process.getProcessModel().getStart();
             Assert.notNull(start, "流程定义[name=" + process.getName() + ", version=" + process.getVersion() + "]没有开始节点");
@@ -148,7 +152,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         StartModel start = process.getProcessModel().getStart();
         Assert.notNull(start, "流程定义[id=" + process.getId() + "]没有开始节点");
 
-        Execution current = execute(process, execution.getOperator(), execution.getArgs(),
+        Execution current = execute(process, execution.getCreateBy(), execution.getArgs(),
                 execution.getParentInstance().getId(), execution.getParentNodeName());
         start.execute(flowLongContext, current);
         return current.getInstance();
@@ -158,25 +162,25 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 创建流程实例，并返回执行对象
      *
      * @param process        流程定义
-     * @param operator       操作人
+     * @param createBy       创建人
      * @param args           参数列表
      * @param parentId       父流程实例id
      * @param parentNodeName 启动子流程的父流程节点名称
      * @return Execution
      */
-    protected Execution execute(Process process, String operator, Map<String, Object> args,
+    protected Execution execute(Process process, String createBy, Map<String, Object> args,
                                 Long parentId, String parentNodeName) {
-        Instance instance = runtimeService().createInstance(process, operator, args, parentId, parentNodeName);
+        Instance instance = runtimeService().createInstance(process, createBy, args, parentId, parentNodeName);
         if (log.isDebugEnabled()) {
             log.debug("创建流程实例对象:" + instance);
         }
         Execution current = new Execution(this, process, instance, args);
-        current.setOperator(operator);
+        current.setCreateBy(createBy);
         return current;
     }
 
     /**
-     * 根据任务主键ID执行任务
+     * 根据任务ID执行任务
      */
     @Override
     public List<Task> executeTask(Long taskId) {
@@ -184,20 +188,20 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务主键ID，操作人ID执行任务
+     * 根据任务ID，创建人ID执行任务
      */
     @Override
-    public List<Task> executeTask(Long taskId, String operator) {
-        return executeTask(taskId, operator, null);
+    public List<Task> executeTask(Long taskId, String createBy) {
+        return executeTask(taskId, createBy, null);
     }
 
     /**
-     * 根据任务主键ID，操作人ID，参数列表执行任务
+     * 根据任务ID，创建人ID，参数列表执行任务
      */
     @Override
-    public List<Task> executeTask(Long taskId, String operator, Map<String, Object> args) {
+    public List<Task> executeTask(Long taskId, String createBy, Map<String, Object> args) {
         //完成任务，并且构造执行对象
-        Execution execution = execute(taskId, operator, args);
+        Execution execution = execute(taskId, createBy, args);
         if (execution == null) {
             return Collections.emptyList();
         }
@@ -211,13 +215,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务主键ID，操作人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
+     * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
      * 1、nodeName为null时，则驳回至上一步处理
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
      */
     @Override
-    public List<Task> executeAndJumpTask(Long taskId, String operator, Map<String, Object> args, String nodeName) {
-        Execution execution = execute(taskId, operator, args);
+    public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName) {
+        Execution execution = execute(taskId, createBy, args);
         if (execution == null) {
             return Collections.emptyList();
         }
@@ -240,37 +244,37 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
+     * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
      */
     @Override
-    public List<Task> createFreeTask(Long instanceId, String operator, Map<String, Object> args, TaskModel model) {
+    public List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model) {
         Instance instance = queryService().getInstance(instanceId);
         Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
-        instance.setLastUpdateBy(operator);
+        instance.setLastUpdateBy(createBy);
         instance.setLastUpdateTime(new Date());
         Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
-        execution.setOperator(operator);
+        execution.setCreateBy(createBy);
         return taskService().createTask(model, execution);
     }
 
     /**
-     * 根据任务主键ID，操作人ID，参数列表完成任务，并且构造执行对象
+     * 根据任务ID，创建人ID，参数列表完成任务，并且构造执行对象
      *
      * @param taskId   任务id
-     * @param operator 操作人
+     * @param createBy 创建人
      * @param args     参数列表
      * @return Execution
      */
-    protected Execution execute(Long taskId, String operator, Map<String, Object> args) {
+    protected Execution execute(Long taskId, String createBy, Map<String, Object> args) {
         if (args == null) args = new HashMap<>();
-        Task task = taskService().complete(taskId, operator, args);
+        Task task = taskService().complete(taskId, createBy, args);
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }
         Instance instance = queryService().getInstance(task.getInstanceId());
         Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
-        instance.setLastUpdateBy(operator);
+        instance.setLastUpdateBy(createBy);
         instance.setLastUpdateTime(new Date());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
@@ -288,7 +292,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
-        execution.setOperator(operator);
+        execution.setCreateBy(createBy);
         execution.setTask(task);
         return execution;
     }

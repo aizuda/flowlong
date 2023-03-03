@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,31 +24,35 @@ import java.util.List;
  * 基于用户或组（角色、部门等）的访问策略类
  * 该策略类适合组作为参与者的情况
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
 public class GeneralAccessStrategy implements TaskAccessStrategy {
 
     /**
-     * 根据操作人id确定所有的组集合
+     * 根据创建人ID确定所有的组集合
      *
-     * @param operator 操作人id
-     * @return List<String> 确定的组集合[如操作人属于多个部门、拥有多个角色]
+     * @param createBy 创建人ID
+     * @return List<String> 确定的组集合[如创建人属于多个部门、拥有多个角色]
      */
-    protected List<String> ensureGroup(String operator) {
+    protected List<String> ensureGroup(String createBy) {
         return null;
     }
 
     /**
-     * 如果操作人id所属的组只要有一项存在于参与者集合中，则表示可访问
+     * 如果创建人ID所属的组只要有一项存在于参与者集合中，则表示可访问
      */
     @Override
-    public boolean isAllowed(String operator, List<TaskActor> actors) {
-        List<String> assignees = ensureGroup(operator);
+    public boolean isAllowed(String createBy, List<TaskActor> actors) {
+        List<String> assignees = ensureGroup(createBy);
         if (assignees == null) {
             assignees = new ArrayList<>();
         }
-        assignees.add(operator);
+        assignees.add(createBy);
         boolean isAllowed = false;
         for (TaskActor actor : actors) {
             for (String assignee : assignees) {

@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,10 @@ import java.util.Map;
  * 5、回退任务
  * 6、提取任务
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
@@ -50,20 +54,20 @@ public interface TaskService {
      * 完成指定的任务，删除活动任务记录，创建历史任务
      *
      * @param taskId   任务id
-     * @param operator 操作人
+     * @param createBy 创建人
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String operator);
+    Task complete(Long taskId, String createBy);
 
     /**
-     * 根据任务主键ID，操作人ID完成任务
+     * 根据任务ID，创建人ID完成任务
      *
      * @param taskId   任务id
-     * @param operator 操作人id
+     * @param createBy 创建人ID
      * @param args     参数集合
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String operator, Map<String, Object> args);
+    Task complete(Long taskId, String createBy, Map<String, Object> args);
 
     /**
      * 更新任务对象
@@ -82,24 +86,24 @@ public interface TaskService {
     HisTask history(Execution execution, CustomModel model);
 
     /**
-     * 根据任务主键ID，操作人ID提取任务
-     * 提取任务相当于预受理操作，仅仅标识此任务只能由此操作人处理
+     * 根据任务ID，创建人ID提取任务
+     * 提取任务相当于预受理操作，仅仅标识此任务只能由此创建人处理
      *
      * @param taskId   任务id
-     * @param operator 操作人id
+     * @param createBy 创建人ID
      * @return Task 任务对象
      */
-    Task take(Long taskId, String operator);
+    Task take(Long taskId, String createBy);
 
     /**
-     * 根据历史任务主键id，操作人唤醒历史任务
+     * 根据历史任务ID，创建人唤醒历史任务
      * 该方法会导致流程状态不可控，请慎用
      *
      * @param taskId   历史任务id
-     * @param operator 操作人id
+     * @param createBy 创建人ID
      * @return Task 唤醒后的任务对象
      */
-    Task resume(Long taskId, String operator);
+    Task resume(Long taskId, String createBy);
 
     /**
      * 向指定的任务id添加参与者
@@ -119,13 +123,13 @@ public interface TaskService {
     void addTaskActor(Long taskId, Integer performType, String... actors);
 
     /**
-     * 根据任务主键id、操作人撤回任务
+     * 根据任务ID、创建人撤回任务
      *
      * @param taskId   任务id
-     * @param operator 操作人
+     * @param createBy 创建人
      * @return Task 任务对象
      */
-    Task withdrawTask(Long taskId, String operator);
+    Task withdrawTask(Long taskId, String createBy);
 
     /**
      * 根据当前任务对象驳回至上一步处理
@@ -137,13 +141,13 @@ public interface TaskService {
     Task rejectTask(ProcessModel model, Task currentTask);
 
     /**
-     * 根据taskId、operator，判断操作人operator是否允许执行任务
+     * 根据taskId、createBy，判断创建人createBy是否允许执行任务
      *
      * @param task     任务对象
-     * @param operator 操作人
+     * @param createBy 创建人
      * @return boolean 是否允许操作
      */
-    boolean isAllowed(Task task, String operator);
+    boolean isAllowed(Task task, String createBy);
 
     /**
      * 根据任务模型、执行对象创建新的任务

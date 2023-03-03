@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ import com.flowlong.bpm.engine.entity.Surrogate;
  * 委托管理
  * 时限控制
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
@@ -35,14 +39,14 @@ public interface ManagerService {
     /**
      * 删除委托代理对象
      *
-     * @param id 委托代理主键id
+     * @param id 委托代理ID
      */
     void deleteSurrogate(String id);
 
     /**
-     * 根据主键id查询委托代理对象
+     * 根据ID查询委托代理对象
      *
-     * @param id 主键id
+     * @param id ID
      * @return surrogate 委托代理对象
      */
     Surrogate getSurrogate(String id);
@@ -51,9 +55,9 @@ public interface ManagerService {
      * 根据授权人、流程名称获取最终代理人
      * 如存在user1->user2->user3，那么最终返回user3
      *
-     * @param operator    授权人
+     * @param createBy    授权人
      * @param processName 流程名称
      * @return String 代理人
      */
-    String getSurrogate(String operator, String processName);
+    String getSurrogate(String createBy, String processName);
 }

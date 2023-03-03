@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,10 @@ import java.util.Map;
 
 /**
  * FlowLong流程引擎接口
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -98,23 +102,23 @@ public interface FlowLongEngine {
     Instance startInstanceById(Long id);
 
     /**
-     * 根据流程定义ID，操作人ID启动流程实例
+     * 根据流程定义ID，创建人ID启动流程实例
      *
      * @param id       流程定义ID
-     * @param operator 操作人ID
+     * @param createBy 创建人ID
      * @return Instance 流程实例
      */
-    Instance startInstanceById(Long id, String operator);
+    Instance startInstanceById(Long id, String createBy);
 
     /**
-     * 根据流程定义ID，操作人ID，参数列表启动流程实例
+     * 根据流程定义ID，创建人ID，参数列表启动流程实例
      *
      * @param id       流程定义ID
-     * @param operator 操作人ID
+     * @param createBy 创建人ID
      * @param args     参数列表
      * @return Instance 流程实例
      */
-    Instance startInstanceById(Long id, String operator, Map<String, Object> args);
+    Instance startInstanceById(Long id, String createBy, Map<String, Object> args);
 
     /**
      * 根据流程名称启动流程实例
@@ -134,25 +138,25 @@ public interface FlowLongEngine {
     Instance startInstanceByName(String name, Integer version);
 
     /**
-     * 根据流程名称、版本号、操作人启动流程实例
+     * 根据流程名称、版本号、创建人启动流程实例
      *
      * @param name     流程定义名称
      * @param version  版本号
-     * @param operator 操作人
+     * @param createBy 创建人
      * @return Instance 流程实例
      */
-    Instance startInstanceByName(String name, Integer version, String operator);
+    Instance startInstanceByName(String name, Integer version, String createBy);
 
     /**
-     * 根据流程名称、版本号、操作人、参数列表启动流程实例
+     * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
      * @param name     流程定义名称
      * @param version  版本号
-     * @param operator 操作人
+     * @param createBy 创建人
      * @param args     参数列表
      * @return Instance 流程实例
      */
-    Instance startInstanceByName(String name, Integer version, String operator, Map<String, Object> args);
+    Instance startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args);
 
     /**
      * 根据父执行对象启动子流程实例
@@ -163,53 +167,53 @@ public interface FlowLongEngine {
     Instance startInstanceByExecution(Execution execution);
 
     /**
-     * 根据任务主键ID执行任务
+     * 根据任务ID执行任务
      *
-     * @param taskId 任务主键ID
+     * @param taskId 任务ID
      * @return List<Task> 任务集合
      */
     List<Task> executeTask(Long taskId);
 
     /**
-     * 根据任务主键ID，操作人ID执行任务
+     * 根据任务ID，创建人ID执行任务
      *
-     * @param taskId   任务主键ID
-     * @param operator 操作人主键ID
+     * @param taskId   任务ID
+     * @param createBy 创建人ID
      * @return List<Task> 任务集合
      */
-    List<Task> executeTask(Long taskId, String operator);
+    List<Task> executeTask(Long taskId, String createBy);
 
     /**
-     * 根据任务主键ID，操作人ID，参数列表执行任务
+     * 根据任务ID，创建人ID，参数列表执行任务
      *
-     * @param taskId   任务主键ID
-     * @param operator 操作人主键ID
+     * @param taskId   任务ID
+     * @param createBy 创建人ID
      * @param args     参数列表
      * @return List<Task> 任务集合
      */
-    List<Task> executeTask(Long taskId, String operator, Map<String, Object> args);
+    List<Task> executeTask(Long taskId, String createBy, Map<String, Object> args);
 
     /**
-     * 根据任务主键ID，操作人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
+     * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
      * 1、nodeName为null时，则跳转至上一步处理
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
      *
-     * @param taskId   任务主键ID
-     * @param operator 操作人主键ID
+     * @param taskId   任务ID
+     * @param createBy 创建人ID
      * @param args     参数列表
      * @param nodeName 跳转的节点名称
      * @return List<Task> 任务集合
      */
-    List<Task> executeAndJumpTask(Long taskId, String operator, Map<String, Object> args, String nodeName);
+    List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
 
     /**
-     * 根据流程实例ID，操作人ID，参数列表按照节点模型model创建新的自由任务
+     * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
      *
      * @param instanceId 流程实例id
-     * @param operator   操作人id
+     * @param createBy   创建人ID
      * @param args       参数列表
      * @param model      节点模型
      * @return List<Task> 任务集合
      */
-    List<Task> createFreeTask(Long instanceId, String operator, Map<String, Object> args, TaskModel model);
+    List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model);
 }

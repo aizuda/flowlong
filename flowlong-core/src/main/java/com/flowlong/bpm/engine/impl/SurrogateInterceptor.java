@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,10 @@ import com.flowlong.bpm.engine.entity.Task;
  * 这里是对新创建的任务通过添加参与者进行委托代理(即授权人、代理人都可处理任务)
  * 对于运行中且未处理的待办任务，可调用engine.task().addTaskActor方法
  * {@link TaskService#addTaskActor(String, String...)}
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0

@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,10 @@ import java.util.Map;
 /**
  * 流程实例运行业务类
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
@@ -63,20 +67,20 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      *
      * @param process  流程定义对象
-     * @param operator 操作人员ID
+     * @param createBy 创建人员ID
      * @param args     参数列表
      * @return
      */
     @Override
-    public Instance createInstance(Process process, String operator, Map<String, Object> args) {
-        return createInstance(process, operator, args, null, null);
+    public Instance createInstance(Process process, String createBy, Map<String, Object> args) {
+        return createInstance(process, createBy, args, null, null);
     }
 
     /**
      * 创建活动实例
      *
      * @param process        流程定义对象
-     * @param createBy       操作人员ID
+     * @param createBy       创建人员ID
      * @param args           参数列表
      * @param parentId       父流程实例ID
      * @param parentNodeName 父流程节点模型
@@ -217,10 +221,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 强制中止活动实例,并强制完成活动任务
      */
     @Override
-    public void terminate(String instanceId, String operator) {
+    public void terminate(String instanceId, String createBy) {
 //        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
 //        for (Task task : tasks) {
-//            taskService.complete(task.getId(), operator);
+//            taskService.complete(task.getId(), createBy);
 //        }
         Instance instance = instanceMapper.selectById(instanceId);
         HisInstance his = new HisInstance(instance, FlowState.termination);

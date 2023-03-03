@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +24,30 @@ import java.util.Map;
 /**
  * 流程实例运行业务类
  *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author hubin
  * @since 1.0
  */
 public interface RuntimeService {
 
     /**
-     * 根据流程、操作人员、父流程实例ID创建流程实例
+     * 根据流程、创建人员、父流程实例ID创建流程实例
      *
      * @param process  流程定义对象
-     * @param operator 操作人员ID
+     * @param createBy 创建人员ID
      * @param args     参数列表
      * @return Instance 活动流程实例对象
      */
-    Instance createInstance(Process process, String operator, Map<String, Object> args);
+    Instance createInstance(Process process, String createBy, Map<String, Object> args);
 
     /**
-     * 根据流程、操作人员、父流程实例ID创建流程实例
+     * 根据流程、创建人员、父流程实例ID创建流程实例
      *
      * @param process        流程定义对象
-     * @param createBy       操作人员ID
+     * @param createBy       创建人员ID
      * @param args           参数列表
      * @param parentId       父流程实例ID
      * @param parentNodeName 父流程节点模型
@@ -124,9 +128,9 @@ public interface RuntimeService {
      * 流程实例强制终止
      *
      * @param instanceId 流程实例id
-     * @param operator   处理人员
+     * @param createBy   处理人员
      */
-    void terminate(String instanceId, String operator);
+    void terminate(String instanceId, String createBy);
 
     /**
      * 更新流程实例

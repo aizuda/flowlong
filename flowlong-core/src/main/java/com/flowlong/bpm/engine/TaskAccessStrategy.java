@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,11 @@ import java.util.List;
 
 /**
  * 任务访问策略类
- * 用于判断给定的操作人员是否允许执行某个任务
+ * 用于判断给定的创建人员是否允许执行某个任务
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -28,11 +32,11 @@ import java.util.List;
 public interface TaskAccessStrategy {
 
     /**
-     * 根据操作人id、参与者集合判断是否允许访问所属任务
+     * 根据创建人ID、参与者集合判断是否允许访问所属任务
      *
-     * @param operator 操作人id
+     * @param createBy 创建人ID
      * @param actors   参与者列表 传递至该接口的实现类中的参与者都是为非空
      * @return boolean 是否允许访问
      */
-    boolean isAllowed(String operator, List<TaskActor> actors);
+    boolean isAllowed(String createBy, List<TaskActor> actors);
 }

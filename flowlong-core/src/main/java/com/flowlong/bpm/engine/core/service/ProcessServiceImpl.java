@@ -1,4 +1,4 @@
-/* Copyright 2023-2025 www.flowlong.com
+/* Copyright 2023-2025 jobob@qq.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,10 @@ import java.util.List;
 
 /**
  * 流程定义业务类
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
  *
  * @author hubin
  * @since 1.0
@@ -137,30 +141,38 @@ public class ProcessServiceImpl implements ProcessService {
      * @param input 定义输入流
      */
     @Override
-    public Long deploy(InputStream input) {
-        return deploy(input, null);
+    public Long deploy(InputStream input, boolean repeat) {
+        return deploy(input, null, repeat);
     }
 
     /**
-     * 根据流程定义xml的输入流解析为字节数组，保存至流程表 flw_process
+     * 根据InputStream输入流，部署流程定义
      *
-     * @param input    定义输入流
+     * @param input    流程定义输入流
      * @param createBy 创建人
+     * @param repeat   是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return
      */
     @Override
-    public Long deploy(InputStream input, String createBy) {
+    public Long deploy(InputStream input, String createBy, boolean repeat) {
         Assert.notNull(input);
         try {
-            byte[] bytes = StreamUtils.readBytes(input);
+            final byte[] bytes = StreamUtils.readBytes(input);
             ProcessModel processModel = ModelParser.parse(bytes);
             /**
              * 查询流程信息获取最后版本号
              */
-            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getVersion)
-                    .eq(Process::getName, processModel.getName()).orderByDesc(Process::getVersion));
+            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
+                    .select(Process::getId, Process::getVersion)
+                    .eq(Process::getName, processModel.getName())
+                    .orderByDesc(Process::getVersion));
             Integer version = 0;
             if (CollectionUtils.isNotEmpty(processList)) {
-                version = processList.get(0).getVersion();
+                Process process = processList.get(0);
+                if (!repeat) {
+                    return process.getId();
+                }
+                version = process.getVersion();
             }
             /**
              * 当前版本 +1 添加一条新的流程记录
