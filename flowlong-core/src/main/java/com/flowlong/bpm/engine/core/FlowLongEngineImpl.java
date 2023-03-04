@@ -20,7 +20,10 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.model.*;
+import com.flowlong.bpm.engine.model.NodeModel;
+import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.model.TaskModel;
+import com.flowlong.bpm.engine.model.TransitionModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -135,11 +138,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     protected Instance startProcess(Process process, String createBy, Map<String, Object> args) {
         Execution execution = this.execute(process, createBy, args, null, null);
-        if (process.getProcessModel() != null) {
-            StartModel start = process.getProcessModel().getStart();
-            Assert.notNull(start, "流程定义[name=" + process.getName() + ", version=" + process.getVersion() + "]没有开始节点");
-            start.execute(flowLongContext, execution);
-        }
+        // 执行启动模型
+        process.executeStartModel(flowLongContext, execution);
         return execution.getInstance();
     }
 
@@ -149,12 +149,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public Instance startInstanceByExecution(Execution execution) {
         Process process = execution.getProcess();
-        StartModel start = process.getProcessModel().getStart();
-        Assert.notNull(start, "流程定义[id=" + process.getId() + "]没有开始节点");
-
         Execution current = execute(process, execution.getCreateBy(), execution.getArgs(),
                 execution.getParentInstance().getId(), execution.getParentNodeName());
-        start.execute(flowLongContext, current);
+        process.executeStartModel(flowLongContext, current);
         return current.getInstance();
     }
 
@@ -205,12 +202,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (execution == null) {
             return Collections.emptyList();
         }
-        ProcessModel model = execution.getProcess().getProcessModel();
-        if (model != null) {
-            NodeModel nodeModel = model.getNode(execution.getTask().getTaskName());
-            //将执行对象交给该任务对应的节点模型执行
-            nodeModel.execute(flowLongContext, execution);
-        }
+        execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getTask().getTaskName());
         return execution.getTasks();
     }
 

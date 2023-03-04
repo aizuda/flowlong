@@ -14,13 +14,20 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.model.StartModel;
+import com.flowlong.bpm.engine.parser.ModelParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.function.Consumer;
 
 /**
  * 流程定义实体类
@@ -66,21 +73,55 @@ public class Process extends BaseEntity {
      * 流程定义xml
      */
     protected byte[] content;
-    /**
-     * 流程定义模型
-     */
-    @TableField(exist = false)
-    protected ProcessModel processModel;
 
     public void setFlowState(FlowState flowState) {
         this.state = flowState.getValue();
     }
 
-    public void setProcessModel(ProcessModel processModel) {
-        this.processModel = processModel;
-        this.name = processModel.getName();
-        this.displayName = processModel.getDisplayName();
-        this.instanceUrl = processModel.getInstanceUrl();
+    /**
+     * 模型解析
+     */
+    public ProcessModel getProcessModel() {
+        return null == this.content ? null : ModelParser.parse(this.content);
     }
 
+    /**
+     * 执行节点模型
+     *
+     * @param flowLongContext 流程引擎上下文
+     * @param execution       流程执行对象
+     * @param nodeName        节点名称
+     */
+    public void executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
+        this.processModelParser(processModel -> {
+            NodeModel nodeModel = processModel.getNode(nodeName);
+            Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
+            nodeModel.execute(flowLongContext, execution);
+        });
+    }
+
+    /**
+     * 执行开始模型
+     *
+     * @param flowLongContext 流程引擎上下文
+     * @param execution       流程执行对象
+     */
+    public void executeStartModel(FlowLongContext flowLongContext, Execution execution) {
+        this.processModelParser(processModel -> {
+            StartModel start = processModel.getStart();
+            Assert.notNull(start, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
+            start.execute(flowLongContext, execution);
+        });
+    }
+
+    /**
+     * 流程模型解析
+     *
+     * @param consumer 解析模型消费者
+     */
+    private void processModelParser(Consumer<ProcessModel> consumer) {
+        if (null != this.content) {
+            consumer.accept(ModelParser.parse(this.content));
+        }
+    }
 }

@@ -33,6 +33,6 @@ public class ForkParser extends AbstractNodeParser {
 
     @Override
     public NodeModel parse(Element element) {
-        return new ForkModel();
+        return this.parse(new ForkModel(), element);
     }
 }

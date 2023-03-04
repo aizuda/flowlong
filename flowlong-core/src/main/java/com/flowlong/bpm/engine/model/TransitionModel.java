@@ -15,8 +15,8 @@
 package com.flowlong.bpm.engine.model;
 
 import com.flowlong.bpm.engine.ModelInstance;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.handler.impl.StartSubProcessHandler;
 import lombok.Getter;
@@ -64,20 +64,24 @@ public class TransitionModel extends BaseElement implements ModelInstance {
      */
     private boolean enabled = false;
 
+    public TransitionModel enable() {
+        this.enabled = true;
+        return this;
+    }
+
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-        if (!enabled) {
-            return;
-        }
-        if (target instanceof TaskModel) {
-            //如果目标节点模型为TaskModel，则创建task
-            fire(new CreateTaskHandler((TaskModel) target), flowLongContext, execution);
-        } else if (target instanceof SubProcessModel) {
-            //如果目标节点模型为SubProcessModel，则启动子流程
-            fire(new StartSubProcessHandler((SubProcessModel) target), flowLongContext, execution);
-        } else {
-            //如果目标节点模型为其它控制类型，则继续由目标节点执行
-            target.execute(flowLongContext, execution);
+        if (enabled) {
+            if (target instanceof TaskModel) {
+                //如果目标节点模型为TaskModel，则创建task
+                fire(new CreateTaskHandler((TaskModel) target), flowLongContext, execution);
+            } else if (target instanceof SubProcessModel) {
+                //如果目标节点模型为SubProcessModel，则启动子流程
+                fire(new StartSubProcessHandler((SubProcessModel) target), flowLongContext, execution);
+            } else {
+                //如果目标节点模型为其它控制类型，则继续由目标节点执行
+                target.execute(flowLongContext, execution);
+            }
         }
     }
 }

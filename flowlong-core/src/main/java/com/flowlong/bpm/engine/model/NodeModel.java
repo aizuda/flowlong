@@ -14,13 +14,15 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.ModelInstance;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.exception.FlowLongException;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
+@Getter
+@Setter
 public abstract class NodeModel extends BaseElement implements ModelInstance {
     /**
      * 输入变迁集合
@@ -121,10 +125,7 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
      * @param execution 执行对象
      */
     protected void runOutTransition(FlowLongContext flowLongContext, Execution execution) {
-        for (TransitionModel tm : getOutputs()) {
-            tm.setEnabled(true);
-            tm.execute(flowLongContext, execution);
-        }
+        this.getOutputs().forEach(t -> t.enable().execute(flowLongContext, execution));
     }
 
     /**
@@ -161,34 +162,6 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
         }
     }
 
-    public List<TransitionModel> getInputs() {
-        return inputs;
-    }
-
-    public void setInputs(List<TransitionModel> inputs) {
-        this.inputs = inputs;
-    }
-
-    public List<TransitionModel> getOutputs() {
-        return outputs;
-    }
-
-    public void setOutputs(List<TransitionModel> outputs) {
-        this.outputs = outputs;
-    }
-
-    public String getLayout() {
-        return layout;
-    }
-
-    public void setLayout(String layout) {
-        this.layout = layout;
-    }
-
-    public String getPreInterceptors() {
-        return preInterceptors;
-    }
-
     public void setPreInterceptors(String preInterceptors) {
         this.preInterceptors = preInterceptors;
         if (StringUtils.isNotEmpty(preInterceptors)) {
@@ -199,10 +172,6 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
                 }
             }
         }
-    }
-
-    public String getPostInterceptors() {
-        return postInterceptors;
     }
 
     public void setPostInterceptors(String postInterceptors) {

@@ -33,6 +33,6 @@ public class JoinParser extends AbstractNodeParser {
 
     @Override
     public NodeModel parse(Element element) {
-        return new JoinModel();
+        return this.parse(new JoinModel(), element);
     }
 }

@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 流程定义业务类
@@ -91,26 +90,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public Process getProcessById(Long id) {
-        Process entity = null;
-        if (entity != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("obtain process[id={}] from cache.", id);
-            }
-            return entity;
-        }
-        entity = processMapper.selectById(id);
-        if (entity != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("obtain process[id={}] from database.", id);
-            }
-            // 如果Process对象的内容不为空就解析xml获取ProcessModel对象
-            // 设置流程对象的ProcessModel属性
-            if (Objects.nonNull(entity.getContent()) && entity.getContent().length > 0) {
-                ProcessModel processModel = ModelParser.parse(entity.getContent());
-                entity.setProcessModel(processModel);
-            }
-        }
-        return entity;
+        return processMapper.selectById(id);
     }
 
     /**
@@ -187,7 +167,9 @@ public class ProcessServiceImpl implements ProcessService {
             Process process = new Process();
             process.setVersion(version + 1);
             process.setFlowState(FlowState.active);
-            process.setProcessModel(processModel);
+            process.setName(processModel.getName());
+            process.setDisplayName(processModel.getDisplayName());
+            process.setInstanceUrl(processModel.getInstanceUrl());
             process.setContent(bytes);
             process.setCreateBy(createBy);
             process.setCreateTime(new Date());
@@ -207,14 +189,12 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public void redeploy(Long id, InputStream input) {
         Assert.notNull(input);
-        Process entity = processMapper.selectById(id);
-        Assert.notNull(entity);
+        Process process = processMapper.selectById(id);
+        Assert.notNull(process);
         try {
             byte[] bytes = StreamUtils.readBytes(input);
-            ProcessModel model = ModelParser.parse(bytes);
-            entity.setProcessModel(model);
-            entity.setContent(bytes);
-            processMapper.updateById(entity);
+            process.setContent(bytes);
+            processMapper.updateById(process);
         } catch (Exception e) {
             e.printStackTrace();
             log.error(e.getMessage());

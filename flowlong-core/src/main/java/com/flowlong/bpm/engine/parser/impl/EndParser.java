@@ -33,6 +33,6 @@ public class EndParser extends AbstractNodeParser {
 
     @Override
     public NodeModel parse(Element element) {
-        return new EndModel();
+        return this.parse(new EndModel(), element);
     }
 }

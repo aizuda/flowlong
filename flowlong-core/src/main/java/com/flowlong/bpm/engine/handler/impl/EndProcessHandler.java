@@ -22,8 +22,6 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
-import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.model.SubProcessModel;
 
 import java.util.List;
 
@@ -65,15 +63,10 @@ public class EndProcessHandler implements FlowLongHandler {
                 return;
             }
             Process process = engine.processService().getProcessById(parentInstance.getProcessId());
-            ProcessModel pm = process.getProcessModel();
-            if (pm == null) {
-                return;
-            }
-            SubProcessModel spm = (SubProcessModel) pm.getNode(instance.getParentNodeName());
             Execution newExecution = new Execution(engine, process, parentInstance, execution.getArgs());
             newExecution.setChildInstanceId(instance.getId());
             newExecution.setTask(execution.getTask());
-            spm.execute(flowLongContext, newExecution);
+            process.executeNodeModel(flowLongContext, newExecution, instance.getParentNodeName());
             /**
              * SubProcessModel执行结果的tasks合并到当前执行对象execution的tasks列表中
              */
