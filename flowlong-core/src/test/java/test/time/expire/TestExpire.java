@@ -4,8 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import test.TestFlowLong;
