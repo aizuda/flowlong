@@ -45,8 +45,8 @@ public class LogInterceptor implements FlowLongInterceptor {
                 buffer.append(",名称=").append(task.getDisplayName());
                 buffer.append(",创建时间=").append(task.getCreateTime());
                 buffer.append(",参与者={");
-                if (task.getActorIds() != null) {
-                    for (String actor : task.getActorIds()) {
+                if (task.actorIds() != null) {
+                    for (String actor : task.actorIds()) {
                         buffer.append(actor).append(";");
                     }
                 }

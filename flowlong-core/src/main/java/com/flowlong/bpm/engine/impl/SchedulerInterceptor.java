@@ -79,10 +79,10 @@ public class SchedulerInterceptor implements FlowLongInterceptor {
             entity.setModelName(task.getTaskName());
             entity.setJobType(jobType);
             if (jobType == JobEntity.JobType.REMINDER.ordinal()) {
-                TaskModel taskModel = task.getTaskModel();
-                if (taskModel != null && NumberUtils.isNumber(taskModel.getReminderRepeat())) {
-                    entity.setPeriod(Integer.parseInt(taskModel.getReminderRepeat()));
-                }
+//                TaskModel taskModel = task.getTaskModel();
+//                if (taskModel != null && NumberUtils.isNumber(taskModel.getReminderRepeat())) {
+//                    entity.setPeriod(Integer.parseInt(taskModel.getReminderRepeat()));
+//                }
             }
             if (scheduler == null) {
                 scheduler = flowLongContext.getScheduler();

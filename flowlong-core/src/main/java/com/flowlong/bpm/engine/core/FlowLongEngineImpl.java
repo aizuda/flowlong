@@ -278,7 +278,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         instance.setLastUpdateTime(new Date());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
-        if (!task.isMajor()) {
+        if (!task.major()) {
             return null;
         }
         Map<String, Object> instanceMaps = instance.getVariableMap();

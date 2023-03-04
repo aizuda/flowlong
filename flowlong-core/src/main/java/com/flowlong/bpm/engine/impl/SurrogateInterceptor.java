@@ -42,10 +42,10 @@ public class SurrogateInterceptor implements FlowLongInterceptor {
     public void intercept(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
         for (Task task : execution.getTasks()) {
-            if (task.getActorIds() == null) {
+            if (task.actorIds() == null) {
                 continue;
             }
-            for (String actor : task.getActorIds()) {
+            for (String actor : task.actorIds()) {
                 if (StringUtils.isEmpty(actor)) {
                     continue;
                 }

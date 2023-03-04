@@ -135,8 +135,10 @@ public class ProcessModel extends BaseElement {
      */
     public NodeModel getNode(String nodeName) {
         for (NodeModel node : nodes) {
-            if (node.getName().equals(nodeName)) {
-                return node;
+            if (StringUtils.isNotEmpty(node.getName())) {
+                if (node.getName().equals(nodeName)) {
+                    return node;
+                }
             }
         }
         return null;

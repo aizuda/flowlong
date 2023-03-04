@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.model.TaskModel;
@@ -86,36 +85,16 @@ public class Task extends BaseEntity {
      * 任务完成时间
      */
     protected Date finishTime;
-    /**
-     * 任务参与者列表
-     */
-    @TableField(exist = false)
-    protected String[] actorIds;
-    /**
-     * 保持模型对象
-     */
-    @TableField(exist = false)
-    protected TaskModel taskModel;
 
-    public Task() {
-
-    }
-
-    public boolean isMajor() {
+    public boolean major() {
         return this.taskType == TaskModel.TaskType.Major.ordinal();
     }
 
-    public String[] getActorIds() {
-        if (actorIds == null) {
-            String actorStr = (String) getVariableMap().get(KEY_ACTOR);
-            if (actorStr != null) {
-                actorIds = actorStr.split(",");
-            }
-        }
-        return actorIds;
+    public String[] actorIds() {
+        return null;
     }
 
-    public Map<String, Object> getVariableMap() {
+    public Map<String, Object> variableMap() {
         Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
