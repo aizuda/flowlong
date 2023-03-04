@@ -24,6 +24,8 @@ import java.io.InputStream;
  */
 public abstract class TestFlowLong {
 
+    protected Long processId;
+
     @Autowired
     protected FlowLongEngine flowLongEngine;
 
