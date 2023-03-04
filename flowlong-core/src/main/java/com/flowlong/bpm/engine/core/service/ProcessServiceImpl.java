@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 流程定义业务类
@@ -101,6 +102,12 @@ public class ProcessServiceImpl implements ProcessService {
         if (entity != null) {
             if (log.isDebugEnabled()) {
                 log.debug("obtain process[id={}] from database.", id);
+            }
+            // 如果Process对象的内容不为空就解析xml获取ProcessModel对象
+            // 设置流程对象的ProcessModel属性
+            if (Objects.nonNull(entity.getContent()) && entity.getContent().length > 0) {
+                ProcessModel processModel = ModelParser.parse(entity.getContent());
+                entity.setProcessModel(processModel);
             }
         }
         return entity;
