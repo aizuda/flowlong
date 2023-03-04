@@ -6,5 +6,12 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:component-scan base-package="com.flowlong.bpm.engine.core.service"/>
-    <context:component-scan base-package="test.config"/>
+    <context:component-scan base-package="test.mysql.config"/>
+    <context:property-placeholder location="jdbc-mysql.properties"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
+        <property name="url" value="${jdbc.url}"></property>
+        <property name="username" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
 </beans>
