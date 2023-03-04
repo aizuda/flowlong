@@ -14,10 +14,7 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.entity.HisInstance;
-import com.flowlong.bpm.engine.entity.HisTask;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.*;
 
 import java.util.List;
 
@@ -70,7 +67,7 @@ public interface QueryService {
      * 通过流程实例ID获取任务列表
      *
      * @param instanceId 流程实例ID
-     * @return
+     * @return 任务对象列表
      */
     List<Task> getTasksByInstanceId(Long instanceId);
 
@@ -82,7 +79,7 @@ public interface QueryService {
      * @param taskId 任务id
      * @return String[] 参与者id数组
      */
-    String[] getTaskActorsByTaskId(Long taskId);
+    List<TaskActor> getTaskActorsByTaskId(Long taskId);
 
     /**
      * 根据任务ID获取历史任务参与者数组
@@ -90,6 +87,6 @@ public interface QueryService {
      * @param taskId 历史任务id
      * @return String[] 历史参与者id数组
      */
-    String[] getHistoryTaskActorsByTaskId(Long taskId);
+    List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
 
 }

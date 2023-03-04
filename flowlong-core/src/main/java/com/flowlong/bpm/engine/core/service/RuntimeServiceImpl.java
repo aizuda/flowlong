@@ -195,7 +195,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void complete(Long instanceId) {
         HisInstance his = new HisInstance();
         his.setId(instanceId);
-        his.setInstanceState(FlowState.finish);
+        his.setInstanceState(FlowState.finish.getValue());
         his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         this.instanceNotify(TaskListener.EVENT_COMPLETE, his);

@@ -84,30 +84,13 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public String[] getTaskActorsByTaskId(Long taskId) {
-        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
-        if (actors == null || actors.isEmpty()) {
-            return null;
-        }
-        String[] actorIds = new String[actors.size()];
-        for (int i = 0; i < actors.size(); i++) {
-            TaskActor ta = actors.get(i);
-            actorIds[i] = ta.getActorId();
-        }
-        return actorIds;
+    public List<TaskActor> getTaskActorsByTaskId(Long taskId) {
+        return taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
     }
 
     @Override
-    public String[] getHistoryTaskActorsByTaskId(Long taskId) {
-        List<HisTaskActor> actors = hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery().eq(HisTaskActor::getTaskId, taskId));
-        if (actors == null || actors.isEmpty()) {
-            return null;
-        }
-        String[] actorIds = new String[actors.size()];
-        for (int i = 0; i < actors.size(); i++) {
-            HisTaskActor ta = actors.get(i);
-            actorIds[i] = ta.getActorId();
-        }
-        return actorIds;
+    public List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
+        return hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery().eq(HisTaskActor::getTaskId, taskId));
     }
+
 }

@@ -12,8 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.mysql.subprocess;
-
+package test.subprocess;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
@@ -27,23 +26,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 测试串行子流程
+ * 测试并行子流程
  */
-public class TestSerialSubProcess extends MysqlTest {
+public class TestParallelSubProcess extends MysqlTest {
 
     @Test
     public void test() {
         // 创建子流程和并行子流程
         Long childProcessId = this.deployByResource("test/subprocess/child.long");
         System.out.println("子流程ID = " + childProcessId);
-        Long serialChildProcessId = this.deployByResource("test/subprocess/serial-subprocess.long");
-        System.out.println("串行行子流程ID = " + serialChildProcessId);
+        Long parallelChildProcessId = this.deployByResource("test/subprocess/parallel-subprocess.long");
+        System.out.println("并行子流程ID = " + parallelChildProcessId);
 
         // 设置工作流任务节点 operator 属性
         Map<String, Object> args = new HashMap<>(2);
         args.put("task1.operator", "1");
         // 创建流程实例
-        Instance instance = flowLongEngine.startInstanceById(serialChildProcessId, "createUserName", args);
+        Instance instance = flowLongEngine.startInstanceById(parallelChildProcessId, "createUserName", args);
         Long id = instance.getId();
         System.out.println("流程实例ID = " + id);
         List<Task> tasks = flowLongEngine.queryService().getTasksByInstanceId(id);
