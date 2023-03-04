@@ -58,7 +58,6 @@ public class HisTask extends Task {
         this.taskType = task.getTaskType();
         this.expireTime = task.getExpireTime();
         this.actionUrl = task.getActionUrl();
-        this.actorIds = task.getActorIds();
         this.parentTaskId = task.getParentTaskId();
         this.variable = task.getVariable();
         this.performType = task.getPerformType();

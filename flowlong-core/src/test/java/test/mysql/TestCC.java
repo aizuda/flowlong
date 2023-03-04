@@ -16,9 +16,11 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,5 +45,13 @@ public class TestCC extends MysqlTest {
         runtimeService.createCCInstance(instance.getId(), "test", actorId);
         runtimeService.updateCCStatus(instance.getId(), actorId);
         runtimeService.deleteCCInstance(instance.getId(), actorId);
+    }
+
+    @Test
+    public void activeTasksByInstanceId() {
+        List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(1631867495096328191L);
+        if (null != taskList) {
+            taskList.forEach(t -> System.out.println(t.getTaskName()));
+        }
     }
 }

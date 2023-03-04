@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
@@ -30,7 +29,6 @@ import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.handler.impl.JacksonHandler;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.CustomModel;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -105,13 +103,13 @@ public class TaskServiceImpl implements TaskService {
         history.setFinishTime(new Date());
         history.setTaskState(FlowState.finish);
         history.setCreateBy(createBy);
-        if (history.getActorIds() == null) {
+        if (history.actorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
             String[] actorIds = new String[actors.size()];
             for (int i = 0; i < actors.size(); i++) {
                 actorIds[i] = actors.get(i).getActorId();
             }
-            history.setActorIds(actorIds);
+            // history.setActorIds(actorIds);
         }
         hisTaskMapper.insert(history);
         taskMapper.deleteById(task);
@@ -210,7 +208,7 @@ public class TaskServiceImpl implements TaskService {
     public void addTaskActor(Long taskId, Integer performType, String... actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!task.isMajor()) {
+        if (!task.major()) {
             return;
         }
         if (performType == null) {
@@ -222,7 +220,7 @@ public class TaskServiceImpl implements TaskService {
         switch (performType) {
             case 0:
                 assignTask(task.getId(), actors);
-                Map<String, Object> data = task.getVariableMap();
+                Map<String, Object> data = task.variableMap();
                 String oldActor = (String) data.get(Task.KEY_ACTOR);
                 data.put(Task.KEY_ACTOR, oldActor + "," + StringUtils.getStringByArray(actors));
                 task.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
@@ -234,7 +232,7 @@ public class TaskServiceImpl implements TaskService {
                         Task newTask = (Task) task.clone();
                         newTask.setCreateTime(new Date());
                         newTask.setCreateBy(actor);
-                        Map<String, Object> taskData = task.getVariableMap();
+                        Map<String, Object> taskData = task.variableMap();
                         taskData.put(Task.KEY_ACTOR, actor);
                         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
                         taskMapper.insert(newTask);
@@ -433,7 +431,7 @@ public class TaskServiceImpl implements TaskService {
             task.setTaskType(TaskModel.TaskType.Aidant.ordinal());
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
-        task.setTaskModel(model);
+//        task.setTaskModel(model);
         return task;
     }
 
@@ -444,7 +442,7 @@ public class TaskServiceImpl implements TaskService {
         task.setPerformType(TaskModel.PerformType.ANY.ordinal());
         taskMapper.insert(task);
         assignTask(task.getId(), actors);
-        task.setActorIds(actors);
+//        task.setActorIds(actors);
         return task;
     }
 
@@ -544,8 +542,8 @@ public class TaskServiceImpl implements TaskService {
         if(actors == null || actors.length == 0) {
             return;
         }
-        if(task.isMajor()) {
-            Map<String, Object> taskData = task.getVariableMap();
+        if(task.major()) {
+            Map<String, Object> taskData = task.variableMap();
             String actorStr = (String)taskData.get(Task.KEY_ACTOR);
             if(StringUtils.isNotEmpty(actorStr)) {
                 String[] actorArray = actorStr.split(",");
