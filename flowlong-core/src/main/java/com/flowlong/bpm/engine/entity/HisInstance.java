@@ -46,10 +46,6 @@ public class HisInstance extends Instance {
      */
     protected Date endTime;
 
-    public void setInstanceState(FlowState flowState) {
-        this.instanceState = flowState.getValue();
-    }
-
     public HisInstance() {
 
     }
