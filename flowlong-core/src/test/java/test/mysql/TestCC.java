@@ -1,43 +1,27 @@
-package test;
+package test.mysql;
 
-import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.entity.Instance;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import test.TestFlowLong;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
-public class MysqlTest {
-
-    @Autowired
-    private FlowLongEngine flowLongEngine;
-    /**
-     * 流程ID
-     */
-    protected Long processId;
-
-    protected void deployByResource(String resourceName) {
-        this.processId = flowLongEngine.processService().deployByResource(resourceName, false);
-    }
-
-    @BeforeEach
-    public void before() {
-        this.deployByResource("test/cc/process.long");
-    }
+public class TestCC extends TestFlowLong {
 
     /**
      * 抄送测试
      */
     @Test
     public void testCc() {
+        Long processId = this.deployByResource("test/cc/process.long");
+        System.out.println("流程定义ID = " + processId);
         Map<String, Object> args = new HashMap<>();
         // 设置工作流任务节点 assignee 属性
         args.put("task1.assignee", "1");
@@ -49,5 +33,4 @@ public class MysqlTest {
         runtimeService.updateCCStatus(instance.getId(), actorId);
         runtimeService.deleteCCInstance(instance.getId(), actorId);
     }
-
 }

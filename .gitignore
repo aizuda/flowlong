@@ -17,3 +17,4 @@
 .settings/
 bin/
 *.log
+jdbc.properties
