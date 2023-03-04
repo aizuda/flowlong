@@ -59,9 +59,11 @@ public class TaskServiceImpl implements TaskService {
     private TaskActorMapper taskActorMapper;
     private HisTaskMapper hisTaskMapper;
 
+    private HisTaskActorMapper hisTaskActorMapper;
+
     public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy,
                            @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper,
-                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper) {
+                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper,HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
@@ -69,6 +71,7 @@ public class TaskServiceImpl implements TaskService {
         this.taskMapper = taskMapper;
         this.taskActorMapper = taskActorMapper;
         this.hisTaskMapper = hisTaskMapper;
+        this.hisTaskActorMapper = hisTaskActorMapper;
     }
 
     /**
@@ -105,13 +108,22 @@ public class TaskServiceImpl implements TaskService {
         history.setCreateBy(createBy);
         if (history.actorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+            List<HisTaskActor> hisTaskActors = new ArrayList<>();
             String[] actorIds = new String[actors.size()];
+            Long[] ids = new Long[actors.size()];
             for (int i = 0; i < actors.size(); i++) {
-                actorIds[i] = actors.get(i).getActorId();
+                TaskActor actor = actors.get(i);
+                actorIds[i] = actor.getActorId();
+                ids[i] = actor.getId();
+                hisTaskActors.add(new HisTaskActor(actors.get(i)));
             }
+            hisTaskMapper.insert(history);
             // history.setActorIds(actorIds);
+            hisTaskActorMapper.insertBatchSomeColumn(hisTaskActors);
+            taskActorMapper.deleteBatchIds(Arrays.asList(ids));
+        }else{
+            hisTaskMapper.insert(history);
         }
-        hisTaskMapper.insert(history);
         taskMapper.deleteById(task);
         if (null != taskListener) {
             taskListener.notify(TaskListener.EVENT_COMPLETE, history);
@@ -421,6 +433,7 @@ public class TaskServiceImpl implements TaskService {
      */
     private Task createTaskBase(TaskModel model, Execution execution) {
         Task task = new Task();
+        task.setCreateBy(execution.getCreateBy());
         task.setInstanceId(execution.getInstance().getId());
         task.setTaskName(model.getName());
         task.setDisplayName(model.getDisplayName());
