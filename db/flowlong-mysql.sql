@@ -52,8 +52,8 @@ DROP TABLE IF EXISTS `flw_his_task`;
 CREATE TABLE `flw_his_task`  (
                                  `id` bigint NOT NULL COMMENT '主键ID',
                                  `tenant_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '租户ID',
-                                 `create_by` timestamp NULL DEFAULT NULL COMMENT '处理人',
-                                 `create_time` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '创建时间',
+                                 `create_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '处理人',
+                                 `create_time` timestamp NULL DEFAULT NULL COMMENT '创建时间',
                                  `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                  `parent_task_id` bigint NULL DEFAULT NULL COMMENT '父任务ID',
                                  `task_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '任务名称',
