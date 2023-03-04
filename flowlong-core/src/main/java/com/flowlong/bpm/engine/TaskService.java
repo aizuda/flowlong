@@ -175,4 +175,11 @@ public interface TaskService {
      * @return
      */
     TaskModel getTaskModel(String taskId);
+
+    /**
+     * 对指定的任务id删除参与者
+     * @param taskId 任务id
+     * @param actors 参与者
+     */
+    void removeTaskActor(Long taskId, String... actors);
 }

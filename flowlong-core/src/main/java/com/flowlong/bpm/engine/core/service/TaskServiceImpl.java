@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
@@ -29,6 +30,7 @@ import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.handler.impl.JacksonHandler;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.CustomModel;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -532,6 +534,47 @@ public class TaskServiceImpl implements TaskService {
             return true;
         }
         return !StringUtils.isEmpty(createBy) && taskAccessStrategy.isAllowed(createBy, actors);
+    }
+
+
+    @Override
+    public void removeTaskActor(Long taskId, String... actors) {
+        Task task = taskMapper.selectById(taskId);
+        Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
+        if(actors == null || actors.length == 0) {
+            return;
+        }
+        if(task.isMajor()) {
+            Map<String, Object> taskData = task.getVariableMap();
+            String actorStr = (String)taskData.get(Task.KEY_ACTOR);
+            if(StringUtils.isNotEmpty(actorStr)) {
+                String[] actorArray = actorStr.split(",");
+                StringBuilder newActor = new StringBuilder(actorStr.length());
+                boolean isMatch;
+                for(String actor : actorArray) {
+                    isMatch = false;
+                    if(StringUtils.isEmpty(actor)) {
+                        continue;
+                    }
+                    for(String removeActor : actors) {
+                        if(actor.equals(removeActor)) {
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                    if(isMatch) {
+                        continue;
+                    }
+                    newActor.append(actor).append(",");
+                }
+                if (newActor.length() > 0) {
+                    newActor.deleteCharAt(newActor.length() - 1);
+                }
+                taskData.put(Task.KEY_ACTOR, newActor.toString());
+                task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
+                taskMapper.updateById(task);
+            }
+        }
     }
 
 }
