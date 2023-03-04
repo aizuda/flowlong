@@ -12,20 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test;
+package test.mysql;
 
-import com.flowlong.bpm.engine.FlowLongEngine;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import test.TestFlowLong;
 
 /**
- * 测试流程引擎抽象类
+ * Mysql 测试基类
  */
-public abstract class TestFlowLong {
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
+public class MysqlTest extends TestFlowLong {
 
-    @Autowired
-    protected FlowLongEngine flowLongEngine;
-
-    protected Long deployByResource(String resourceName) {
-        return flowLongEngine.processService().deployByResource(resourceName, false);
-    }
 }
