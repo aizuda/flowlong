@@ -15,12 +15,10 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.Serializable;
 
 /**
  * 抄送实例实体类
@@ -54,7 +52,7 @@ public class CCInstance extends BaseEntity {
      */
     protected String finishTime;
 
-    public void setFlowState(FlowState flowState) {
-        this.state = flowState.getValue();
+    public void setInstanceState(InstanceState instanceState) {
+        this.state = instanceState.getValue();
     }
 }

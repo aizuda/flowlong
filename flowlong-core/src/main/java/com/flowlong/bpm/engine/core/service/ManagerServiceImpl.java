@@ -16,8 +16,7 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.flowlong.bpm.engine.ManagerService;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Surrogate;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public void saveOrUpdate(Surrogate surrogate) {
         Assert.notNull(surrogate);
-        surrogate.setState(FlowState.active);
+        surrogate.setState(InstanceState.active);
         if (null == surrogate.getId()) {
             surrogateMapper.insert(surrogate);
         } else {

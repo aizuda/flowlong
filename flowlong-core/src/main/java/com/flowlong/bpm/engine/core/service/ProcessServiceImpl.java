@@ -19,7 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.StreamUtils;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
 import com.flowlong.bpm.engine.entity.HisInstance;
@@ -209,7 +209,7 @@ public class ProcessServiceImpl implements ProcessService {
     public void undeploy(Long id) {
         Process process = new Process();
         process.setId(id);
-        process.setFlowState(FlowState.finish);
+        process.setFlowState(FlowState.inactive);
         processMapper.updateById(process);
     }
 
