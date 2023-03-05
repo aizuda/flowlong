@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process  name="forkjoin" displayName="测试分支合并">
+	<start name="start1" displayName="start1" layout="40,140,100,50">
+		<transition name="transition1" to="fork1" g="58,140;88,140;88,140;85,140;85,140;115,140"></transition>
+	</start>
+	<fork name="fork1" displayName="fork1" layout="140,140,100,50">
+		<transition name="transition3" to="task1" g="165,140;200,140;200,-20;230,-20"></transition>
+	<transition name="transition4" to="task2" g="165,140;230,140"></transition>
+	<transition name="transition5" to="task3" g="165,140;200,140;200,340;230,340"></transition>
+	</fork>
+	<task name="task1" displayName="task1" layout="280,-20,100,50" assignee="task1.operator" performType="ANY">
+		<transition name="transition6" to="join1" g="330,-20;661,-20;661,116"></transition>
+	</task>
+	<join name="join1" displayName="join1" layout="660,140,100,50">
+		<transition name="transition2" to="end1" g="685,140;882,140"></transition>
+	</join>
+	<end name="end1" displayName="end1" layout="900,140,100,50">
+		</end>
+	<task name="task2" displayName="task2" layout="280,140,100,50" assignee="task2.operator" performType="ANY">
+		<transition name="transition7" to="join2" g="330,140;425,140;425,240;455,240"></transition>
+	</task>
+	<join name="join2" displayName="join2" layout="480,240,100,50">
+		<transition name="transition9" to="join1" g="505,240;605,240;605,140;635,140"></transition>
+	</join>
+	<task name="task3" displayName="task3" layout="280,340,100,50" assignee="task3.operator" performType="ANY">
+		<transition name="transition8" to="join2" g="330,340;425,340;425,240;455,240"></transition>
+	</task>
+</process>
