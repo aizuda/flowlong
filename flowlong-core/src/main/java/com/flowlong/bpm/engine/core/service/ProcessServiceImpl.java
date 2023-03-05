@@ -203,14 +203,17 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     /**
-     * 根据processId卸载流程
+     * 卸载指定的定义流程，更新为未启用状态
+     *
+     * @param id 流程定义ID
+     * @return
      */
     @Override
-    public void undeploy(Long id) {
+    public boolean undeploy(Long id) {
         Process process = new Process();
         process.setId(id);
         process.setFlowState(FlowState.inactive);
-        processMapper.updateById(process);
+        return processMapper.updateById(process) > 0;
     }
 
     /**

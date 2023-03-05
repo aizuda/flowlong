@@ -12,19 +12,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.mysql.handler;
+package test.handler;
 
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.DecisionHandler;
 
 /**
- * TaskHandler
+ * TaskDecisionHandler
  *
  * @author yeluod
- * @since 1.0
  **/
-public class TaskHandler implements DecisionHandler {
+public class TaskDecisionHandler implements DecisionHandler {
 
     @Override
     public String decide(FlowLongContext context, Execution execution) {

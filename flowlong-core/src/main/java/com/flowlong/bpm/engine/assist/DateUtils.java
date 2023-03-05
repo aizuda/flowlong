@@ -14,8 +14,9 @@
  */
 package com.flowlong.bpm.engine.assist;
 
-import org.joda.time.DateTime;
-
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
 
@@ -38,13 +39,27 @@ public class DateUtils {
      * @return
      */
     public static String getTime() {
-        return new DateTime().toString(DATE_FORMAT_DEFAULT);
+        return localDateTimeFormat(LocalDateTime.now());
+    }
+
+    /**
+     * 日期 Date 转为 LocalDateTime
+     *
+     * @param date
+     * @return java.time.LocalDateTime;
+     */
+    public static LocalDateTime dateToLocalDateTime(Date date) {
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private static String localDateTimeFormat(LocalDateTime localDateTime) {
+        return localDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_DEFAULT));
     }
 
     /**
      * 解析日期时间对象
      *
-     * @param date
+     * @param date 日期类型对象
      * @return
      */
     public static String parseTime(Object date) {
@@ -52,7 +67,7 @@ public class DateUtils {
             return null;
         }
         if (date instanceof Date) {
-            return new DateTime(date).toString(DATE_FORMAT_DEFAULT);
+            return localDateTimeFormat(dateToLocalDateTime((Date) date));
         }
         if (date instanceof String) {
             return String.valueOf(date);

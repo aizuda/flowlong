@@ -10,10 +10,10 @@ import lombok.extern.slf4j.Slf4j;
  * Interceptor for test
  *
  * @author august
- * @since 2023-03-05
  */
 @Slf4j
 public class LocalTaskInterceptor implements FlowLongInterceptor {
+
     @Override
     public void intercept(FlowLongContext flowLongContext, Execution execution) {
         if (log.isInfoEnabled()) {

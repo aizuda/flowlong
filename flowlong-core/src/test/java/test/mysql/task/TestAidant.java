@@ -16,6 +16,7 @@ package test.mysql.task;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -24,13 +25,19 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 协办流程测试
+ *
  * @author liulf
- * @since 1.0
  */
 public class TestAidant extends MysqlTest {
+
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/aidant.long");
+    }
+
     @Test
     public void testAidantTask() {
-        Long processId = this.deployByResource("test/task/aidant.long");
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
         Instance instance = flowLongEngine.startInstanceByName("aidant", 1, "creteUser", args);

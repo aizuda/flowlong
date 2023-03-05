@@ -16,6 +16,8 @@ package test.mysql.custom;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -23,11 +25,16 @@ import java.util.List;
 
 public class TestCustomHandler extends MysqlTest {
 
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/custom/customHandler.long");
+    }
+
     @Test
     public void test() {
-        Long processId = deployByResource("test/custom/customHandler.long");
         Instance instance = flowLongEngine.startInstanceById(processId);
-        System.out.println("instance=" + instance);
+        Assertions.assertNotNull(instance);
+
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         for (Task task : tasks) {
             flowLongEngine.executeTask(task.getId());

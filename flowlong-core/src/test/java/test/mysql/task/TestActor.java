@@ -17,6 +17,7 @@ package test.mysql.task;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.TaskModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -25,29 +26,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 测试流程参与者
+ *
  * @author shen tao tao
- * @date 2023/3/4 11:40
- * @since 1.0
  */
 public class TestActor extends MysqlTest {
 
-    @Test
-    void test() {
-        Task task = createTask();
-        flowLongEngine.taskService().addTaskActor(task.getId(), 0, "test1", "test2");
-        flowLongEngine.taskService().removeTaskActor(task.getId(), "test2");
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/simple.long");
     }
 
-    private Task createTask() {
+    @Test
+    void test() {
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.operator", new String[]{"1"});
-        Long processId = this.deployByResource("test/task/simple.long");
+        args.put("task1.assignee", new String[]{"1"});
         Instance instance = flowLongEngine.startInstanceById(processId, "test0", args);
         System.out.println("instance=" + instance);
         TaskModel tm1 = new TaskModel();
         tm1.setName("task1");
         tm1.setDisplayName("任务1");
         List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), "test0", args, tm1);
-        return tasks.get(0);
+        Task task = tasks.get(0);
+        flowLongEngine.taskService().addTaskActor(task.getId(), 0, "test1", "test2");
+        flowLongEngine.taskService().removeTaskActor(task.getId(), "test2");
     }
 }

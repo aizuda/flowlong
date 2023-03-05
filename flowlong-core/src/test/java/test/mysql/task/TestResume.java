@@ -18,6 +18,7 @@ import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -35,25 +36,27 @@ import java.util.Map;
 @Slf4j
 public class TestResume extends MysqlTest {
 
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/resume.long");
+    }
+
     @Test
     public void test() {
-        String createBy = "he.wenyao"; // 创建者
-        InputStream resourceAsStream = StreamUtils.getResourceAsStream("test/task/resume.long");
-        Long processId = this.deploy(resourceAsStream, createBy, true);
         log.info("流程定义ID = {}", processId);
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.operator", new String[]{"1"});
+        args.put("task1.assignee", new String[]{"1"});
         // 启动流程，生成一个实例
-        Instance ins = this.flowLongEngine.startInstanceByName("resume", 1, createBy, args);
+        Instance ins = this.flowLongEngine.startInstanceByName("resume", 1, testUser1, args);
         // 获取活跃的任务
         List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
         // 执行任务
         tasks.forEach(t -> {
-            this.flowLongEngine.executeTask(t.getId(),createBy);
+            this.flowLongEngine.executeTask(t.getId(),testUser1);
         });
         // 唤醒已经被执行过的任务
         tasks.forEach(t -> {
-            this.flowLongEngine.taskService().resume(t.getId(), createBy);
+            this.flowLongEngine.taskService().resume(t.getId(), testUser1);
         });
     }
 }

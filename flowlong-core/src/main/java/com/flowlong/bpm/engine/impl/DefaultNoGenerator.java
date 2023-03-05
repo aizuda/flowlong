@@ -16,8 +16,9 @@ package com.flowlong.bpm.engine.impl;
 
 import com.flowlong.bpm.engine.NoGenerator;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import org.joda.time.DateTime;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 /**
@@ -35,7 +36,7 @@ public class DefaultNoGenerator implements NoGenerator {
 
     @Override
     public String generate(ProcessModel model) {
-        String time = new DateTime().toString("yyyyMMdd-HH:mm:ss-SSS");
+        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss-SSS"));
         return time + "-" + RandomHolder.RANDOM.nextInt(1000);
     }
 

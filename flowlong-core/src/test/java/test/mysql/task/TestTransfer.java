@@ -23,10 +23,9 @@ import test.mysql.MysqlTest;
 import java.util.List;
 
 /**
- * @Description: TestTransfer
+ * 转派任务测试
+ *
  * @Author: Binfeng.Yan
- * @Date: 2023/3/4 16:26
- * @Version: 1.0
  */
 public class TestTransfer extends MysqlTest {
 
@@ -35,12 +34,6 @@ public class TestTransfer extends MysqlTest {
 		processId = this.deployByResource("test/task/transfer.long");
 	}
 
-	/**
-	 * Description: 转派任务
-	 * @return void
-	 * @author Binfeng.Yan
-	 * @date 2023/3/4 17:10
-	 */
 	@Test
 	public void test() {
 		Instance instance = flowLongEngine.startInstanceByName("transfer", 1);
@@ -51,6 +44,5 @@ public class TestTransfer extends MysqlTest {
 			flowLongEngine.taskService().complete(task.getId());
 		}
 	}
-
 
 }

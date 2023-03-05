@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 /**
+ * 测试任务job执行后的回调类
  *
  * @author wangzi
  */

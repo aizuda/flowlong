@@ -111,11 +111,11 @@ public interface ProcessService {
     void redeploy(Long id, InputStream input);
 
     /**
-     * 卸载指定的流程定义，只更新状态
+     * 卸载指定的定义流程，更新为未启用状态
      *
-     * @param id 流程定义id
+     * @param id 流程定义ID
      */
-    void undeploy(Long id);
+    boolean undeploy(Long id);
 
     /**
      * 谨慎使用.数据恢复非常痛苦，你懂得~~

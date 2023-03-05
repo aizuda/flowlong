@@ -14,23 +14,22 @@ import java.util.List;
  * Test Interceptor
  *
  * @author august
- * @since 2023-03-05
  */
 @Slf4j
 public class TestLocalInterceptor extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/cc/process.long");
+        processId = this.deployByResource("test/cc.long");
     }
 
     @Test
     public void test() {
-        Instance instance = flowLongEngine.startInstanceById(processId, "2");
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
         QueryService queryService = flowLongEngine.queryService();
         List<Task> tasks = queryService.getActiveTasksByInstanceId(instance.getId());
         for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getId(), "2");
+            flowLongEngine.executeTask(task.getId(), testUser1);
         }
     }
 }

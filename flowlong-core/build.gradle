@@ -4,7 +4,6 @@ dependencies {
     api project(":flowlong-annotation")
 
     implementation 'commons-lang:commons-lang:2.5'
-    implementation 'joda-time:joda-time:2.3'
 
     compileOnly("org.springframework.boot:spring-boot-starter-json")
     compileOnly("org.springframework:spring-context")

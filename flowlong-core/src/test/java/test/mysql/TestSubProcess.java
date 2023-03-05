@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 测试子流程
  *
  * @author ximu
  */
@@ -22,9 +23,9 @@ public class TestSubProcess extends MysqlTest {
         Long parallelChildProcessId = this.deployByResource("test/subprocess/parallel-subprocess.long");
         System.out.println("并行子流程ID = " + parallelChildProcessId);
 
-        // 设置工作流任务节点 operator 属性
+        // 设置工作流任务节点 assignee 属性
         Map<String, Object> args = new HashMap<>(2);
-        args.put("task1.operator", "1");
+        args.put("task1.assignee", "1");
         // 创建流程实例
         Instance instance = flowLongEngine.startInstanceById(parallelChildProcessId, "createUserName", args);
         Long id = instance.getId();
@@ -45,9 +46,9 @@ public class TestSubProcess extends MysqlTest {
         Long serialChildProcessId = this.deployByResource("test/subprocess/serial-subprocess.long");
         System.out.println("串行行子流程ID = " + serialChildProcessId);
 
-        // 设置工作流任务节点 operator 属性
+        // 设置工作流任务节点 assignee 属性
         Map<String, Object> args = new HashMap<>(2);
-        args.put("task1.operator", "1");
+        args.put("task1.assignee", "1");
         // 创建流程实例
         Instance instance = flowLongEngine.startInstanceById(serialChildProcessId, "createUserName", args);
         Long id = instance.getId();

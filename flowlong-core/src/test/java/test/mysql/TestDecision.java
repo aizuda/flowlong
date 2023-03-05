@@ -27,7 +27,6 @@ import java.util.Map;
  * TestDecision
  *
  * @author W.d
- * @since 1.0
  **/
 class TestDecision extends MysqlTest {
 
@@ -36,13 +35,13 @@ class TestDecision extends MysqlTest {
      **/
     @Test
     void taskByDecisionExprTest() {
-        Long processId = super.deployByResource("test/decision/decision-expr-process.long");
+        processId = this.deployByResource("test/decision/decision-expr-process.long");
         Map<String, Object> args = new HashMap<>(16);
-        args.put("task1.operator", new String[]{"1", "2"});
-        // args.put("task2.operator", new String[]{"1","2"});
-        // args.put("task3.operator", new String[]{"1","2"});
+        args.put("task1.assignee", new String[]{"1", "2"});
+        // args.put("task2.assignee", new String[]{"1","2"});
+        // args.put("task3.assignee", new String[]{"1","2"});
         args.put("content", "toTask1");
-        Instance instance = super.flowLongEngine.startInstanceById(processId, "testUser", args);
+        Instance instance = flowLongEngine.startInstanceById(processId, "testUser", args);
         System.out.println("instance = " + instance);
         Assertions.assertNotNull(instance);
         this.operCC(instance);
@@ -53,13 +52,13 @@ class TestDecision extends MysqlTest {
      **/
     @Test
     void taskByTransitionExprTest() {
-        Long processId = super.deployByResource("test/decision/transition-expr-process.long");
+        processId = this.deployByResource("test/decision/transition-expr-process.long");
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.operator", new String[]{"1"});
-        args.put("task2.operator", new String[]{"1"});
-        args.put("task3.operator", new String[]{"1"});
+        args.put("task1.assignee", new String[]{"1"});
+        args.put("task2.assignee", new String[]{"1"});
+        args.put("task3.assignee", new String[]{"1"});
         args.put("content", 250);
-        Instance instance = super.flowLongEngine.startInstanceById(processId, "2", args);
+        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
         System.out.println("instance = " + instance);
         Assertions.assertNotNull(instance);
         this.operCC(instance);
@@ -70,21 +69,20 @@ class TestDecision extends MysqlTest {
      **/
     @Test
     void taskByDecisionHandlerTest() {
-        Long processId = super.deploy(StreamUtils.getResourceAsStream("test/decision/decision-handler-process.long"),
-                "1", false);
+        processId = this.deploy(StreamUtils.getResourceAsStream("test/decision/decision-handler-process.long"), "1", false);
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.operator", new String[]{"1"});
-        args.put("task2.operator", new String[]{"1"});
-        args.put("task3.operator", new String[]{"1"});
+        args.put("task1.assignee", new String[]{"1"});
+        args.put("task2.assignee", new String[]{"1"});
+        args.put("task3.assignee", new String[]{"1"});
         args.put("content", "toTask3");
-        Instance instance = super.flowLongEngine.startInstanceById(processId, "2", args);
+        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
         System.out.println("instance = " + instance);
         Assertions.assertNotNull(instance);
         this.operCC(instance);
     }
 
     private void operCC(Instance instance) {
-        RuntimeService runtimeService = super.flowLongEngine.runtimeService();
+        RuntimeService runtimeService = flowLongEngine.runtimeService();
         final String actorId = "1000";
         runtimeService.createCCInstance(instance.getId(), "test", actorId);
         runtimeService.deleteCCInstance(instance.getId(), actorId);

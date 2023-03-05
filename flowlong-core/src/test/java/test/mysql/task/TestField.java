@@ -16,23 +16,24 @@ package test.mysql.task;
 
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
 /**
- * 测试获取任务field
+ * 简单测试获取流程field
  *
  * @author lipanre
- * @date 2023/3/4 12:04
  */
 public class TestField extends MysqlTest {
 
-    /**
-     * 测试获取流程Field
-     */
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/field.long");
+    }
+
     @Test
     public void testField() {
-        Long processId = this.deployByResource("test/task/field.long");
         ProcessModel processModel = flowLongEngine.processService().getProcessById(processId).getProcessModel();
         // 获取名称为task1的task
         TaskModel taskModel = (TaskModel) processModel.getNode("task1");

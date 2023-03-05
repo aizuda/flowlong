@@ -16,6 +16,7 @@ package test.mysql.task.assignmenthandler;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -23,9 +24,13 @@ import java.util.List;
 
 public class TestAssignmentHandler extends MysqlTest {
 
+	@BeforeEach
+	public void before() {
+		processId = this.deployByResource("test/task/assignmentthandler.long");
+	}
+
 	@Test
 	public void test() {
-		Long processId = this.deployByResource("test/task/assignmentthandler.long");
 		Instance instance = flowLongEngine.startInstanceById(processId, "2");
 		System.out.println("instance=" + instance);
 		List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());

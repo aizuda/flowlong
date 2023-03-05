@@ -34,7 +34,7 @@ public interface DecisionHandler {
      *
      * @param flowLongContext 流程引擎上下文
      * @param execution       {@see Execution}
-     * @return String 后置流转的name
+     * @return String 后置流转的节点名称
      */
     String decide(FlowLongContext flowLongContext, Execution execution);
 }

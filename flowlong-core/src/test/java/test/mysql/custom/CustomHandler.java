@@ -19,8 +19,9 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 
 /**
+ * 自定义流程处理器
+ *
  * @author yuqs
- * @since 1.0
  */
 public class CustomHandler implements FlowLongHandler {
 
@@ -28,5 +29,4 @@ public class CustomHandler implements FlowLongHandler {
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         System.out.println("custom handler");
     }
-
 }

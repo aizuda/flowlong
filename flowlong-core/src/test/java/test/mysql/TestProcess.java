@@ -14,37 +14,46 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Process;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 类名称：TestProcess
- * <p>
- * 描述：
- * 创建人：xdg
- * 创建时间：2023-03-04 10:58
+ * 测试简单流程
+ *
+ * @author xdg
  */
 public class TestProcess extends MysqlTest {
+
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/simple.long");
+    }
+
     @Test
     public void test() {
-        Long processId = this.deployByResource("test/task/simple.long");
+        ProcessService processService = flowLongEngine.processService();
 
-        Process process = flowLongEngine.processService().getProcessById(processId);
+        // 根据流程定义ID查询
+        Process process = processService.getProcessById(processId);
+        Assertions.assertNotNull(process);
 
-        System.out.println("output 1=" + process);
+        // 根据流程定义ID和版本号查询
+        process = processService.getProcessByVersion(process.getName(), process.getVersion());
+        Assertions.assertNotNull(process);
 
-        process = flowLongEngine.processService().getProcessByVersion(process.getName(), process.getVersion());
+        // 启动指定流程定义ID启动流程实例
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", testUser1);
+        flowLongEngine.startInstanceById(processId, testUser1, args);
 
-        System.out.println("output 2="+process);
-
-        Map<String, Object> args = new HashMap<String, Object>();
-
-        args.put("task1.operator", "1");
-
-        flowLongEngine.startInstanceById(processId, "1", args);
-        flowLongEngine.processService().undeploy(processId);
+        // 卸载指定的定义流程
+        Assert.isTrue(processService.undeploy(processId));
     }
 }
