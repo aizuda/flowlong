@@ -14,11 +14,16 @@
  */
 package test.mysql;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,15 +43,22 @@ public class TestSurrogate extends MysqlTest {
     public void test() {
         // 组装参数列表
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.operator", new String[]{"test"});
+        args.put("task1.assignee", Arrays.asList(testUser3));
         // 启动流程实例
-        Instance surrogate = flowLongEngine.startInstanceById(processId, "2", args);
-        // 输出流程实例信息
-        System.out.println("surrogate=" + surrogate);
-        // List<Task> tasks = flowLongEngine.queryService().getTasksByInstanceId(surrogate.getId());
-        // for (Task task : tasks) {
-        //     // flowLongEngine.executeTask(task.getId(), "1", args);
-        // }
+        Instance surrogate = flowLongEngine.startInstanceById(processId, testUser1, args);
+        Assertions.assertNotNull(surrogate);
+        List<Task> tasks = flowLongEngine.queryService().getTasksByInstanceId(surrogate.getId());
+        for (Task task : tasks) {
+            try {
+                // 测试无权限执行
+                flowLongEngine.executeTask(task.getId(), testUser2, args);
+            } catch (Throwable t) {
+                Assertions.assertTrue(t.getMessage().contains("当前参与者[test002]不允许执行任务"));
+            }
+            // 正常执行，该节点执行完直接结束，不存在其它任务
+            List<Task> taskList = flowLongEngine.executeTask(task.getId(), testUser1, args);
+            Assertions.assertTrue(CollectionUtils.isEmpty(taskList));
+        }
     }
 
 }

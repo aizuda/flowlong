@@ -43,11 +43,11 @@ public class TestCC extends MysqlTest {
         Map<String, Object> args = new HashMap<>();
         // 设置工作流任务节点 assignee 属性
         args.put("task1.assignee", "1");
-        Instance instance = flowLongEngine.startInstanceByName("simple", 1, "testUser", args);
+        Instance instance = flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
         RuntimeService runtimeService = flowLongEngine.runtimeService();
         // 创建抄送实例，暂时先 debug 观察数据库表结构数据变化
         final String actorId = "1000";
-        runtimeService.createCCInstance(instance.getId(), "test", actorId);
+        runtimeService.createCCInstance(instance.getId(), testUser2, actorId);
         runtimeService.updateCCStatus(instance.getId(), actorId);
         runtimeService.deleteCCInstance(instance.getId(), actorId);
     }
