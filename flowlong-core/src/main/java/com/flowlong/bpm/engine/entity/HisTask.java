@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,8 +41,8 @@ public class HisTask extends Task {
      */
     protected Integer taskState;
 
-    public void setTaskState(FlowState flowState) {
-        this.taskState = flowState.getValue();
+    public void setTaskState(InstanceState instanceState) {
+        this.taskState = instanceState.getValue();
     }
 
     public HisTask() {

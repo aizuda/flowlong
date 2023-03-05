@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.StartModel;

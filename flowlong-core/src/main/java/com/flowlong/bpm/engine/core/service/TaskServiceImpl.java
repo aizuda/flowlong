@@ -25,7 +25,7 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
@@ -105,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
         }
         HisTask history = new HisTask(task);
         history.setFinishTime(new Date());
-        history.setTaskState(FlowState.finish);
+        history.setTaskState(InstanceState.finish);
         history.setCreateBy(createBy);
 
         List<HisTaskActor> hisTaskActors = new ArrayList<>();
@@ -156,7 +156,7 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setFinishTime(hisTask.getCreateTime());
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
-        hisTask.setTaskState(FlowState.finish);
+        hisTask.setTaskState(InstanceState.finish);
         hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
         hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         hisTask.setVariable(FlowLongContext.JSON_HANDLER.toJson(execution.getArgs()));

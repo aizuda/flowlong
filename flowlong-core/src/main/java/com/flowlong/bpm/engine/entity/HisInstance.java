@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -50,9 +50,9 @@ public class HisInstance extends Instance {
 
     }
 
-    public HisInstance(Instance instance, FlowState flowState) {
+    public HisInstance(Instance instance, InstanceState instanceState) {
         this.id = instance.getId();
-        this.instanceState = flowState.getValue();
+        this.instanceState = instanceState.getValue();
         this.processId = instance.getProcessId();
         this.createTime = instance.getCreateTime();
         this.expireTime = instance.getExpireTime();

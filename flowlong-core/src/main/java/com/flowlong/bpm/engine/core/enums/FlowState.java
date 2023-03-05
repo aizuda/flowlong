@@ -1,23 +1,17 @@
-package com.flowlong.bpm.engine.core;
-
+package com.flowlong.bpm.engine.core.enums;
 
 /**
- * 流程状态
- *
+ * 实例状态
  */
 public enum FlowState {
     /**
-     * 活动
+     * 启用
      */
     active(1),
     /**
-     * 结束
+     * 未启用
      */
-    finish(0),
-    /**
-     * 终止
-     */
-    termination(2);
+    inactive(0);
 
     private final int value;
 
@@ -28,4 +22,5 @@ public enum FlowState {
     public int getValue() {
         return value;
     }
+
 }

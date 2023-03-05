@@ -15,12 +15,11 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -71,7 +70,7 @@ public class Surrogate extends BaseEntity {
      */
     protected Date operationTime;
 
-    public void setState(FlowState flowState) {
-        this.state = flowState.getValue();
+    public void setState(InstanceState instanceState) {
+        this.state = instanceState.getValue();
     }
 }

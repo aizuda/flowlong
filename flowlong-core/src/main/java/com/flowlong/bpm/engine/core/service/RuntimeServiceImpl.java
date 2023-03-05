@@ -20,7 +20,7 @@ import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.core.FlowState;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
@@ -129,7 +129,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             ccinstance.setInstanceId(instanceId);
             ccinstance.setActorId(actorId);
             ccinstance.setCreateBy(createBy);
-            ccinstance.setFlowState(FlowState.active);
+            ccinstance.setInstanceState(InstanceState.active);
             ccinstance.setCreateTime(new Date());
             ccInstanceMapper.insert(ccinstance);
         }
@@ -138,7 +138,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void updateCCStatus(Long instanceId, List<String> actorIds) {
         CCInstance ccInstance = new CCInstance();
-        ccInstance.setFlowState(FlowState.finish);
+        ccInstance.setInstanceState(InstanceState.finish);
         ccInstance.setFinishTime(DateUtils.getTime());
         ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
                 .eq(CCInstance::getInstanceId, instanceId)
@@ -177,7 +177,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(Instance instance) {
         instanceMapper.insert(instance);
-        hisInstanceMapper.insert(new HisInstance(instance, FlowState.active));
+        hisInstanceMapper.insert(new HisInstance(instance, InstanceState.active));
     }
 
     /**
@@ -195,7 +195,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void complete(Long instanceId) {
         HisInstance his = new HisInstance();
         his.setId(instanceId);
-        his.setInstanceState(FlowState.finish.getValue());
+        his.setInstanceState(InstanceState.finish.getValue());
         his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         this.instanceNotify(TaskListener.EVENT_COMPLETE, his);
@@ -227,7 +227,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 //            taskService.complete(task.getId(), createBy);
 //        }
         Instance instance = instanceMapper.selectById(instanceId);
-        HisInstance his = new HisInstance(instance, FlowState.termination);
+        HisInstance his = new HisInstance(instance, InstanceState.termination);
         his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         hisInstanceMapper.updateById(his);
