@@ -17,6 +17,7 @@ package test.mysql;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
@@ -28,12 +29,16 @@ import java.util.Map;
  */
 public class TestCC extends MysqlTest {
 
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/cc/process.long");
+    }
+
     /**
      * 抄送测试
      */
     @Test
     public void testCc() {
-        Long processId = this.deployByResource("test/cc/process.long");
         System.out.println("流程定义ID = " + processId);
         Map<String, Object> args = new HashMap<>();
         // 设置工作流任务节点 assignee 属性

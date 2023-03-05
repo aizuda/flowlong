@@ -25,7 +25,6 @@ public class TestController {
     public Long deployByResource() {
         return flowLongEngine.processService().deployByResource("process.long", false);
     }
-;
 
     /**
      * 启动流程实例

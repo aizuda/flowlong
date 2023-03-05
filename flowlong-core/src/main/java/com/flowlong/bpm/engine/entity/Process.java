@@ -95,7 +95,7 @@ public class Process extends BaseEntity {
     public void executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
+            Assert.notNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
             nodeModel.execute(flowLongContext, execution);
         });
     }
