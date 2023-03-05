@@ -1,7 +1,6 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.mapper.Mapper;
 
 import java.util.List;
 

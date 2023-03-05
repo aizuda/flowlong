@@ -14,8 +14,8 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 
 import java.util.Collections;

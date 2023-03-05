@@ -12,28 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.handler;
+package test.mysql.query;
 
-import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
+import com.flowlong.bpm.engine.entity.Process;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import test.mysql.MysqlTest;
 
 /**
- * 流程各模型操作处理接口
- *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
- * </p>
- *
- * @author hubin
- * @since 1.0
+ * 查询抄送
  */
-public interface FlowLongHandler {
+public class TestQueryProcess extends MysqlTest {
 
-    /**
-     * 子类需要实现的方法，来处理具体的操作
-     *
-     * @param flowLongContext 流程引擎上下文
-     * @param execution       执行对象
-     */
-    void handle(FlowLongContext flowLongContext, Execution execution);
+    @Autowired
+    private ProcessMapper processMapper;
+
+    @Test
+    public void test() {
+        Long id = 0L;
+
+        // 注入 Mapper 查询
+        Process process = processMapper.selectById(id);
+        System.out.println("Mapper查询 = " + process);
+    }
 }

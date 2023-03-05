@@ -12,28 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.handler;
+package test.mysql.expire;
 
-import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.scheduling.JobCallback;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /**
- * 流程各模型操作处理接口
  *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
- * </p>
- *
- * @author hubin
- * @since 1.0
+ * @author wangzi
  */
-public interface FlowLongHandler {
 
-    /**
-     * 子类需要实现的方法，来处理具体的操作
-     *
-     * @param flowLongContext 流程引擎上下文
-     * @param execution       执行对象
-     */
-    void handle(FlowLongContext flowLongContext, Execution execution);
+@Slf4j
+public class TestCallback implements JobCallback {
+
+	public void callback(String taskId, List<Task> newTasks) {
+		log.info("callback taskId=" + taskId);
+		log.info("newTasks=" + newTasks);
+	}
 }

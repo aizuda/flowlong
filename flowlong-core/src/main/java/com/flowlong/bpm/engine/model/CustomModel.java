@@ -14,12 +14,12 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.ReflectUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import lombok.Getter;
 import lombok.Setter;

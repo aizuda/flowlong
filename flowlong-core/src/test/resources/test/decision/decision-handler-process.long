@@ -3,7 +3,7 @@
     <start displayName="start1" layout="76,146,-1,-1" name="start1">
         <transition g="" name="transition1" offset="0,0" to="decision1"/>
     </start>
-    <decision displayName="decision1" handleClass="test.decision.handler.TaskHandler" layout="179,146,-1,-1"
+    <decision displayName="decision1" handleClass="test.mysql.handler.TaskHandler" layout="179,146,-1,-1"
               name="decision1">
         <transition displayName="to task2" g="" name="toTask2" offset="-4,-18" to="task2"/>
         <transition displayName="to task1" g="202,86" name="toTask1" offset="-27,-23" to="task1"/>

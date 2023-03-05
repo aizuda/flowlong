@@ -12,36 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.model;
+package test.mysql.custom;
 
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-
-import java.util.Collections;
-import java.util.List;
+import com.flowlong.bpm.engine.handler.FlowLongHandler;
 
 /**
- * 开始节点定义start元素
- *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
- * </p>
- *
- * @author hubin
+ * @author yuqs
  * @since 1.0
  */
-public class StartModel extends NodeModel {
-
-    /**
-     * 开始节点无输入变迁
-     */
-    @Override
-    public List<TransitionModel> getInputs() {
-        return Collections.emptyList();
-    }
+public class CustomHandler implements FlowLongHandler {
 
     @Override
-    protected void run(FlowLongContext flowLongContext, Execution execution) {
-        runOutTransition(flowLongContext,  execution);
+    public void handle(FlowLongContext flowLongContext, Execution execution) {
+        System.out.println("custom handler");
     }
+
 }
