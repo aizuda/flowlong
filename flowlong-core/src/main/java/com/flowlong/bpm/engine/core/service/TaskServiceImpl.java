@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
@@ -63,7 +64,7 @@ public class TaskServiceImpl implements TaskService {
 
     public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy,
                            @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper,
-                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper,HisTaskActorMapper hisTaskActorMapper) {
+                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
@@ -106,24 +107,23 @@ public class TaskServiceImpl implements TaskService {
         history.setFinishTime(new Date());
         history.setTaskState(FlowState.finish);
         history.setCreateBy(createBy);
+
+        List<HisTaskActor> hisTaskActors = new ArrayList<>();
         if (history.actorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
-            List<HisTaskActor> hisTaskActors = new ArrayList<>();
-            String[] actorIds = new String[actors.size()];
-            Long[] ids = new Long[actors.size()];
-            for (int i = 0; i < actors.size(); i++) {
-                TaskActor actor = actors.get(i);
-                actorIds[i] = actor.getActorId();
-                ids[i] = actor.getId();
-                hisTaskActors.add(new HisTaskActor(actors.get(i)));
+            for (TaskActor actor : actors) {
+                hisTaskActors.add(new HisTaskActor(actor));
             }
-            hisTaskMapper.insert(history);
-            // history.setActorIds(actorIds);
-            hisTaskActorMapper.insertBatchSomeColumn(hisTaskActors);
-            taskActorMapper.deleteBatchIds(Arrays.asList(ids));
-        }else{
-            hisTaskMapper.insert(history);
         }
+        // 迁移 task 信息到 flw_his_task
+        hisTaskMapper.insert(history);
+        if (hisTaskActors.size() > 0) {
+            // 将 task 参与者信息迁移到 flw_his_task_actor
+            hisTaskActorMapper.insertBatchSomeColumn(hisTaskActors);
+            // 移除 flw_task_actor 中 task 参与者信息
+            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        }
+        // 删除 flw_task 中指定 task 信息
         taskMapper.deleteById(task);
         if (null != taskListener) {
             taskListener.notify(TaskListener.EVENT_COMPLETE, history);
@@ -553,28 +553,28 @@ public class TaskServiceImpl implements TaskService {
     public void removeTaskActor(Long taskId, String... actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if(actors == null || actors.length == 0) {
+        if (actors == null || actors.length == 0) {
             return;
         }
-        if(task.major()) {
+        if (task.major()) {
             Map<String, Object> taskData = task.variableMap();
-            String actorStr = (String)taskData.get(Task.KEY_ACTOR);
-            if(StringUtils.isNotEmpty(actorStr)) {
+            String actorStr = (String) taskData.get(Task.KEY_ACTOR);
+            if (StringUtils.isNotEmpty(actorStr)) {
                 String[] actorArray = actorStr.split(",");
                 StringBuilder newActor = new StringBuilder(actorStr.length());
                 boolean isMatch;
-                for(String actor : actorArray) {
+                for (String actor : actorArray) {
                     isMatch = false;
-                    if(StringUtils.isEmpty(actor)) {
+                    if (StringUtils.isEmpty(actor)) {
                         continue;
                     }
-                    for(String removeActor : actors) {
-                        if(actor.equals(removeActor)) {
+                    for (String removeActor : actors) {
+                        if (actor.equals(removeActor)) {
                             isMatch = true;
                             break;
                         }
                     }
-                    if(isMatch) {
+                    if (isMatch) {
                         continue;
                     }
                     newActor.append(actor).append(",");
