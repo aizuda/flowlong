@@ -37,7 +37,7 @@ public class TestNotAllow extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/task/right/process.long");
+        processId = this.deployByResource("test/task/right.long");
     }
 
     @Test

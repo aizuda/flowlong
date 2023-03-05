@@ -32,7 +32,7 @@ public class TestTransfer extends MysqlTest {
 
 	@BeforeEach
 	public void before() {
-		processId = this.deployByResource("test/task/transfer/process.long");
+		processId = this.deployByResource("test/task/transfer.long");
 	}
 
 	/**

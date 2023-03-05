@@ -30,7 +30,7 @@ import java.util.Map;
 public class TestProcess extends MysqlTest {
     @Test
     public void test() {
-        Long processId = this.deployByResource("test/task/simple/process.long");
+        Long processId = this.deployByResource("test/task/simple.long");
 
         Process process = flowLongEngine.processService().getProcessById(processId);
 

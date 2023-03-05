@@ -36,7 +36,7 @@ public class TestSimple extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/task/simple/process.long");
+        processId = this.deployByResource("test/task/simple.long");
         flowLongEngine.processService().updateType(processId, "预算管理流程");
     }
 

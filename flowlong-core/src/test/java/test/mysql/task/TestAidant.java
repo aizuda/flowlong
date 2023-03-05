@@ -30,7 +30,7 @@ import java.util.Map;
 public class TestAidant extends MysqlTest {
     @Test
     public void testAidantTask() {
-        Long processId = this.deployByResource("test/task/aidant/process.long");
+        Long processId = this.deployByResource("test/task/aidant.long");
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
         Instance instance = flowLongEngine.startInstanceByName("aidant", 1, "creteUser", args);

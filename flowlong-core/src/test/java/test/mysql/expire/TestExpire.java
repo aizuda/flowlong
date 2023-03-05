@@ -33,7 +33,7 @@ public class TestExpire extends MysqlTest {
 
 	@Test
 	public void test() {
-		Long processId = this.deployByResource("test/time/expire/process.long");
+		Long processId = this.deployByResource("test/expire.long");
 		System.out.println("部署的流程定义ID = " + processId);
 		System.out.println(DateUtils.parseTime(new DateTime(2023, 3, 4, 14, 21).toDate()));
 		Map<String, Object> args = new HashMap<>();

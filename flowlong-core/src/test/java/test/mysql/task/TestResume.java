@@ -38,7 +38,7 @@ public class TestResume extends MysqlTest {
     @Test
     public void test() {
         String createBy = "he.wenyao"; // 创建者
-        InputStream resourceAsStream = StreamUtils.getResourceAsStream("test/task/resume/process.long");
+        InputStream resourceAsStream = StreamUtils.getResourceAsStream("test/task/resume.long");
         Long processId = this.deploy(resourceAsStream, createBy, true);
         log.info("流程定义ID = {}", processId);
         Map<String, Object> args = new HashMap<>();

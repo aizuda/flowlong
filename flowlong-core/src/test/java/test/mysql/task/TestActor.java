@@ -41,7 +41,7 @@ public class TestActor extends MysqlTest {
     private Task createTask() {
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("task1.operator", new String[]{"1"});
-        Long processId = this.deployByResource("test/task/simple/process.long");
+        Long processId = this.deployByResource("test/task/simple.long");
         Instance instance = flowLongEngine.startInstanceById(processId, "test0", args);
         System.out.println("instance=" + instance);
         TaskModel tm1 = new TaskModel();

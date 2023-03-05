@@ -32,7 +32,7 @@ public class TestField extends MysqlTest {
      */
     @Test
     public void testField() {
-        Long processId = this.deployByResource("test/task/field/process.long");
+        Long processId = this.deployByResource("test/task/field.long");
         ProcessModel processModel = flowLongEngine.processService().getProcessById(processId).getProcessModel();
         // 获取名称为task1的task
         TaskModel taskModel = (TaskModel) processModel.getNode("task1");

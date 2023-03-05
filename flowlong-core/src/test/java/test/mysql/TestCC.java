@@ -31,7 +31,7 @@ public class TestCC extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/cc/process.long");
+        processId = this.deployByResource("test/cc.long");
     }
 
     /**
