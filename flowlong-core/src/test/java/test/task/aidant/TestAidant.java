@@ -35,19 +35,10 @@ public class TestAidant extends MysqlTest {
         Long processId = this.deployByResource("test/task/aidant/process.long");
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
-        Instance instance = flowLongEngine.startInstanceByName("aidant", 1, "liu", args);
-        System.out.println("instance=" + instance);
-        QueryService queryService = flowLongEngine.queryService();
-        TaskModel tm = new TaskModel();
-        tm.setName("task1");
-        tm.setDisplayName("任务1");
-        tm.setTaskType(TaskModel.TASKTYPE_AIDANT);
-        flowLongEngine.createFreeTask(instance.getId(), null, args, tm);
-        List<Task> tasks = queryService.getActiveTasksByInstanceId(instance.getId());
-        for (Task task : tasks) {
-            flowLongEngine.taskService().addTaskActor(task.getId(), 0, "test1", "test2");
-            flowLongEngine.taskService().complete(task.getId());
+        Instance instance = flowLongEngine.startInstanceByName("aidant", 1, "creteUser", args);
+        List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        for(Task task : tasks) {
+            flowLongEngine.taskService().createNewTask(task.getId(), 1, "test");
         }
-        flowLongEngine.processService().undeploy(processId);
     }
 }

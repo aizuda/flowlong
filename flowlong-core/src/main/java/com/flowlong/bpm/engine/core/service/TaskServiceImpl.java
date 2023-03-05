@@ -342,6 +342,7 @@ public class TaskServiceImpl implements TaskService {
         List<Task> tasks = new ArrayList<Task>();
         try {
             Task newTask = (Task) task.clone();
+            newTask.setId(null);
             newTask.setTaskType(taskType);
             newTask.setCreateTime(new Date());
             newTask.setParentTaskId(taskId);
