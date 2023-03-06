@@ -12,10 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.forkjoin;
+package test.mysql;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
@@ -26,23 +28,28 @@ import java.util.Map;
 /**
  * 测试测试分支合并
  *
+ * @author zhaoxb123
  */
 public class TestForkJoin extends MysqlTest {
 
+	@BeforeEach
+	public void before() {
+		processId = this.deployByResource("test/forkjoin.long");
+	}
 
 	@Test
 	public void test() {
-		Long processId = super.deployByResource("test/forkjoin/process.long");
 		Map<String, Object> args = new HashMap<>();
-		args.put("task1.operator", "1");
-		args.put("task2.operator", "1");
-		args.put("task3.operator", "1");
-		Instance instance = super.flowLongEngine.startInstanceById(processId, "1", args);
-		System.out.println(instance);
+		args.put("task1.assignee", testUser1);
+		args.put("task2.assignee", testUser1);
+		args.put("task3.assignee", testUser1);
+		Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
+		Assertions.assertNotNull(instance);
+
 		List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
 		for(Task task : taskList) {
 			System.out.println("==========================="+task.getTaskName());
-			flowLongEngine.executeTask(task.getId(), "1", args);
+			flowLongEngine.executeTask(task.getId(), testUser1, args);
 		}
 	}
 }
