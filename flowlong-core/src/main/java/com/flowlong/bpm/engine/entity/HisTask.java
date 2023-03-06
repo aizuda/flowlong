@@ -41,6 +41,10 @@ public class HisTask extends Task {
      */
     protected Integer taskState;
 
+    public void setTaskState(Integer taskState) {
+        this.taskState = taskState;
+    }
+
     public void setTaskState(InstanceState instanceState) {
         this.taskState = instanceState.getValue();
     }

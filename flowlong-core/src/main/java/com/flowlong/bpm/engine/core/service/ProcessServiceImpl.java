@@ -17,13 +17,16 @@ package com.flowlong.bpm.engine.core.service;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
+import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.HisInstance;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.Surrogate;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;
@@ -58,10 +61,14 @@ public class ProcessServiceImpl implements ProcessService {
     private String CACHE_NAME = "long.process.name";
     private ProcessMapper processMapper;
     private HisInstanceMapper hisInstanceMapper;
+    private SurrogateMapper surrogateMapper;
+    private RuntimeService runtimeService;
 
-    public ProcessServiceImpl(ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper) {
+    public ProcessServiceImpl(ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper, RuntimeService runtimeService, SurrogateMapper surrogateMapper) {
         this.processMapper = processMapper;
         this.hisInstanceMapper = hisInstanceMapper;
+        this.runtimeService = runtimeService;
+        this.surrogateMapper = surrogateMapper;
     }
 
     @Override
@@ -221,12 +228,14 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public void cascadeRemove(Long id) {
-        Process process = processMapper.selectById(id);
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
                 .eq(HisInstance::getProcessId, id));
         for (HisInstance hisInstance : hisInstances) {
-            // runtimeService.cascadeRemove(hisInstance.getId());
+             // 删除与流程相关的实例
+             runtimeService.cascadeRemove(hisInstance.getId());
         }
+        // 删除与流程相关的委托代理
+        surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, id));
         processMapper.deleteById(id);
     }
 }

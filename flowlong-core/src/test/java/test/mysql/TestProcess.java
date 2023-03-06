@@ -15,13 +15,18 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.Task;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +34,7 @@ import java.util.Map;
  *
  * @author xdg
  */
+@Slf4j
 public class TestProcess extends MysqlTest {
 
     @BeforeEach
@@ -56,4 +62,33 @@ public class TestProcess extends MysqlTest {
         // 卸载指定的定义流程
         Assert.isTrue(processService.undeploy(processId));
     }
+
+
+    /**
+     * 测试流程的级联删除
+     */
+    @Test
+    public void cascadeRemove() {
+        log.info("开始测试级联删除");
+        ProcessService processService = flowLongEngine.processService();
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", new String[]{"1"});
+        // 启动两个流程，然后抄送一个流程，在执行一个流程 测试级联删除
+        Instance ins = this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
+        this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
+        // 抄送一个流程为了测试级联删除
+        final String actorId = "1000";
+        RuntimeService runtimeService = flowLongEngine.runtimeService();
+        runtimeService.createCCInstance(ins.getId(), testUser1, actorId);
+        // 获取活跃的任务
+        List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
+        // 执行任务
+        tasks.forEach(t -> {
+            this.flowLongEngine.executeTask(t.getId(), testUser1);
+        });
+        // 测试级联删除
+        processService.cascadeRemove(processId);
+    }
+
+
 }
