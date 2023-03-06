@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine;
 
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 
@@ -84,22 +85,23 @@ public interface RuntimeService {
     }
 
     /**
-     * 更新抄送记录为已阅
+     * 结束抄送实例
      *
-     * @param instanceId 流程实例ID
-     * @param actorIds   参与者ID
+     * @param instanceId    流程实例ID
+     * @param actorIds      参与者ID
+     * @return 更新是否成功
      */
-    void updateCCStatus(Long instanceId, List<String> actorIds);
+    boolean finishCCInstance(Long instanceId, List<String> actorIds);
 
-    default void updateCCStatus(Long instanceId, String actorId) {
-        this.updateCCStatus(instanceId, Arrays.asList(actorId));
+    default boolean finishCCInstance(Long instanceId, String actorId) {
+        return this.finishCCInstance(instanceId, Arrays.asList(actorId));
     }
 
     /**
      * 删除抄送记录
      *
      * @param instanceId 流程实例id
-     * @param actorId 参与者id
+     * @param actorId    参与者id
      */
     void deleteCCInstance(Long instanceId, String actorId);
 

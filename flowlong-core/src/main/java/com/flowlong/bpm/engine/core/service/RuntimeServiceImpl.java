@@ -125,24 +125,24 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void createCCInstance(Long instanceId, String createBy, List<String> actorIds) {
         for (String actorId : actorIds) {
-            CCInstance ccinstance = new CCInstance();
-            ccinstance.setInstanceId(instanceId);
-            ccinstance.setActorId(actorId);
-            ccinstance.setCreateBy(createBy);
-            ccinstance.setInstanceState(InstanceState.active);
-            ccinstance.setCreateTime(new Date());
-            ccInstanceMapper.insert(ccinstance);
+            CCInstance ccInstance = new CCInstance();
+            ccInstance.setInstanceId(instanceId);
+            ccInstance.setActorId(actorId);
+            ccInstance.setCreateBy(createBy);
+            ccInstance.setInstanceState(InstanceState.active);
+            ccInstance.setCreateTime(new Date());
+            ccInstanceMapper.insert(ccInstance);
         }
     }
 
     @Override
-    public void updateCCStatus(Long instanceId, List<String> actorIds) {
+    public boolean finishCCInstance(Long instanceId, List<String> actorIds) {
         CCInstance ccInstance = new CCInstance();
         ccInstance.setInstanceState(InstanceState.finish);
         ccInstance.setFinishTime(DateUtils.getTime());
-        ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
+        return ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
                 .eq(CCInstance::getInstanceId, instanceId)
-                .in(CCInstance::getActorId, actorIds));
+                .in(CCInstance::getActorId, actorIds)) > 0;
     }
 
     @Override
