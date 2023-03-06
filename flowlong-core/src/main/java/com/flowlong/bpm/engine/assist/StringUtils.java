@@ -63,15 +63,7 @@ public class StringUtils {
      * @return 逗号分隔的字符串
      */
     public static String getStringByArray(String... strArray) {
-        if (strArray == null) {
-            return "";
-        }
-        StringBuilder buffer = new StringBuilder(strArray.length * 10);
-        for (String str : strArray) {
-            buffer.append(str).append(",");
-        }
-        buffer.deleteCharAt(buffer.length() - 1);
-        return buffer.toString();
+        return String.join(",", strArray);
     }
 
     /**
