@@ -61,12 +61,14 @@ public class TaskModel extends WorkModel {
      * 参与方式
      * any：任何一个参与者处理完即执行下一步
      * all：所有参与者都完成，才可执行下一步
+     * percentage:完成数/所有参与者数 > 百分比，才可以执行下一步
      */
     private String performType = PERFORMTYPE_ANY;
     /**
      * 任务类型
      * major：主办任务
      * aidant：协办任务
+     * countersign：会签任务
      */
     private String taskType = TASKTYPE_MAJOR;
     /**
@@ -252,13 +254,13 @@ public class TaskModel extends WorkModel {
      * 参与类型
      */
     public enum PerformType {
-        ANY, ALL;
+        ANY, ALL, PERCENTAGE;
     }
 
     /**
-     * 任务类型(Major:主办的,Aidant:协助的,Record:仅仅作为记录的)
+     * 任务类型(Major:主办的,Aidant:协助的,countersign:会签的,Record:仅仅作为记录的)
      */
     public enum TaskType {
-        Major, Aidant, Record;
+        Major, Aidant,Countersign,Record;
     }
 }
