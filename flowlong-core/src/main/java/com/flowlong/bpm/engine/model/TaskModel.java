@@ -45,6 +45,11 @@ public class TaskModel extends WorkModel {
      * 类型：参与者fork任务
      */
     public static final String PERFORMTYPE_ALL = "ALL";
+
+    /**
+     * 类型：参与者会签百分比
+     */
+    public static final String PERFORMTYPE_PERCENTAGE = "PERCENTAGE";
     /**
      * 类型：主办任务
      */
@@ -53,6 +58,10 @@ public class TaskModel extends WorkModel {
      * 类型：协办任务
      */
     public static final String TASKTYPE_AIDANT = "Aidant";
+    /**
+     * 类型：会签任务
+     */
+    public static final String TASKTYPE_COUNTERSIGN = "Countersign";
     /**
      * 参与者变量名称
      */
@@ -132,8 +141,12 @@ public class TaskModel extends WorkModel {
         return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
     }
 
-    public boolean isPerformAll() {
-        return PERFORMTYPE_ALL.equalsIgnoreCase(this.performType);
+    public boolean isPerformPercentage() {
+        return PERFORMTYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
+    }
+
+    public boolean isCountersign() {
+        return TASKTYPE_COUNTERSIGN.equalsIgnoreCase(this.taskType);
     }
 
     public boolean isMajor() {
