@@ -43,9 +43,9 @@ public interface FlowLongScheduler {
     /**
      * 调度执行方法
      *
-     * @param entity 调度DTO
+     * @param jobEntity 调度DTO
      */
-    void schedule(JobEntity entity);
+    void schedule(JobEntity jobEntity);
 
     /**
      * 停止调度
