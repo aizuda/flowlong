@@ -22,6 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 拒绝任务测试类
+ *
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
  * @author fanco
  * @since 1.0
  */
