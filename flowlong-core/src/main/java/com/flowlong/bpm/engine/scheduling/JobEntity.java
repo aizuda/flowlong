@@ -15,6 +15,8 @@
 package com.flowlong.bpm.engine.scheduling;
 
 import com.flowlong.bpm.engine.entity.Task;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -30,6 +32,8 @@ import java.util.Map;
  * @author hubin
  * @since 1.0
  */
+@Getter
+@Setter
 public class JobEntity implements Serializable {
     /**
      * job主键
@@ -67,6 +71,7 @@ public class JobEntity implements Serializable {
      * 执行参数
      */
     private Map<String, Object> args;
+
     public JobEntity(String id, Task task, Date startTime) {
         this(id, task, startTime, 0);
     }
@@ -88,78 +93,6 @@ public class JobEntity implements Serializable {
         this.startTime = startTime;
         this.period = period;
         this.args = args;
-    }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public int getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
-    public Map<String, Object> getArgs() {
-        return args;
-    }
-
-    public void setArgs(Map<String, Object> args) {
-        this.args = args;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getModelName() {
-        return modelName;
-    }
-
-    public void setModelName(String modelName) {
-        this.modelName = modelName;
-    }
-
-    public int getJobType() {
-        return jobType;
-    }
-
-    public void setJobType(int jobType) {
-        this.jobType = jobType;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getGroup() {
-        return group;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
     }
 
     /**
