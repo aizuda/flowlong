@@ -20,33 +20,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 拒绝任务测试类
+ * 测试任务撤回
  *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
- * </p>
- *
- * @author fanco
- * @since 1.0
+ * @author shen tao tao
  */
-public class TestReject extends MysqlTest {
-	@BeforeEach
-	public void before() {
-		processId = this.deployByResource("test/task/reject.long");
-	}
-	
-	@Test
-	public void test() {
-		Map<String, Object> args = new HashMap<String, Object>();
-		args.put("number", 2);
-		Instance instance = flowLongEngine.startInstanceById(processId, "creator");
-		List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		Task nextTask = flowLongEngine.executeTask(tasks.get(0).getId(), "creator", args).get(0);
-		flowLongEngine.executeAndJumpTask(nextTask.getId(), "creator", args, "task1");
-	}
+public class TestWithdraw extends MysqlTest {
+
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/withdraw.long");
+    }
+
+    @Test
+    void test() {
+        Instance instance = flowLongEngine.startInstanceByName("withdraw", 1);
+        System.out.println("instance=" + instance);
+        Task task = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()).get(0);
+        Task nextTask = flowLongEngine.taskService().createNewTask(task.getId(), 0, "testWithdraw").get(0);
+        flowLongEngine.taskService().complete(task.getId());
+        Task withdrawTask = flowLongEngine.taskService().withdrawTask(task.getId(), "testWithdraw");
+        flowLongEngine.taskService().complete(withdrawTask.getId(), "testWithdraw");
+    }
 }

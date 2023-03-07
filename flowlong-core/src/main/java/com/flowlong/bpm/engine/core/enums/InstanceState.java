@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core.enums;
 
+import java.util.Arrays;
 /**
  * 流程状态
  *
@@ -42,6 +43,10 @@ public enum InstanceState {
 
     public int getValue() {
         return value;
+    }
+
+    public static InstanceState get(int value) {
+        return Arrays.stream(InstanceState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
 
 }
