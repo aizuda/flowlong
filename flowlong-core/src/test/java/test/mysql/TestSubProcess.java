@@ -1,9 +1,12 @@
 package test.mysql;
 
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,4 +63,30 @@ public class TestSubProcess extends MysqlTest {
             System.out.println("************************end:::::" + task);
         }
     }
+
+    /**
+     * 子流程关联父流程
+     */
+    @Test
+    public void testRelation() {
+        // 创建父流程
+        Long processId = this.deployByResource("test/task/simple.long");
+        System.out.println("父流程id:" + processId);
+        // 组装参数列表
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", Arrays.asList(testUser3));
+        // 启动父流程实例
+        Instance surrogate = flowLongEngine.startInstanceById(processId, testUser1, args);
+        Assertions.assertNotNull(surrogate);
+
+        // 创建子流程
+        Long serialChildProcessId = this.deployByResource("test/subprocess/serial-subprocess.long");
+        System.out.println("串行行子流程ID = " + serialChildProcessId);
+
+        // 创建子流程实例 传入父流程实例ID做关联
+        Instance instance = flowLongEngine.startInstanceByIdAndParentId(serialChildProcessId, testUser1, null, surrogate.getId(), surrogate.getParentNodeName());
+        // print: {"parentId":${父流程id}}
+        System.out.println("子流程实例：" + FlowLongContext.JSON_HANDLER.toJson(instance));
+    }
+
 }
