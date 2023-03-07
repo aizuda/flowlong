@@ -64,12 +64,10 @@ public class CreateTaskHandler implements FlowLongHandler {
         try {
             List<FlowLongInterceptor> interceptors = flowLongContext.getInterceptors();
             if (null != interceptors) {
-                for (FlowLongInterceptor interceptor : interceptors) {
-                    interceptor.intercept(flowLongContext, execution);
-                }
+                interceptors.forEach(i -> i.handle(flowLongContext, execution));
             }
         } catch (Exception e) {
-            log.error("拦截器执行失败=" + e.getMessage());
+            log.error("拦截器执行失败={}", e.getMessage());
             throw new FlowLongException(e);
         }
     }

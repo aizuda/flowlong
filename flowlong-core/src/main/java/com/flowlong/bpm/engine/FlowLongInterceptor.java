@@ -30,10 +30,10 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 public interface FlowLongInterceptor {
 
     /**
-     * 拦截方法，参数为执行对象
+     * 拦截处理方法
      *
      * @param flowLongContext 流程引擎上下文
-     * @param execution       执行对象。可从中获取执行的数据
+     * @param execution       执行对象
      */
-    void intercept(FlowLongContext flowLongContext, Execution execution);
+    void handle(FlowLongContext flowLongContext, Execution execution);
 }

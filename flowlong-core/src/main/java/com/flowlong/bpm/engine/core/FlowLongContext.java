@@ -81,6 +81,16 @@ public class FlowLongContext {
         return NODE_PARSER_MAP.get(key);
     }
 
+    /**
+     * 新增自定义节点解析处理器，可覆盖默认节点解析
+     *
+     * @param key        节点名称
+     * @param nodeParser 节点解析处理器
+     */
+    public static void addNodeParser(String key, NodeParser nodeParser) {
+        NODE_PARSER_MAP.put(key, nodeParser);
+    }
+
     public FlowLongEngine build() throws FlowLongException {
         // 默认初始化流程引擎上下文
         return this.build(null);

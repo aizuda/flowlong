@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LocalTaskInterceptor implements FlowLongInterceptor {
 
     @Override
-    public void intercept(FlowLongContext flowLongContext, Execution execution) {
+    public void handle(FlowLongContext flowLongContext, Execution execution) {
         if (log.isInfoEnabled()) {
             log.info("LocalTaskInterceptor start...");
             for (Task task : execution.getTasks()) {

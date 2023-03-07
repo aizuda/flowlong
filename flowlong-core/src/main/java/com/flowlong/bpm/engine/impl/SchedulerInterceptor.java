@@ -52,7 +52,7 @@ public class SchedulerInterceptor implements FlowLongInterceptor {
      * 时限控制拦截方法
      */
     @Override
-    public void intercept(FlowLongContext flowLongContext, Execution execution) {
+    public void handle(FlowLongContext flowLongContext, Execution execution) {
         if (!isScheduled) {
             return;
         }
