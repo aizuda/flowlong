@@ -504,7 +504,9 @@ public class TaskServiceImpl implements TaskService {
      * @return 参与者数组
      */
     private String[] getTaskActors(Object actors) {
-        if (actors == null) return null;
+        if (actors == null){
+            return null;
+        }
         String[] results;
         if (actors instanceof String) {
             //如果值为字符串类型，则使用逗号,分隔
