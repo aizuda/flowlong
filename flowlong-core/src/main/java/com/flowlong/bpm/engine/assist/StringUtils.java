@@ -63,6 +63,12 @@ public class StringUtils {
      * @return 逗号分隔的字符串
      */
     public static String getStringByArray(String... strArray) {
+        if (strArray == null) {
+            return null;
+        }
+        if (strArray.length == 0) {
+            return "";
+        }
         return String.join(",", strArray);
     }
 

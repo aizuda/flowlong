@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 任务执行业务类
@@ -265,17 +266,30 @@ public class TaskServiceImpl implements TaskService {
     public Task withdrawTask(Long taskId, String createBy) {
         HisTask hist = hisTaskMapper.selectById(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-//        List<Task> tasks;
-//        if (hist.isPerformAny()) {
-//            tasks = access().getNextActiveTasks(hist.getId());
-//        } else {
-//            tasks = access().getNextActiveTasks(hist.getInstanceId(),
-//                    hist.getTaskName(), hist.getParentTaskId());
-//        }
-//        if (tasks == null || tasks.isEmpty()) {
-//            throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
-//        }
-//        hisTaskMapper.deleteBatchIds(tasks.stream().map(t -> t.getId()).collect(Collectors.toList()));
+        List<Task> tasks = new ArrayList<>();
+        if (hist.isPerformAny()) {
+            // 根据父任务id查询所有子任务
+            tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
+        } else {
+            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
+                    .eq(HisTask::getInstanceId, hist.getInstanceId())
+                    .eq(HisTask::getTaskName, hist.getTaskName())
+                    .eq(HisTask::getParentTaskId, hist.getParentTaskId()))
+                    .stream().map(HisTask::getId).collect(Collectors.toList());
+            if (!hisTaskIds.isEmpty()) {
+                tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
+            }
+        }
+        if (tasks == null || tasks.isEmpty()) {
+            throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
+        }
+        List<Long> taskIds = tasks.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        // 查询任务参与者
+        List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds)).stream().map(TaskActor::getId).collect(Collectors.toList());
+        if (!taskActorIds.isEmpty()) {
+            taskActorMapper.deleteBatchIds(taskActorIds);
+        }
+        taskMapper.deleteBatchIds(tasks.stream().map(BaseEntity::getId).collect(Collectors.toList()));
 
         Task task = hist.undoTask();
         task.setCreateTime(new Date());
@@ -396,6 +410,7 @@ public class TaskServiceImpl implements TaskService {
         String actionUrl = StringUtils.isEmpty(form) ? taskModel.getForm() : form;
 
         String[] actors = getTaskActors(taskModel, execution);
+
         args.put(Task.KEY_ACTOR, StringUtils.getStringByArray(actors));
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
@@ -505,7 +520,9 @@ public class TaskServiceImpl implements TaskService {
      * @return 参与者数组
      */
     private String[] getTaskActors(Object actors) {
-        if (actors == null) return null;
+        if (actors == null){
+            return null;
+        }
         String[] results;
         if (actors instanceof String) {
             //如果值为字符串类型，则使用逗号,分隔
@@ -560,7 +577,7 @@ public class TaskServiceImpl implements TaskService {
         if (actors == null || actors.isEmpty()) {
             return true;
         }
-        return !StringUtils.isEmpty(createBy) && taskAccessStrategy.isAllowed(createBy, actors);
+        return StringUtils.isNotEmpty(createBy) && taskAccessStrategy.isAllowed(createBy, actors);
     }
 
 

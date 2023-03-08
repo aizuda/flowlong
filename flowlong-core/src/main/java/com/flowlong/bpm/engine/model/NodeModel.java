@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 节点元素（存在输入输出的变迁）
@@ -55,21 +56,13 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
      */
     private String layout;
     /**
-     * 局部前置拦截器
-     */
-    private String preInterceptors;
-    /**
-     * 局部后置拦截器
-     */
-    private String postInterceptors;
-    /**
      * 前置局部拦截器实例集合
      */
-    private List<FlowLongInterceptor> preInterceptorList = new ArrayList<>();
+    protected List<FlowLongInterceptor> preInterceptorList = new ArrayList<>();
     /**
      * 后置局部拦截器实例集合
      */
-    private List<FlowLongInterceptor> postInterceptorList = new ArrayList<>();
+    protected List<FlowLongInterceptor> postInterceptorList = new ArrayList<>();
 
     /**
      * 根据父节点模型、当前节点模型判断是否可退回。可退回条件：
@@ -137,9 +130,9 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
      */
     private void intercept(FlowLongContext flowLongContext, List<FlowLongInterceptor> interceptorList, Execution execution) {
         try {
-            interceptorList.forEach(i -> i.intercept(flowLongContext, execution));
+            interceptorList.forEach(i -> i.handle(flowLongContext, execution));
         } catch (Exception e) {
-            log.error("拦截器执行失败=" + e.getMessage());
+            log.error("拦截器执行失败: {}", e.getMessage());
             throw new FlowLongException(e);
         }
     }
@@ -163,26 +156,21 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
     }
 
     public void setPreInterceptors(String preInterceptors) {
-        this.preInterceptors = preInterceptors;
-        if (StringUtils.isNotEmpty(preInterceptors)) {
-            for (String interceptor : preInterceptors.split(",")) {
+        this.parseInterceptor(preInterceptors, i -> this.preInterceptorList.add(i));
+    }
+
+    public void parseInterceptor(String interceptors, Consumer<FlowLongInterceptor> consumer) {
+        if (StringUtils.isNotEmpty(interceptors)) {
+            for (String interceptor : interceptors.split(",")) {
                 FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
-                if (instance != null) {
-                    this.preInterceptorList.add(instance);
+                if (null != instance) {
+                    consumer.accept(instance);
                 }
             }
         }
     }
 
     public void setPostInterceptors(String postInterceptors) {
-        this.postInterceptors = postInterceptors;
-        if (StringUtils.isNotEmpty(postInterceptors)) {
-            for (String interceptor : postInterceptors.split(",")) {
-                FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
-                if (instance != null) {
-                    this.postInterceptorList.add(instance);
-                }
-            }
-        }
+        this.parseInterceptor(postInterceptors, i -> this.postInterceptorList.add(i));
     }
 }

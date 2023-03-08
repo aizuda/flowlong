@@ -20,6 +20,7 @@ import com.flowlong.bpm.engine.model.TaskModel;
 
 public class TaskAssign implements Assignment {
 	
+	@Override
 	public Object assign(TaskModel model, Execution execution) {
         System.out.println(model);
 		System.out.println(execution.getArgs());

@@ -121,6 +121,18 @@ public interface FlowLongEngine {
     Instance startInstanceById(Long id, String createBy, Map<String, Object> args);
 
     /**
+     * 根据流程定义ID，父流程实例ID，创建人ID，参数列表启动流程实例
+     *
+     * @param id       流程定义ID
+     * @param createBy 创建人ID
+     * @param args     参数列表
+     * @param parentId 父流程实例ID
+     * @param parentName 父流程实例名称
+     * @return Instance 流程实例
+     */
+    Instance startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName);
+
+    /**
      * 根据流程名称启动流程实例
      *
      * @param name 流程定义名称
