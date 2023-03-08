@@ -14,13 +14,9 @@
  *  * limitations under the License.
  *
  */
-
 package com.flowlong.bpm.engine.scheduling;
 
-import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.model.NodeModel;
-
-import java.util.Map;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 
 /**
  * 任务提醒接口
@@ -37,11 +33,9 @@ public interface JobReminder {
     /**
      * 提醒操作
      *
-     * @param process   流程定义对象
-     * @param orderId   流程实例id
-     * @param taskId    任务id
-     * @param nodeModel 节点模型
-     * @param data      数据
+     * @param context       流程引擎上下文
+     * @param instanceId    流程实例ID
+     * @param currentTaskId 当前待处理任务ID
      */
-    void remind(Process process, String orderId, String taskId, NodeModel nodeModel, Map<String, Object> data);
+    void remind(FlowLongContext context, String instanceId, String currentTaskId);
 }
