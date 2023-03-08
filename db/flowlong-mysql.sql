@@ -16,7 +16,7 @@ CREATE TABLE `flw_cc_instance`  (
                                     `finish_time` timestamp NULL DEFAULT NULL COMMENT '完成时间',
                                     PRIMARY KEY (`id`) USING BTREE,
                                     INDEX `idx_cc_instance_instance_id`(`instance_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '抄送实例表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '抄送实例表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_his_instance
@@ -43,7 +43,7 @@ CREATE TABLE `flw_his_instance`  (
                                      INDEX `idx_his_instance_process_id`(`process_id` ASC) USING BTREE,
                                      INDEX `idx_his_instance_parent_id`(`parent_id` ASC) USING BTREE,
                                      CONSTRAINT `fk_his_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程实例表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_his_task
@@ -64,13 +64,14 @@ CREATE TABLE `flw_his_task`  (
                                  `variable` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '变量json',
                                  `version` tinyint(1) NULL DEFAULT 1 COMMENT '版本，默认 1',
                                  `expire_time` timestamp NULL DEFAULT NULL COMMENT '任务期望完成时间',
+                                 `remind_time` timestamp NULL DEFAULT NULL COMMENT '提醒时间',
                                  `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
                                  `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，结束 1，活动',
                                  PRIMARY KEY (`id`) USING BTREE,
                                  INDEX `idx_his_task_instance_id`(`instance_id` ASC) USING BTREE,
                                  INDEX `idx_his_task_parent_task_id`(`parent_task_id` ASC) USING BTREE,
                                  CONSTRAINT `fk_his_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_his_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_his_task_actor
@@ -84,7 +85,7 @@ CREATE TABLE `flw_his_task_actor`  (
                                        PRIMARY KEY (`id`) USING BTREE,
                                        INDEX `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                        CONSTRAINT `fk_his_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_his_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '历史任务参与者表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '历史任务参与者表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_instance
@@ -100,6 +101,7 @@ CREATE TABLE `flw_instance`  (
                                  `parent_node_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '父流程依赖的节点名称',
                                  `priority` tinyint(1) NULL DEFAULT NULL COMMENT '优先级',
                                  `instance_no` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '流程实例编号',
+                                 `business_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '业务KEY',
                                  `variable` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '变量json',
                                  `version` int NULL DEFAULT NULL COMMENT '版本',
                                  `expire_time` timestamp NULL DEFAULT NULL COMMENT '期望完成时间',
@@ -108,9 +110,9 @@ CREATE TABLE `flw_instance`  (
                                  PRIMARY KEY (`id`) USING BTREE,
                                  INDEX `idx_instance_process_id`(`process_id` ASC) USING BTREE,
                                  INDEX `idx_instance_parent_id`(`parent_id` ASC) USING BTREE,
-                                 CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-                                 CONSTRAINT `fk_instance_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
+                                 CONSTRAINT `fk_instance_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+                                 CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程实例表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_process
@@ -130,7 +132,7 @@ CREATE TABLE `flw_process`  (
                                 `content` longblob NULL COMMENT '流程模型定义',
                                 PRIMARY KEY (`id`) USING BTREE,
                                 INDEX `idx_process_name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '流程定义表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_surrogate
@@ -152,7 +154,7 @@ CREATE TABLE `flw_surrogate`  (
                                   PRIMARY KEY (`id`) USING BTREE,
                                   INDEX `idx_surrogate_process_id`(`process_id` ASC) USING BTREE,
                                   CONSTRAINT `fk_surrogate_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '委托代理表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '委托代理表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_task
@@ -173,11 +175,12 @@ CREATE TABLE `flw_task`  (
                              `variable` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '变量json',
                              `version` tinyint(1) NULL DEFAULT 1 COMMENT '版本，默认 1',
                              `expire_time` timestamp NULL DEFAULT NULL COMMENT '任务期望完成时间',
+                             `remind_time` timestamp NULL DEFAULT NULL COMMENT '提醒时间',
                              `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
                              PRIMARY KEY (`id`) USING BTREE,
                              INDEX `idx_task_instance_id`(`instance_id` ASC) USING BTREE,
                              CONSTRAINT `fk_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务表' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for flw_task_actor
@@ -191,6 +194,6 @@ CREATE TABLE `flw_task_actor`  (
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                    CONSTRAINT `fk__task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务参与者表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务参与者表' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

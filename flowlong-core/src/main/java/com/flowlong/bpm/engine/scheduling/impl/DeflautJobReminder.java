@@ -6,10 +6,11 @@ import com.flowlong.bpm.engine.scheduling.JobReminder;
 
 import java.util.Map;
 
-public class SpringJobReminder implements JobReminder {
+public class DeflautJobReminder implements JobReminder {
 
     @Override
-    public void remind(Process process, String orderId, String taskId, NodeModel nodeModel, Map<String, Object> data) {
+    public void remind(Process process, String orderId, String taskId, NodeModel nodeModel,
+                       Map<String, Object> data) {
 
     }
 }
