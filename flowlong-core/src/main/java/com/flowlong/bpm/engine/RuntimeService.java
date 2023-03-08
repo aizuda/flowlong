@@ -142,13 +142,14 @@ public interface RuntimeService {
     void updateInstance(Instance instance);
 
     /**
-     * 级联删除指定流程实例的所有数据：
-     * 1.wf_instance,wf_hist_instance
-     * 2.wf_task,wf_hist_task
-     * 3.wf_task_actor,wf_hist_task_actor
-     * 4.wf_cc_instance
+     * 级联删除指定流程实例的所有数据
+     *
+     * 1.flw_instance,flw_his_instance
+     * 2.flw_task, flw_his_task
+     * 3.flw_task_actor,flw_his_task_actor
+     * 4.flw_cc_instance
      *
      * @param id
      */
-    void cascadeRemove(String id);
+    void cascadeRemove(Long id);
 }
