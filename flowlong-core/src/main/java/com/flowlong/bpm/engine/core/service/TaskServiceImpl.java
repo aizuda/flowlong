@@ -345,7 +345,7 @@ public class TaskServiceImpl implements TaskService {
             newTask.setTaskType(taskType);
             newTask.setCreateTime(new Date());
             newTask.setParentTaskId(taskId);
-            tasks.add(saveTask(newTask, actors));
+            tasks.add(saveTask(newTask, TaskModel.PerformType.ANY, actors));
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException("任务对象不支持复制", e.getCause());
         }
@@ -404,7 +404,7 @@ public class TaskServiceImpl implements TaskService {
 
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-            task = saveTask(task, actors);
+            task = saveTask(task,TaskModel.PerformType.ANY, actors);
 //            task.setRemindDate(remindDate);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
@@ -416,10 +416,24 @@ public class TaskServiceImpl implements TaskService {
                 } catch (CloneNotSupportedException e) {
                     singleTask = task;
                 }
-                singleTask = saveTask(singleTask, actor);
+                singleTask = saveTask(singleTask,TaskModel.PerformType.ALL, actor);
 //                singleTask.setRemindDate(remindDate);
                 tasks.add(singleTask);
             }
+        } else if (taskModel.isPerformPercentage()) {
+            //任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
+            for (String actor : actors) {
+                Task singleTask;
+                try {
+                    singleTask = (Task) task.clone();
+                } catch (CloneNotSupportedException e) {
+                    singleTask = task;
+                }
+                singleTask = saveTask(singleTask,TaskModel.PerformType.PERCENTAGE, actor);
+//                singleTask.setRemindDate(remindDate);
+                tasks.add(singleTask);
+            }
+
         }
         return tasks;
     }
@@ -440,8 +454,10 @@ public class TaskServiceImpl implements TaskService {
         task.setCreateTime(new Date());
         if (model.isMajor()) {
             task.setTaskType(TaskModel.TaskType.Major.ordinal());
-        } else {
+        } else if(model.isAidant()) {
             task.setTaskType(TaskModel.TaskType.Aidant.ordinal());
+        } else if (model.isCountersign()) {
+            task.setTaskType(TaskModel.TaskType.Countersign.ordinal());
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
 //        task.setTaskModel(model);
@@ -451,8 +467,8 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 由DBAccess实现类持久化task对象
      */
-    private Task saveTask(Task task, String... actors) {
-        task.setPerformType(TaskModel.PerformType.ANY.ordinal());
+    private Task saveTask(Task task,TaskModel.PerformType performType, String... actors) {
+        task.setPerformType(performType.ordinal());
         taskMapper.insert(task);
         assignTask(task.getId(), actors);
 //        task.setActorIds(actors);

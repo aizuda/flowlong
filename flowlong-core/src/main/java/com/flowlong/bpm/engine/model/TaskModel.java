@@ -124,7 +124,7 @@ public class TaskModel extends WorkModel {
              * any方式，直接执行输出变迁
              */
             runOutTransition(flowLongContext, execution);
-        } else {
+        } else if(performType.equalsIgnoreCase(PERFORMTYPE_ALL)) {
             /**
              * all方式，需要判断是否已全部合并
              * 由于all方式分配任务，是每人一个任务
@@ -134,11 +134,22 @@ public class TaskModel extends WorkModel {
             if (execution.isMerged()) {
                 runOutTransition(flowLongContext, execution);
             }
+        } else if(performType.equalsIgnoreCase(PERFORMTYPE_PERCENTAGE)) {
+            /**
+             * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
+             * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
+             */
+
+
         }
     }
 
     public boolean isPerformAny() {
         return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
+    }
+
+    public boolean isPerformAll() {
+        return PERFORMTYPE_ALL.equalsIgnoreCase(this.performType);
     }
 
     public boolean isPerformPercentage() {
@@ -152,6 +163,8 @@ public class TaskModel extends WorkModel {
     public boolean isMajor() {
         return TASKTYPE_MAJOR.equalsIgnoreCase(this.taskType);
     }
+
+    public boolean isAidant() { return TASKTYPE_AIDANT.equalsIgnoreCase(this.taskType); }
 
     public String getAssignee() {
         return assignee;

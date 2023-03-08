@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<process displayName="测试简单会签" name="actorall">
-    <start displayName="start1" layout="64,83,-1,-1" name="start1">
-        <transition g="" name="transition1" offset="0,0" to="task1"/>
-    </start>
-    <task assignee="task1.operator" displayName="task1" layout="213,80,-1,-1" name="task1" performType="ALL">
-        <transition g="" name="transition2" offset="0,0" to="end1"/>
-    </task>
-    <end displayName="end1" layout="454,82,-1,-1" name="end1"/>
+<process  name="testCountersign" displayName="测试会签" >
+<start name="start" displayName="开始" layout="360,180,120,80">
+    <transition name="t1" to="apply" g="378,180;440,180"></transition>
+</start>
+<task name="apply" displayName="文章审核申请" layout="500,180,120,80" assignee="approve.operator"  performType="PERCENTAGE">
+    <transition name="t2" to="approveDept" g="560,180;620,180"></transition>
+</task>
+<task name="approveDept" displayName="部门领导审批" layout="680,180,120,80" assignee="approve1.operator"  performType="PERCENTAGE">
+    <transition name="t3" to="approveBoss" g="740,180;800,180"></transition>
+</task>
+<task name="approveBoss" displayName="公司领导审批" layout="860,180,120,80" assignee="approve2.operator"  performType="PERCENTAGE">
+    <transition name="t4" to="end" g="920,180;982,180"></transition>
+</task>
+<end name="end" displayName="结束" layout="1000,180,120,80" >
+</end>
 </process>
