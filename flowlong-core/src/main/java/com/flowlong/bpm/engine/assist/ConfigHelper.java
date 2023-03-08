@@ -14,12 +14,14 @@
  */
 package com.flowlong.bpm.engine.assist;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
+import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.math.NumberUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import org.springframework.util.ResourceUtils;
 
 /**
  * 配置属性帮助类
@@ -89,33 +91,29 @@ public class ConfigHelper {
     /**
      * 根据指定的文件名称，从类路径中加载属性文件，构造Properties对象
      *
-     * @param filename 属性文件名称
+     * @param resourceName 属性文件名称
      */
-    public static void loadProperties(String filename) {
-        InputStream in = null;
-        ClassLoader threadContextClassLoader = Thread.currentThread().getContextClassLoader();
+    public static void loadProperties(String resourceName) {
         properties = new Properties();
-        if (threadContextClassLoader != null) {
-            in = threadContextClassLoader.getResourceAsStream(filename);
-        }
-        if (in == null) {
-            in = ConfigHelper.class.getResourceAsStream(filename);
-            if (in == null) {
-                log.warn("No properties file found in the classpath by filename " + filename);
-            }
-        } else {
-            try {
-                properties.load(in);
-                log.info("Properties read " + properties);
-            } catch (Exception e) {
-                log.error("Error reading from " + filename, e);
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    log.warn("IOException while closing InputStream: " + e.getMessage());
+        ClassLoader classLoaderToUse = ClassUtils.getDefaultClassLoader();
+        try {
+            Enumeration<URL> urls = (classLoaderToUse != null ? classLoaderToUse.getResources(resourceName) :
+                    ClassLoader.getSystemResources(resourceName));
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                URLConnection con = url.openConnection();
+                ResourceUtils.useCachesIfNecessary(con);
+                try (InputStream is = con.getInputStream()) {
+                    if (resourceName.endsWith(".xml")) {
+                        properties.loadFromXML(is);
+                    } else {
+                        properties.load(is);
+                    }
+                    log.info("Properties read " + properties);
                 }
             }
+        } catch (Exception e) {
+            log.error("Error reading from " + resourceName, e);
         }
     }
 

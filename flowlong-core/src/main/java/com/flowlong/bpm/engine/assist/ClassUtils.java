@@ -14,10 +14,9 @@
  */
 package com.flowlong.bpm.engine.assist;
 
-import lombok.extern.slf4j.Slf4j;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 类操作帮助类
@@ -119,5 +118,33 @@ public class ClassUtils {
             log.error("检查传递的class类型参数是否为抽象类?", ex.getCause());
         }
         return null;
+    }
+
+    /**
+     * 返回要使用的默认类加载器：通常是线程上下文类加载器（如果可用）;
+     * @return ClassLoader
+     */
+    public static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl = null;
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        }
+        catch (Throwable ex) {
+            // Cannot access thread context ClassLoader - falling back...
+        }
+        if (cl == null) {
+            // No thread context class loader -> use class loader of this class.
+            cl = ClassUtils.class.getClassLoader();
+            if (cl == null) {
+                // getClassLoader() returning null indicates the bootstrap ClassLoader
+                try {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+                catch (Throwable ex) {
+                    // Cannot access system ClassLoader - oh well, maybe the caller can live with null...
+                }
+            }
+        }
+        return cl;
     }
 }
