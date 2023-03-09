@@ -60,6 +60,10 @@ public class Instance extends BaseEntity {
      */
     protected String instanceNo;
     /**
+     * 业务KEY（用于关联业务逻辑实现预留）
+     */
+    protected String businessKey;
+    /**
      * 变量json
      */
     protected String variable;

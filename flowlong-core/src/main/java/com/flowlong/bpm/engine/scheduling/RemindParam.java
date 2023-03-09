@@ -14,8 +14,11 @@
  */
 package com.flowlong.bpm.engine.scheduling;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * 调度器接口，与具体的定时调度框架无关
+ * 提醒参数
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
@@ -24,33 +27,20 @@ package com.flowlong.bpm.engine.scheduling;
  * @author hubin
  * @since 1.0
  */
-public interface FlowLongScheduler {
-    String CONFIG_REPEAT = "scheduler.repeat";
-    String CONFIG_USECALENDAR = "scheduler.useCalendar";
-    String CONFIG_HOLIDAYS = "scheduler.holidays";
-    String CONFIG_WEEKS = "scheduler.weeks";
-    String CONFIG_WORKTIME = "scheduler.workTime";
-
-    String CALENDAR_NAME = "snakerCalendar";
-
-    String KEY = "id";
-    String MODEL = "model";
-    String GROUP = "snaker";
-
-    String TYPE_EXECUTOR = "executor.";
-    String TYPE_REMINDER = "reminder.";
-
+@Getter
+@Setter
+public class RemindParam {
     /**
-     * 调度执行方法
-     *
-     * @param jobEntity 调度DTO
+     * 提醒时间 cron 表达式
      */
-    void schedule(JobEntity jobEntity);
-
+    private String cron;
     /**
-     * 停止调度
-     *
-     * @param key job主键
+     * 工作日设置，格式为 1,2,3...7，表示周一至周日
      */
-    void delete(String key);
+    private String weeks;
+    /**
+     * 工作时间设置，格式为 8:00-18:00
+     */
+    private String workTime;
+
 }

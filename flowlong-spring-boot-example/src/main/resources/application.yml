@@ -9,6 +9,11 @@ spring:
     username: root
     password: 密码
 
+# FlowLong Config
+flowlong:
+  remind:
+    cron: "*/5 * * * * ?"
+
 # Logger Config
 logging:
   level:

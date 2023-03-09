@@ -82,6 +82,10 @@ public class Task extends BaseEntity {
      */
     protected Date expireTime;
     /**
+     * 提醒时间
+     */
+    protected Date remindTime;
+    /**
      * 任务完成时间
      */
     protected Date finishTime;

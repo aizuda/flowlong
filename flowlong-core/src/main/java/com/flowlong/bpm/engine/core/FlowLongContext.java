@@ -20,7 +20,6 @@ import com.flowlong.bpm.engine.handler.JsonHandler;
 import com.flowlong.bpm.engine.handler.impl.JacksonHandler;
 import com.flowlong.bpm.engine.parser.NodeParser;
 import com.flowlong.bpm.engine.parser.impl.*;
-import com.flowlong.bpm.engine.scheduling.FlowLongScheduler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +49,6 @@ public class FlowLongContext {
     private ManagerService managerService;
     private Expression expression;
 
-    /**
-     * 调度器接口
-     */
-    private FlowLongScheduler scheduler;
     private List<FlowLongInterceptor> interceptors;
     private TaskAccessStrategy taskAccessStrategy;
 
@@ -62,6 +57,7 @@ public class FlowLongContext {
      * 使用其它json框架可以初始化的赋值该静态属性
      */
     public static JsonHandler JSON_HANDLER = new JacksonHandler();
+    public static long REMIND_SCHEDULED_FIXED_DELAY = 5000;
 
     /**
      * 初始化内置节点解析类 MAP

@@ -21,7 +21,6 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
-import com.flowlong.bpm.engine.scheduling.JobCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,10 +103,6 @@ public class TaskModel extends WorkModel {
      * 分配参与者处理类型
      */
     private String assignmentHandler;
-    /**
-     * 任务执行后回调对象
-     */
-    private JobCallback callbackObject;
     /**
      * 分配参与者处理对象
      */
@@ -240,18 +235,6 @@ public class TaskModel extends WorkModel {
 
     public String getCallback() {
         return callback;
-    }
-
-    public void setCallback(String callbackStr) {
-        if (StringUtils.isNotEmpty(callbackStr)) {
-            this.callback = callbackStr;
-            callbackObject = (JobCallback) ClassUtils.newInstance(callbackStr);
-            Assert.notNull(callbackObject, "回调处理类实例化失败");
-        }
-    }
-
-    public JobCallback getCallbackObject() {
-        return callbackObject;
     }
 
     public List<FieldModel> getFields() {
