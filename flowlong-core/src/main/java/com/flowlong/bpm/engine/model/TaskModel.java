@@ -58,10 +58,6 @@ public class TaskModel extends WorkModel {
      */
     public static final String TASKTYPE_AIDANT = "Aidant";
     /**
-     * 类型：会签任务
-     */
-    public static final String TASKTYPE_COUNTERSIGN = "Countersign";
-    /**
      * 参与者变量名称
      */
     private String assignee;
@@ -76,7 +72,6 @@ public class TaskModel extends WorkModel {
      * 任务类型
      * major：主办任务
      * aidant：协办任务
-     * countersign：会签任务
      */
     private String taskType = TASKTYPE_MAJOR;
     /**
@@ -149,10 +144,6 @@ public class TaskModel extends WorkModel {
 
     public boolean isPerformPercentage() {
         return PERFORMTYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
-    }
-
-    public boolean isCountersign() {
-        return TASKTYPE_COUNTERSIGN.equalsIgnoreCase(this.taskType);
     }
 
     public boolean isMajor() {
@@ -270,6 +261,6 @@ public class TaskModel extends WorkModel {
      * 任务类型(Major:主办的,Aidant:协助的,countersign:会签的,Record:仅仅作为记录的)
      */
     public enum TaskType {
-        Major, Aidant,Countersign,Record;
+        Major, Aidant,Record;
     }
 }
