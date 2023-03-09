@@ -3,10 +3,9 @@ package com.flowlong.bpm.engine.scheduling;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.scheduling.annotation.Scheduled;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
 
 
 /**
@@ -21,26 +20,52 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @Getter
 @Setter
-public class SpringBootScheduler {
+public class SpringBootScheduler implements SchedulingConfigurer {
+    /**
+     * 流程引擎上下文
+     */
     private FlowLongContext context;
-    private JobReminder jobReminder;
+    /**
+     * 任务提醒接口
+     */
+    private TaskReminder taskReminder;
+    /**
+     * 任务锁，可注入分布式锁实现
+     */
+    private JobLock jobLock;
+    /**
+     * 提醒参数
+     */
+    private RemindParam remindParam;
 
     /**
-     * 提醒防重入锁
+     * 流程提醒处理
      */
-    private static Lock REMIND_LOCK = new ReentrantLock();
-
-    @Scheduled(cron = "${flowlong.remind.cron}")
     public void remind() {
-        if (null != jobReminder) {
-            try {
-                REMIND_LOCK.lock();
+        try {
+            jobLock.lock();
 
-                // TODO 数据库中定时读取待提醒流程实例和任务
-                jobReminder.remind(context, null, null);
-            } finally {
-                REMIND_LOCK.unlock();
-            }
+            // TODO 数据库中定时读取待提醒流程实例和任务
+            taskReminder.remind(context, null, null);
+        } finally {
+            jobLock.unlock();
         }
+    }
+
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.addTriggerTask(() -> remind(), triggerContext ->
+                new CronTrigger(remindParam.getCron()).nextExecutionTime(triggerContext));
+    }
+
+    public void setRemindParam(RemindParam remindParam) {
+        if (null == remindParam) {
+            /*
+             * 未配置定时任务提醒参数，默认 cron 为5秒钟执行一次
+             */
+            remindParam = new RemindParam();
+            remindParam.setCron("*/5 * * * * ?");
+        }
+        this.remindParam = remindParam;
     }
 }

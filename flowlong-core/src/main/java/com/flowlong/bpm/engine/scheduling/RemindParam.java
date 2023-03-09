@@ -12,25 +12,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.mysql.expire;
+package com.flowlong.bpm.engine.scheduling;
 
-import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.scheduling.JobCallback;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 测试任务job执行后的回调类
+ * 提醒参数
  *
- * @author wangzi
+ * <p>
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
  */
+@Getter
+@Setter
+public class RemindParam {
+    /**
+     * 提醒时间 cron 表达式
+     */
+    private String cron;
+    /**
+     * 工作日设置，格式为 1,2,3...7，表示周一至周日
+     */
+    private String weeks;
+    /**
+     * 工作时间设置，格式为 8:00-18:00
+     */
+    private String workTime;
 
-@Slf4j
-public class TestCallback implements JobCallback {
-
-	public void callback(String taskId, List<Task> newTasks) {
-		log.info("callback taskId=" + taskId);
-		log.info("newTasks=" + newTasks);
-	}
 }

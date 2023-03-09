@@ -1,0 +1,24 @@
+{
+    "groups": [
+        {
+            "sourceType": "com.flowlong.bpm.autoconfigure.FlowLongProperties",
+            "name": "flowlong",
+            "type": "com.flowlong.bpm.autoconfigure.FlowLongProperties"
+        },
+        {
+            "sourceType": "com.flowlong.bpm.autoconfigure.FlowLongProperties",
+            "name": "flowlong.remind",
+            "sourceMethod": "getRemind()",
+            "type": "com.flowlong.bpm.engine.scheduling.RemindParam"
+        }
+    ],
+    "properties": [
+        {
+            "sourceType": "com.flowlong.bpm.engine.scheduling.RemindParam",
+            "name":  "flowlong.remind.cron",
+            "defaultValue": "*/5 * * * * ?",
+            "description": "remind cron.",
+            "type": "java.lang.String"
+        }
+    ]
+}

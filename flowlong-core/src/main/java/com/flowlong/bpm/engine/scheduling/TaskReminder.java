@@ -28,7 +28,7 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
  * @author hubin
  * @since 1.0
  */
-public interface JobReminder {
+public interface TaskReminder {
 
     /**
      * 提醒操作

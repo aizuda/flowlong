@@ -55,7 +55,6 @@ public interface NodeParser {
     String ATTR_VERSION = "version";
     String ATTR_EXPIRE_TIME = "expireTime";
     String ATTR_AUTO_EXECUTE = "autoExecute";
-    String ATTR_CALLBACK = "callback";
     String ATTR_REMINDER_TIME = "reminderTime";
     String ATTR_REMINDER_REPEAT = "reminderRepeat";
     String ATTR_CLAZZ = "clazz";

@@ -16,7 +16,10 @@ package com.flowlong.bpm.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.scheduling.*;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -39,15 +42,41 @@ import org.springframework.context.annotation.Configuration;
 public class FlowLongAutoConfiguration {
 
     @Bean
-    public FlowLongEngine flowLongEngine(ProcessService processService, QueryService queryService,
-                                         RuntimeService runtimeService, TaskService taskService,
-                                         ManagerService managerService) {
+    @ConditionalOnMissingBean
+    public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService,
+                                           RuntimeService runtimeService, TaskService taskService,
+                                           ManagerService managerService) {
         FlowLongContext flc = new FlowLongContext();
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
         flc.setManagerService(managerService);
-        return flc.build();
+        return flc;
+    }
+
+    @Bean
+    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    @ConditionalOnMissingBean
+    public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
+        return flowLongContext.build();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JobLock jobLock() {
+        return new LocalLock();
+    }
+
+    @Bean
+    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
+                                                   TaskReminder taskReminder, JobLock jobLock) {
+        SpringBootScheduler scheduler = new SpringBootScheduler();
+        scheduler.setContext(flowLongContext);
+        scheduler.setRemindParam(properties.getRemind());
+        scheduler.setTaskReminder(taskReminder);
+        scheduler.setJobLock(jobLock);
+        return scheduler;
     }
 }

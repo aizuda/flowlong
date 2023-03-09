@@ -14,9 +14,11 @@
  */
 package com.flowlong.bpm.autoconfigure;
 
+import com.flowlong.bpm.engine.scheduling.RemindParam;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * 配置属性
@@ -32,5 +34,10 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ConfigurationProperties(prefix = "flowlong")
 public class FlowLongProperties {
+    /**
+     * 提醒时间
+     */
+    @NestedConfigurationProperty
+    private RemindParam remind;
 
 }
