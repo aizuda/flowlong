@@ -16,7 +16,10 @@ package com.flowlong.bpm.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.scheduling.*;
+import com.flowlong.bpm.engine.scheduling.JobLock;
+import com.flowlong.bpm.engine.scheduling.LocalLock;
+import com.flowlong.bpm.engine.scheduling.SpringBootScheduler;
+import com.flowlong.bpm.engine.scheduling.TaskReminder;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -56,7 +59,6 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
     @ConditionalOnMissingBean
     public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
         return flowLongContext.build();
@@ -70,6 +72,7 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    @ConditionalOnMissingBean
     public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
                                                    TaskReminder taskReminder, JobLock jobLock) {
         SpringBootScheduler scheduler = new SpringBootScheduler();
