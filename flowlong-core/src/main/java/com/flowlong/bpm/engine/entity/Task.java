@@ -90,6 +90,11 @@ public class Task extends BaseEntity {
      */
     protected Date finishTime;
 
+    /**
+     * 任务通过百分比
+     */
+    protected Integer taskPassPercentage;
+
     public boolean major() {
         return this.taskType == TaskModel.TaskType.Major.ordinal();
     }

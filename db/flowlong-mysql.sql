@@ -67,6 +67,7 @@ CREATE TABLE `flw_his_task`  (
                                  `remind_time` timestamp NULL DEFAULT NULL COMMENT '提醒时间',
                                  `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
                                  `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，结束 1，活动',
+                                 `task_pass_percentage` tinyint(100) NULL DEFAULT 0 COMMENT '任务通过百分比',
                                  PRIMARY KEY (`id`) USING BTREE,
                                  INDEX `idx_his_task_instance_id`(`instance_id` ASC) USING BTREE,
                                  INDEX `idx_his_task_parent_task_id`(`parent_task_id` ASC) USING BTREE,
@@ -177,6 +178,7 @@ CREATE TABLE `flw_task`  (
                              `expire_time` timestamp NULL DEFAULT NULL COMMENT '任务期望完成时间',
                              `remind_time` timestamp NULL DEFAULT NULL COMMENT '提醒时间',
                              `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
+                             `task_pass_percentage` tinyint(100) NULL DEFAULT 0 COMMENT '任务通过百分比',
                              PRIMARY KEY (`id`) USING BTREE,
                              INDEX `idx_task_instance_id`(`instance_id` ASC) USING BTREE,
                              CONSTRAINT `fk_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -193,7 +195,7 @@ CREATE TABLE `flw_task_actor`  (
                                    `actor_id` varchar(300) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '参与者ID',
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
-                                   CONSTRAINT `fk__task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+                                   CONSTRAINT `fk_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '任务参与者表' ROW_FORMAT = DYNAMIC;
 
 SET FOREIGN_KEY_CHECKS = 1;

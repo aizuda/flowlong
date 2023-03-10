@@ -129,7 +129,10 @@ public class TaskModel extends WorkModel {
              * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
              */
-
+            fire(new MergeActorHandler(getName()), flowLongContext, execution);
+            if (execution.isMerged()) {
+                runOutTransition(flowLongContext, execution);
+            }
 
         }
     }
