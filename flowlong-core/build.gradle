@@ -8,11 +8,12 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-json")
     compileOnly("org.springframework:spring-context")
     compileOnly("com.baomidou:mybatis-plus-extension")
-    compileOnly 'de.odysseus.juel:juel:2.1.3'
+    compileOnly('de.odysseus.juel:juel:2.1.3')
 
     testCompileOnly("org.springframework.boot:spring-boot-starter-json")
     testCompileOnly("org.springframework:spring-web")
     testCompileOnly("org.springframework:spring-jdbc")
     testCompileOnly("com.baomidou:mybatis-plus-extension")
     testCompileOnly("mysql:mysql-connector-java")
+    testCompileOnly('de.odysseus.juel:juel:2.1.3')
 }
