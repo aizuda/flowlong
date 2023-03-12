@@ -17,6 +17,8 @@ package com.flowlong.bpm.engine.core;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.core.enums.JumpMode;
+import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
@@ -227,25 +229,53 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName) {
-        Execution execution = execute(taskId, createBy, args);
+        return this.executeAndJumpTask(taskId, createBy, args, nodeName, JumpMode.all);
+    }
+
+    @Override
+    public List<Task> retreatTask(Long taskId, String createBy, Map<String, Object> args, String nodeName) {
+        return this.executeAndJumpTask(taskId, createBy, args, nodeName, JumpMode.retreat);
+    }
+
+    /**
+     * 根据任务ID，创建人ID，参数列表执行任务，并且根据节点名称与跳转模式跳转到指定节点
+     * @param taskId
+     * @param createBy
+     * @param args
+     * @param nodeName
+     * @param jumpMode
+     * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
+     */
+    public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName, JumpMode jumpMode) {
+        Execution execution = this.execute(taskId, createBy, args);
         if (execution == null) {
             return Collections.emptyList();
         }
-        ProcessModel model = execution.getProcess().getProcessModel();
-        Assert.notNull(model, "当前任务未找到流程定义模型");
+        ProcessModel processModel = execution.getProcess().getProcessModel();
+        Assert.notNull(processModel, "当前任务未找到流程定义模型");
         if (StringUtils.isEmpty(nodeName)) {
-            Task newTask = taskService().rejectTask(model, execution.getTask());
-            execution.addTask(newTask);
+            // 驳回当前任务
+            Task rejectTask = taskService().rejectTask(processModel, execution.getTask());
+            execution.addTask(rejectTask);
         } else {
-            NodeModel nodeModel = model.getNode(nodeName);
+            // 委派获取历史任务信息
+            switch (jumpMode) {
+                case advance:
+                    // todo: 暂未扩展节点前进逻辑
+                    break;
+                case retreat:
+                    HisTask appointTask = queryService().getHistoryTaskByName(execution.getInstance().getId(), nodeName);
+                    Assert.notNull(appointTask, "未在当前实例中找到对应任务历史记录");
+                    break;
+            }
+            NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
-            //动态创建转移对象，由转移对象执行execution实例
+            // 动态创建转移对象，由转移对象执行execution实例
             TransitionModel tm = new TransitionModel();
             tm.setTarget(nodeModel);
             tm.setEnabled(true);
             tm.execute(flowLongContext, execution);
         }
-
         return execution.getTasks();
     }
 
@@ -273,7 +303,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @return Execution
      */
     protected Execution execute(Long taskId, String createBy, Map<String, Object> args) {
-        if (args == null) args = new HashMap<>();
+        if (args == null) {
+            args = new HashMap<>();
+        }
         Task task = taskService().complete(taskId, createBy, args);
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
@@ -302,5 +334,4 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         execution.setTask(task);
         return execution;
     }
-
 }
