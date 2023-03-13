@@ -103,20 +103,20 @@ public class TaskServiceImpl implements TaskService {
         if (!isAllowed(task, createBy)) {
             throw new FlowLongException("当前参与者[" + createBy + "]不允许执行任务[taskId=" + taskId + "]");
         }
-        HisTask history = new HisTask(task);
-        history.setFinishTime(new Date());
-        history.setTaskState(InstanceState.finish);
-        history.setCreateBy(createBy);
+        HisTask hisTask = new HisTask(task);
+        hisTask.setFinishTime(new Date());
+        hisTask.setTaskState(InstanceState.finish);
+        hisTask.setCreateBy(createBy);
 
         List<HisTaskActor> hisTaskActors = new ArrayList<>();
-        if (history.actorIds() == null) {
+        if (hisTask.actorIds() == null) {
             List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
             for (TaskActor actor : actors) {
                 hisTaskActors.add(new HisTaskActor(actor));
             }
         }
         // 迁移 task 信息到 flw_his_task
-        hisTaskMapper.insert(history);
+        hisTaskMapper.insert(hisTask);
         if (hisTaskActors.size() > 0) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
             hisTaskActorMapper.insertBatchSomeColumn(hisTaskActors);
@@ -125,10 +125,16 @@ public class TaskServiceImpl implements TaskService {
         }
         // 删除 flw_task 中指定 task 信息
         taskMapper.deleteById(task);
-        if (null != taskListener) {
-            taskListener.notify(TaskListener.EVENT_COMPLETE, history);
-        }
+        // 任务监听器通知
+        this.taskNotify(TaskListener.EVENT_COMPLETE, task);
         return task;
+    }
+
+
+    protected void taskNotify(String event, Task task) {
+        if (null != taskListener) {
+            taskListener.notify(event, task);
+        }
     }
 
     /**
@@ -139,6 +145,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void updateTask(Task task) {
         taskMapper.updateById(task);
+        // 任务监听器通知
+        this.taskNotify(TaskListener.EVENT_UPDATE, task);
     }
 
     /**
@@ -272,9 +280,9 @@ public class TaskServiceImpl implements TaskService {
             tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
         } else {
             List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
-                    .eq(HisTask::getInstanceId, hist.getInstanceId())
-                    .eq(HisTask::getTaskName, hist.getTaskName())
-                    .eq(HisTask::getParentTaskId, hist.getParentTaskId()))
+                            .eq(HisTask::getInstanceId, hist.getInstanceId())
+                            .eq(HisTask::getTaskName, hist.getTaskName())
+                            .eq(HisTask::getParentTaskId, hist.getParentTaskId()))
                     .stream().map(HisTask::getId).collect(Collectors.toList());
             if (!hisTaskIds.isEmpty()) {
                 tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
@@ -504,7 +512,7 @@ public class TaskServiceImpl implements TaskService {
      * @return 参与者数组
      */
     private String[] getTaskActors(Object actors) {
-        if (actors == null){
+        if (actors == null) {
             return null;
         }
         String[] results;
