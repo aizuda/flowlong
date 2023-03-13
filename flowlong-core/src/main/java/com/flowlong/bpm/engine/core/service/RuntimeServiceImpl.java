@@ -144,6 +144,13 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
     }
 
+    /**
+     * 结束抄送实例
+     *
+     * @param instanceId    流程实例ID
+     * @param actorIds      参与者ID
+     * @return 更新是否成功
+     */
     @Override
     public boolean finishCCInstance(Long instanceId, List<String> actorIds) {
         CCInstance ccInstance = new CCInstance();

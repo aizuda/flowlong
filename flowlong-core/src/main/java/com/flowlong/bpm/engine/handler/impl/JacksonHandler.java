@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine.handler.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.JsonHandler;
 
@@ -31,6 +32,10 @@ import com.flowlong.bpm.engine.handler.JsonHandler;
  */
 public class JacksonHandler implements JsonHandler {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    static {
+        OBJECT_MAPPER.registerModule(new JavaTimeModule());
+    }
 
     @Override
     public String toJson(Object object) {
