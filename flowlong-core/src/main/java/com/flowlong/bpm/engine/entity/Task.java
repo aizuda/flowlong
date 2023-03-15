@@ -41,6 +41,8 @@ import java.util.Map;
 @TableName("flw_task")
 public class Task extends BaseEntity {
     public static final String KEY_ACTOR = "S-ACTOR";
+
+    public static final String PASS_NUM = "PASS-NUM";
     /**
      * 流程实例ID
      */
@@ -89,11 +91,6 @@ public class Task extends BaseEntity {
      * 任务完成时间
      */
     protected Date finishTime;
-
-    /**
-     * 任务通过百分比
-     */
-    protected Integer taskPassPercentage;
 
     public boolean major() {
         return this.taskType == TaskModel.TaskType.Major.ordinal();

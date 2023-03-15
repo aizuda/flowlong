@@ -20,10 +20,15 @@ import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 任务定义task元素
@@ -35,6 +40,9 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
+@Slf4j
+@Getter
+@Setter
 public class TaskModel extends WorkModel {
     /**
      * 类型：普通任务
@@ -107,6 +115,11 @@ public class TaskModel extends WorkModel {
      */
     private List<FieldModel> fields = null;
 
+    /**
+     * 任务通过百分比
+     */
+    protected Integer taskPassPercentage;
+
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
         if (performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
@@ -129,8 +142,12 @@ public class TaskModel extends WorkModel {
              * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
              */
-            fire(new MergeActorHandler(getName()), flowLongContext, execution);
-            if (execution.isMerged()) {
+            Task task = execution.getTask();
+            Map<String, Object> variableMap = task.variableMap();
+            Integer passNum = (Integer) variableMap.get(Task.PASS_NUM);
+            flowLongContext.getQueryService().getTaskActorsByTaskId(task.getId());
+            List<Task> tasks = execution.getTasks();
+            if (passNum == tasks.size()) {
                 runOutTransition(flowLongContext, execution);
             }
 
@@ -155,26 +172,6 @@ public class TaskModel extends WorkModel {
 
     public boolean isAidant() { return TASKTYPE_AIDANT.equalsIgnoreCase(this.taskType); }
 
-    public String getAssignee() {
-        return assignee;
-    }
-
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
-
-    public String getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(String expireTime) {
-        this.expireTime = expireTime;
-    }
-
-    public String getTaskType() {
-        return taskType;
-    }
-
     public void setTaskType(String taskType) {
         this.taskType = (StringUtils.isEmpty(taskType) ? TASKTYPE_MAJOR : taskType);
     }
@@ -187,56 +184,12 @@ public class TaskModel extends WorkModel {
         this.performType = (StringUtils.isEmpty(performType) ? PERFORMTYPE_ANY : performType);
     }
 
-    public String getReminderTime() {
-        return reminderTime;
-    }
-
-    public void setReminderTime(String reminderTime) {
-        this.reminderTime = reminderTime;
-    }
-
-    public String getReminderRepeat() {
-        return reminderRepeat;
-    }
-
-    public void setReminderRepeat(String reminderRepeat) {
-        this.reminderRepeat = reminderRepeat;
-    }
-
-    public String getAutoExecute() {
-        return autoExecute;
-    }
-
-    public void setAutoExecute(String autoExecute) {
-        this.autoExecute = autoExecute;
-    }
-
-    public Assignment getAssignmentHandlerObject() {
-        return assignmentHandlerObject;
-    }
-
-    public String getAssignmentHandler() {
-        return assignmentHandler;
-    }
-
     public void setAssignmentHandler(String assignmentHandlerStr) {
         if (StringUtils.isNotEmpty(assignmentHandlerStr)) {
             this.assignmentHandler = assignmentHandlerStr;
             assignmentHandlerObject = (Assignment) ClassUtils.newInstance(assignmentHandlerStr);
             Assert.notNull(assignmentHandlerObject, "分配参与者处理类实例化失败");
         }
-    }
-
-    public String getCallback() {
-        return callback;
-    }
-
-    public List<FieldModel> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<FieldModel> fields) {
-        this.fields = fields;
     }
 
     /**

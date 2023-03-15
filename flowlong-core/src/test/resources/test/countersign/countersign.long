@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<process  name="testCountersign" displayName="测试会签" >
-<start name="start" displayName="开始" layout="360,180,120,80">
-    <transition name="t1" to="apply" g="378,180;440,180"></transition>
+<process displayName="测试会签任务" name="testCountersign02">
+<start displayName="start1" layout="28,83,-1,-1" name="start1">
+    <transition g="" name="transition1" offset="0,0" to="task1"/>
 </start>
-<task name="apply" displayName="文章审核申请" layout="500,180,120,80" assignee="approve.operator"  performType="PERCENTAGE">
-    <transition name="t2" to="approveDept" g="560,180;620,180"></transition>
+<end displayName="end1" layout="661,83,-1,-1" name="end1"/>
+<task displayName="task1" layout="122,81,-1,-1" name="task1" performType="PERCENTAGE" assignee="person1.assignee,person2.assignee">
+    <transition g="" name="transition2" offset="0,0" to="task2"/>
 </task>
-<task name="approveDept" displayName="部门领导审批" layout="680,180,120,80" assignee="approve1.operator"  performType="PERCENTAGE">
-    <transition name="t3" to="approveBoss" g="740,180;800,180"></transition>
+<task displayName="task2" layout="255,81,-1,-1" name="task2" performType="PERCENTAGE">
+    <transition g="" name="transition3" offset="0,0" to="task3"/>
 </task>
-<task name="approveBoss" displayName="公司领导审批" layout="860,180,120,80" assignee="approve2.operator"  performType="PERCENTAGE">
-    <transition name="t4" to="end" g="920,180;982,180"></transition>
+<task displayName="task3" layout="491,81,-1,-1" name="task3" performType="PERCENTAGE">
+    <transition g="" name="transition5" offset="0,0" to="task4"/>
 </task>
-<end name="end" displayName="结束" layout="1000,180,120,80" >
-</end>
+<task displayName="task4" layout="491,188,-1,-1" name="task4" performType="PERCENTAGE">
+    <transition g="" name="transition7" offset="0,0" to="end1"/>
+</task>
 </process>

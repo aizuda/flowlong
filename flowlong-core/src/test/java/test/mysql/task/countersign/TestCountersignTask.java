@@ -19,6 +19,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.model.TaskModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -44,14 +45,11 @@ public class TestCountersignTask extends MysqlTest {
      */
     @Test
     public void test() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.operator", new String[]{"1", "2"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
+        Instance instance = flowLongEngine.startInstanceById(processId, "2");
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getParentTaskId(), "2");
+            flowLongEngine.executeTask(task.getId(), "2");
         }
-
     }
 
     /**
@@ -82,12 +80,15 @@ public class TestCountersignTask extends MysqlTest {
     @Test
     public void test3() {
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.operator", new String[]{"1", "2"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
-        List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getParentTaskId(), "2");
-        }
+        args.put("task1.assignee", new String[]{"1"});
+        Instance instance = flowLongEngine.startInstanceById(processId, "test0", args);
+        System.out.println("instance=" + instance);
+        TaskModel tm1 = new TaskModel();
+        tm1.setName("task1");
+        tm1.setDisplayName("任务1");
+        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), "test0", args, tm1);
+        Task task = tasks.get(0);
+        System.out.println(task.toString());
     }
 
     /**

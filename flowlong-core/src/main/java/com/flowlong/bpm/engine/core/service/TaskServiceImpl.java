@@ -412,6 +412,7 @@ public class TaskServiceImpl implements TaskService {
         String[] actors = getTaskActors(taskModel, execution);
 
         args.put(Task.KEY_ACTOR, StringUtils.getStringByArray(actors));
+        args.put(Task.PASS_NUM, 0);
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
         task.setExpireTime(expireDate);
