@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
@@ -36,7 +37,6 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -114,7 +114,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 迁移任务参与者
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
-        if (!CollectionUtils.isEmpty(actors)) {
+        if (CollectionUtils.isNotEmpty(actors)) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
             actors.forEach(t -> hisTaskActorMapper.insert(new HisTaskActor(t)));
             // 移除 flw_task_actor 中 task 参与者信息
@@ -657,7 +657,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId) {
         List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
-        if (!CollectionUtils.isEmpty(taskList)) {
+        if (CollectionUtils.isNotEmpty(taskList)) {
             List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
             taskMapper.delete(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));

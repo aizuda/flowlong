@@ -231,9 +231,9 @@ public class ProcessServiceImpl implements ProcessService {
     public void cascadeRemove(Long id) {
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
                 .eq(HisInstance::getProcessId, id));
-        for (HisInstance hisInstance : hisInstances) {
-             // 删除与流程相关的实例
-             runtimeService.cascadeRemove(hisInstance.getId());
+        if (CollectionUtils.isNotEmpty(hisInstances)) {
+            // 删除与流程相关的实例
+            hisInstances.forEach(t -> runtimeService.cascadeRemove(t.getId()));
         }
         // 删除与流程相关的委托代理
         surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, id));

@@ -1,5 +1,6 @@
 package com.flowlong.bpm.engine.scheduling;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Task;
@@ -8,7 +9,6 @@ import lombok.Setter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -52,7 +52,7 @@ public class SpringBootScheduler implements SchedulingConfigurer {
             jobLock.lock();
             TaskService taskService = context.getTaskService();
             List<Task> taskList = taskService.getTimeoutOrRemindTasks();
-            if (!CollectionUtils.isEmpty(taskList)) {
+            if (CollectionUtils.isNotEmpty(taskList)) {
                 for (Task task : taskList) {
                     if (null != task.getRemindTime() && task.getRemindTime().after(new Date())) {
                         /**
