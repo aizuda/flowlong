@@ -14,12 +14,15 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.entity.HisTask;
+import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
 import lombok.Getter;
@@ -29,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 任务定义task元素
@@ -143,12 +147,23 @@ public class TaskModel extends WorkModel {
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
              */
             Task task = execution.getTask();
-            Map<String, Object> variableMap = task.variableMap();
-            Integer passNum = (Integer) variableMap.get(Task.PASS_NUM);
-            flowLongContext.getQueryService().getTaskActorsByTaskId(task.getId());
-            List<Task> tasks = execution.getTasks();
-            if (passNum == tasks.size()) {
-                runOutTransition(flowLongContext, execution);
+            Long parentTaskId = task.getParentTaskId();
+            if (parentTaskId != 0) {
+//                flowLongContext.getQueryService().getParentTaskId(parentTaskId);
+                Task parentTask = flowLongContext.getQueryService().getTask(parentTaskId);
+                String variable = parentTask.getVariable();
+                Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(variable, Map.class);
+                if (ObjectUtils.isNotEmpty(map)) {
+                    Integer totalActorNum = (Integer) map.get(Task.TOTAL_ACTOR_NUM);
+                    Integer passNUm = (Integer) map.get(Task.PASS_NUM);
+                    passNUm += 1;
+                    map.put(Task.PASS_NUM, passNUm);
+                    parentTask.setVariable(FlowLongContext.JSON_HANDLER.toJson(map));
+                    flowLongContext.getTaskService().updateTask(task);
+                    if (passNUm >= totalActorNum * taskPassPercentage / 100) {
+                        runOutTransition(flowLongContext, execution);
+                    }
+                }
             }
 
         }

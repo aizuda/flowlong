@@ -99,4 +99,16 @@ public class QueryServiceImpl implements QueryService {
         return hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery().eq(HisTaskActor::getTaskId, taskId));
     }
 
+    @Override
+    public List<Instance> getActiveInstances(Long parentId) {
+        return instanceMapper.selectList(Wrappers.<Instance>lambdaQuery().eq(Instance::getParentId, parentId));
+    }
+
+    @Override
+    public List<Task> getActiveTasks(Long instanceId, List<String> activeNodes) {
+        return taskMapper.selectList(Wrappers.<Task>lambdaQuery()
+                .eq(Task::getInstanceId, instanceId)
+                .in(Task::getTaskName, activeNodes));
+    }
+
 }

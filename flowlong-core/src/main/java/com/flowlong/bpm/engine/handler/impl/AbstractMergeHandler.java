@@ -18,8 +18,11 @@ import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.model.SubProcessModel;
+import com.flowlong.bpm.engine.model.TaskModel;
 
 import java.util.List;
 
@@ -49,28 +52,22 @@ public abstract class AbstractMergeHandler implements FlowLongHandler {
         boolean isSubProcessMerged = false;
         boolean isTaskMerged = false;
 
-//        if (model.containsNodeNames(SubProcessModel.class, activeNodes)) {
-//            QueryFilter filter = new QueryFilter().setParentId(instance.getId())
-//                    .setExcludedIds(new String[]{execution.getChildInstanceId()});
-//            List<Instance> instances = queryService.getActiveInstances(filter);
-//            //如果所有子流程都已完成，则表示可合并
-//            if (instances == null || instances.isEmpty()) {
-//                isSubProcessMerged = true;
-//            }
-//        } else {
-//            isSubProcessMerged = true;
-//        }
-//        if (isSubProcessMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
-//            QueryFilter filter = new QueryFilter().
-//                    setInstanceId(instance.getId()).
-//                    setExcludedIds(new String[]{execution.getTask().getId()}).
-//                    setNames(activeNodes);
-//            List<Task> tasks = queryService.getActiveTasks(filter);
-//            if (tasks == null || tasks.isEmpty()) {
-//                //如果所有task都已完成，则表示可合并
-//                isTaskMerged = true;
-//            }
-//        }
+        if (model.containsNodeNames(SubProcessModel.class, activeNodes)) {
+            List<Instance> instances = queryService.getActiveInstances(instance.getParentId());
+            //如果所有子流程都已完成，则表示可合并
+            if (instances == null || instances.isEmpty()) {
+                isSubProcessMerged = true;
+            }
+        } else {
+            isSubProcessMerged = true;
+        }
+        if (isSubProcessMerged && model.containsNodeNames(TaskModel.class, activeNodes)) {
+            List<Task> tasks = queryService.getActiveTasks(instance.getId(), activeNodes);
+            if (tasks == null || tasks.isEmpty()) {
+                //如果所有task都已完成，则表示可合并
+                isTaskMerged = true;
+            }
+        }
         execution.setMerged(isSubProcessMerged && isTaskMerged);
     }
 
