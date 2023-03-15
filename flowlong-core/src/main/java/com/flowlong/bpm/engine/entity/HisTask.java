@@ -38,7 +38,7 @@ import lombok.ToString;
 @TableName("flw_his_task")
 public class HisTask extends Task {
     /**
-     * 任务状态（0：结束；1：活动）
+     * 任务状态 0，活动 1，结束 2，超时 3，终止
      */
     protected Integer taskState;
 

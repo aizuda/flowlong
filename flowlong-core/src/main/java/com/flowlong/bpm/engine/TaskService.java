@@ -45,7 +45,7 @@ public interface TaskService {
     /**
      * 完成指定的任务，删除活动任务记录，创建历史任务
      *
-     * @param taskId 任务id
+     * @param taskId 任务ID
      * @return Task 任务对象
      */
     Task complete(Long taskId);
@@ -53,7 +53,7 @@ public interface TaskService {
     /**
      * 完成指定的任务，删除活动任务记录，创建历史任务
      *
-     * @param taskId   任务id
+     * @param taskId   任务ID
      * @param createBy 创建人
      * @return Task 任务对象
      */
@@ -62,7 +62,7 @@ public interface TaskService {
     /**
      * 根据任务ID，创建人ID完成任务
      *
-     * @param taskId   任务id
+     * @param taskId   任务ID
      * @param createBy 创建人ID
      * @param args     参数集合
      * @return Task 任务对象
@@ -74,7 +74,14 @@ public interface TaskService {
      *
      * @param task 任务对象
      */
-    void updateTask(Task task);
+    void updateTaskById(Task task);
+
+    /**
+     * 任务设置超时
+     *
+     * @param taskId 任务ID
+     */
+    boolean taskTimeout(Long taskId);
 
     /**
      * 根据执行对象、自定义节点模型创建历史任务记录
@@ -89,7 +96,7 @@ public interface TaskService {
      * 根据任务ID，创建人ID提取任务
      * 提取任务相当于预受理操作，仅仅标识此任务只能由此创建人处理
      *
-     * @param taskId   任务id
+     * @param taskId   任务ID
      * @param createBy 创建人ID
      * @return Task 任务对象
      */
@@ -99,24 +106,24 @@ public interface TaskService {
      * 根据历史任务ID，创建人唤醒历史任务
      * 该方法会导致流程状态不可控，请慎用
      *
-     * @param taskId   历史任务id
+     * @param taskId   历史任务ID
      * @param createBy 创建人ID
      * @return Task 唤醒后的任务对象
      */
     Task resume(Long taskId, String createBy);
 
     /**
-     * 向指定的任务id添加参与者
+     * 向指定的任务ID添加参与者
      *
-     * @param taskId 任务id
+     * @param taskId 任务ID
      * @param actors 参与者
      */
     void addTaskActor(Long taskId, String... actors);
 
     /**
-     * 向指定的任务id添加参与者
+     * 向指定的任务ID添加参与者
      *
-     * @param taskId      任务id
+     * @param taskId      任务ID
      * @param performType 参与类型
      * @param actors      参与者
      */
@@ -125,7 +132,7 @@ public interface TaskService {
     /**
      * 根据任务ID、创建人撤回任务
      *
-     * @param taskId   任务id
+     * @param taskId   任务ID
      * @param createBy 创建人
      * @return Task 任务对象
      */
@@ -159,9 +166,9 @@ public interface TaskService {
     List<Task> createTask(TaskModel taskModel, Execution execution);
 
     /**
-     * 根据已有任务id、任务类型、参与者创建新的任务
+     * 根据已有任务ID、任务类型、参与者创建新的任务
      *
-     * @param taskId   主办任务id
+     * @param taskId   主办任务ID
      * @param taskType 任务类型
      * @param actors   参与者集合
      * @return List<Task> 创建任务集合
@@ -169,16 +176,24 @@ public interface TaskService {
     List<Task> createNewTask(Long taskId, int taskType, String... actors);
 
     /**
-     * 根据任务id获取任务模型
+     * 获取超时或者提醒的任务
      *
-     * @param taskId 任务id
+     * @return List<Task> 任务列表
+     */
+    List<Task> getTimeoutOrRemindTasks();
+
+    /**
+     * 根据任务ID获取任务模型
+     *
+     * @param taskId 任务ID
      * @return
      */
     TaskModel getTaskModel(String taskId);
 
     /**
-     * 对指定的任务id删除参与者
-     * @param taskId 任务id
+     * 对指定的任务ID删除参与者
+     *
+     * @param taskId 任务ID
      * @param actors 参与者
      */
     void removeTaskActor(Long taskId, String... actors);

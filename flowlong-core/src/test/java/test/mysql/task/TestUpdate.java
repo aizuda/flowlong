@@ -37,7 +37,7 @@ public class TestUpdate extends MysqlTest {
         System.out.println("instance=" + instance);
         Task task = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()).get(0);
         task.setCreateBy("testUpdate");
-        flowLongEngine.taskService().updateTask(task);
+        flowLongEngine.taskService().updateTaskById(task);
         flowLongEngine.taskService().complete(task.getId(), "testUpdate");
     }
 }

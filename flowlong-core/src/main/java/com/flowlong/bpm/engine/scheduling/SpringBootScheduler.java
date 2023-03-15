@@ -1,11 +1,17 @@
 package com.flowlong.bpm.engine.scheduling;
 
+import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.entity.Task;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -44,9 +50,34 @@ public class SpringBootScheduler implements SchedulingConfigurer {
     public void remind() {
         try {
             jobLock.lock();
+            TaskService taskService = context.getTaskService();
+            List<Task> taskList = taskService.getTimeoutOrRemindTasks();
+            if (!CollectionUtils.isEmpty(taskList)) {
+                for (Task task : taskList) {
+                    if (null != task.getRemindTime() && task.getRemindTime().after(new Date())) {
+                        /**
+                         * 任务提醒
+                         */
+                        try {
+                            // 1，更新提醒次数减去 1 次
+                            Task temp = new Task();
+                            temp.setId(task.getId());
+                            temp.setRemindRepeat(task.getRemindRepeat() - 1);
+                            taskService.updateTaskById(temp);
 
-            // TODO 数据库中定时读取待提醒流程实例和任务
-            taskReminder.remind(context, null, null);
+                            // 2，调用提醒接口
+                            taskReminder.remind(context, task.getInstanceId(), task.getId());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        /**
+                         * 任务超时
+                         */
+                        taskService.taskTimeout(task.getId());
+                    }
+                }
+            }
         } finally {
             jobLock.unlock();
         }

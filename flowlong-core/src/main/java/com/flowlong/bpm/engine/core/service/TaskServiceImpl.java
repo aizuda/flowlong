@@ -143,10 +143,35 @@ public class TaskServiceImpl implements TaskService {
      * @param task 任务对象
      */
     @Override
-    public void updateTask(Task task) {
+    public void updateTaskById(Task task) {
         taskMapper.updateById(task);
         // 任务监听器通知
         this.taskNotify(TaskListener.EVENT_UPDATE, task);
+    }
+
+    /**
+     * 任务设置超时
+     *
+     * @param taskId 任务ID
+     */
+    @Override
+    public boolean taskTimeout(Long taskId) {
+        Task task = taskMapper.selectById(taskId);
+        if (null != task) {
+            // 1，更新历史任务状态为超时，设置完成时间
+            HisTask hisTask = new HisTask();
+            hisTask.setId(taskId);
+            hisTask.setTaskState(InstanceState.timeout);
+            hisTask.setFinishTime(new Date());
+            hisTaskMapper.updateById(hisTask);
+
+            // 2，删除任务
+            taskMapper.deleteById(taskId);
+
+            // 3，任务监听器通知
+            this.taskNotify(TaskListener.EVENT_UPDATE, task);
+        }
+        return true;
     }
 
     /**
@@ -276,7 +301,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
         List<Task> tasks = new ArrayList<>();
         if (hist.isPerformAny()) {
-            // 根据父任务id查询所有子任务
+            // 根据父任务ID查询所有子任务
             tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
         } else {
             List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
@@ -333,7 +358,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 对指定的任务分配参与者。参与者可以为用户、部门、角色
      *
-     * @param taskId   任务id
+     * @param taskId   任务ID
      * @param actorIds 参与者id集合
      */
     private void assignTask(Long taskId, String... actorIds) {
@@ -375,9 +400,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * 获取超时或者提醒的任务
+     *
+     * @return List<Task> 任务列表
+     */
+    @Override
+    public List<Task> getTimeoutOrRemindTasks() {
+        Date currentDate = new Date();
+        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().le(Task::getExpireTime, currentDate)
+                .or().le(Task::getRemindTime, currentDate));
+    }
+
+    /**
      * 获取任务模型
      *
-     * @param taskId 任务id
+     * @param taskId 任务ID
      * @return TaskModel
      */
     @Override
@@ -389,11 +426,11 @@ public class TaskServiceImpl implements TaskService {
         Process process = processMapper.selectById(instance.getProcessId());
         ProcessModel model = process.getProcessModel();
         NodeModel nodeModel = model.getNode(task.getTaskName());
-        Assert.notNull(nodeModel, "任务id无法找到节点模型.");
+        Assert.notNull(nodeModel, "任务ID无法找到节点模型.");
         if (nodeModel instanceof TaskModel) {
             return (TaskModel) nodeModel;
         } else {
-            throw new IllegalArgumentException("任务id找到的节点模型不匹配");
+            throw new IllegalArgumentException("任务ID找到的节点模型不匹配");
         }
     }
 
