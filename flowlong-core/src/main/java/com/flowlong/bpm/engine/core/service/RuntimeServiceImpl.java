@@ -23,8 +23,8 @@ import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.*;
-import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -144,6 +144,13 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
     }
 
+    /**
+     * 结束抄送实例
+     *
+     * @param instanceId    流程实例ID
+     * @param actorIds      参与者ID
+     * @return 更新是否成功
+     */
     @Override
     public boolean finishCCInstance(Long instanceId, List<String> actorIds) {
         CCInstance ccInstance = new CCInstance();
@@ -186,7 +193,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(Instance instance) {
         instanceMapper.insert(instance);
-        hisInstanceMapper.insert(new HisInstance(instance, InstanceState.active));
+        HisInstance his = new HisInstance(instance, InstanceState.active);
+        hisInstanceMapper.insert(his);
+        // 流程实例监听器通知
+        this.instanceNotify(TaskListener.EVENT_CREATE, his);
     }
 
     /**
@@ -207,6 +217,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         his.setInstanceState(InstanceState.finish.getValue());
         his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
+        // 流程实例监听器通知
         this.instanceNotify(TaskListener.EVENT_COMPLETE, his);
     }
 
@@ -240,6 +251,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         his.setEndTime(new Date());
         instanceMapper.deleteById(instanceId);
         hisInstanceMapper.updateById(his);
+        // 流程实例监听器通知
         this.instanceNotify(TaskListener.EVENT_TERMINATE, his);
     }
 

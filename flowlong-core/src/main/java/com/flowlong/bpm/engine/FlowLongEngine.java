@@ -218,6 +218,17 @@ public interface FlowLongEngine {
      */
     List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
 
+
+    /**
+     * 根据流程ID，创建人ID，参数列表结束当前任务并根据nodeName回退到历史节点
+     * @param taskId 任务ID
+     * @param createBy 创建人ID
+     * @param args 参数列表
+     * @param nodeName 节点名称
+     * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
+     */
+    List<Task> retreatTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
+
     /**
      * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
      *

@@ -32,6 +32,7 @@ CREATE TABLE `flw_his_instance`  (
                                      `parent_node_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '父流程依赖的节点名称',
                                      `priority` tinyint(1) NULL DEFAULT NULL COMMENT '优先级',
                                      `instance_no` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '流程实例编号',
+                                     `business_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '业务KEY',
                                      `variable` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT '变量json',
                                      `version` int NULL DEFAULT NULL COMMENT '版本',
                                      `expire_time` timestamp NULL DEFAULT NULL COMMENT '期望完成时间',

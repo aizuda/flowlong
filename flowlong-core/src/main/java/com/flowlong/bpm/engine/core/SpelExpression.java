@@ -15,36 +15,38 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.Expression;
-import de.odysseus.el.ExpressionFactoryImpl;
-import de.odysseus.el.util.SimpleContext;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
-import javax.el.ExpressionFactory;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Juel 表达式引擎
+ * Spring el表达式解析器
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
  * </p>
  *
- * @author hubin
+ * @author ximu
  * @since 1.0
  */
-public class JuelExpression implements Expression {
-    private final ExpressionFactory expressionFactory;
+public class SpelExpression implements Expression {
+    private final ExpressionParser parser;
 
-    public JuelExpression() {
-        expressionFactory = new ExpressionFactoryImpl();
+    public SpelExpression() {
+        parser = new SpelExpressionParser();
     }
 
     @Override
     public <T> T eval(Class<T> T, String expr, Map<String, Object> args) {
-        SimpleContext context = new SimpleContext();
+        EvaluationContext context = new StandardEvaluationContext();
         for (Entry<String, Object> entry : args.entrySet()) {
-            context.setVariable(entry.getKey(), expressionFactory.createValueExpression(entry.getValue(), Object.class));
+            context.setVariable(entry.getKey(), entry.getValue());
         }
-        return (T) expressionFactory.createValueExpression(context, expr, T).getValue(context);
+        return parser.parseExpression(expr).getValue(context, T);
     }
+
 }
