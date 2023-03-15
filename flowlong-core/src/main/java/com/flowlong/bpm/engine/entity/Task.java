@@ -98,10 +98,6 @@ public class Task extends BaseEntity {
         return this.taskType == TaskModel.TaskType.Major.ordinal();
     }
 
-    public String[] actorIds() {
-        return null;
-    }
-
     public Map<String, Object> variableMap() {
         Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();

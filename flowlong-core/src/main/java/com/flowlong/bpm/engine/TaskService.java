@@ -197,4 +197,11 @@ public interface TaskService {
      * @param actors 参与者
      */
     void removeTaskActor(Long taskId, String... actors);
+
+    /**
+     * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor
+     *
+     * @param instanceId 流程实例ID
+     */
+    void cascadeRemoveByInstanceId(Long instanceId);
 }

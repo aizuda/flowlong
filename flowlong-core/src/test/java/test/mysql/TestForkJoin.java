@@ -41,8 +41,8 @@ public class TestForkJoin extends MysqlTest {
 	public void test() {
 		Map<String, Object> args = new HashMap<>();
 		args.put("task1.assignee", testUser1);
-		args.put("task2.assignee", testUser1);
-		args.put("task3.assignee", testUser1);
+		args.put("task2.assignee", testUser2);
+		args.put("task3.assignee", testUser3);
 		Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
 		Assertions.assertNotNull(instance);
 

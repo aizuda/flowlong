@@ -64,7 +64,8 @@ public class ProcessServiceImpl implements ProcessService {
     private SurrogateMapper surrogateMapper;
     private RuntimeService runtimeService;
 
-    public ProcessServiceImpl(ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper, RuntimeService runtimeService, SurrogateMapper surrogateMapper) {
+    public ProcessServiceImpl(RuntimeService runtimeService, ProcessMapper processMapper,
+                              HisInstanceMapper hisInstanceMapper, SurrogateMapper surrogateMapper) {
         this.processMapper = processMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.runtimeService = runtimeService;

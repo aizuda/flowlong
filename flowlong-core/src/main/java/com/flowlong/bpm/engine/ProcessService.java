@@ -118,7 +118,7 @@ public interface ProcessService {
     boolean undeploy(Long id);
 
     /**
-     * 谨慎使用.数据恢复非常痛苦，你懂得~~
+     * 谨慎使用！！！不可恢复
      * 级联删除指定流程定义的所有数据：
      * 1.wf_process
      * 2.wf_order,wf_hist_order

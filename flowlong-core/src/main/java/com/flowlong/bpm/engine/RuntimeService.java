@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 
@@ -87,8 +86,8 @@ public interface RuntimeService {
     /**
      * 结束抄送实例
      *
-     * @param instanceId    流程实例ID
-     * @param actorIds      参与者ID
+     * @param instanceId 流程实例ID
+     * @param actorIds   参与者ID
      * @return 更新是否成功
      */
     boolean finishCCInstance(Long instanceId, List<String> actorIds);
@@ -100,7 +99,7 @@ public interface RuntimeService {
     /**
      * 删除抄送记录
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      * @param actorId    参与者id
      */
     void deleteCCInstance(Long instanceId, String actorId);
@@ -108,7 +107,7 @@ public interface RuntimeService {
     /**
      * 流程实例正常完成
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      */
     void complete(Long instanceId);
 
@@ -122,17 +121,17 @@ public interface RuntimeService {
     /**
      * 流程实例强制终止
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      */
-    void terminate(String instanceId);
+    void terminate(Long instanceId);
 
     /**
      * 流程实例强制终止
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      * @param createBy   处理人员
      */
-    void terminate(String instanceId, String createBy);
+    void terminate(Long instanceId, String createBy);
 
     /**
      * 更新流程实例
@@ -143,13 +142,13 @@ public interface RuntimeService {
 
     /**
      * 级联删除指定流程实例的所有数据
-     *
+     * <p>
      * 1.flw_instance,flw_his_instance
      * 2.flw_task, flw_his_task
      * 3.flw_task_actor,flw_his_task_actor
      * 4.flw_cc_instance
      *
-     * @param id
+     * @param instanceId 流程实例ID
      */
-    void cascadeRemove(Long id);
+    void cascadeRemove(Long instanceId);
 }

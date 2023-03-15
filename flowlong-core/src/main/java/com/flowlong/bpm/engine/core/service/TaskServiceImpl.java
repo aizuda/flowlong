@@ -36,6 +36,7 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -103,28 +104,26 @@ public class TaskServiceImpl implements TaskService {
         if (!isAllowed(task, createBy)) {
             throw new FlowLongException("当前参与者[" + createBy + "]不允许执行任务[taskId=" + taskId + "]");
         }
+
+        // 迁移 task 信息到 flw_his_task
         HisTask hisTask = new HisTask(task);
         hisTask.setFinishTime(new Date());
         hisTask.setTaskState(InstanceState.finish);
         hisTask.setCreateBy(createBy);
-
-        List<HisTaskActor> hisTaskActors = new ArrayList<>();
-        if (hisTask.actorIds() == null) {
-            List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
-            for (TaskActor actor : actors) {
-                hisTaskActors.add(new HisTaskActor(actor));
-            }
-        }
-        // 迁移 task 信息到 flw_his_task
         hisTaskMapper.insert(hisTask);
-        if (hisTaskActors.size() > 0) {
+
+        // 迁移任务参与者
+        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        if (!CollectionUtils.isEmpty(actors)) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
-            hisTaskActorMapper.insertBatchSomeColumn(hisTaskActors);
+            actors.forEach(t -> hisTaskActorMapper.insert(new HisTaskActor(t)));
             // 移除 flw_task_actor 中 task 参与者信息
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
         }
+
         // 删除 flw_task 中指定 task 信息
-        taskMapper.deleteById(task);
+        taskMapper.deleteById(taskId);
+
         // 任务监听器通知
         this.taskNotify(TaskListener.EVENT_COMPLETE, task);
         return task;
@@ -650,4 +649,20 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    /**
+     * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor
+     *
+     * @param instanceId 流程实例ID
+     */
+    @Override
+    public void cascadeRemoveByInstanceId(Long instanceId) {
+        List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+        if (!CollectionUtils.isEmpty(taskList)) {
+            List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
+            taskMapper.delete(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+            hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, taskIds));
+            hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, instanceId));
+        }
+    }
 }

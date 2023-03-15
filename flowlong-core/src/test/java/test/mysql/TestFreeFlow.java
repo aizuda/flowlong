@@ -12,14 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package test.freeflow;
+package test.mysql;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.TaskModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import test.mysql.MysqlTest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,21 +33,23 @@ public class TestFreeFlow extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/freeflow/free.long");
+        processId = this.deployByResource("test/free.long");
     }
 
     @Test
     public void test() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.assignee", new String[]{"assignee1"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "assignee1", args);
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", testUser1);
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
         TaskModel tm1 = new TaskModel();
         tm1.setName("task1");
-        tm1.setDisplayName("任务1");
-        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), "testFreeTask2", args, tm1);
-        for(Task task : tasks) {
-            flowLongEngine.taskService().complete(task.getId(), "testFreeTask2", null);
+        tm1.setDisplayName("自由任务1");
+        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), testUser2, args, tm1);
+        for (Task task : tasks) {
+            // 完成自由任务
+            flowLongEngine.taskService().complete(task.getId(), testUser2, null);
         }
-//        flowLongEngine.runtimeService().terminate(instance.getId().toString());
+        // 终止流程
+        flowLongEngine.runtimeService().terminate(instance.getId());
     }
 }

@@ -232,7 +232,7 @@ public interface FlowLongEngine {
     /**
      * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      * @param createBy   创建人ID
      * @param args       参数列表
      * @param model      节点模型

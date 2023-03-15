@@ -33,7 +33,7 @@ public interface QueryService {
     /**
      * 根据流程实例ID获取流程实例对象
      *
-     * @param instanceId 流程实例id
+     * @param instanceId 流程实例ID
      * @return Instance 流程实例对象
      */
     Instance getInstance(Long instanceId);
@@ -41,7 +41,7 @@ public interface QueryService {
     /**
      * 根据流程实例ID获取历史流程实例对象
      *
-     * @param instanceId 历史流程实例id
+     * @param instanceId 历史流程实例ID
      * @return HistoryInstance 历史流程实例对象
      */
     HisInstance getHistInstance(Long instanceId);

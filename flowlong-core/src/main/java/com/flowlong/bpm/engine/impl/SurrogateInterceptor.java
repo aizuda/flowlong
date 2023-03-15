@@ -37,18 +37,18 @@ public class SurrogateInterceptor implements FlowLongInterceptor {
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
         for (Task task : execution.getTasks()) {
-            if (task.actorIds() == null) {
-                continue;
-            }
-            for (String actor : task.actorIds()) {
-                if (StringUtils.isEmpty(actor)) {
-                    continue;
-                }
-                String agent = engine.managerService().getSurrogate(actor, execution.getProcess().getName());
-                if (StringUtils.isNotEmpty(agent) && !actor.equals(agent)) {
-                    engine.taskService().addTaskActor(task.getId(), agent);
-                }
-            }
+//            if (task.actorIds() == null) {
+//                continue;
+//            }
+//            for (String actor : task.actorIds()) {
+//                if (StringUtils.isEmpty(actor)) {
+//                    continue;
+//                }
+//                String agent = engine.managerService().getSurrogate(actor, execution.getProcess().getName());
+//                if (StringUtils.isNotEmpty(agent) && !actor.equals(agent)) {
+//                    engine.taskService().addTaskActor(task.getId(), agent);
+//                }
+//            }
         }
     }
 }

@@ -38,7 +38,9 @@ public class LocalLock implements JobLock {
 
     public static Lock getLocalLock() {
         if (null == LOCAL_LOCK) {
-            LOCAL_LOCK = new ReentrantLock();
+            synchronized (LocalLock.class) {
+                LOCAL_LOCK = new ReentrantLock();
+            }
         }
         return LOCAL_LOCK;
     }

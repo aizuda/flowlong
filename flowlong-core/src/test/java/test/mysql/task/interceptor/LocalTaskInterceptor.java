@@ -25,9 +25,9 @@ public class LocalTaskInterceptor implements FlowLongInterceptor {
                 buffer.append(",创建时间=").append(task.getCreateTime());
                 buffer.append(",参与者={");
                 if (task.actorIds() != null) {
-                    for (String actor : task.actorIds()) {
-                        buffer.append(actor).append(";");
-                    }
+//                    for (String actor : task.actorIds()) {
+//                        buffer.append(actor).append(";");
+//                    }
                 }
                 buffer.append("}]");
                 log.info(buffer.toString());
