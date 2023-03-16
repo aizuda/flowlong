@@ -44,7 +44,9 @@ public class MergeBranchHandler extends AbstractMergeHandler {
      * @param buffer
      */
     private void findForkTaskNames(NodeModel node, StringBuilder buffer) {
-        if (node instanceof ForkModel) return;
+        if (node instanceof ForkModel) {
+            return;
+        }
         List<TransitionModel> inputs = node.getInputs();
         for (TransitionModel tm : inputs) {
             if (tm.getSource() instanceof WorkModel) {

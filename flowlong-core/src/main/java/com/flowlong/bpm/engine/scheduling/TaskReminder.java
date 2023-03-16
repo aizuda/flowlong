@@ -37,5 +37,5 @@ public interface TaskReminder {
      * @param instanceId    流程实例ID
      * @param currentTaskId 当前待处理任务ID
      */
-    void remind(FlowLongContext context, String instanceId, String currentTaskId);
+    void remind(FlowLongContext context, Long instanceId, Long currentTaskId);
 }

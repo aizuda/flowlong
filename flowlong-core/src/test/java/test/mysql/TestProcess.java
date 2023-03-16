@@ -72,23 +72,19 @@ public class TestProcess extends MysqlTest {
         log.info("开始测试级联删除");
         ProcessService processService = flowLongEngine.processService();
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.assignee", new String[]{"1"});
+        args.put("task1.assignee", testUser1);
         // 启动两个流程，然后抄送一个流程，在执行一个流程 测试级联删除
         Instance ins = this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
         this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
         // 抄送一个流程为了测试级联删除
-        final String actorId = "1000";
         RuntimeService runtimeService = flowLongEngine.runtimeService();
-        runtimeService.createCCInstance(ins.getId(), testUser1, actorId);
+        runtimeService.createCCInstance(ins.getId(), testUser1, testUser3);
         // 获取活跃的任务
         List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
         // 执行任务
-        tasks.forEach(t -> {
-            this.flowLongEngine.executeTask(t.getId(), testUser1);
-        });
+        tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
         // 测试级联删除
         processService.cascadeRemove(processId);
     }
-
 
 }

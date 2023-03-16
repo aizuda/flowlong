@@ -14,7 +14,6 @@
  */
 package test.mysql.task;
 
-import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

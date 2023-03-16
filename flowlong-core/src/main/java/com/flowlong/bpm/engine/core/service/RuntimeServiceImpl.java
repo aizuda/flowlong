@@ -14,15 +14,21 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.RuntimeService;
+import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
-import com.flowlong.bpm.engine.core.mapper.*;
+import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
@@ -34,7 +40,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 流程实例运行业务类
@@ -48,28 +53,26 @@ import java.util.stream.Collectors;
  */
 @Service
 public class RuntimeServiceImpl implements RuntimeService {
+    private InstanceListener instanceListener;
+    private QueryService queryService;
+    private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
     private CCInstanceMapper ccInstanceMapper;
-    private InstanceListener instanceListener;
-    private HisTaskMapper hisTaskMapper;
-    private TaskMapper taskMapper;
-    private HisTaskActorMapper hisTaskActorMapper;
-    private TaskActorMapper taskActorMapper;
+    private SurrogateMapper surrogateMapper;
 
 
-    public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener, InstanceMapper instanceMapper,
+    public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
+                              QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
                               HisInstanceMapper hisInstanceMapper, CCInstanceMapper ccInstanceMapper,
-                              HisTaskMapper hisTaskMapper, TaskMapper taskMapper,
-                              HisTaskActorMapper hisTaskActorMapper, TaskActorMapper taskActorMapper) {
+                              SurrogateMapper surrogateMapper) {
+        this.instanceListener = instanceListener;
+        this.queryService = queryService;
+        this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.ccInstanceMapper = ccInstanceMapper;
-        this.instanceListener = instanceListener;
-        this.hisTaskMapper = hisTaskMapper;
-        this.taskMapper = taskMapper;
-        this.hisTaskActorMapper = hisTaskActorMapper;
-        this.taskActorMapper = taskActorMapper;
+        this.surrogateMapper = surrogateMapper;
     }
 
     /**
@@ -147,8 +150,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 结束抄送实例
      *
-     * @param instanceId    流程实例ID
-     * @param actorIds      参与者ID
+     * @param instanceId 流程实例ID
+     * @param actorIds   参与者ID
      * @return 更新是否成功
      */
     @Override
@@ -200,10 +203,12 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     /**
-     * 更新活动实例的last_Updator、last_Update_Time、expire_Time、version、variable
+     * 更新活动实例
      */
     @Override
     public void updateInstance(Instance instance) {
+        Assert.illegalArgument(null == instance || null == instance.getId(),
+                "instance id cannot be empty");
         instanceMapper.updateById(instance);
     }
 
@@ -230,22 +235,25 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 强制中止流程实例
      *
-     * @see RuntimeServiceImpl#terminate(String, String)
+     * @param instanceId 流程实例ID
      */
     @Override
-    public void terminate(String instanceId) {
-        this.terminate(instanceId, null);
+    public void terminate(Long instanceId) {
+        this.terminate(instanceId, FlowLongEngine.ADMIN);
     }
 
     /**
      * 强制中止活动实例,并强制完成活动任务
+     *
+     * @param instanceId 流程实例ID
+     * @param createBy   处理人员
      */
     @Override
-    public void terminate(String instanceId, String createBy) {
-//        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
-//        for (Task task : tasks) {
-//            taskService.complete(task.getId(), createBy);
-//        }
+    public void terminate(Long instanceId, String createBy) {
+        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
+        for (Task task : tasks) {
+            taskService.complete(task.getId(), createBy);
+        }
         Instance instance = instanceMapper.selectById(instanceId);
         HisInstance his = new HisInstance(instance, InstanceState.termination);
         his.setEndTime(new Date());
@@ -258,43 +266,29 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 级联删除指定流程实例的所有数据
      *
-     * 1.flw_instance,flw_his_instance
-     * 2.flw_task, flw_his_task
-     * 3.flw_task_actor,flw_his_task_actor
-     * 4.flw_cc_instance
-     *
-     * @param id 实例 id
+     * @param processId 流程ID
      */
     @Override
-    public void cascadeRemove(Long id) {
-        // 获取历史实例
-        HisInstance hisInstance = hisInstanceMapper.selectById(id);
-        Assert.notNull(hisInstance);
-        // 删除活动任务相关信息：flw_task, flw_task_actor
-        List<Task> activeTasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, id));
-        if(activeTasks.size() > 0){
-            List<Long> taskIds = activeTasks.stream().map(Task::getId).collect(Collectors.toList());
-            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
-            taskMapper.delete(Wrappers.<Task>lambdaQuery().in(Task::getId, taskIds));
+    public void cascadeRemoveByProcessId(Long processId) {
+        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
+                .eq(HisInstance::getProcessId, processId));
+        if (CollectionUtils.isNotEmpty(hisInstances)) {
+            hisInstances.forEach(t -> {
+                // 删除活动任务相关信息
+                taskService.cascadeRemoveByInstanceId(t.getId());
+                // 删除抄送实例列表
+                ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
+            });
         }
 
-        // 删除历史完成任务相关信息：flw_his_task,flw_his_task_actor
-        List<HisTask> hisTasks = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, id));
-        if(hisTasks.size() > 0){
-            List<Long> hisTaskIds = hisTasks.stream().map(HisTask::getId).collect(Collectors.toList());
-            hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, hisTaskIds));
-            hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().in(HisTask::getId, hisTaskIds));
-        }
+        // 删除历史实例
+        hisInstanceMapper.delete(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, processId));
 
-        // 删除抄送实例列表
-        List<CCInstance> ccInstances = ccInstanceMapper.selectList(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, id));
-        if(ccInstances.size() > 0){
-            List<Long> ccIds = ccInstances.stream().map(CCInstance::getId).collect(Collectors.toList());
-            ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().in(CCInstance::getId, ccIds));
-        }
-        // 删除实例以及历史实例
-        hisInstanceMapper.deleteById(hisInstance);
-        instanceMapper.deleteById(id);
+        // 删除实例
+        instanceMapper.delete(Wrappers.<Instance>lambdaQuery().eq(Instance::getProcessId, processId));
 
+        // 删除与流程相关的委托代理
+        surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, processId));
     }
+
 }

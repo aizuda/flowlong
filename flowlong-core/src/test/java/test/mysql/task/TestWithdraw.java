@@ -20,8 +20,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
-import java.util.List;
-
 /**
  * 测试任务撤回
  *

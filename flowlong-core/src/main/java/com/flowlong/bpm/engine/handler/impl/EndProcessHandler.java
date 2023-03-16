@@ -15,12 +15,12 @@
 package com.flowlong.bpm.engine.handler.impl;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class EndProcessHandler implements FlowLongHandler {
         Instance instance = execution.getInstance();
         List<Task> tasks = engine.queryService().getTasksByInstanceId(instance.getId());
         for (Task task : tasks) {
-            if (task.major()) throw new FlowLongException("存在未完成的主办任务,请确认.");
+            Assert.illegalArgument(task.major(), "存在未完成的主办任务");
             engine.taskService().complete(task.getId(), FlowLongEngine.AUTO);
         }
         /**

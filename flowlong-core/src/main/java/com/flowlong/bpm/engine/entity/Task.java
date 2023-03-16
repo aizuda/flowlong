@@ -46,7 +46,7 @@ public class Task extends BaseEntity {
      */
     protected Long instanceId;
     /**
-     * 父任务Id
+     * 父任务ID
      */
     protected Long parentTaskId;
     /**
@@ -86,16 +86,16 @@ public class Task extends BaseEntity {
      */
     protected Date remindTime;
     /**
+     * 提醒次数
+     */
+    protected Integer remindRepeat;
+    /**
      * 任务完成时间
      */
     protected Date finishTime;
 
     public boolean major() {
         return this.taskType == TaskModel.TaskType.Major.ordinal();
-    }
-
-    public String[] actorIds() {
-        return null;
     }
 
     public Map<String, Object> variableMap() {

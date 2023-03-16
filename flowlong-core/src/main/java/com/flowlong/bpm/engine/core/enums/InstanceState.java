@@ -25,15 +25,19 @@ public enum InstanceState {
     /**
      * 活动
      */
-    active(1),
+    active(0),
     /**
      * 结束
      */
-    finish(0),
+    finish(1),
+    /**
+     * 超时
+     */
+    timeout(1),
     /**
      * 终止
      */
-    termination(2);
+    termination(3);
 
     private final int value;
 

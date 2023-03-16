@@ -21,12 +21,8 @@ import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.enums.FlowState;
-import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
-import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
-import com.flowlong.bpm.engine.entity.HisInstance;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Surrogate;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;
@@ -60,23 +56,18 @@ public class ProcessServiceImpl implements ProcessService {
      */
     private String CACHE_NAME = "long.process.name";
     private ProcessMapper processMapper;
-    private HisInstanceMapper hisInstanceMapper;
-    private SurrogateMapper surrogateMapper;
     private RuntimeService runtimeService;
 
-    public ProcessServiceImpl(ProcessMapper processMapper, HisInstanceMapper hisInstanceMapper, RuntimeService runtimeService, SurrogateMapper surrogateMapper) {
+    public ProcessServiceImpl(RuntimeService runtimeService, ProcessMapper processMapper) {
         this.processMapper = processMapper;
-        this.hisInstanceMapper = hisInstanceMapper;
         this.runtimeService = runtimeService;
-        this.surrogateMapper = surrogateMapper;
     }
 
     @Override
     public void check(Process process, Long id) {
         Assert.notNull(process, "指定的流程定义[id=" + id + "]不存在");
         if (process.getState() != null && process.getState() == 0) {
-            throw new IllegalArgumentException("指定的流程定义[id=" + id +
-                    ",version=" + process.getVersion() + "]为非活动状态");
+            throw new IllegalArgumentException("指定的流程定义[id=" + id + ",version=" + process.getVersion() + "]为非活动状态");
         }
     }
 
@@ -119,10 +110,7 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public Process getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
-        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
-                .eq(Process::getName, name)
-                .eq(null != version, Process::getVersion, version)
-                .orderByDesc(Process::getVersion));
+        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getName, name).eq(null != version, Process::getVersion, version).orderByDesc(Process::getVersion));
         if (CollectionUtils.isEmpty(processList)) {
             throw new FlowLongException("process [" + name + "] does not exist");
         }
@@ -156,10 +144,7 @@ public class ProcessServiceImpl implements ProcessService {
             /**
              * 查询流程信息获取最后版本号
              */
-            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
-                    .select(Process::getId, Process::getVersion)
-                    .eq(Process::getName, processModel.getName())
-                    .orderByDesc(Process::getVersion));
+            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getId, Process::getVersion).eq(Process::getName, processModel.getName()).orderByDesc(Process::getVersion));
             Integer version = 0;
             if (CollectionUtils.isNotEmpty(processList)) {
                 Process process = processList.get(0);
@@ -228,14 +213,10 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public void cascadeRemove(Long id) {
-        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
-                .eq(HisInstance::getProcessId, id));
-        for (HisInstance hisInstance : hisInstances) {
-             // 删除与流程相关的实例
-             runtimeService.cascadeRemove(hisInstance.getId());
-        }
-        // 删除与流程相关的委托代理
-        surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, id));
+        // 删除与流程相关的实例
+        runtimeService.cascadeRemoveByProcessId(id);
+
+        // 删除部署流程流程信息
         processMapper.deleteById(id);
     }
 }

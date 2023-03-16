@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class TestTaskReminder implements TaskReminder {
 
     @Override
-    public void remind(FlowLongContext context, String instanceId, String currentTaskId) {
+    public void remind(FlowLongContext context, Long instanceId, Long currentTaskId) {
         System.out.println("测试提醒：" + instanceId);
     }
 }

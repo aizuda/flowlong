@@ -16,7 +16,6 @@ package com.flowlong.bpm.engine.impl;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
-import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Task;
@@ -37,18 +36,18 @@ public class SurrogateInterceptor implements FlowLongInterceptor {
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
         for (Task task : execution.getTasks()) {
-            if (task.actorIds() == null) {
-                continue;
-            }
-            for (String actor : task.actorIds()) {
-                if (StringUtils.isEmpty(actor)) {
-                    continue;
-                }
-                String agent = engine.managerService().getSurrogate(actor, execution.getProcess().getName());
-                if (StringUtils.isNotEmpty(agent) && !actor.equals(agent)) {
-                    engine.taskService().addTaskActor(task.getId(), agent);
-                }
-            }
+//            if (task.actorIds() == null) {
+//                continue;
+//            }
+//            for (String actor : task.actorIds()) {
+//                if (StringUtils.isEmpty(actor)) {
+//                    continue;
+//                }
+//                String agent = engine.managerService().getSurrogate(actor, execution.getProcess().getName());
+//                if (StringUtils.isNotEmpty(agent) && !actor.equals(agent)) {
+//                    engine.taskService().addTaskActor(task.getId(), agent);
+//                }
+//            }
         }
     }
 }

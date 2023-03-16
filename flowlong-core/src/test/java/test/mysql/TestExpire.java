@@ -18,7 +18,6 @@ import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import test.mysql.MysqlTest;
 
 import java.time.LocalDate;
 import java.util.HashMap;

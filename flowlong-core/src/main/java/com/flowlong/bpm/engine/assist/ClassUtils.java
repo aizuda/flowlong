@@ -14,9 +14,10 @@
  */
 package com.flowlong.bpm.engine.assist;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 类操作帮助类
