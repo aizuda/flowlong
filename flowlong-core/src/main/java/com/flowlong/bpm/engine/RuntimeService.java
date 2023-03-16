@@ -142,13 +142,8 @@ public interface RuntimeService {
 
     /**
      * 级联删除指定流程实例的所有数据
-     * <p>
-     * 1.flw_instance,flw_his_instance
-     * 2.flw_task, flw_his_task
-     * 3.flw_task_actor,flw_his_task_actor
-     * 4.flw_cc_instance
      *
-     * @param instanceId 流程实例ID
+     * @param processId 流程ID
      */
-    void cascadeRemove(Long instanceId);
+    void cascadeRemoveByProcessId(Long processId);
 }

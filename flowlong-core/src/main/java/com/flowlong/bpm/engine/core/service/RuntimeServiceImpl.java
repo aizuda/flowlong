@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.QueryService;
@@ -27,6 +28,7 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
@@ -38,7 +40,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 流程实例运行业务类
@@ -58,17 +59,20 @@ public class RuntimeServiceImpl implements RuntimeService {
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
     private CCInstanceMapper ccInstanceMapper;
+    private SurrogateMapper surrogateMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper, CCInstanceMapper ccInstanceMapper) {
+                              HisInstanceMapper hisInstanceMapper, CCInstanceMapper ccInstanceMapper,
+                              SurrogateMapper surrogateMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.ccInstanceMapper = ccInstanceMapper;
+        this.surrogateMapper = surrogateMapper;
     }
 
     /**
@@ -261,31 +265,30 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     /**
      * 级联删除指定流程实例的所有数据
-     * <p>
-     * 1.flw_instance,flw_his_instance
-     * 2.flw_task, flw_his_task
-     * 3.flw_task_actor,flw_his_task_actor
-     * 4.flw_cc_instance
      *
-     * @param id 实例 id
+     * @param processId 流程ID
      */
     @Override
-    public void cascadeRemove(Long id) {
-        // 获取历史实例
-        HisInstance hisInstance = hisInstanceMapper.selectById(id);
-        Assert.notNull(hisInstance);
-
-        // 删除活动任务相关信息
-        taskService.cascadeRemoveByInstanceId(id);
-
-        // 删除抄送实例列表
-        List<CCInstance> ccInstances = ccInstanceMapper.selectList(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, id));
-        if (ccInstances.size() > 0) {
-            List<Long> ccIds = ccInstances.stream().map(CCInstance::getId).collect(Collectors.toList());
-            ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().in(CCInstance::getId, ccIds));
+    public void cascadeRemoveByProcessId(Long processId) {
+        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
+                .eq(HisInstance::getProcessId, processId));
+        if (CollectionUtils.isNotEmpty(hisInstances)) {
+            hisInstances.forEach(t -> {
+                // 删除活动任务相关信息
+                taskService.cascadeRemoveByInstanceId(t.getId());
+                // 删除抄送实例列表
+                ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
+            });
         }
-        // 删除实例以及历史实例
-        hisInstanceMapper.deleteById(hisInstance);
-        instanceMapper.deleteById(id);
+
+        // 删除历史实例
+        hisInstanceMapper.delete(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, processId));
+
+        // 删除实例
+        instanceMapper.delete(Wrappers.<Instance>lambdaQuery().eq(Instance::getProcessId, processId));
+
+        // 删除与流程相关的委托代理
+        surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, processId));
     }
+
 }

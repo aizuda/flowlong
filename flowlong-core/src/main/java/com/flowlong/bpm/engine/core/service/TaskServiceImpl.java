@@ -60,12 +60,12 @@ public class TaskServiceImpl implements TaskService {
     private TaskMapper taskMapper;
     private TaskActorMapper taskActorMapper;
     private HisTaskMapper hisTaskMapper;
-
     private HisTaskActorMapper hisTaskActorMapper;
 
     public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy,
-                           @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper,
-                           TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+                           @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper,
+                           InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper,
+                           HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
@@ -655,13 +655,22 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId) {
-        List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+        // 删除历史任务及参与者
+        List<HisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().select(HisTask::getId)
+                .eq(HisTask::getInstanceId, instanceId));
+        if (CollectionUtils.isNotEmpty(hisTaskList)) {
+            List<Long> hisTaskIds = hisTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+            hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, hisTaskIds));
+            hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, instanceId));
+        }
+
+        // 删除任务及参与者
+        List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().select(Task::getId)
+                .eq(Task::getInstanceId, instanceId));
         if (CollectionUtils.isNotEmpty(taskList)) {
             List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
             taskMapper.delete(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
-            hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, taskIds));
-            hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, instanceId));
         }
     }
 }
