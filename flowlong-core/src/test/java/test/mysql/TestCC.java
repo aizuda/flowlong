@@ -41,27 +41,22 @@ public class TestCC extends MysqlTest {
     public void testCc() {
         System.out.println("流程定义ID = " + processId);
         Map<String, Object> args = new HashMap<>();
-        // 设置工作流任务节点 assignee 属性
-        args.put("task1.assignee", "1");
+        args.put("task1.assignee", testUser3);
         Instance instance = flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
         RuntimeService runtimeService = flowLongEngine.runtimeService();
 
         // 创建抄送实例，暂时先 debug 观察数据库表结构数据变化
-        final String actorId = "1000";
-        runtimeService.createCCInstance(instance.getId(), testUser2, actorId);
+        runtimeService.createCCInstance(instance.getId(), testUser2, testUser1);
+
+        List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        if (null != taskList) {
+            taskList.forEach(t -> System.err.println(t));
+        }
 
         // 查阅完成，结束抄送实例
-        runtimeService.finishCCInstance(instance.getId(), actorId);
+        runtimeService.finishCCInstance(instance.getId(), testUser1);
 
         // 删除抄送实例
-        runtimeService.deleteCCInstance(instance.getId(), actorId);
-    }
-
-    @Test
-    public void activeTasksByInstanceId() {
-        List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(1631867495096328191L);
-        if (null != taskList) {
-            taskList.forEach(t -> System.out.println(t.getTaskName()));
-        }
+        runtimeService.deleteCCInstance(instance.getId(), testUser1);
     }
 }

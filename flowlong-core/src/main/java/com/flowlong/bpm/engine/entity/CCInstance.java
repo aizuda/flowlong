@@ -20,6 +20,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * 抄送实例实体类
  *
@@ -50,9 +52,19 @@ public class CCInstance extends BaseEntity {
     /**
      * 完成时间
      */
-    protected String finishTime;
+    protected Date finishTime;
 
     public void setInstanceState(InstanceState instanceState) {
         this.state = instanceState.getValue();
+    }
+
+    public static CCInstance activeState(Long instanceId, String actorId, String createBy, Date createTime) {
+        CCInstance ccInstance = new CCInstance();
+        ccInstance.instanceId = instanceId;
+        ccInstance.actorId = actorId;
+        ccInstance.createBy = createBy;
+        ccInstance.state = InstanceState.active.getValue();
+        ccInstance.createTime = createTime;
+        return ccInstance;
     }
 }

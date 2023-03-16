@@ -85,7 +85,7 @@ public interface QueryService {
      * 根据任务ID获取活动任务参与者数组
      *
      * @param taskId 任务ID
-     * @return String[] 参与者id数组
+     * @return String[] 参与者ID数组
      */
     List<TaskActor> getTaskActorsByTaskId(Long taskId);
 
@@ -93,7 +93,7 @@ public interface QueryService {
      * 根据任务ID获取历史任务参与者数组
      *
      * @param taskId 历史任务ID
-     * @return String[] 历史参与者id数组
+     * @return String[] 历史参与者ID数组
      */
     List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
 

@@ -2,6 +2,7 @@ package com.flowlong.bpm.engine.scheduling;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.flowlong.bpm.engine.TaskService;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Task;
 import lombok.Getter;
@@ -53,8 +54,9 @@ public class SpringBootScheduler implements SchedulingConfigurer {
             TaskService taskService = context.getTaskService();
             List<Task> taskList = taskService.getTimeoutOrRemindTasks();
             if (CollectionUtils.isNotEmpty(taskList)) {
+                Date currentDate = DateUtils.getCurrentDate();
                 for (Task task : taskList) {
-                    if (null != task.getRemindTime() && task.getRemindTime().after(new Date())) {
+                    if (null != task.getRemindTime() && DateUtils.after(task.getRemindTime(), currentDate)) {
                         /**
                          * 任务提醒
                          */

@@ -100,7 +100,7 @@ public interface RuntimeService {
      * 删除抄送记录
      *
      * @param instanceId 流程实例ID
-     * @param actorId    参与者id
+     * @param actorId    参与者ID
      */
     void deleteCCInstance(Long instanceId, String actorId);
 

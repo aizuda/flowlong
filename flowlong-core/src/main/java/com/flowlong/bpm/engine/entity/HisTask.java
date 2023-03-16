@@ -51,22 +51,20 @@ public class HisTask extends Task {
         this.taskState = instanceState;
     }
 
-    public HisTask() {
-
-    }
-
-    public HisTask(Task task) {
-        this.id = task.getId();
-        this.instanceId = task.getInstanceId();
-        this.createTime = task.getCreateTime();
-        this.displayName = task.getDisplayName();
-        this.taskName = task.getTaskName();
-        this.taskType = task.getTaskType();
-        this.expireTime = task.getExpireTime();
-        this.actionUrl = task.getActionUrl();
-        this.parentTaskId = task.getParentTaskId();
-        this.variable = task.getVariable();
-        this.performType = task.getPerformType();
+    public static HisTask of(Task task) {
+        HisTask hisTask = new HisTask();
+        hisTask.id = task.getId();
+        hisTask.instanceId = task.getInstanceId();
+        hisTask.createTime = task.getCreateTime();
+        hisTask.displayName = task.getDisplayName();
+        hisTask.taskName = task.getTaskName();
+        hisTask.taskType = task.getTaskType();
+        hisTask.expireTime = task.getExpireTime();
+        hisTask.actionUrl = task.getActionUrl();
+        hisTask.parentTaskId = task.getParentTaskId();
+        hisTask.variable = task.getVariable();
+        hisTask.performType = task.getPerformType();
+        return hisTask;
     }
 
     /**

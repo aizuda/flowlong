@@ -34,6 +34,10 @@ public abstract class Assert {
      * @param message    异常打印信息
      */
     public static void isTrue(boolean expression, String message) {
+        illegalArgument(expression, message);
+    }
+
+    public static void isFalse(boolean expression, String message) {
         illegalArgument(!expression, message);
     }
 

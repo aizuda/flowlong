@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.enums.JumpMode;
 import com.flowlong.bpm.engine.entity.HisTask;
@@ -287,7 +288,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Instance instance = queryService().getInstance(instanceId);
         Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
         instance.setLastUpdateBy(createBy);
-        instance.setLastUpdateTime(new Date());
+        instance.setLastUpdateTime(DateUtils.getCurrentDate());
         Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
         execution.setCreateBy(createBy);
@@ -313,7 +314,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Instance instance = queryService().getInstance(task.getInstanceId());
         Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
         instance.setLastUpdateBy(createBy);
-        instance.setLastUpdateTime(new Date());
+        instance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
         if (!task.major()) {
