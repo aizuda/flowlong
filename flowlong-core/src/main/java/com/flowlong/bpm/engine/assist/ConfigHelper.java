@@ -14,14 +14,15 @@
  */
 package com.flowlong.bpm.engine.assist;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.math.NumberUtils;
+import org.springframework.util.ResourceUtils;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Properties;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.math.NumberUtils;
-import org.springframework.util.ResourceUtils;
 
 /**
  * 配置属性帮助类

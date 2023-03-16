@@ -23,7 +23,6 @@ import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Surrogate;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.parser.ModelParser;

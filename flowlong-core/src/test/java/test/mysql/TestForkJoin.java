@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import test.mysql.MysqlTest;
 
 import java.util.HashMap;
 import java.util.List;
