@@ -37,6 +37,7 @@ import java.util.List;
  */
 public class TaskParser extends AbstractNodeParser {
 
+
     @Override
     public NodeModel parse(Element element) {
         TaskModel task = this.parse(new TaskModel(), element);
@@ -49,6 +50,7 @@ public class TaskParser extends AbstractNodeParser {
         task.setPerformType(element.getAttribute(ATTR_PERFORM_TYPE));
         task.setTaskType(element.getAttribute(ATTR_TASK_TYPE));
         task.setAssignmentHandler(element.getAttribute(ATTR_ASSIGNEE_HANDLER));
+        task.setTaskPassPercentage(element.getAttribute(ATTR_TASK_PASS_PERCENTAGE));
         NodeList fieldList = element.getElementsByTagName(ATTR_FIELD);
         List<FieldModel> fields = new ArrayList<FieldModel>();
         for (int i = 0; i < fieldList.getLength(); i++) {

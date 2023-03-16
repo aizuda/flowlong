@@ -14,19 +14,14 @@
  */
 package test.mysql.task.countersign;
 
-import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
-import com.flowlong.bpm.engine.model.TaskModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 测试会签任务
@@ -63,45 +58,8 @@ public class TestCountersignTask extends MysqlTest {
         Long taskId = task.getId();
         String actors = "123";
         String actors1 = "456";
-        if (task.getTaskName().equals("task1")) {
-            flowLongEngine.taskService().addTaskActor(taskId, actors, actors1);
-        }
-        List<TaskActor> taskActorsByTaskId = flowLongEngine.queryService().getTaskActorsByTaskId(taskId);
-        for (TaskActor taskActor : taskActorsByTaskId) {
-            Assert.isTrue(taskActor.getActorId().equals(actors));
-        }
-
-
-    }
-
-    /**
-     * 会签百分比测试
-     */
-    @Test
-    public void test3() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.assignee", new String[]{"1"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "test0", args);
-        System.out.println("instance=" + instance);
-        TaskModel tm1 = new TaskModel();
-        tm1.setName("task1");
-        tm1.setDisplayName("任务1");
-        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), "test0", args, tm1);
-        Task task = tasks.get(0);
-        System.out.println(task.toString());
-    }
-
-    /**
-     * 串行会签测试
-     */
-    @Test
-    public void test4() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.operator", new String[]{"1", "2"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
-        List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getParentTaskId(), "2");
-        }
+        flowLongEngine.taskService().addTaskActor(taskId, actors, actors1);
+        List<Task> newtasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        Assert.isTrue((tasks.size() + 2) == newtasks.size());
     }
 }

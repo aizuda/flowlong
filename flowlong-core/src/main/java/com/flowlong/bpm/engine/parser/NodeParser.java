@@ -50,6 +50,8 @@ public interface NodeParser {
     String ATTR_ASSIGNEE_HANDLER = "assignmentHandler";
     String ATTR_PERFORM_TYPE = "performType";
     String ATTR_TASK_TYPE = "taskType";
+
+    String ATTR_TASK_PASS_PERCENTAGE = "taskPassPercentage";
     String ATTR_TO = "to";
     String ATTR_PROCESS_NAME = "processName";
     String ATTR_VERSION = "version";

@@ -105,11 +105,18 @@ public interface QueryService {
     List<Instance> getActiveInstances(Long parentInstanceId);
 
     /**
-     * 根据父任务ID获取子任务列表
+     * 根据实例ID和活动名称获取当前节点激活的任务
      *
      * @param instanceId 实例ID
-     * @param activeNodes 活动任务列表
+     * @param activeNodes 活动任务名称
      * @return 子任务列表
      */
     List<Task> getActiveTasks(Long instanceId, List<String> activeNodes);
+
+    /**
+     * 根据实例ID和活动名称获取当前节点所有任务
+     * @param instanceId 实例ID
+     * @param activeNodes 活动名称
+     */
+    List<HisTask> getHisActiveTasks(Long instanceId, List<String> activeNodes);
 }

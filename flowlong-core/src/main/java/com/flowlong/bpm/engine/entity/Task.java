@@ -41,9 +41,6 @@ import java.util.Map;
 @TableName("flw_task")
 public class Task extends BaseEntity {
     public static final String KEY_ACTOR = "S-ACTOR";
-
-    public static final String PASS_NUM = "PASS-NUM";
-    public static final String TOTAL_ACTOR_NUM = "TOTAL_ACTOR_NUM";
     /**
      * 流程实例ID
      */

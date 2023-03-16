@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<process displayName="测试会签任务" name="testCountersign02">
+<process displayName="测试会签任务" name="testCountersign06">
 <start displayName="start1" layout="28,83,-1,-1" name="start1">
     <transition g="" name="transition1" offset="0,0" to="task1"/>
 </start>
 <end displayName="end1" layout="661,83,-1,-1" name="end1"/>
-<task displayName="task1" layout="122,81,-1,-1" name="task1" performType="PERCENTAGE" assignee="person1.assignee,person2.assignee">
+<task displayName="task1" layout="122,81,-1,-1" name="task1" performType="PERCENTAGE" taskPassPercentage="60" assignee="person1.assignee,person2.assignee">
     <transition g="" name="transition2" offset="0,0" to="task2"/>
 </task>
 <task displayName="task2" layout="255,81,-1,-1" name="task2" performType="PERCENTAGE">

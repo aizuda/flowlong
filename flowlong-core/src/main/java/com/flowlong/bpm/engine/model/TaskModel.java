@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine.model;
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.flowlong.bpm.engine.Assignment;
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
@@ -30,6 +31,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -122,7 +124,7 @@ public class TaskModel extends WorkModel {
     /**
      * 任务通过百分比
      */
-    protected Integer taskPassPercentage;
+    protected String taskPassPercentage;
 
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
@@ -147,25 +149,16 @@ public class TaskModel extends WorkModel {
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
              */
             Task task = execution.getTask();
-            Long parentTaskId = task.getParentTaskId();
-            if (parentTaskId != 0) {
-//                flowLongContext.getQueryService().getParentTaskId(parentTaskId);
-                Task parentTask = flowLongContext.getQueryService().getTask(parentTaskId);
-                String variable = parentTask.getVariable();
-                Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(variable, Map.class);
-                if (ObjectUtils.isNotEmpty(map)) {
-                    Integer totalActorNum = (Integer) map.get(Task.TOTAL_ACTOR_NUM);
-                    Integer passNUm = (Integer) map.get(Task.PASS_NUM);
-                    passNUm += 1;
-                    map.put(Task.PASS_NUM, passNUm);
-                    parentTask.setVariable(FlowLongContext.JSON_HANDLER.toJson(map));
-                    flowLongContext.getTaskService().updateTask(task);
-                    if (passNUm >= totalActorNum * taskPassPercentage / 100) {
-                        runOutTransition(flowLongContext, execution);
-                    }
-                }
+            String taskName = task.getTaskName();
+            Instance instance = execution.getInstance();
+            QueryService queryService = flowLongContext.getQueryService();
+            List<Task> activeTasks = queryService.getActiveTasks(instance.getId(), Collections.singletonList(taskName));
+            List<HisTask> hisActiveTasks = queryService.getHisActiveTasks(instance.getId(), Collections.singletonList(taskName));
+            int totalActorNum = activeTasks.size() + hisActiveTasks.size();
+            int passNUm = hisActiveTasks.size();
+            if (passNUm >= totalActorNum * Integer.parseInt(taskPassPercentage) / 100) {
+                runOutTransition(flowLongContext, execution);
             }
-
         }
     }
 

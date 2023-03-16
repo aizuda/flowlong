@@ -111,4 +111,11 @@ public class QueryServiceImpl implements QueryService {
                 .in(Task::getTaskName, activeNodes));
     }
 
+    @Override
+    public List<HisTask> getHisActiveTasks(Long instanceId, List<String> activeNodes) {
+        return hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
+                .eq(HisTask::getInstanceId, instanceId)
+                .in(HisTask::getTaskName, activeNodes));
+    }
+
 }
