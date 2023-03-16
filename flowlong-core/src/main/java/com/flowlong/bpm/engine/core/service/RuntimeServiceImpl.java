@@ -235,7 +235,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(Long instanceId) {
-        this.terminate(instanceId, null);
+        this.terminate(instanceId, FlowLongEngine.ADMIN);
     }
 
     /**

@@ -34,8 +34,17 @@ import java.util.Map;
  * @since 1.0
  */
 public interface FlowLongEngine {
+    /**
+     * 流程管理员
+     */
     String ADMIN = "long.admin";
+    /**
+     * 流程自动完成
+     */
     String AUTO = "long.auto";
+    /**
+     * 流程实例ID
+     */
     String ID = "long.instanceNo";
 
     /**
@@ -123,10 +132,10 @@ public interface FlowLongEngine {
     /**
      * 根据流程定义ID，父流程实例ID，创建人ID，参数列表启动流程实例
      *
-     * @param id       流程定义ID
-     * @param createBy 创建人ID
-     * @param args     参数列表
-     * @param parentId 父流程实例ID
+     * @param id         流程定义ID
+     * @param createBy   创建人ID
+     * @param args       参数列表
+     * @param parentId   父流程实例ID
      * @param parentName 父流程实例名称
      * @return Instance 流程实例
      */
@@ -221,9 +230,10 @@ public interface FlowLongEngine {
 
     /**
      * 根据流程ID，创建人ID，参数列表结束当前任务并根据nodeName回退到历史节点
-     * @param taskId 任务ID
+     *
+     * @param taskId   任务ID
      * @param createBy 创建人ID
-     * @param args 参数列表
+     * @param args     参数列表
      * @param nodeName 节点名称
      * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
      */

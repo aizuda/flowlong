@@ -15,13 +15,11 @@
 package test.mysql.config;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
-import com.baomidou.mybatisplus.core.config.GlobalConfig;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.core.injector.SQLInjector;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
@@ -60,10 +58,6 @@ public class MysqlConfig {
         mybatisPlusInterceptor.addInnerInterceptor(new PaginationInnerInterceptor());
         sqlSessionFactory.setPlugins(mybatisPlusInterceptor);
         sqlSessionFactory.setConfiguration(configuration);
-
-        GlobalConfig globalConfig = new GlobalConfig();
-        globalConfig.setSqlInjector(new SQLInjector());
-        sqlSessionFactory.setGlobalConfig(globalConfig);
         return sqlSessionFactory.getObject();
     }
 

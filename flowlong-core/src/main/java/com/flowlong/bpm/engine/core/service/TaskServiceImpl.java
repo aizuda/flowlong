@@ -101,9 +101,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
-        if (!isAllowed(task, createBy)) {
-            throw new FlowLongException("当前参与者[" + createBy + "]不允许执行任务[taskId=" + taskId + "]");
-        }
+        Assert.isTrue(isAllowed(task, createBy), "当前参与者[" + createBy +
+                "]不允许执行任务[taskId=" + taskId + "]");
 
         // 迁移 task 信息到 flw_his_task
         HisTask hisTask = new HisTask(task);
