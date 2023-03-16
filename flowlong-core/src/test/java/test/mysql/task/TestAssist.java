@@ -29,18 +29,18 @@ import java.util.Map;
  *
  * @author liulf
  */
-public class TestAidant extends MysqlTest {
+public class TestAssist extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/task/aidant.long");
+        processId = this.deployByResource("test/task/assist.long");
     }
 
     @Test
-    public void testAidantTask() {
+    public void testAssistTask() {
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
-        Instance instance = flowLongEngine.startInstanceByName("aidant", 1, "creteUser", args);
+        Instance instance = flowLongEngine.startInstanceByName("assist", 1, "creteUser", args);
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         for(Task task : tasks) {
             flowLongEngine.taskService().createNewTask(task.getId(), 1, "test");

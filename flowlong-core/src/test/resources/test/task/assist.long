@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<process displayName="协办流程测试" name="aidant">
+<process displayName="协办流程测试" name="assist">
     <start displayName="start1" layout="54,128,-1,-1" name="start1">
         <transition g="" name="transition1" offset="0,0" to="task1"/>
     </start>

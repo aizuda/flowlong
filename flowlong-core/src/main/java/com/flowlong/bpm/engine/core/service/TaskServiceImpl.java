@@ -479,7 +479,7 @@ public class TaskServiceImpl implements TaskService {
         if (model.isMajor()) {
             task.setTaskType(TaskModel.TaskType.Major.ordinal());
         } else {
-            task.setTaskType(TaskModel.TaskType.Aidant.ordinal());
+            task.setTaskType(TaskModel.TaskType.Assist.ordinal());
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
 //        task.setTaskModel(model);

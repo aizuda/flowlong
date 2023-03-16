@@ -39,19 +39,19 @@ public class TaskModel extends WorkModel {
     /**
      * 类型：普通任务
      */
-    public static final String PERFORMTYPE_ANY = "ANY";
+    public static final String PERFORM_TYPE_ANY = "ANY";
     /**
      * 类型：参与者fork任务
      */
-    public static final String PERFORMTYPE_ALL = "ALL";
+    public static final String PERFORM_TYPE_ALL = "ALL";
     /**
      * 类型：主办任务
      */
-    public static final String TASKTYPE_MAJOR = "Major";
+    public static final String TASK_TYPE_MAJOR = "Major";
     /**
      * 类型：协办任务
      */
-    public static final String TASKTYPE_AIDANT = "Aidant";
+    public static final String TASK_TYPE_ASSIST = "Assist";
     /**
      * 参与者变量名称
      */
@@ -61,13 +61,13 @@ public class TaskModel extends WorkModel {
      * any：任何一个参与者处理完即执行下一步
      * all：所有参与者都完成，才可执行下一步
      */
-    private String performType = PERFORMTYPE_ANY;
+    private String performType = PERFORM_TYPE_ANY;
     /**
      * 任务类型
      * major：主办任务
-     * aidant：协办任务
+     * assist：协办任务
      */
-    private String taskType = TASKTYPE_MAJOR;
+    private String taskType = TASK_TYPE_MAJOR;
     /**
      * 期望完成时间
      */
@@ -103,7 +103,7 @@ public class TaskModel extends WorkModel {
 
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
-        if (performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
+        if (performType == null || performType.equalsIgnoreCase(PERFORM_TYPE_ANY)) {
             /**
              * any方式，直接执行输出变迁
              */
@@ -122,15 +122,15 @@ public class TaskModel extends WorkModel {
     }
 
     public boolean isPerformAny() {
-        return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
+        return PERFORM_TYPE_ANY.equalsIgnoreCase(this.performType);
     }
 
     public boolean isPerformAll() {
-        return PERFORMTYPE_ALL.equalsIgnoreCase(this.performType);
+        return PERFORM_TYPE_ALL.equalsIgnoreCase(this.performType);
     }
 
     public boolean isMajor() {
-        return TASKTYPE_MAJOR.equalsIgnoreCase(this.taskType);
+        return TASK_TYPE_MAJOR.equalsIgnoreCase(this.taskType);
     }
 
     public String getAssignee() {
@@ -154,7 +154,7 @@ public class TaskModel extends WorkModel {
     }
 
     public void setTaskType(String taskType) {
-        this.taskType = (StringUtils.isEmpty(taskType) ? TASKTYPE_MAJOR : taskType);
+        this.taskType = (StringUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);
     }
 
     public String getPerformType() {
@@ -162,7 +162,7 @@ public class TaskModel extends WorkModel {
     }
 
     public void setPerformType(String performType) {
-        this.performType = (StringUtils.isEmpty(performType) ? PERFORMTYPE_ANY : performType);
+        this.performType = (StringUtils.isEmpty(performType) ? PERFORM_TYPE_ANY : performType);
     }
 
     public String getReminderTime() {
@@ -239,9 +239,9 @@ public class TaskModel extends WorkModel {
     }
 
     /**
-     * 任务类型(Major:主办的,Aidant:协助的,Record:仅仅作为记录的)
+     * 任务类型(Major:主办的,Assist:协助的,Record:仅仅作为记录的)
      */
     public enum TaskType {
-        Major, Aidant, Record;
+        Major, Assist, Record;
     }
 }
