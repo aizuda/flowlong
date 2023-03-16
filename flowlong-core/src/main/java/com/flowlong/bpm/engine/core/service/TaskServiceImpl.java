@@ -432,7 +432,7 @@ public class TaskServiceImpl implements TaskService {
         if (args == null) {
             args = new HashMap<>();
         }
-        Date expireDate = DateUtils.processTime(args, taskModel.getExpireTime());
+        Date expireTime = DateUtils.processTime(args, taskModel.getExpireTime());
         Date remindTime = DateUtils.processTime(args, taskModel.getReminderTime());
         String form = (String) args.get(taskModel.getForm());
         String actionUrl = StringUtils.isEmpty(form) ? taskModel.getForm() : form;
@@ -441,7 +441,7 @@ public class TaskServiceImpl implements TaskService {
         args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
-        task.setExpireTime(expireDate);
+        task.setExpireTime(expireTime);
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
 
         List<Task> tasks = new ArrayList<>();
@@ -544,8 +544,7 @@ public class TaskServiceImpl implements TaskService {
         } else if (actors instanceof String[]) {
             return Arrays.asList((String[]) actors);
         } else {
-            throw new FlowLongException("任务参与者对象[" + actors + "]类型不支持."
-                    + "合法参数示例:Long,Integer,new String[]{},'10000,20000',List<String>");
+            throw new FlowLongException("任务参与者对象[" + actors + "]类型不支持");
         }
     }
 
