@@ -104,12 +104,14 @@ public interface TaskService {
     Task take(Long taskId, String createBy);
 
     /**
-     * 根据历史任务ID，创建人唤醒历史任务
+     * 唤醒历史任务
+     * <p>
      * 该方法会导致流程状态不可控，请慎用
+     * </p>
      *
      * @param taskId   历史任务ID
      * @param createBy 创建人ID
-     * @return Task 唤醒后的任务对象
+     * @return {@link Task} 唤醒后的任务对象
      */
     Task resume(Long taskId, String createBy);
 

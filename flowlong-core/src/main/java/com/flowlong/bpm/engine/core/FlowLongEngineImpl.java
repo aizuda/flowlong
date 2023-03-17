@@ -29,7 +29,10 @@ import com.flowlong.bpm.engine.model.TaskModel;
 import com.flowlong.bpm.engine.model.TransitionModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 基本的流程引擎实现类
@@ -240,12 +243,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据节点名称与跳转模式跳转到指定节点
-     * @param taskId
-     * @param createBy
-     * @param args
-     * @param nodeName
-     * @param jumpMode
-     * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
+     *
+     * @param taskId   任务ID
+     * @param createBy 创建人
+     * @param args     参数
+     * @param nodeName 节点名称
+     * @param jumpMode 跳转模式
+     * @return {@link Task} 任务列表
      */
     public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName, JumpMode jumpMode) {
         Execution execution = this.execute(taskId, createBy, args);
@@ -256,8 +260,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Assert.notNull(processModel, "当前任务未找到流程定义模型");
         if (StringUtils.isEmpty(nodeName)) {
             // 驳回当前任务
-            Task rejectTask = taskService().rejectTask(processModel, execution.getTask());
-            execution.addTask(rejectTask);
+            execution.addTask(taskService().rejectTask(processModel, execution.getTask()));
         } else {
             // 委派获取历史任务信息
             switch (jumpMode) {

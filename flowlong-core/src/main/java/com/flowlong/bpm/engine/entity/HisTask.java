@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -73,18 +74,14 @@ public class HisTask extends Task {
      * @return 任务对象
      */
     public Task undoTask() {
-        Task task = new Task();
-        task.setInstanceId(this.getInstanceId());
-        task.setTaskName(this.getTaskName());
-        task.setDisplayName(this.getDisplayName());
-        task.setTaskType(this.getTaskType());
-        task.setExpireTime(this.getExpireTime());
-        task.setActionUrl(this.getActionUrl());
-        task.setParentTaskId(this.getParentTaskId());
-        task.setVariable(this.getVariable());
-        task.setPerformType(this.getPerformType());
-        task.setCreateBy(this.getCreateBy());
-        return task;
+        try {
+            Task task = (Task) this.clone();
+            task.setId(null);
+            task.setFinishTime(null);
+            return task;
+        } catch (CloneNotSupportedException e) {
+            throw new FlowLongException(e);
+        }
     }
 
     public boolean isPerformAny() {

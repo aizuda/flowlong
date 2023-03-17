@@ -220,19 +220,21 @@ public class TaskServiceImpl implements TaskService {
     public Task resume(Long taskId, String createBy) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
-        boolean isAllowed = true;
-        if (StringUtils.isNotEmpty(histTask.getCreateBy())) {
-            isAllowed = histTask.getCreateBy().equals(createBy);
-        }
-        if (isAllowed) {
-            Task task = histTask.undoTask();
-            task.setCreateTime(DateUtils.getCurrentDate());
-            taskMapper.insert(task);
-            assignTask(task.getId(), task.getCreateBy());
-            return task;
-        } else {
-            throw new FlowLongException("当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
-        }
+        Assert.isTrue(StringUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), createBy),
+                "当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+
+        // 流程实例结束情况恢复流程实例
+        Instance instance = instanceMapper.selectById(histTask.getInstanceId());
+        Assert.isNull(instance, "已结束流程任务不支持唤醒");
+
+        // 历史任务恢复
+        Task task = histTask.undoTask();
+        task.setCreateTime(DateUtils.getCurrentDate());
+        taskMapper.insert(task);
+
+        // 分配任务
+        assignTask(task.getId(), createBy);
+        return task;
     }
 
     /**
