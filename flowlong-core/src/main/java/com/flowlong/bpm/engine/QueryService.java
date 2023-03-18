@@ -97,4 +97,26 @@ public interface QueryService {
      */
     List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
 
+    /**
+     * 根据父流程实例ID获取流程实例
+     * @param parentInstanceId 父流程实例ID
+     * @return 子流程实例列表
+     */
+    List<Instance> getActiveInstances(Long parentInstanceId);
+
+    /**
+     * 根据实例ID和活动名称获取当前节点激活的任务
+     *
+     * @param instanceId 实例ID
+     * @param activeNodes 活动任务名称
+     * @return 子任务列表
+     */
+    List<Task> getActiveTasks(Long instanceId, List<String> activeNodes);
+
+    /**
+     * 根据实例ID和活动名称获取当前节点所有任务
+     * @param instanceId 实例ID
+     * @param activeNodes 活动名称
+     */
+    List<HisTask> getHisActiveTasks(Long instanceId, List<String> activeNodes);
 }

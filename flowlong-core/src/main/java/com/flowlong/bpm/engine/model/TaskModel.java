@@ -14,15 +14,21 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.flowlong.bpm.engine.Assignment;
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ClassUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.entity.HisTask;
+import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -44,6 +50,11 @@ public class TaskModel extends WorkModel {
      * 类型：参与者fork任务
      */
     public static final String PERFORM_TYPE_ALL = "ALL";
+
+    /**
+     * 类型：参与者会签百分比
+     */
+    public static final String PERFORMTYPE_TYPE_PERCENTAGE = "PERCENTAGE";
     /**
      * 类型：主办任务
      */
@@ -60,12 +71,13 @@ public class TaskModel extends WorkModel {
      * 参与方式
      * any：任何一个参与者处理完即执行下一步
      * all：所有参与者都完成，才可执行下一步
+     * percentage:完成数/所有参与者数 > 百分比，才可以执行下一步
      */
     private String performType = PERFORM_TYPE_ANY;
     /**
      * 任务类型
      * major：主办任务
-     * assist：协办任务
+     * aidant：协办任务
      */
     private String taskType = TASK_TYPE_MAJOR;
     /**
@@ -101,6 +113,11 @@ public class TaskModel extends WorkModel {
      */
     private List<FieldModel> fields = null;
 
+    /**
+     * 任务通过百分比
+     */
+    private String taskPassPercentage;
+
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
         if (performType == null || performType.equalsIgnoreCase(PERFORM_TYPE_ANY)) {
@@ -108,7 +125,7 @@ public class TaskModel extends WorkModel {
              * any方式，直接执行输出变迁
              */
             runOutTransition(flowLongContext, execution);
-        } else {
+        } else if(performType.equalsIgnoreCase(PERFORM_TYPE_ALL)) {
             /**
              * all方式，需要判断是否已全部合并
              * 由于all方式分配任务，是每人一个任务
@@ -116,6 +133,22 @@ public class TaskModel extends WorkModel {
              */
             fire(new MergeActorHandler(getName()), flowLongContext, execution);
             if (execution.isMerged()) {
+                runOutTransition(flowLongContext, execution);
+            }
+        } else if(performType.equalsIgnoreCase(PERFORMTYPE_TYPE_PERCENTAGE)) {
+            /**
+             * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
+             * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
+             */
+            Task task = execution.getTask();
+            String taskName = task.getTaskName();
+            Instance instance = execution.getInstance();
+            QueryService queryService = flowLongContext.getQueryService();
+            List<Task> activeTasks = queryService.getActiveTasks(instance.getId(), Collections.singletonList(taskName));
+            List<HisTask> hisActiveTasks = queryService.getHisActiveTasks(instance.getId(), Collections.singletonList(taskName));
+            int totalActorNum = activeTasks.size() + hisActiveTasks.size();
+            int passNUm = hisActiveTasks.size();
+            if (passNUm >= (totalActorNum * (Float.parseFloat(taskPassPercentage) / 100F))) {
                 runOutTransition(flowLongContext, execution);
             }
         }
@@ -129,9 +162,15 @@ public class TaskModel extends WorkModel {
         return PERFORM_TYPE_ALL.equalsIgnoreCase(this.performType);
     }
 
+    public boolean isPerformPercentage() {
+        return PERFORMTYPE_TYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
+    }
+
     public boolean isMajor() {
         return TASK_TYPE_MAJOR.equalsIgnoreCase(this.taskType);
     }
+
+    public boolean isAidant() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
 
     public String getAssignee() {
         return assignee;
@@ -139,6 +178,10 @@ public class TaskModel extends WorkModel {
 
     public void setAssignee(String assignee) {
         this.assignee = assignee;
+    }
+
+    public String getTaskType() {
+        return taskType;
     }
 
     public String getExpireTime() {
@@ -149,8 +192,20 @@ public class TaskModel extends WorkModel {
         this.expireTime = expireTime;
     }
 
-    public String getTaskType() {
-        return taskType;
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public void setAssignmentHandlerObject(Assignment assignmentHandlerObject) {
+        this.assignmentHandlerObject = assignmentHandlerObject;
+    }
+
+    public String getTaskPassPercentage() {
+        return taskPassPercentage;
+    }
+
+    public void setTaskPassPercentage(String taskPassPercentage) {
+        this.taskPassPercentage = taskPassPercentage;
     }
 
     public void setTaskType(String taskType) {
@@ -235,11 +290,11 @@ public class TaskModel extends WorkModel {
      * 参与类型
      */
     public enum PerformType {
-        ANY, ALL;
+        ANY, ALL, PERCENTAGE;
     }
 
     /**
-     * 任务类型(Major:主办的,Assist:协助的,Record:仅仅作为记录的)
+     * 任务类型(Major:主办的,Assist:协助的,countersign:会签的,Record:仅仅作为记录的)
      */
     public enum TaskType {
         Major, Assist, Record;
