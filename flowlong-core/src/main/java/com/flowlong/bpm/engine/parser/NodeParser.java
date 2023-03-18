@@ -52,6 +52,9 @@ public interface NodeParser {
     String ATTR_TASK_TYPE = "taskType";
 
     String ATTR_TASK_PASS_PERCENTAGE = "taskPassPercentage";
+
+    String ATTR_TASK_IS_SEQUENCE = "isSequence";
+
     String ATTR_TO = "to";
     String ATTR_PROCESS_NAME = "processName";
     String ATTR_VERSION = "version";

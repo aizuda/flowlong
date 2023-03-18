@@ -124,7 +124,13 @@ public class TaskModel extends WorkModel {
     /**
      * 任务通过百分比
      */
-    protected String taskPassPercentage;
+    private String taskPassPercentage;
+
+    /**
+     * 是否是串行
+     */
+    private String isSequence = "false";
+
 
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {

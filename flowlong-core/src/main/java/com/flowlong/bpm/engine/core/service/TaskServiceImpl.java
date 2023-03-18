@@ -459,7 +459,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> createTask(TaskModel taskModel, Execution execution) {
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = new LinkedList<>();
 
         Map<String, Object> args = execution.getArgs();
         if (args == null) {
