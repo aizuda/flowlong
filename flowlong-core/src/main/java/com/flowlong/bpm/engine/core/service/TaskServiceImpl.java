@@ -397,7 +397,7 @@ public class TaskServiceImpl implements TaskService {
             newTask.setTaskType(taskType);
             newTask.setCreateTime(DateUtils.getCurrentDate());
             newTask.setParentTaskId(taskId);
-            tasks.add(this.saveTask(newTask, actors));
+            tasks.add(this.saveTask(newTask, TaskModel.PerformType.ANY, actors));
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException("任务对象不支持复制", e.getCause());
         }
@@ -464,19 +464,24 @@ public class TaskServiceImpl implements TaskService {
         task.setExpireTime(expireTime);
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = new LinkedList<>();
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-            task = saveTask(task, actors);
+            task = saveTask(task, TaskModel.PerformType.ANY, actors);
             task.setRemindTime(remindTime);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
             //任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
-            try {
-                Task singleTask = (Task) task.clone();
+            for (String actor : actors) {
+                Task singleTask;
+                try {
+                    singleTask = (Task) task.clone();
+                } catch (CloneNotSupportedException e) {
+                    singleTask = task;
+                }
+                singleTask = saveTask(singleTask,TaskModel.PerformType.ALL, Collections.singletonList(actor));
                 singleTask.setRemindTime(remindTime);
-                tasks.add(saveTask(singleTask, actors));
-            } catch (CloneNotSupportedException e) {
+                tasks.add(singleTask);
             }
         } else if (taskModel.isPerformPercentage()) {
             //任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
@@ -488,11 +493,10 @@ public class TaskServiceImpl implements TaskService {
                     singleTask = task;
                 }
                 singleTask.setId(null);
-                singleTask = saveTask(singleTask,TaskModel.PerformType.PERCENTAGE, actor);
-//                singleTask.setRemindDate(remindDate);
+                singleTask = saveTask(singleTask, TaskModel.PerformType.PERCENTAGE, Collections.singletonList(actor));
+                singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
-
         }
         return tasks;
     }
@@ -528,8 +532,8 @@ public class TaskServiceImpl implements TaskService {
      * @param actors 参与者ID集合
      * @return
      */
-    private Task saveTask(Task task, List<String> actors) {
-        task.setPerformType(TaskModel.PerformType.ANY.ordinal());
+    private Task saveTask(Task task, TaskModel.PerformType performType, List<String> actors) {
+        task.setPerformType(performType.ordinal());
         taskMapper.insert(task);
         actors.forEach(t -> this.assignTask(task.getId(), t));
         return task;

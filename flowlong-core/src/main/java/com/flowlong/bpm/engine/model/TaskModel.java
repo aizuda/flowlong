@@ -148,7 +148,7 @@ public class TaskModel extends WorkModel {
             List<HisTask> hisActiveTasks = queryService.getHisActiveTasks(instance.getId(), Collections.singletonList(taskName));
             int totalActorNum = activeTasks.size() + hisActiveTasks.size();
             int passNUm = hisActiveTasks.size();
-            if (passNUm >= totalActorNum * Integer.parseInt(taskPassPercentage) / 100) {
+            if (passNUm >= (totalActorNum * (Float.parseFloat(taskPassPercentage) / 100F))) {
                 runOutTransition(flowLongContext, execution);
             }
         }
@@ -171,6 +171,42 @@ public class TaskModel extends WorkModel {
     }
 
     public boolean isAidant() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
+
+    public String getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(String assignee) {
+        this.assignee = assignee;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public String getExpireTime() {
+        return expireTime;
+    }
+
+    public void setExpireTime(String expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    public void setCallback(String callback) {
+        this.callback = callback;
+    }
+
+    public void setAssignmentHandlerObject(Assignment assignmentHandlerObject) {
+        this.assignmentHandlerObject = assignmentHandlerObject;
+    }
+
+    public String getTaskPassPercentage() {
+        return taskPassPercentage;
+    }
+
+    public void setTaskPassPercentage(String taskPassPercentage) {
+        this.taskPassPercentage = taskPassPercentage;
+    }
 
     public void setTaskType(String taskType) {
         this.taskType = (StringUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,9 +43,12 @@ public class TestCountersignTask extends MysqlTest {
     public void test() {
         Instance instance = flowLongEngine.startInstanceById(processId, "2");
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        int count = 0;
         for (Task task : tasks) {
             flowLongEngine.executeTask(task.getId(), "2");
+            count++;
         }
+        Assert.isFalse(count == 2, "会签任务执行失败");
     }
 
     /**
@@ -56,10 +60,11 @@ public class TestCountersignTask extends MysqlTest {
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         Task task = tasks.get(0);
         Long taskId = task.getId();
-        String actors = "123";
-        String actors1 = "456";
-        flowLongEngine.taskService().addTaskActor(taskId, actors, actors1);
+        List<String> taskActor = new ArrayList<>();
+        taskActor.add("123");
+        taskActor.add("456");
+        flowLongEngine.taskService().addTaskActor(taskId, taskActor);
         List<Task> newtasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        Assert.isTrue((tasks.size() + 2) == newtasks.size());
+        Assert.isFalse((tasks.size() + 2) == newtasks.size(), "动态加签失败");
     }
 }
