@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,22 +52,20 @@ public class HisTask extends Task {
         this.taskState = instanceState;
     }
 
-    public HisTask() {
-
-    }
-
-    public HisTask(Task task) {
-        this.id = task.getId();
-        this.instanceId = task.getInstanceId();
-        this.createTime = task.getCreateTime();
-        this.displayName = task.getDisplayName();
-        this.taskName = task.getTaskName();
-        this.taskType = task.getTaskType();
-        this.expireTime = task.getExpireTime();
-        this.actionUrl = task.getActionUrl();
-        this.parentTaskId = task.getParentTaskId();
-        this.variable = task.getVariable();
-        this.performType = task.getPerformType();
+    public static HisTask of(Task task) {
+        HisTask hisTask = new HisTask();
+        hisTask.id = task.getId();
+        hisTask.instanceId = task.getInstanceId();
+        hisTask.createTime = task.getCreateTime();
+        hisTask.displayName = task.getDisplayName();
+        hisTask.taskName = task.getTaskName();
+        hisTask.taskType = task.getTaskType();
+        hisTask.expireTime = task.getExpireTime();
+        hisTask.actionUrl = task.getActionUrl();
+        hisTask.parentTaskId = task.getParentTaskId();
+        hisTask.variable = task.getVariable();
+        hisTask.performType = task.getPerformType();
+        return hisTask;
     }
 
     /**
@@ -75,18 +74,14 @@ public class HisTask extends Task {
      * @return 任务对象
      */
     public Task undoTask() {
-        Task task = new Task();
-        task.setInstanceId(this.getInstanceId());
-        task.setTaskName(this.getTaskName());
-        task.setDisplayName(this.getDisplayName());
-        task.setTaskType(this.getTaskType());
-        task.setExpireTime(this.getExpireTime());
-        task.setActionUrl(this.getActionUrl());
-        task.setParentTaskId(this.getParentTaskId());
-        task.setVariable(this.getVariable());
-        task.setPerformType(this.getPerformType());
-        task.setCreateBy(this.getCreateBy());
-        return task;
+        try {
+            Task task = (Task) this.clone();
+            task.setId(null);
+            task.setFinishTime(null);
+            return task;
+        } catch (CloneNotSupportedException e) {
+            throw new FlowLongException(e);
+        }
     }
 
     public boolean isPerformAny() {

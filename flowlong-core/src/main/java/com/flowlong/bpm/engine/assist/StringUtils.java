@@ -57,22 +57,6 @@ public class StringUtils {
     }
 
     /**
-     * 根据字符串数组返回逗号分隔的字符串值
-     *
-     * @param strArray 字符串数组
-     * @return 逗号分隔的字符串
-     */
-    public static String getStringByArray(String... strArray) {
-        if (strArray == null) {
-            return null;
-        }
-        if (strArray.length == 0) {
-            return "";
-        }
-        return String.join(",", strArray);
-    }
-
-    /**
      * xml内容特殊符号替换
      *
      * @param xml xml字符串

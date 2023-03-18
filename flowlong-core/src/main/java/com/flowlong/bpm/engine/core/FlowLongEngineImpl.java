@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.enums.JumpMode;
 import com.flowlong.bpm.engine.entity.HisTask;
@@ -28,7 +29,10 @@ import com.flowlong.bpm.engine.model.TaskModel;
 import com.flowlong.bpm.engine.model.TransitionModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 基本的流程引擎实现类
@@ -239,12 +243,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据节点名称与跳转模式跳转到指定节点
-     * @param taskId
-     * @param createBy
-     * @param args
-     * @param nodeName
-     * @param jumpMode
-     * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
+     *
+     * @param taskId   任务ID
+     * @param createBy 创建人
+     * @param args     参数
+     * @param nodeName 节点名称
+     * @param jumpMode 跳转模式
+     * @return {@link Task} 任务列表
      */
     public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName, JumpMode jumpMode) {
         Execution execution = this.execute(taskId, createBy, args);
@@ -255,8 +260,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Assert.notNull(processModel, "当前任务未找到流程定义模型");
         if (StringUtils.isEmpty(nodeName)) {
             // 驳回当前任务
-            Task rejectTask = taskService().rejectTask(processModel, execution.getTask());
-            execution.addTask(rejectTask);
+            execution.addTask(taskService().rejectTask(processModel, execution.getTask()));
         } else {
             // 委派获取历史任务信息
             switch (jumpMode) {
@@ -287,7 +291,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Instance instance = queryService().getInstance(instanceId);
         Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
         instance.setLastUpdateBy(createBy);
-        instance.setLastUpdateTime(new Date());
+        instance.setLastUpdateTime(DateUtils.getCurrentDate());
         Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
         execution.setCreateBy(createBy);
@@ -313,7 +317,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Instance instance = queryService().getInstance(task.getInstanceId());
         Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
         instance.setLastUpdateBy(createBy);
-        instance.setLastUpdateTime(new Date());
+        instance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
         if (!task.major()) {

@@ -104,7 +104,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         Instance instance = new Instance();
         instance.setParentId(parentId);
         instance.setParentNodeName(parentNodeName);
-        instance.setCreateTime(new Date());
+        instance.setCreateTime(DateUtils.getCurrentDate());
         instance.setLastUpdateTime(instance.getCreateTime());
         instance.setCreateBy(createBy);
         instance.setLastUpdateBy(instance.getCreateBy());
@@ -136,14 +136,9 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void createCCInstance(Long instanceId, String createBy, List<String> actorIds) {
-        for (String actorId : actorIds) {
-            CCInstance ccInstance = new CCInstance();
-            ccInstance.setInstanceId(instanceId);
-            ccInstance.setActorId(actorId);
-            ccInstance.setCreateBy(createBy);
-            ccInstance.setInstanceState(InstanceState.active);
-            ccInstance.setCreateTime(new Date());
-            ccInstanceMapper.insert(ccInstance);
+        if (CollectionUtils.isNotEmpty(actorIds)) {
+            Date currentDate = DateUtils.getCurrentDate();
+            actorIds.forEach(actorId -> CCInstance.activeState(instanceId, actorId, createBy, currentDate));
         }
     }
 
@@ -158,7 +153,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public boolean finishCCInstance(Long instanceId, List<String> actorIds) {
         CCInstance ccInstance = new CCInstance();
         ccInstance.setInstanceState(InstanceState.finish);
-        ccInstance.setFinishTime(DateUtils.getTime());
+        ccInstance.setFinishTime(DateUtils.getCurrentDate());
         return ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
                 .eq(CCInstance::getInstanceId, instanceId)
                 .in(CCInstance::getActorId, actorIds)) > 0;
@@ -195,11 +190,15 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void saveInstance(Instance instance) {
+        // 保存实例
         instanceMapper.insert(instance);
-        HisInstance his = new HisInstance(instance, InstanceState.active);
-        hisInstanceMapper.insert(his);
+
+        // 保存历史实例设置为活的状态
+        HisInstance hisInstance = HisInstance.of(instance, InstanceState.active);
+        hisInstanceMapper.insert(hisInstance);
+
         // 流程实例监听器通知
-        this.instanceNotify(TaskListener.EVENT_CREATE, his);
+        this.instanceNotify(TaskListener.EVENT_CREATE, hisInstance);
     }
 
     /**
@@ -217,13 +216,13 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void complete(Long instanceId) {
-        HisInstance his = new HisInstance();
-        his.setId(instanceId);
-        his.setInstanceState(InstanceState.finish.getValue());
-        his.setEndTime(new Date());
+        HisInstance hisInstance = new HisInstance();
+        hisInstance.setId(instanceId);
+        hisInstance.setInstanceState(InstanceState.finish.getValue());
+        hisInstance.setEndTime(DateUtils.getCurrentDate());
         instanceMapper.deleteById(instanceId);
         // 流程实例监听器通知
-        this.instanceNotify(TaskListener.EVENT_COMPLETE, his);
+        this.instanceNotify(TaskListener.EVENT_COMPLETE, hisInstance);
     }
 
     protected void instanceNotify(String event, HisInstance hisInstance) {
@@ -250,17 +249,25 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(Long instanceId, String createBy) {
-        List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
-        for (Task task : tasks) {
-            taskService.complete(task.getId(), createBy);
-        }
         Instance instance = instanceMapper.selectById(instanceId);
-        HisInstance his = new HisInstance(instance, InstanceState.termination);
-        his.setEndTime(new Date());
-        instanceMapper.deleteById(instanceId);
-        hisInstanceMapper.updateById(his);
-        // 流程实例监听器通知
-        this.instanceNotify(TaskListener.EVENT_TERMINATE, his);
+        if (null != instance) {
+            // 实例相关任务强制完成
+            List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
+            for (Task task : tasks) {
+                taskService.complete(task.getId(), createBy);
+            }
+
+            // 更新历史实例设置状态为终止
+            HisInstance hisInstance = HisInstance.of(instance, InstanceState.termination);
+            hisInstance.setEndTime(DateUtils.getCurrentDate());
+            hisInstanceMapper.updateById(hisInstance);
+
+            // 删除实例
+            instanceMapper.deleteById(instanceId);
+
+            // 流程实例监听器通知
+            this.instanceNotify(TaskListener.EVENT_TERMINATE, hisInstance);
+        }
     }
 
     /**

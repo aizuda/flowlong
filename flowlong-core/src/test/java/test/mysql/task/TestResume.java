@@ -16,7 +16,9 @@ package test.mysql.task;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -42,19 +44,21 @@ public class TestResume extends MysqlTest {
     @Test
     public void test() {
         log.info("流程定义ID = {}", processId);
-        Map<String, Object> args = new HashMap<>();
-        args.put("task1.assignee", new String[]{"1"});
+
         // 启动流程，生成一个实例
-        Instance ins = this.flowLongEngine.startInstanceByName("resume", 1, testUser1, args);
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", testUser1);
+        Instance instance = this.flowLongEngine.startInstanceByName("resume", 1, testUser1, args);
+        Assertions.assertNotNull(instance);
+
         // 获取活跃的任务
-        List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
+        List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+
         // 执行任务
-        tasks.forEach(t -> {
-            this.flowLongEngine.executeTask(t.getId(),testUser1);
-        });
+        tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
+
         // 唤醒已经被执行过的任务
-        tasks.forEach(t -> {
-            this.flowLongEngine.taskService().resume(t.getId(), testUser1);
-        });
+        Assertions.assertThrows(FlowLongException.class, () ->
+                tasks.forEach(t -> this.flowLongEngine.taskService().resume(t.getId(), testUser1)));
     }
 }

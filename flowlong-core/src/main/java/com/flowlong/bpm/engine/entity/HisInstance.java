@@ -46,21 +46,19 @@ public class HisInstance extends Instance {
      */
     protected Date endTime;
 
-    public HisInstance() {
-
-    }
-
-    public HisInstance(Instance instance, InstanceState instanceState) {
-        this.id = instance.getId();
-        this.instanceState = instanceState.getValue();
-        this.processId = instance.getProcessId();
-        this.createTime = instance.getCreateTime();
-        this.expireTime = instance.getExpireTime();
-        this.createBy = instance.getCreateBy();
-        this.parentId = instance.getParentId();
-        this.priority = instance.getPriority();
-        this.instanceNo = instance.getInstanceNo();
-        this.variable = instance.getVariable();
+    public static HisInstance of(Instance instance, InstanceState instanceState) {
+        HisInstance hisInstance = new HisInstance();
+        hisInstance.id = instance.getId();
+        hisInstance.instanceState = instanceState.getValue();
+        hisInstance.processId = instance.getProcessId();
+        hisInstance.createTime = instance.getCreateTime();
+        hisInstance.expireTime = instance.getExpireTime();
+        hisInstance.createBy = instance.getCreateBy();
+        hisInstance.parentId = instance.getParentId();
+        hisInstance.priority = instance.getPriority();
+        hisInstance.instanceNo = instance.getInstanceNo();
+        hisInstance.variable = instance.getVariable();
+        return hisInstance;
     }
 
     /**

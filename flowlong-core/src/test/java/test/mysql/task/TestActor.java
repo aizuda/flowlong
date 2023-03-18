@@ -21,6 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,15 +41,15 @@ public class TestActor extends MysqlTest {
     @Test
     void test() {
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.assignee", new String[]{"1"});
-        Instance instance = flowLongEngine.startInstanceById(processId, "test0", args);
+        args.put("task1.assignee", testUser1);
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
         System.out.println("instance=" + instance);
         TaskModel tm1 = new TaskModel();
         tm1.setName("task1");
         tm1.setDisplayName("任务1");
-        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), "test0", args, tm1);
+        List<Task> tasks = flowLongEngine.createFreeTask(instance.getId(), testUser1, args, tm1);
         Task task = tasks.get(0);
-        flowLongEngine.taskService().addTaskActor(task.getId(), 0, "test1", "test2");
-        flowLongEngine.taskService().removeTaskActor(task.getId(), "test2");
+        flowLongEngine.taskService().addTaskActor(task.getId(), 0, Arrays.asList(testUser2, testUser3));
+        flowLongEngine.taskService().removeTaskActor(task.getId(), testUser2);
     }
 }

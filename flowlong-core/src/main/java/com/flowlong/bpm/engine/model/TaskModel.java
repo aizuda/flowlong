@@ -26,15 +26,10 @@ import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * 任务定义task元素
@@ -46,31 +41,28 @@ import java.util.Objects;
  * @author hubin
  * @since 1.0
  */
-@Slf4j
-@Getter
-@Setter
 public class TaskModel extends WorkModel {
     /**
      * 类型：普通任务
      */
-    public static final String PERFORMTYPE_ANY = "ANY";
+    public static final String PERFORM_TYPE_ANY = "ANY";
     /**
      * 类型：参与者fork任务
      */
-    public static final String PERFORMTYPE_ALL = "ALL";
+    public static final String PERFORM_TYPE_ALL = "ALL";
 
     /**
      * 类型：参与者会签百分比
      */
-    public static final String PERFORMTYPE_PERCENTAGE = "PERCENTAGE";
+    public static final String PERFORMTYPE_TYPE_PERCENTAGE = "PERCENTAGE";
     /**
      * 类型：主办任务
      */
-    public static final String TASKTYPE_MAJOR = "Major";
+    public static final String TASK_TYPE_MAJOR = "Major";
     /**
      * 类型：协办任务
      */
-    public static final String TASKTYPE_AIDANT = "Aidant";
+    public static final String TASK_TYPE_ASSIST = "Assist";
     /**
      * 参与者变量名称
      */
@@ -81,13 +73,13 @@ public class TaskModel extends WorkModel {
      * all：所有参与者都完成，才可执行下一步
      * percentage:完成数/所有参与者数 > 百分比，才可以执行下一步
      */
-    private String performType = PERFORMTYPE_ANY;
+    private String performType = PERFORM_TYPE_ANY;
     /**
      * 任务类型
      * major：主办任务
      * aidant：协办任务
      */
-    private String taskType = TASKTYPE_MAJOR;
+    private String taskType = TASK_TYPE_MAJOR;
     /**
      * 期望完成时间
      */
@@ -128,12 +120,12 @@ public class TaskModel extends WorkModel {
 
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
-        if (performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {
+        if (performType == null || performType.equalsIgnoreCase(PERFORM_TYPE_ANY)) {
             /**
              * any方式，直接执行输出变迁
              */
             runOutTransition(flowLongContext, execution);
-        } else if(performType.equalsIgnoreCase(PERFORMTYPE_ALL)) {
+        } else if(performType.equalsIgnoreCase(PERFORM_TYPE_ALL)) {
             /**
              * all方式，需要判断是否已全部合并
              * 由于all方式分配任务，是每人一个任务
@@ -143,7 +135,7 @@ public class TaskModel extends WorkModel {
             if (execution.isMerged()) {
                 runOutTransition(flowLongContext, execution);
             }
-        } else if(performType.equalsIgnoreCase(PERFORMTYPE_PERCENTAGE)) {
+        } else if(performType.equalsIgnoreCase(PERFORMTYPE_TYPE_PERCENTAGE)) {
             /**
              * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
@@ -163,25 +155,25 @@ public class TaskModel extends WorkModel {
     }
 
     public boolean isPerformAny() {
-        return PERFORMTYPE_ANY.equalsIgnoreCase(this.performType);
+        return PERFORM_TYPE_ANY.equalsIgnoreCase(this.performType);
     }
 
     public boolean isPerformAll() {
-        return PERFORMTYPE_ALL.equalsIgnoreCase(this.performType);
+        return PERFORM_TYPE_ALL.equalsIgnoreCase(this.performType);
     }
 
     public boolean isPerformPercentage() {
-        return PERFORMTYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
+        return PERFORMTYPE_TYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
     }
 
     public boolean isMajor() {
-        return TASKTYPE_MAJOR.equalsIgnoreCase(this.taskType);
+        return TASK_TYPE_MAJOR.equalsIgnoreCase(this.taskType);
     }
 
-    public boolean isAidant() { return TASKTYPE_AIDANT.equalsIgnoreCase(this.taskType); }
+    public boolean isAidant() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
 
     public void setTaskType(String taskType) {
-        this.taskType = (StringUtils.isEmpty(taskType) ? TASKTYPE_MAJOR : taskType);
+        this.taskType = (StringUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);
     }
 
     public String getPerformType() {
@@ -189,7 +181,39 @@ public class TaskModel extends WorkModel {
     }
 
     public void setPerformType(String performType) {
-        this.performType = (StringUtils.isEmpty(performType) ? PERFORMTYPE_ANY : performType);
+        this.performType = (StringUtils.isEmpty(performType) ? PERFORM_TYPE_ANY : performType);
+    }
+
+    public String getReminderTime() {
+        return reminderTime;
+    }
+
+    public void setReminderTime(String reminderTime) {
+        this.reminderTime = reminderTime;
+    }
+
+    public String getReminderRepeat() {
+        return reminderRepeat;
+    }
+
+    public void setReminderRepeat(String reminderRepeat) {
+        this.reminderRepeat = reminderRepeat;
+    }
+
+    public String getAutoExecute() {
+        return autoExecute;
+    }
+
+    public void setAutoExecute(String autoExecute) {
+        this.autoExecute = autoExecute;
+    }
+
+    public Assignment getAssignmentHandlerObject() {
+        return assignmentHandlerObject;
+    }
+
+    public String getAssignmentHandler() {
+        return assignmentHandler;
     }
 
     public void setAssignmentHandler(String assignmentHandlerStr) {
@@ -198,6 +222,18 @@ public class TaskModel extends WorkModel {
             assignmentHandlerObject = (Assignment) ClassUtils.newInstance(assignmentHandlerStr);
             Assert.notNull(assignmentHandlerObject, "分配参与者处理类实例化失败");
         }
+    }
+
+    public String getCallback() {
+        return callback;
+    }
+
+    public List<FieldModel> getFields() {
+        return fields;
+    }
+
+    public void setFields(List<FieldModel> fields) {
+        this.fields = fields;
     }
 
     /**
@@ -222,9 +258,9 @@ public class TaskModel extends WorkModel {
     }
 
     /**
-     * 任务类型(Major:主办的,Aidant:协助的,countersign:会签的,Record:仅仅作为记录的)
+     * 任务类型(Major:主办的,Assist:协助的,countersign:会签的,Record:仅仅作为记录的)
      */
     public enum TaskType {
-        Major, Aidant,Record;
+        Major, Assist, Record;
     }
 }

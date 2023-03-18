@@ -14,6 +14,8 @@
  */
 package com.flowlong.bpm.engine.assist;
 
+import com.flowlong.bpm.engine.exception.FlowLongException;
+
 import java.util.Objects;
 
 /**
@@ -34,6 +36,10 @@ public abstract class Assert {
      * @param message    异常打印信息
      */
     public static void isTrue(boolean expression, String message) {
+        illegalArgument(expression, message);
+    }
+
+    public static void isFalse(boolean expression, String message) {
         illegalArgument(!expression, message);
     }
 
@@ -57,7 +63,7 @@ public abstract class Assert {
      * @param message 异常打印信息
      */
     public static void isNull(Object object, String message) {
-        illegalArgument(null != object, message);
+        illegalArgument(null == object, message);
     }
 
     /**
@@ -115,7 +121,7 @@ public abstract class Assert {
      */
     public static void illegalArgument(boolean illegal, String message) {
         if (illegal) {
-            throw new IllegalArgumentException(message);
+            throw new FlowLongException(message);
         }
     }
 }

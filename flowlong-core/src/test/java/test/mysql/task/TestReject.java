@@ -16,6 +16,7 @@ package test.mysql.task;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -35,6 +36,7 @@ import java.util.Map;
  * @since 1.0
  */
 public class TestReject extends MysqlTest {
+
 	@BeforeEach
 	public void before() {
 		processId = this.deployByResource("test/task/reject.long");
@@ -42,11 +44,21 @@ public class TestReject extends MysqlTest {
 	
 	@Test
 	public void test() {
-		Map<String, Object> args = new HashMap<String, Object>();
+		Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
+		Assertions.assertNotNull(instance);
+
+		// 启动流程实例
+		Map<String, Object> args = new HashMap<>();
 		args.put("number", 2);
-		Instance instance = flowLongEngine.startInstanceById(processId, "creator");
 		List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		Task nextTask = flowLongEngine.executeTask(tasks.get(0).getId(), "creator", args).get(0);
-		flowLongEngine.executeAndJumpTask(nextTask.getId(), "creator", args, "task1");
+
+		// 执行任务2
+		Task task2 = flowLongEngine.executeTask(tasks.get(0).getId(), testUser1, args).get(0);
+		Assertions.assertEquals(task2.getTaskName(), "task2");
+
+		// 任意任务节点跳转
+		flowLongEngine.executeAndJumpTask(task2.getId(), testUser1, args, "task1");
+		List<Task> task1List = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+		Assertions.assertEquals(task1List.get(0).getTaskName(), "task1");
 	}
 }

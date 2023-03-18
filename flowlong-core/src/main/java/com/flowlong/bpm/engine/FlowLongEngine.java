@@ -106,7 +106,7 @@ public interface FlowLongEngine {
      * 根据流程定义ID启动流程实例
      *
      * @param id 流程定义ID
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceById(Long id);
 
@@ -115,7 +115,7 @@ public interface FlowLongEngine {
      *
      * @param id       流程定义ID
      * @param createBy 创建人ID
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceById(Long id, String createBy);
 
@@ -125,7 +125,7 @@ public interface FlowLongEngine {
      * @param id       流程定义ID
      * @param createBy 创建人ID
      * @param args     参数列表
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceById(Long id, String createBy, Map<String, Object> args);
 
@@ -137,7 +137,7 @@ public interface FlowLongEngine {
      * @param args       参数列表
      * @param parentId   父流程实例ID
      * @param parentName 父流程实例名称
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName);
 
@@ -145,7 +145,7 @@ public interface FlowLongEngine {
      * 根据流程名称启动流程实例
      *
      * @param name 流程定义名称
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByName(String name);
 
@@ -154,7 +154,7 @@ public interface FlowLongEngine {
      *
      * @param name    流程定义名称
      * @param version 版本号
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByName(String name, Integer version);
 
@@ -164,7 +164,7 @@ public interface FlowLongEngine {
      * @param name     流程定义名称
      * @param version  版本号
      * @param createBy 创建人
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByName(String name, Integer version, String createBy);
 
@@ -175,7 +175,7 @@ public interface FlowLongEngine {
      * @param version  版本号
      * @param createBy 创建人
      * @param args     参数列表
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args);
 
@@ -183,7 +183,7 @@ public interface FlowLongEngine {
      * 根据父执行对象启动子流程实例
      *
      * @param execution 执行对象
-     * @return Instance 流程实例
+     * @return {@link Instance} 流程实例
      */
     Instance startInstanceByExecution(Execution execution);
 
@@ -191,7 +191,7 @@ public interface FlowLongEngine {
      * 根据任务ID执行任务
      *
      * @param taskId 任务ID
-     * @return List<Task> 任务集合
+     * @return {@link Task} 任务列表
      */
     List<Task> executeTask(Long taskId);
 
@@ -210,14 +210,16 @@ public interface FlowLongEngine {
      * @param taskId   任务ID
      * @param createBy 创建人ID
      * @param args     参数列表
-     * @return List<Task> 任务集合
+     * @return {@link Task} 任务列表
      */
     List<Task> executeTask(Long taskId, String createBy, Map<String, Object> args);
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
+     * <p>
      * 1、nodeName为null时，则跳转至上一步处理
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
+     * </p>
      *
      * @param taskId   任务ID
      * @param createBy 创建人ID
@@ -227,7 +229,6 @@ public interface FlowLongEngine {
      */
     List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
 
-
     /**
      * 根据流程ID，创建人ID，参数列表结束当前任务并根据nodeName回退到历史节点
      *
@@ -235,7 +236,7 @@ public interface FlowLongEngine {
      * @param createBy 创建人ID
      * @param args     参数列表
      * @param nodeName 节点名称
-     * @return java.util.List<com.flowlong.bpm.engine.entity.Task>
+     * @return {@link Task} 任务列表
      */
     List<Task> retreatTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
 
@@ -246,7 +247,7 @@ public interface FlowLongEngine {
      * @param createBy   创建人ID
      * @param args       参数列表
      * @param model      节点模型
-     * @return List<Task> 任务集合
+     * @return {@link Task} 任务列表
      */
     List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model);
 }

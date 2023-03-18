@@ -19,6 +19,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
@@ -164,7 +165,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setContent(bytes);
             process.setCreateBy(createBy);
-            process.setCreateTime(new Date());
+            process.setCreateTime(DateUtils.getCurrentDate());
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {

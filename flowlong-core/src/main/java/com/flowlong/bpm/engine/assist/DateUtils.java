@@ -34,19 +34,26 @@ public class DateUtils {
     private static final String DATE_FORMAT_DEFAULT = "yyyy-MM-dd HH:mm:ss";
 
     /**
-     * 返回标准格式的当前时间
+     * 当前时间 Date 类型
      *
-     * @return
+     * @return {@link Date}
      */
-    public static String getTime() {
-        return localDateTimeFormat(LocalDateTime.now());
+    public static Date getCurrentDate() {
+        return new Date();
+    }
+
+    /**
+     * 日期判断
+     */
+    public static boolean after(Date arg0, Date arg1) {
+        return (null == arg0 || null == arg1) ? false : arg0.after(arg1);
     }
 
     /**
      * 日期 Date 转为 LocalDateTime
      *
-     * @param date
-     * @return java.time.LocalDateTime;
+     * @param date {@link Date}
+     * @return {@link LocalDateTime}
      */
     public static LocalDateTime dateToLocalDateTime(Date date) {
         return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();

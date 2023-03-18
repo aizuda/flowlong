@@ -21,6 +21,7 @@ import com.flowlong.bpm.engine.model.CustomModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -103,12 +104,14 @@ public interface TaskService {
     Task take(Long taskId, String createBy);
 
     /**
-     * 根据历史任务ID，创建人唤醒历史任务
+     * 唤醒历史任务
+     * <p>
      * 该方法会导致流程状态不可控，请慎用
+     * </p>
      *
      * @param taskId   历史任务ID
      * @param createBy 创建人ID
-     * @return Task 唤醒后的任务对象
+     * @return {@link Task} 唤醒后的任务对象
      */
     Task resume(Long taskId, String createBy);
 
@@ -118,7 +121,13 @@ public interface TaskService {
      * @param taskId 任务ID
      * @param actors 参与者
      */
-    void addTaskActor(Long taskId, String... actors);
+    default void addTaskActor(Long taskId, List<String> actors) {
+        this.addTaskActor(taskId, null, actors);
+    }
+
+    default void addTaskActor(Long taskId, String actor) {
+        this.addTaskActor(taskId, Arrays.asList(actor));
+    }
 
     /**
      * 向指定的任务ID添加参与者
@@ -127,7 +136,11 @@ public interface TaskService {
      * @param performType 参与类型
      * @param actors      参与者
      */
-    void addTaskActor(Long taskId, Integer performType, String... actors);
+    void addTaskActor(Long taskId, Integer performType, List<String> actors);
+
+    default void addTaskActor(Long taskId, Integer performType, String actor) {
+        this.addTaskActor(taskId, performType, Arrays.asList(actor));
+    }
 
     /**
      * 根据任务ID、创建人撤回任务
@@ -173,7 +186,11 @@ public interface TaskService {
      * @param actors   参与者集合
      * @return List<Task> 创建任务集合
      */
-    List<Task> createNewTask(Long taskId, int taskType, String... actors);
+    List<Task> createNewTask(Long taskId, int taskType, List<String> actors);
+
+    default List<Task> createNewTask(Long taskId, int taskType, String actor) {
+        return this.createNewTask(taskId, taskType, Arrays.asList(actor));
+    }
 
     /**
      * 获取超时或者提醒的任务

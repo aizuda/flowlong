@@ -101,12 +101,12 @@ public class TaskServiceImpl implements TaskService {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
-        Assert.isTrue(isAllowed(task, createBy), "当前参与者[" + createBy +
+        Assert.isFalse(isAllowed(task, createBy), "当前参与者[" + createBy +
                 "]不允许执行任务[taskId=" + taskId + "]");
 
         // 迁移 task 信息到 flw_his_task
-        HisTask hisTask = new HisTask(task);
-        hisTask.setFinishTime(new Date());
+        HisTask hisTask = HisTask.of(task);
+        hisTask.setFinishTime(DateUtils.getCurrentDate());
         hisTask.setTaskState(InstanceState.finish);
         hisTask.setCreateBy(createBy);
         hisTaskMapper.insert(hisTask);
@@ -115,7 +115,7 @@ public class TaskServiceImpl implements TaskService {
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
         if (CollectionUtils.isNotEmpty(actors)) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
-            actors.forEach(t -> hisTaskActorMapper.insert(new HisTaskActor(t)));
+            actors.forEach(t -> hisTaskActorMapper.insert(HisTaskActor.of(t)));
             // 移除 flw_task_actor 中 task 参与者信息
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
         }
@@ -160,7 +160,7 @@ public class TaskServiceImpl implements TaskService {
             HisTask hisTask = new HisTask();
             hisTask.setId(taskId);
             hisTask.setTaskState(InstanceState.timeout);
-            hisTask.setFinishTime(new Date());
+            hisTask.setFinishTime(DateUtils.getCurrentDate());
             hisTaskMapper.updateById(hisTask);
 
             // 2，删除任务
@@ -183,7 +183,7 @@ public class TaskServiceImpl implements TaskService {
     public HisTask history(Execution execution, CustomModel model) {
         HisTask hisTask = new HisTask();
         hisTask.setInstanceId(execution.getInstance().getId());
-        hisTask.setCreateTime(new Date());
+        hisTask.setCreateTime(DateUtils.getCurrentDate());
         hisTask.setFinishTime(hisTask.getCreateTime());
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
@@ -208,7 +208,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = new Task();
         newTask.setId(taskId);
         newTask.setCreateBy(createBy);
-        newTask.setFinishTime(new Date());
+        newTask.setFinishTime(DateUtils.getCurrentDate());
         taskMapper.updateById(newTask);
         return task;
     }
@@ -220,27 +220,21 @@ public class TaskServiceImpl implements TaskService {
     public Task resume(Long taskId, String createBy) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
-        boolean isAllowed = true;
-        if (StringUtils.isNotEmpty(histTask.getCreateBy())) {
-            isAllowed = histTask.getCreateBy().equals(createBy);
-        }
-        if (isAllowed) {
-            Task task = histTask.undoTask();
-            task.setCreateTime(new Date());
-            taskMapper.insert(task);
-            assignTask(task.getId(), task.getCreateBy());
-            return task;
-        } else {
-            throw new FlowLongException("当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
-        }
-    }
+        Assert.isTrue(StringUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), createBy),
+                "当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
 
-    /**
-     * 向指定任务添加参与者
-     */
-    @Override
-    public void addTaskActor(Long taskId, String... actors) {
-        addTaskActor(taskId, null, actors);
+        // 流程实例结束情况恢复流程实例
+        Instance instance = instanceMapper.selectById(histTask.getInstanceId());
+        Assert.isNull(instance, "已结束流程任务不支持唤醒");
+
+        // 历史任务恢复
+        Task task = histTask.undoTask();
+        task.setCreateTime(DateUtils.getCurrentDate());
+        taskMapper.insert(task);
+
+        // 分配任务
+        assignTask(task.getId(), createBy);
+        return task;
     }
 
     /**
@@ -248,7 +242,7 @@ public class TaskServiceImpl implements TaskService {
      * 该方法根据performType类型判断是否需要创建新的活动任务
      */
     @Override
-    public void addTaskActor(Long taskId, Integer performType, String... actors) {
+    public void addTaskActor(Long taskId, Integer performType, List<String> actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         if (!task.major()) {
@@ -262,18 +256,19 @@ public class TaskServiceImpl implements TaskService {
         }
         switch (performType) {
             case 0:
-                assignTask(task.getId(), actors);
+                actors.forEach(t -> this.assignTask(task.getId(), t));
                 Map<String, Object> data = task.variableMap();
                 String oldActor = (String) data.get(Task.KEY_ACTOR);
-                data.put(Task.KEY_ACTOR, oldActor + "," + StringUtils.getStringByArray(actors));
+                data.put(Task.KEY_ACTOR, oldActor + "," + actors.stream().collect(Collectors.joining(",")));
                 task.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
                 taskMapper.updateById(task);
                 break;
             case 1:
                 try {
+                    Date currentDate = DateUtils.getCurrentDate();
                     for (String actor : actors) {
                         Task newTask = (Task) task.clone();
-                        newTask.setCreateTime(new Date());
+                        newTask.setCreateTime(currentDate);
                         newTask.setCreateBy(actor);
                         newTask.setId(null);
                         Map<String, Object> taskData = task.variableMap();
@@ -341,7 +336,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.deleteBatchIds(tasks.stream().map(BaseEntity::getId).collect(Collectors.toList()));
 
         Task task = hist.undoTask();
-        task.setCreateTime(new Date());
+        task.setCreateTime(DateUtils.getCurrentDate());
         taskMapper.insert(task);
         assignTask(task.getId(), task.getCreateBy());
         return task;
@@ -364,7 +359,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = history.undoTask();
-        task.setCreateTime(new Date());
+        task.setCreateTime(DateUtils.getCurrentDate());
         task.setCreateBy(history.getCreateBy());
         taskMapper.insert(task);
         assignTask(task.getId(), task.getCreateBy());
@@ -374,18 +369,11 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 对指定的任务分配参与者。参与者可以为用户、部门、角色
      *
-     * @param taskId   任务ID
-     * @param actorIds 参与者id集合
+     * @param taskId  任务ID
+     * @param actorId 参与者ID
      */
-    private void assignTask(Long taskId, String... actorIds) {
-        if (actorIds == null || actorIds.length == 0) {
-            return;
-        }
-        for (String actorId : actorIds) {
-            //修复当actorId为null的bug
-            if (StringUtils.isEmpty(actorId)) {
-                continue;
-            }
+    private void assignTask(Long taskId, String actorId) {
+        if (StringUtils.isNotEmpty(actorId)) {
             TaskActor taskActor = new TaskActor();
             taskActor.setTaskId(taskId);
             taskActor.setActorId(actorId);
@@ -398,17 +386,18 @@ public class TaskServiceImpl implements TaskService {
      * 适用于转派，动态协办处理
      */
     @Override
-    public List<Task> createNewTask(Long taskId, int taskType, String... actors) {
+    public List<Task> createNewTask(Long taskId, int taskType, List<String> actors) {
+        Assert.isTrue(CollectionUtils.isEmpty(actors), "参与者不能为空");
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        List<Task> tasks = new ArrayList<Task>();
+        List<Task> tasks = new ArrayList<>();
         try {
             Task newTask = (Task) task.clone();
             newTask.setId(null);
             newTask.setTaskType(taskType);
-            newTask.setCreateTime(new Date());
+            newTask.setCreateTime(DateUtils.getCurrentDate());
             newTask.setParentTaskId(taskId);
-            tasks.add(saveTask(newTask, TaskModel.PerformType.ANY, actors));
+            tasks.add(this.saveTask(newTask, actors));
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException("任务对象不支持复制", e.getCause());
         }
@@ -422,7 +411,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> getTimeoutOrRemindTasks() {
-        Date currentDate = new Date();
+        Date currentDate = DateUtils.getCurrentDate();
         return taskMapper.selectList(Wrappers.<Task>lambdaQuery().le(Task::getExpireTime, currentDate)
                 .or().le(Task::getRemindTime, currentDate));
     }
@@ -451,50 +440,43 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 由DBAccess实现类创建task，并根据model类型决定是否分配参与者
+     * 创建 task 根据 model 决定是否分配参与者
      *
      * @param taskModel 模型
      * @param execution 执行对象
-     * @return List<Task> 任务列表
+     * @return 任务列表
      */
     @Override
     public List<Task> createTask(TaskModel taskModel, Execution execution) {
-        List<Task> tasks = new LinkedList<>();
-
         Map<String, Object> args = execution.getArgs();
         if (args == null) {
             args = new HashMap<>();
         }
-        Date expireDate = DateUtils.processTime(args, taskModel.getExpireTime());
-        Date remindDate = DateUtils.processTime(args, taskModel.getReminderTime());
+        Date expireTime = DateUtils.processTime(args, taskModel.getExpireTime());
+        Date remindTime = DateUtils.processTime(args, taskModel.getReminderTime());
         String form = (String) args.get(taskModel.getForm());
         String actionUrl = StringUtils.isEmpty(form) ? taskModel.getForm() : form;
 
-        String[] actors = getTaskActors(taskModel, execution);
-
-        args.put(Task.KEY_ACTOR, StringUtils.getStringByArray(actors));
+        List<String> actors = getTaskActors(taskModel, execution);
+        args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
         Task task = createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
-        task.setExpireTime(expireDate);
+        task.setExpireTime(expireTime);
         task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
 
+        List<Task> tasks = new ArrayList<>();
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-            task = saveTask(task,TaskModel.PerformType.ANY, actors);
-//            task.setRemindDate(remindDate);
+            task = saveTask(task, actors);
+            task.setRemindTime(remindTime);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
             //任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
-            for (String actor : actors) {
-                Task singleTask;
-                try {
-                    singleTask = (Task) task.clone();
-                } catch (CloneNotSupportedException e) {
-                    singleTask = task;
-                }
-                singleTask = saveTask(singleTask,TaskModel.PerformType.ALL, actor);
-//                singleTask.setRemindDate(remindDate);
-                tasks.add(singleTask);
+            try {
+                Task singleTask = (Task) task.clone();
+                singleTask.setRemindTime(remindTime);
+                tasks.add(saveTask(singleTask, actors));
+            } catch (CloneNotSupportedException e) {
             }
         } else if (taskModel.isPerformPercentage()) {
             //任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
@@ -528,11 +510,11 @@ public class TaskServiceImpl implements TaskService {
         task.setInstanceId(execution.getInstance().getId());
         task.setTaskName(model.getName());
         task.setDisplayName(model.getDisplayName());
-        task.setCreateTime(new Date());
+        task.setCreateTime(DateUtils.getCurrentDate());
         if (model.isMajor()) {
             task.setTaskType(TaskModel.TaskType.Major.ordinal());
         } else {
-            task.setTaskType(TaskModel.TaskType.Aidant.ordinal());
+            task.setTaskType(TaskModel.TaskType.Assist.ordinal());
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
 //        task.setTaskModel(model);
@@ -540,13 +522,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 由DBAccess实现类持久化task对象
+     * 保存任务及参与者信息
+     *
+     * @param task   任务对象
+     * @param actors 参与者ID集合
+     * @return
      */
-    private Task saveTask(Task task,TaskModel.PerformType performType, String... actors) {
-        task.setPerformType(performType.ordinal());
+    private Task saveTask(Task task, List<String> actors) {
+        task.setPerformType(TaskModel.PerformType.ANY.ordinal());
         taskMapper.insert(task);
-        assignTask(task.getId(), actors);
-//        task.setActorIds(actors);
+        actors.forEach(t -> this.assignTask(task.getId(), t));
         return task;
     }
 
@@ -557,7 +542,7 @@ public class TaskServiceImpl implements TaskService {
      * @param execution 执行对象
      * @return 参与者数组
      */
-    private String[] getTaskActors(TaskModel model, Execution execution) {
+    private List<String> getTaskActors(TaskModel model, Execution execution) {
         Object assigneeObject = null;
         Assignment handler = model.getAssignmentHandlerObject();
         if (StringUtils.isNotEmpty(model.getAssignee())) {
@@ -573,45 +558,28 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 根据taskmodel指定的assignee属性，从args中取值
+     * 根据 task model 指定的 assignee 属性，从args中取值
      * 将取到的值处理为String[]类型。
      *
      * @param actors 参与者对象
      * @return 参与者数组
      */
-    private String[] getTaskActors(Object actors) {
-        if (actors == null) {
+    private List<String> getTaskActors(Object actors) {
+        if (null == actors) {
             return null;
         }
-        String[] results;
         if (actors instanceof String) {
-            //如果值为字符串类型，则使用逗号,分隔
-            return ((String) actors).split(",");
+            return Arrays.asList(((String) actors).split(","));
         } else if (actors instanceof List) {
-            //jackson会把stirng[]转成arraylist，此处增加arraylist的逻辑判断,by 红豆冰沙2014.11.21
-            List<?> list = (List) actors;
-            results = new String[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                results[i] = (String) list.get(i);
-            }
-            return results;
+            return (List<String>) actors;
         } else if (actors instanceof Long) {
-            //如果为Long类型，则返回1个元素的String[]
-            results = new String[1];
-            results[0] = String.valueOf(actors);
-            return results;
+            return Arrays.asList(String.valueOf(actors));
         } else if (actors instanceof Integer) {
-            //如果为Integer类型，则返回1个元素的String[]
-            results = new String[1];
-            results[0] = String.valueOf(actors);
-            return results;
+            return Arrays.asList(String.valueOf(actors));
         } else if (actors instanceof String[]) {
-            //如果为String[]类型，则直接返回
-            return (String[]) actors;
+            return Arrays.asList((String[]) actors);
         } else {
-            //其它类型，抛出不支持的类型异常
-            throw new FlowLongException("任务参与者对象[" + actors + "]类型不支持."
-                    + "合法参数示例:Long,Integer,new String[]{},'10000,20000',List<String>");
+            throw new FlowLongException("任务参与者对象[" + actors + "]类型不支持");
         }
     }
 
