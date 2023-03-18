@@ -126,12 +126,6 @@ public class TaskModel extends WorkModel {
      */
     private String taskPassPercentage;
 
-    /**
-     * 是否是串行
-     */
-    private String isSequence = "false";
-
-
     @Override
     protected void run(FlowLongContext flowLongContext, Execution execution) {
         if (performType == null || performType.equalsIgnoreCase(PERFORMTYPE_ANY)) {

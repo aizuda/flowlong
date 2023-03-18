@@ -51,7 +51,6 @@ public class TaskParser extends AbstractNodeParser {
         task.setTaskType(element.getAttribute(ATTR_TASK_TYPE));
         task.setAssignmentHandler(element.getAttribute(ATTR_ASSIGNEE_HANDLER));
         task.setTaskPassPercentage(element.getAttribute(ATTR_TASK_PASS_PERCENTAGE));
-        task.setIsSequence(element.getAttribute(ATTR_TASK_IS_SEQUENCE));
         NodeList fieldList = element.getElementsByTagName(ATTR_FIELD);
         List<FieldModel> fields = new ArrayList<FieldModel>();
         for (int i = 0; i < fieldList.getLength(); i++) {
