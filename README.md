@@ -17,4 +17,7 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 [演示前端 flowlong-web](https://gitee.com/aizuda/flowlong-web)
 
+- 设计器
+
+<img src="https://foruda.gitee.com/images/1679302153417318855/7f7306c1_12260.png" alt="flowlong" width="500px" height="262px">
 
