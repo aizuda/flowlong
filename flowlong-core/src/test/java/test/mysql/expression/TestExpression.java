@@ -15,11 +15,11 @@
 package test.mysql.expression;
 
 import com.flowlong.bpm.engine.Expression;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 测试表达式解析引擎
@@ -28,40 +28,28 @@ import java.util.Map;
  */
 public class TestExpression extends MysqlTest {
 
-
     @Test
     public void test() {
-        // 部署流程
-        processId = this.deployByResource("test/task/simple.long");
-        // 表达式解析引擎 spring-test-mysql.xml
-        // Spel表达式 解析器
-        testSpelExpression();
-        // Juel表达式 解析器
-        //testJuelExpression();
-    }
-
-    public void testSpelExpression() {
-        String expressionFormat = "('this is param: ').concat(#param)";
         // 获取流程使用的解析器
         Expression expression = flowLongEngine.getContext().getExpression();
-        Map<String, Object> args = new HashMap<>();
-        args.put("param", "value");
-        // 解析
-        String eval = expression.eval(String.class, expressionFormat, args);
-        // 输出
-        System.out.println("Spel 解析结果:" + eval);
-    }
 
-    public void testJuelExpression() {
-        String expressionFormat = "this is param: ${param}";
-        // 获取流程使用的解析器
-        Expression expression = flowLongEngine.getContext().getExpression();
-        Map<String, Object> args = new HashMap<>();
-        args.put("param", "value");
-        // 解析
-        String eval = expression.eval(String.class, expressionFormat, args);
-        // 输出
-        System.out.println("Juel 解析结果:" + eval);
-    }
+        // 值替换
+        Assertions.assertEquals("this is param: value", expression.eval(String.class,
+                "('this is param: ').concat(#param)", new HashMap<String, Object>() {{
+                    put("param", "value");
+                }}));
 
+        // 三元运算
+        TestObject testObject = TestObject.of("Hi", 6000);
+        Assertions.assertEquals("大于", expression.eval(String.class,
+                "#testObject.total > 1000 ? '大于' : '小于'", new HashMap<String, Object>() {{
+                    put("testObject", testObject);
+                }}));
+
+        // 字符串连接
+        Assertions.assertEquals("Hi FlowLong", expression.eval(String.class,
+                "#testObject.title + ' FlowLong'", new HashMap<String, Object>() {{
+                    put("testObject", testObject);
+                }}));
+    }
 }

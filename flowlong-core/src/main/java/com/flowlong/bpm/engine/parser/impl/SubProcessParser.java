@@ -14,12 +14,10 @@
  */
 package com.flowlong.bpm.engine.parser.impl;
 
-import com.flowlong.bpm.engine.assist.ConfigHelper;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.SubProcessModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
-import org.apache.commons.lang.math.NumberUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -40,15 +38,16 @@ public class SubProcessParser extends AbstractNodeParser {
         model.setProcessName(element.getAttribute(ATTR_PROCESS_NAME));
         String version = element.getAttribute(ATTR_VERSION);
         int ver = 0;
-        if (NumberUtils.isNumber(version)) {
-            ver = Integer.parseInt(version);
-        }
+        // TODO
+//        if (NumberUtils.isNumber(version)) {
+//            ver = Integer.parseInt(version);
+//        }
         model.setVersion(ver);
         String form = element.getAttribute(ATTR_FORM);
         if (StringUtils.isNotEmpty(form)) {
             model.setForm(form);
         } else {
-            model.setForm(ConfigHelper.getProperty("subprocessurl"));
+//            model.setForm(ConfigHelper.getProperty("subprocessurl"));
         }
         return model;
     }
