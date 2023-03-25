@@ -14,9 +14,12 @@
  */
 package test.mysql.task;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.exception.FlowLongException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -39,14 +42,20 @@ public class TestNotAllow extends MysqlTest {
 
     @Test
     public void test() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.assignee", new String[]{"2"});
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", testUser1);
 
-        Instance instance = flowLongEngine.startInstanceById(processId, "2", args);
-        System.out.println(instance);
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
+        Assertions.assertNotNull(instance);
 
         List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        Assertions.assertTrue(CollectionUtils.isNotEmpty(taskList));
 
+        // 不允许执行异常
+        Assertions.assertThrows(FlowLongException.class,
+                () -> flowLongEngine.executeTask(taskList.get(0).getId(), testUser2, args));
+
+        // 管理员权限允许执行
         for (Task task : taskList) {
             flowLongEngine.executeTask(task.getId(), FlowLongEngine.ADMIN, args);
         }
