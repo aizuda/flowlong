@@ -24,6 +24,7 @@ import lombok.ToString;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 任务实体类
@@ -95,16 +96,23 @@ public class Task extends BaseEntity {
     protected Date finishTime;
 
     public boolean major() {
-        return this.taskType == TaskModel.TaskType.Major.ordinal();
+        return Objects.equals(this.taskType, TaskModel.TaskType.Major.ordinal());
     }
 
     public Map<String, Object> variableMap() {
         Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
-        if (map == null) return Collections.emptyMap();
-        return map;
+        return null == map ? Collections.emptyMap() : map;
     }
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    public void setVariable(String variable) {
+        this.variable = variable;
+    }
+
+    public void setVariable(Map<String, Object> args) {
+        this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
     }
 }

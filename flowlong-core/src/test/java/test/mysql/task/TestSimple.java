@@ -16,6 +16,7 @@ package test.mysql.task;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -39,15 +40,15 @@ public class TestSimple extends MysqlTest {
 
     @Test
     public void test() {
-        Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.assignee", new String[]{"1"});
+        Map<String, Object> args = new HashMap<>();
+        args.put("task1.assignee", testUser1);
 
-        Instance instance = flowLongEngine.startInstanceByName("simple", 1, "2", args);
-        System.out.println(instance);
+        Instance instance = flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
+        Assertions.assertNotNull(instance);
 
         List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         for (Task task : taskList) {
-            flowLongEngine.executeTask(task.getId(), "1", args);
+            flowLongEngine.executeTask(task.getId(), testUser1, args);
         }
     }
 }

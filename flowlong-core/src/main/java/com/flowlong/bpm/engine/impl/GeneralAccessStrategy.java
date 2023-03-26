@@ -17,8 +17,8 @@ package com.flowlong.bpm.engine.impl;
 import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.entity.TaskActor;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 基于用户或组（角色、部门等）的访问策略类
@@ -34,34 +34,14 @@ import java.util.List;
 public class GeneralAccessStrategy implements TaskAccessStrategy {
 
     /**
-     * 根据创建人ID确定所有的组集合
-     *
-     * @param createBy 创建人ID
-     * @return List<String> 确定的组集合[如创建人属于多个部门、拥有多个角色]
-     */
-    protected List<String> ensureGroup(String createBy) {
-        return null;
-    }
-
-    /**
      * 如果创建人ID所属的组只要有一项存在于参与者集合中，则表示可访问
      */
     @Override
-    public boolean isAllowed(String createBy, List<TaskActor> actors) {
-        List<String> assignees = ensureGroup(createBy);
-        if (assignees == null) {
-            assignees = new ArrayList<>();
+    public boolean isAllowed(String userId, List<TaskActor> actors) {
+        if (null == actors) {
+            return false;
         }
-        assignees.add(createBy);
-        boolean isAllowed = false;
-        for (TaskActor actor : actors) {
-            for (String assignee : assignees) {
-                if (actor.getActorId().equals(assignee)) {
-                    isAllowed = true;
-                    break;
-                }
-            }
-        }
-        return isAllowed;
+        // 参与者 ID 默认非组，作为用户ID判断是否允许执行
+        return actors.stream().anyMatch(t -> Objects.equals(t.getActorId(), userId));
     }
 }

@@ -24,7 +24,6 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
@@ -62,10 +61,7 @@ public class TaskServiceImpl implements TaskService {
     private HisTaskMapper hisTaskMapper;
     private HisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy,
-                           @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper,
-                           InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper,
-                           HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
@@ -88,8 +84,8 @@ public class TaskServiceImpl implements TaskService {
      * 完成指定任务
      */
     @Override
-    public Task complete(Long taskId, String createBy) {
-        return complete(taskId, createBy, null);
+    public Task complete(Long taskId, String userId) {
+        return complete(taskId, userId, null);
     }
 
     /**
@@ -97,18 +93,17 @@ public class TaskServiceImpl implements TaskService {
      * 该方法仅仅结束活动任务，并不能驱动流程继续执行
      */
     @Override
-    public Task complete(Long taskId, String createBy, Map<String, Object> args) {
+    public Task complete(Long taskId, String userId, Map<String, Object> args) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
-        Assert.isFalse(isAllowed(task, createBy), "当前参与者[" + createBy +
-                "]不允许执行任务[taskId=" + taskId + "]");
+        task.setVariable(args);
+        Assert.isFalse(isAllowed(task, userId), "当前参与者 [" + userId + "]不允许执行任务[taskId=" + taskId + "]");
 
         // 迁移 task 信息到 flw_his_task
         HisTask hisTask = HisTask.of(task);
         hisTask.setFinishTime(DateUtils.getCurrentDate());
         hisTask.setTaskState(InstanceState.finish);
-        hisTask.setCreateBy(createBy);
+        hisTask.setCreateBy(userId);
         hisTaskMapper.insert(hisTask);
 
         // 迁移任务参与者
@@ -190,26 +185,29 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setTaskState(InstanceState.finish);
         hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
         hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
-        hisTask.setVariable(FlowLongContext.JSON_HANDLER.toJson(execution.getArgs()));
+        hisTask.setVariable(execution.getArgs());
         hisTaskMapper.insert(hisTask);
         return hisTask;
     }
 
     /**
-     * 提取指定任务，设置完成时间及创建人，状态不改变
+     * 根据 任务ID 认领任务，删除其它任务参与者
+     *
+     * @param taskId 任务ID
+     * @param userId 用户ID
+     * @return
      */
     @Override
-    public Task take(Long taskId, String createBy) {
+    public Task claim(Long taskId, String userId) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!isAllowed(task, createBy)) {
-            throw new FlowLongException("当前参与者[" + createBy + "]不允许提取任务[taskId=" + taskId + "]");
+        if (!isAllowed(task, userId)) {
+            throw new FlowLongException("当前执行用户ID [" + userId + "] 不允许提取任务 [taskId=" + taskId + "]");
         }
-        Task newTask = new Task();
-        newTask.setId(taskId);
-        newTask.setCreateBy(createBy);
-        newTask.setFinishTime(DateUtils.getCurrentDate());
-        taskMapper.updateById(newTask);
+        // 删除任务参与者
+        taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        // 插入当前用户ID作为唯一参与者
+        taskActorMapper.insert(TaskActor.of(taskId, userId));
         return task;
     }
 
@@ -217,11 +215,10 @@ public class TaskServiceImpl implements TaskService {
      * 唤醒指定的历史任务
      */
     @Override
-    public Task resume(Long taskId, String createBy) {
+    public Task resume(Long taskId, String userId) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
-        Assert.isTrue(StringUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), createBy),
-                "当前参与者[" + createBy + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+        Assert.isTrue(StringUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), userId), "当前参与者[" + userId + "]不允许唤醒历史任务[taskId=" + taskId + "]");
 
         // 流程实例结束情况恢复流程实例
         Instance instance = instanceMapper.selectById(histTask.getInstanceId());
@@ -233,7 +230,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.insert(task);
 
         // 分配任务
-        assignTask(task.getId(), createBy);
+        assignTask(task.getId(), userId);
         return task;
     }
 
@@ -260,7 +257,7 @@ public class TaskServiceImpl implements TaskService {
                 Map<String, Object> data = task.variableMap();
                 String oldActor = (String) data.get(Task.KEY_ACTOR);
                 data.put(Task.KEY_ACTOR, oldActor + "," + actors.stream().collect(Collectors.joining(",")));
-                task.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
+                task.setVariable(data);
                 taskMapper.updateById(task);
                 break;
             case 1:
@@ -273,7 +270,7 @@ public class TaskServiceImpl implements TaskService {
                         newTask.setId(null);
                         Map<String, Object> taskData = task.variableMap();
                         taskData.put(Task.KEY_ACTOR, actor);
-                        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
+                        task.setVariable(taskData);
                         taskMapper.insert(newTask);
                         assignTask(newTask.getId(), actor);
                     }
@@ -290,7 +287,7 @@ public class TaskServiceImpl implements TaskService {
                         newTask.setId(null);
                         Map<String, Object> taskData = task.variableMap();
                         taskData.put(Task.KEY_ACTOR, actor);
-                        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
+                        task.setVariable(taskData);
                         taskMapper.insert(newTask);
                         assignTask(newTask.getId(), actor);
                     }
@@ -315,11 +312,7 @@ public class TaskServiceImpl implements TaskService {
             // 根据父任务ID查询所有子任务
             tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
         } else {
-            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
-                            .eq(HisTask::getInstanceId, hist.getInstanceId())
-                            .eq(HisTask::getTaskName, hist.getTaskName())
-                            .eq(HisTask::getParentTaskId, hist.getParentTaskId()))
-                    .stream().map(HisTask::getId).collect(Collectors.toList());
+            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, hist.getInstanceId()).eq(HisTask::getTaskName, hist.getTaskName()).eq(HisTask::getParentTaskId, hist.getParentTaskId())).stream().map(HisTask::getId).collect(Collectors.toList());
             if (!hisTaskIds.isEmpty()) {
                 tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
             }
@@ -373,11 +366,8 @@ public class TaskServiceImpl implements TaskService {
      * @param actorId 参与者ID
      */
     private void assignTask(Long taskId, String actorId) {
-        if (StringUtils.isNotEmpty(actorId)) {
-            TaskActor taskActor = new TaskActor();
-            taskActor.setTaskId(taskId);
-            taskActor.setActorId(actorId);
-            taskActorMapper.insert(taskActor);
+        if (null != actorId) {
+            taskActorMapper.insert(TaskActor.of(taskId, actorId));
         }
     }
 
@@ -412,8 +402,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getTimeoutOrRemindTasks() {
         Date currentDate = DateUtils.getCurrentDate();
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().le(Task::getExpireTime, currentDate)
-                .or().le(Task::getRemindTime, currentDate));
+        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().le(Task::getExpireTime, currentDate).or().le(Task::getRemindTime, currentDate));
     }
 
     /**
@@ -449,25 +438,24 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> createTask(TaskModel taskModel, Execution execution) {
         Map<String, Object> args = execution.getArgs();
-        if (args == null) {
-            args = new HashMap<>();
-        }
+        // 执行参数中获取失效时间，提醒时间
         Date expireTime = DateUtils.processTime(args, taskModel.getExpireTime());
         Date remindTime = DateUtils.processTime(args, taskModel.getReminderTime());
         String form = (String) args.get(taskModel.getForm());
         String actionUrl = StringUtils.isEmpty(form) ? taskModel.getForm() : form;
 
-        List<String> actors = getTaskActors(taskModel, execution);
+        // 模型中获取参与者信息
+        List<String> actors = this.getTaskActors(taskModel, execution);
         args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
-        Task task = createTaskBase(taskModel, execution);
+        Task task = this.createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
         task.setExpireTime(expireTime);
-        task.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
+        task.setVariable(args);
 
         List<Task> tasks = new LinkedList<>();
         if (taskModel.isPerformAny()) {
             //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-            task = saveTask(task, TaskModel.PerformType.ANY, actors);
+            task = this.saveTask(task, TaskModel.PerformType.ANY, actors);
             task.setRemindTime(remindTime);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
@@ -479,7 +467,7 @@ public class TaskServiceImpl implements TaskService {
                 } catch (CloneNotSupportedException e) {
                     singleTask = task;
                 }
-                singleTask = saveTask(singleTask,TaskModel.PerformType.ALL, Collections.singletonList(actor));
+                singleTask = this.saveTask(singleTask, TaskModel.PerformType.ALL, Collections.singletonList(actor));
                 singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
@@ -493,7 +481,7 @@ public class TaskServiceImpl implements TaskService {
                     singleTask = task;
                 }
                 singleTask.setId(null);
-                singleTask = saveTask(singleTask, TaskModel.PerformType.PERCENTAGE, Collections.singletonList(actor));
+                singleTask = this.saveTask(singleTask, TaskModel.PerformType.PERCENTAGE, Collections.singletonList(actor));
                 singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
@@ -521,7 +509,6 @@ public class TaskServiceImpl implements TaskService {
             task.setTaskType(TaskModel.TaskType.Assist.ordinal());
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
-//        task.setTaskModel(model);
         return task;
     }
 
@@ -551,14 +538,14 @@ public class TaskServiceImpl implements TaskService {
         Assignment handler = model.getAssignmentHandlerObject();
         if (StringUtils.isNotEmpty(model.getAssignee())) {
             assigneeObject = execution.getArgs().get(model.getAssignee());
-        } else if (handler != null) {
+        } else if (null != handler) {
             if (handler instanceof Assignment) {
                 assigneeObject = handler.assign(model, execution);
             } else {
                 assigneeObject = handler.assign(execution);
             }
         }
-        return getTaskActors(assigneeObject == null ? model.getAssignee() : assigneeObject);
+        return this.getTaskActors(null == assigneeObject ? model.getAssignee() : assigneeObject);
     }
 
     /**
@@ -588,28 +575,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 判断当前创建人createBy是否允许执行taskId指定的任务
+     * 根据 taskId、createBy 判断创建人createBy是否允许执行任务
+     *
+     * @param task   任务对象
+     * @param userId 用户ID
+     * @return
      */
     @Override
-    public boolean isAllowed(Task task, String createBy) {
-        // 如果当前创建人不为空
-        if (StringUtils.isNotEmpty(createBy)) {
-            // 如果是admin或者auto，直接返回true
-            if (FlowLongEngine.ADMIN.equalsIgnoreCase(createBy)
-                    || FlowLongEngine.AUTO.equalsIgnoreCase(createBy)) {
-                return true;
-            }
-            // 如果为其他，当前做错人和任务执行人对比
-            if (StringUtils.isNotEmpty(task.getCreateBy())) {
-                return createBy.equals(task.getCreateBy());
-            }
+    public boolean isAllowed(Task task, String userId) {
+        if (StringUtils.isEmpty(userId)) {
+            // 任务执行创建人不存在
+            return false;
         }
-
-        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, task.getId()));
-        if (actors == null || actors.isEmpty()) {
+        // 如果是admin或者auto，直接返回true
+        if (FlowLongEngine.ADMIN.equalsIgnoreCase(userId) || FlowLongEngine.AUTO.equalsIgnoreCase(userId)) {
             return true;
         }
-        return StringUtils.isNotEmpty(createBy) && taskAccessStrategy.isAllowed(createBy, actors);
+        // 任务参与者列表
+        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, task.getId()));
+        if (actors == null || actors.isEmpty()) {
+            // 未设置参与者，默认返回 true
+            return true;
+        }
+        return taskAccessStrategy.isAllowed(userId, actors);
     }
 
 
@@ -647,7 +635,7 @@ public class TaskServiceImpl implements TaskService {
                     newActor.deleteCharAt(newActor.length() - 1);
                 }
                 taskData.put(Task.KEY_ACTOR, newActor.toString());
-                task.setVariable(FlowLongContext.JSON_HANDLER.toJson(taskData));
+                task.setVariable(taskData);
                 taskMapper.updateById(task);
             }
         }
@@ -661,8 +649,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId) {
         // 删除历史任务及参与者
-        List<HisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().select(HisTask::getId)
-                .eq(HisTask::getInstanceId, instanceId));
+        List<HisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().select(HisTask::getId).eq(HisTask::getInstanceId, instanceId));
         if (CollectionUtils.isNotEmpty(hisTaskList)) {
             List<Long> hisTaskIds = hisTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, hisTaskIds));
@@ -670,8 +657,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 删除任务及参与者
-        List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().select(Task::getId)
-                .eq(Task::getInstanceId, instanceId));
+        List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().select(Task::getId).eq(Task::getInstanceId, instanceId));
         if (CollectionUtils.isNotEmpty(taskList)) {
             List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));

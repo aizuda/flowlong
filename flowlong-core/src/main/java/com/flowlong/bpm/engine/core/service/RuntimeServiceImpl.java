@@ -23,7 +23,6 @@ import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.StringUtils;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
@@ -122,7 +121,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             }
         }
 
-        instance.setVariable(FlowLongContext.JSON_HANDLER.toJson(args));
+        instance.setVariable(args);
         this.saveInstance(instance);
         return instance;
     }
@@ -179,7 +178,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         data.putAll(args);
         Instance temp = new Instance();
         temp.setId(instanceId);
-        temp.setVariable(FlowLongContext.JSON_HANDLER.toJson(data));
+        temp.setVariable(data);
         instanceMapper.updateById(temp);
     }
 

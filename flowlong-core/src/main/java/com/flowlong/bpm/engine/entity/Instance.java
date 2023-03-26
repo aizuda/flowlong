@@ -90,4 +90,12 @@ public class Instance extends BaseEntity {
         if (map == null) return Collections.emptyMap();
         return map;
     }
+
+    public void setVariable(String variable) {
+        this.variable = variable;
+    }
+
+    public void setVariable(Map<String, Object> args) {
+        this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
+    }
 }

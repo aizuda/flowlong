@@ -47,9 +47,9 @@ public class HisTask extends Task {
         this.taskState = instanceState.getValue();
     }
 
-    public void setTaskState(Integer instanceState) {
-        Assert.notNull(InstanceState.get(instanceState), "插入的实例状态异常[instanceState=" + instanceState + "]");
-        this.taskState = instanceState;
+    public void setTaskState(Integer taskState) {
+        Assert.notNull(InstanceState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
+        this.taskState = taskState;
     }
 
     public static HisTask of(Task task) {

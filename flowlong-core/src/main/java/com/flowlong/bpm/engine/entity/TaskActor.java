@@ -53,4 +53,10 @@ public class TaskActor implements Serializable {
      */
     protected String actorId;
 
+    public static TaskActor of(Long taskId, String actorId) {
+        TaskActor taskActor = new TaskActor();
+        taskActor.setTaskId(taskId);
+        taskActor.setActorId(actorId);
+        return taskActor;
+    }
 }

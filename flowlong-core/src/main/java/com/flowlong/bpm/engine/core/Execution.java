@@ -24,6 +24,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -150,5 +151,17 @@ public class Execution implements Serializable {
      */
     public void addTask(Task task) {
         this.tasks.add(task);
+    }
+
+    /**
+     * 执行参数
+     *
+     * @return {@link Map<String, Object>}
+     */
+    public Map<String, Object> getArgs() {
+        if (null == this.args) {
+            this.args = new HashMap<>();
+        }
+        return this.args;
     }
 }

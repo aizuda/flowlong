@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.assist.Assert;
@@ -54,7 +53,7 @@ public class TaskModel extends WorkModel {
     /**
      * 类型：参与者会签百分比
      */
-    public static final String PERFORMTYPE_TYPE_PERCENTAGE = "PERCENTAGE";
+    public static final String PERFORM_TYPE_PERCENTAGE = "PERCENTAGE";
     /**
      * 类型：主办任务
      */
@@ -135,7 +134,7 @@ public class TaskModel extends WorkModel {
             if (execution.isMerged()) {
                 runOutTransition(flowLongContext, execution);
             }
-        } else if(performType.equalsIgnoreCase(PERFORMTYPE_TYPE_PERCENTAGE)) {
+        } else if(performType.equalsIgnoreCase(PERFORM_TYPE_PERCENTAGE)) {
             /**
              * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
@@ -163,14 +162,14 @@ public class TaskModel extends WorkModel {
     }
 
     public boolean isPerformPercentage() {
-        return PERFORMTYPE_TYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
+        return PERFORM_TYPE_PERCENTAGE.equalsIgnoreCase(this.performType);
     }
 
     public boolean isMajor() {
         return TASK_TYPE_MAJOR.equalsIgnoreCase(this.taskType);
     }
 
-    public boolean isAidant() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
+    public boolean isAssist() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
 
     public String getAssignee() {
         return assignee;
@@ -294,9 +293,24 @@ public class TaskModel extends WorkModel {
     }
 
     /**
-     * 任务类型(Major:主办的,Assist:协助的,countersign:会签的,Record:仅仅作为记录的)
+     * 任务类型
      */
     public enum TaskType {
-        Major, Assist, Record;
+        /**
+         * 主办
+         */
+        Major,
+        /**
+         * 协助
+         */
+        Assist,
+        /**
+         * 会签
+         */
+        Countersign,
+        /**
+         * 仅作为记录
+         */
+        Record;
     }
 }

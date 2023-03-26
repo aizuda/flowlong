@@ -54,21 +54,21 @@ public interface TaskService {
     /**
      * 完成指定的任务，删除活动任务记录，创建历史任务
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人
+     * @param taskId 任务ID
+     * @param userId 用户ID
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String createBy);
+    Task complete(Long taskId, String userId);
 
     /**
      * 根据任务ID，创建人ID完成任务
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
-     * @param args     参数集合
+     * @param taskId 任务ID
+     * @param userId 用户ID
+     * @param args   参数集合
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String createBy, Map<String, Object> args);
+    Task complete(Long taskId, String userId, Map<String, Object> args);
 
     /**
      * 更新任务对象
@@ -94,14 +94,13 @@ public interface TaskService {
     HisTask history(Execution execution, CustomModel model);
 
     /**
-     * 根据任务ID，创建人ID提取任务
-     * 提取任务相当于预受理操作，仅仅标识此任务只能由此创建人处理
+     * 根据 任务ID 认领任务，删除其它任务参与者
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
+     * @param taskId 任务ID
+     * @param userId 用户ID
      * @return Task 任务对象
      */
-    Task take(Long taskId, String createBy);
+    Task claim(Long taskId, String userId);
 
     /**
      * 唤醒历史任务
@@ -109,11 +108,11 @@ public interface TaskService {
      * 该方法会导致流程状态不可控，请慎用
      * </p>
      *
-     * @param taskId   历史任务ID
-     * @param createBy 创建人ID
+     * @param taskId 历史任务ID
+     * @param userId 用户ID
      * @return {@link Task} 唤醒后的任务对象
      */
-    Task resume(Long taskId, String createBy);
+    Task resume(Long taskId, String userId);
 
     /**
      * 向指定的任务ID添加参与者
@@ -161,13 +160,13 @@ public interface TaskService {
     Task rejectTask(ProcessModel model, Task currentTask);
 
     /**
-     * 根据taskId、createBy，判断创建人createBy是否允许执行任务
+     * 根据 taskId、createBy 判断创建人createBy是否允许执行任务
      *
-     * @param task     任务对象
-     * @param createBy 创建人
+     * @param task   任务对象
+     * @param userId 用户ID
      * @return boolean 是否允许操作
      */
-    boolean isAllowed(Task task, String createBy);
+    boolean isAllowed(Task task, String userId);
 
     /**
      * 根据任务模型、执行对象创建新的任务
