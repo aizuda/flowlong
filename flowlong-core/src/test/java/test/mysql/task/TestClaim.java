@@ -14,8 +14,8 @@
  */
 package test.mysql.task;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.flowlong.bpm.engine.TaskService;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -49,7 +49,7 @@ public class TestClaim extends MysqlTest {
 		Assertions.assertNotNull(instance);
 
 		List<Task> taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		Assertions.assertTrue(CollectionUtils.isNotEmpty(taskList));
+		Assertions.assertTrue(ObjectUtils.isNotEmpty(taskList));
 		Assertions.assertEquals(taskList.get(0).getCreateBy(), testUser1);
 
 		TaskService taskService = flowLongEngine.taskService();
@@ -59,7 +59,7 @@ public class TestClaim extends MysqlTest {
 		}
 
 		taskList = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		Assertions.assertTrue(CollectionUtils.isNotEmpty(taskList));
+		Assertions.assertTrue(ObjectUtils.isNotEmpty(taskList));
 		Task firstTask = taskList.get(0);
 
 		// 不允许执行异常

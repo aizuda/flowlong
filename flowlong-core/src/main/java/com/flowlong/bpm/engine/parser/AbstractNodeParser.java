@@ -14,10 +14,9 @@
  */
 package com.flowlong.bpm.engine.parser;
 
-import com.flowlong.bpm.engine.assist.XmlUtils;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.TransitionModel;
-import org.w3c.dom.Element;
 
 import java.util.List;
 
@@ -37,15 +36,15 @@ public abstract class AbstractNodeParser implements NodeParser {
     /**
      * 公共部分节点逻辑解析
      */
-    protected <T extends NodeModel> T parse(T model, Element element) {
+    protected <T extends NodeModel> T parse(T model, ModelElement element) {
         model.setName(element.getAttribute(ATTR_NAME));
         model.setDisplayName(element.getAttribute(ATTR_DISPLAY_NAME));
         model.setLayout(element.getAttribute(ATTR_LAYOUT));
         model.setPreInterceptors(element.getAttribute(ATTR_PRE_INTERCEPTORS));
         model.setPostInterceptors(element.getAttribute(ATTR_POST_INTERCEPTORS));
 
-        List<Element> transitions = XmlUtils.elements(element, NODE_TRANSITION);
-        for (Element te : transitions) {
+        List<ModelElement> transitions = element.elements(NODE_TRANSITION);
+        for (ModelElement te : transitions) {
             TransitionModel transition = new TransitionModel();
             transition.setName(te.getAttribute(ATTR_NAME));
             transition.setDisplayName(te.getAttribute(ATTR_DISPLAY_NAME));

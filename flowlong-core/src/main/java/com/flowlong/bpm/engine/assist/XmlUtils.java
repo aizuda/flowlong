@@ -15,15 +15,10 @@
 package com.flowlong.bpm.engine.assist;
 
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * xml解析的帮助类
@@ -56,28 +51,5 @@ public class XmlUtils {
         } catch (ParserConfigurationException e) {
             throw new FlowLongException("documentBuilder is null");
         }
-    }
-
-    /**
-     * 从element元素查找所有tagName指定的子节点元素集合
-     *
-     * @param element 元素 {@see Element}
-     * @param tagName 标签名称
-     * @return
-     */
-    public static List<Element> elements(Element element, String tagName) {
-        if (element == null || !element.hasChildNodes()) {
-            return Collections.emptyList();
-        }
-        List<Element> elements = new ArrayList<>();
-        for (Node child = element.getFirstChild(); child != null; child = child.getNextSibling()) {
-            if (child.getNodeType() == Node.ELEMENT_NODE) {
-                Element childElement = (Element) child;
-                String childTagName = childElement.getNodeName();
-                if (tagName.equals(childTagName))
-                    elements.add(childElement);
-            }
-        }
-        return elements;
     }
 }

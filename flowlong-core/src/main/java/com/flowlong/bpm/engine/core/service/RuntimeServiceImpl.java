@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.QueryService;
@@ -22,7 +21,7 @@ import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
@@ -110,11 +109,11 @@ public class RuntimeServiceImpl implements RuntimeService {
         instance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();
         if (model != null && args != null) {
-            if (StringUtils.isNotEmpty(model.getExpireTime())) {
+            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
                 instance.setExpireTime(new Date(model.getExpireTime()));
             }
             String instanceNo = (String) args.get(FlowLongEngine.ID);
-            if (StringUtils.isNotEmpty(instanceNo)) {
+            if (ObjectUtils.isNotEmpty(instanceNo)) {
                 instance.setInstanceNo(instanceNo);
             } else {
                 instance.setInstanceNo(model.getGenerator().generate(model));
@@ -135,7 +134,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void createCCInstance(Long instanceId, String createBy, List<String> actorIds) {
-        if (CollectionUtils.isNotEmpty(actorIds)) {
+        if (ObjectUtils.isNotEmpty(actorIds)) {
             Date currentDate = DateUtils.getCurrentDate();
             actorIds.forEach(actorId -> CCInstance.activeState(instanceId, actorId, createBy, currentDate));
         }
@@ -278,7 +277,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void cascadeRemoveByProcessId(Long processId) {
         List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
                 .eq(HisInstance::getProcessId, processId));
-        if (CollectionUtils.isNotEmpty(hisInstances)) {
+        if (ObjectUtils.isNotEmpty(hisInstances)) {
             hisInstances.forEach(t -> {
                 // 删除活动任务相关信息
                 taskService.cascadeRemoveByInstanceId(t.getId());

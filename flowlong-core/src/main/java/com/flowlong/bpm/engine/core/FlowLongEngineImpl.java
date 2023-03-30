@@ -17,7 +17,7 @@ package com.flowlong.bpm.engine.core;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.JumpMode;
 import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Instance;
@@ -258,7 +258,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         ProcessModel processModel = execution.getProcess().getProcessModel();
         Assert.notNull(processModel, "当前任务未找到流程定义模型");
-        if (StringUtils.isEmpty(nodeName)) {
+        if (ObjectUtils.isEmpty(nodeName)) {
             // 驳回当前任务
             execution.addTask(taskService().rejectTask(processModel, execution.getTask()));
         } else {

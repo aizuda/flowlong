@@ -18,7 +18,7 @@ import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ClassUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.HisTask;
@@ -208,7 +208,7 @@ public class TaskModel extends WorkModel {
     }
 
     public void setTaskType(String taskType) {
-        this.taskType = (StringUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);
+        this.taskType = (ObjectUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);
     }
 
     public String getPerformType() {
@@ -216,7 +216,7 @@ public class TaskModel extends WorkModel {
     }
 
     public void setPerformType(String performType) {
-        this.performType = (StringUtils.isEmpty(performType) ? PERFORM_TYPE_ANY : performType);
+        this.performType = (ObjectUtils.isEmpty(performType) ? PERFORM_TYPE_ANY : performType);
     }
 
     public String getReminderTime() {
@@ -252,7 +252,7 @@ public class TaskModel extends WorkModel {
     }
 
     public void setAssignmentHandler(String assignmentHandlerStr) {
-        if (StringUtils.isNotEmpty(assignmentHandlerStr)) {
+        if (ObjectUtils.isNotEmpty(assignmentHandlerStr)) {
             this.assignmentHandler = assignmentHandlerStr;
             assignmentHandlerObject = (Assignment) ClassUtils.newInstance(assignmentHandlerStr);
             Assert.notNull(assignmentHandlerObject, "分配参与者处理类实例化失败");

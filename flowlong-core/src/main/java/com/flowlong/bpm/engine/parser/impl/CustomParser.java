@@ -15,9 +15,9 @@
 package com.flowlong.bpm.engine.parser.impl;
 
 import com.flowlong.bpm.engine.model.CustomModel;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
-import org.w3c.dom.Element;
 
 /**
  * 自定义节点解析器
@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 public class CustomParser extends AbstractNodeParser {
 
     @Override
-    public NodeModel parse(Element element) {
+    public NodeModel parse(ModelElement element) {
         CustomModel custom = this.parse(new CustomModel(), element);
         custom.setClazz(element.getAttribute(ATTR_CLAZZ));
         custom.setMethodName(element.getAttribute(ATTR_METHOD_NAME));

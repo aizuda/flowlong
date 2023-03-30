@@ -15,9 +15,9 @@
 package com.flowlong.bpm.engine.parser.impl;
 
 import com.flowlong.bpm.engine.model.DecisionModel;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
-import org.w3c.dom.Element;
 
 /**
  * 决策节点解析类
@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 public class DecisionParser extends AbstractNodeParser {
 
     @Override
-    public NodeModel parse(Element element) {
+    public NodeModel parse(ModelElement element) {
         DecisionModel decision = this.parse(new DecisionModel(), element);
         decision.setExpr(element.getAttribute(ATTR_EXPR));
         decision.setHandleClass(element.getAttribute(ATTR_HANDLE_CLASS));

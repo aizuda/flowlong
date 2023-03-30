@@ -15,9 +15,9 @@
 package com.flowlong.bpm.engine.parser.impl;
 
 import com.flowlong.bpm.engine.model.ForkModel;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
-import org.w3c.dom.Element;
 
 /**
  * 分支节点解析类
@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
 public class ForkParser extends AbstractNodeParser {
 
     @Override
-    public NodeModel parse(Element element) {
+    public NodeModel parse(ModelElement element) {
         return this.parse(new ForkModel(), element);
     }
 }

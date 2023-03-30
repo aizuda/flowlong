@@ -14,12 +14,12 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
@@ -111,7 +111,7 @@ public class ProcessServiceImpl implements ProcessService {
     public Process getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
         List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getName, name).eq(null != version, Process::getVersion, version).orderByDesc(Process::getVersion));
-        if (CollectionUtils.isEmpty(processList)) {
+        if (ObjectUtils.isEmpty(processList)) {
             throw new FlowLongException("process [" + name + "] does not exist");
         }
         return processList.get(0);
@@ -146,7 +146,7 @@ public class ProcessServiceImpl implements ProcessService {
              */
             List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getId, Process::getVersion).eq(Process::getName, processModel.getName()).orderByDesc(Process::getVersion));
             Integer version = 0;
-            if (CollectionUtils.isNotEmpty(processList)) {
+            if (ObjectUtils.isNotEmpty(processList)) {
                 Process process = processList.get(0);
                 if (!repeat) {
                     return process.getId();

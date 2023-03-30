@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.core.service;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
@@ -22,7 +21,7 @@ import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.*;
@@ -108,7 +107,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 迁移任务参与者
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
-        if (CollectionUtils.isNotEmpty(actors)) {
+        if (ObjectUtils.isNotEmpty(actors)) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
             actors.forEach(t -> hisTaskActorMapper.insert(HisTaskActor.of(t)));
             // 移除 flw_task_actor 中 task 参与者信息
@@ -218,7 +217,7 @@ public class TaskServiceImpl implements TaskService {
     public Task resume(Long taskId, String userId) {
         HisTask histTask = hisTaskMapper.selectById(taskId);
         Assert.notNull(histTask, "指定的历史任务[id=" + taskId + "]不存在");
-        Assert.isTrue(StringUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), userId), "当前参与者[" + userId + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+        Assert.isTrue(ObjectUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), userId), "当前参与者[" + userId + "]不允许唤醒历史任务[taskId=" + taskId + "]");
 
         // 流程实例结束情况恢复流程实例
         Instance instance = instanceMapper.selectById(histTask.getInstanceId());
@@ -242,7 +241,7 @@ public class TaskServiceImpl implements TaskService {
     public void addTaskActor(Long taskId, Integer performType, List<String> actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!task.major()) {
+        if (!task.major() || ObjectUtils.isEmpty(actors)) {
             return;
         }
         if (performType == null) {
@@ -366,9 +365,7 @@ public class TaskServiceImpl implements TaskService {
      * @param actorId 参与者ID
      */
     private void assignTask(Long taskId, String actorId) {
-        if (null != actorId) {
-            taskActorMapper.insert(TaskActor.of(taskId, actorId));
-        }
+        taskActorMapper.insert(TaskActor.of(taskId, actorId));
     }
 
     /**
@@ -377,7 +374,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> createNewTask(Long taskId, int taskType, List<String> actors) {
-        Assert.isTrue(CollectionUtils.isEmpty(actors), "参与者不能为空");
+        Assert.isTrue(ObjectUtils.isEmpty(actors), "参与者不能为空");
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         List<Task> tasks = new ArrayList<>();
@@ -442,14 +439,18 @@ public class TaskServiceImpl implements TaskService {
         Date expireTime = DateUtils.processTime(args, taskModel.getExpireTime());
         Date remindTime = DateUtils.processTime(args, taskModel.getReminderTime());
         String form = (String) args.get(taskModel.getForm());
-        String actionUrl = StringUtils.isEmpty(form) ? taskModel.getForm() : form;
+        String actionUrl = ObjectUtils.isEmpty(form) ? taskModel.getForm() : form;
 
-        // 模型中获取参与者信息
-        List<String> actors = this.getTaskActors(taskModel, execution);
-        args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
+        // 执行任务
         Task task = this.createTaskBase(taskModel, execution);
         task.setActionUrl(actionUrl);
         task.setExpireTime(expireTime);
+
+        // 模型中获取参与者信息
+        List<String> actors = this.getTaskActors(taskModel, execution);
+        if (ObjectUtils.isNotEmpty(actors)) {
+            args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
+        }
         task.setVariable(args);
 
         List<Task> tasks = new LinkedList<>();
@@ -522,7 +523,9 @@ public class TaskServiceImpl implements TaskService {
     private Task saveTask(Task task, TaskModel.PerformType performType, List<String> actors) {
         task.setPerformType(performType.ordinal());
         taskMapper.insert(task);
-        actors.forEach(t -> this.assignTask(task.getId(), t));
+        if (ObjectUtils.isNotEmpty(actors)) {
+            actors.forEach(t -> this.assignTask(task.getId(), t));
+        }
         return task;
     }
 
@@ -536,7 +539,7 @@ public class TaskServiceImpl implements TaskService {
     private List<String> getTaskActors(TaskModel model, Execution execution) {
         Object assigneeObject = null;
         Assignment handler = model.getAssignmentHandlerObject();
-        if (StringUtils.isNotEmpty(model.getAssignee())) {
+        if (ObjectUtils.isNotEmpty(model.getAssignee())) {
             assigneeObject = execution.getArgs().get(model.getAssignee());
         } else if (null != handler) {
             if (handler instanceof Assignment) {
@@ -583,7 +586,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean isAllowed(Task task, String userId) {
-        if (StringUtils.isEmpty(userId)) {
+        if (ObjectUtils.isEmpty(userId)) {
             // 任务执行创建人不存在
             return false;
         }
@@ -611,13 +614,13 @@ public class TaskServiceImpl implements TaskService {
         if (task.major()) {
             Map<String, Object> taskData = task.variableMap();
             String actorStr = (String) taskData.get(Task.KEY_ACTOR);
-            if (StringUtils.isNotEmpty(actorStr)) {
+            if (ObjectUtils.isNotEmpty(actorStr)) {
                 String[] actorArray = actorStr.split(",");
                 StringBuilder newActor = new StringBuilder(actorStr.length());
                 boolean isMatch;
                 for (String actor : actorArray) {
                     isMatch = false;
-                    if (StringUtils.isEmpty(actor)) {
+                    if (ObjectUtils.isEmpty(actor)) {
                         continue;
                     }
                     for (String removeActor : actors) {
@@ -650,7 +653,7 @@ public class TaskServiceImpl implements TaskService {
     public void cascadeRemoveByInstanceId(Long instanceId) {
         // 删除历史任务及参与者
         List<HisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().select(HisTask::getId).eq(HisTask::getInstanceId, instanceId));
-        if (CollectionUtils.isNotEmpty(hisTaskList)) {
+        if (ObjectUtils.isNotEmpty(hisTaskList)) {
             List<Long> hisTaskIds = hisTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, hisTaskIds));
             hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, instanceId));
@@ -658,7 +661,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 删除任务及参与者
         List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().select(Task::getId).eq(Task::getInstanceId, instanceId));
-        if (CollectionUtils.isNotEmpty(taskList)) {
+        if (ObjectUtils.isNotEmpty(taskList)) {
             List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
             taskMapper.delete(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));

@@ -14,8 +14,10 @@
  */
 package test.mysql.task;
 
+import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -34,10 +36,12 @@ public class TestUpdate extends MysqlTest {
     @Test
     void test() {
         Instance instance = flowLongEngine.startInstanceByName("transfer", 1);
-        System.out.println("instance=" + instance);
+        Assertions.assertNotNull(instance);
+
+        TaskService taskService = flowLongEngine.taskService();
         Task task = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()).get(0);
-        task.setCreateBy("testUpdate");
-        flowLongEngine.taskService().updateTaskById(task);
-        flowLongEngine.taskService().complete(task.getId(), "testUpdate");
+        task.setCreateBy(testUser1);
+        taskService.updateTaskById(task);
+        taskService.complete(task.getId(), testUser1);
     }
 }

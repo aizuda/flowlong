@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine.model;
 
 import com.flowlong.bpm.engine.Expression;
 import com.flowlong.bpm.engine.assist.ClassUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -63,7 +63,7 @@ public class DecisionModel extends NodeModel {
             throw new FlowLongException("表达式解析器为空，请检查配置.");
         }
         String next = null;
-        if (StringUtils.isNotEmpty(expr)) {
+        if (ObjectUtils.isNotEmpty(expr)) {
             next = expression.eval(String.class, expr, execution.getArgs());
         } else if (decide != null) {
             next = decide.decide(flowLongContext, execution);
@@ -71,9 +71,9 @@ public class DecisionModel extends NodeModel {
         log.info(execution.getInstance().getId() + "->decision expression[expr=" + expr + "] return result:" + next);
         boolean isFound = false;
         for (TransitionModel tm : getOutputs()) {
-            if (StringUtils.isEmpty(next)) {
+            if (ObjectUtils.isEmpty(next)) {
                 String expr = tm.getExpr();
-                if (StringUtils.isNotEmpty(expr) && expression.eval(Boolean.class, expr, execution.getArgs())) {
+                if (ObjectUtils.isNotEmpty(expr) && expression.eval(Boolean.class, expr, execution.getArgs())) {
                     tm.setEnabled(true);
                     tm.execute(flowLongContext, execution);
                     isFound = true;
@@ -105,7 +105,7 @@ public class DecisionModel extends NodeModel {
 
     public void setHandleClass(String handleClass) {
         this.handleClass = handleClass;
-        if (StringUtils.isNotEmpty(handleClass)) {
+        if (ObjectUtils.isNotEmpty(handleClass)) {
             decide = (DecisionHandler) ClassUtils.newInstance(handleClass);
         }
     }

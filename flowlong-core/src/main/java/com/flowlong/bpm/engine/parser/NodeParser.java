@@ -14,8 +14,8 @@
  */
 package com.flowlong.bpm.engine.parser;
 
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
-import org.w3c.dom.Element;
 
 /**
  * 节点解析接口
@@ -76,6 +76,6 @@ public interface NodeParser {
      * @param element dom元素 {@see Element}
      * @return 返回节点模型实现对象 {@see ModeModel}
      */
-    NodeModel parse(Element element);
+    NodeModel parse(ModelElement element);
 
 }

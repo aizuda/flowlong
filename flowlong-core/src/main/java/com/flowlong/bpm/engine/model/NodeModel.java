@@ -17,7 +17,7 @@ package com.flowlong.bpm.engine.model;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.ModelInstance;
 import com.flowlong.bpm.engine.assist.ClassUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -160,7 +160,7 @@ public abstract class NodeModel extends BaseElement implements ModelInstance {
     }
 
     public void parseInterceptor(String interceptors, Consumer<FlowLongInterceptor> consumer) {
-        if (StringUtils.isNotEmpty(interceptors)) {
+        if (ObjectUtils.isNotEmpty(interceptors)) {
             for (String interceptor : interceptors.split(",")) {
                 FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
                 if (null != instance) {

@@ -14,7 +14,7 @@
  */
 package test.mysql;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.Assertions;
@@ -57,7 +57,7 @@ public class TestSurrogate extends MysqlTest {
             }
             // 正常执行，该节点执行完直接结束，不存在其它任务
             List<Task> taskList = flowLongEngine.executeTask(task.getId(), testUser1, args);
-            Assertions.assertTrue(CollectionUtils.isEmpty(taskList));
+            Assertions.assertTrue(ObjectUtils.isEmpty(taskList));
         }
     }
 

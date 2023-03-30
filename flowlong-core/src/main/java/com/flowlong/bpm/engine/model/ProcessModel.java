@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine.model;
 
 import com.flowlong.bpm.engine.NoGenerator;
 import com.flowlong.bpm.engine.assist.ClassUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.impl.DefaultNoGenerator;
 
 import java.util.ArrayList;
@@ -135,7 +135,7 @@ public class ProcessModel extends BaseElement {
      */
     public NodeModel getNode(String nodeName) {
         for (NodeModel node : nodes) {
-            if (StringUtils.isNotEmpty(node.getName())) {
+            if (ObjectUtils.isNotEmpty(node.getName())) {
                 if (node.getName().equals(nodeName)) {
                     return node;
                 }
@@ -194,7 +194,7 @@ public class ProcessModel extends BaseElement {
 
     public void setInstanceNoClass(String instanceNoClass) {
         this.instanceNoClass = instanceNoClass;
-        if (StringUtils.isNotEmpty(instanceNoClass)) {
+        if (ObjectUtils.isNotEmpty(instanceNoClass)) {
             generator = (NoGenerator) ClassUtils.newInstance(instanceNoClass);
         }
     }

@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.parser;
 import com.flowlong.bpm.engine.assist.XmlUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TransitionModel;
@@ -61,11 +62,11 @@ public class ModelParser {
      * @param bytes         流程定义字节
      * @param parseFunction 节点解析处理函数
      */
-    public static ProcessModel parse(byte[] bytes, Function<Element, NodeModel> parseFunction) {
+    public static ProcessModel parse(byte[] bytes, Function<ModelElement, NodeModel> parseFunction) {
         DocumentBuilder documentBuilder = XmlUtils.createDocumentBuilder();
         try {
             Document doc = documentBuilder.parse(new ByteArrayInputStream(bytes));
-            Element element = doc.getDocumentElement();
+            ModelElement element = new ModelElement(doc.getDocumentElement());
             ProcessModel processModel = new ProcessModel();
             processModel.setName(element.getAttribute(NodeParser.ATTR_NAME));
             processModel.setDisplayName(element.getAttribute(NodeParser.ATTR_DISPLAY_NAME));
@@ -77,7 +78,7 @@ public class ModelParser {
             for (int i = 0; i < nodeSize; i++) {
                 Node node = nodeList.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    NodeModel nodeModel = parseFunction.apply((Element) node);
+                    NodeModel nodeModel = parseFunction.apply(new ModelElement((Element) node));
                     if (null == nodeModel) {
                         throw new FlowLongException("Unknown node: " + node.getNodeName());
                     }

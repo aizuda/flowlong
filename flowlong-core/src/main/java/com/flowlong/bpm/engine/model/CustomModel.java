@@ -15,8 +15,8 @@
 package com.flowlong.bpm.engine.model;
 
 import com.flowlong.bpm.engine.assist.ClassUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.assist.ReflectUtils;
-import com.flowlong.bpm.engine.assist.StringUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -81,7 +81,7 @@ public class CustomModel extends WorkModel {
             }
             Object[] objects = getArgs(execution.getArgs(), args);
             Object returnValue = ReflectUtils.invoke(method, invokeObject, objects);
-            if (StringUtils.isNotEmpty(var)) {
+            if (ObjectUtils.isNotEmpty(var)) {
                 execution.getArgs().put(var, returnValue);
             }
         }
@@ -98,7 +98,7 @@ public class CustomModel extends WorkModel {
      */
     private Object[] getArgs(Map<String, Object> execArgs, String args) {
         Object[] objects = null;
-        if (StringUtils.isNotEmpty(args)) {
+        if (ObjectUtils.isNotEmpty(args)) {
             String[] argArray = args.split(",");
             objects = new Object[argArray.length];
             for (int i = 0; i < argArray.length; i++) {

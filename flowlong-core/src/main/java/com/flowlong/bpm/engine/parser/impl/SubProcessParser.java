@@ -14,11 +14,11 @@
  */
 package com.flowlong.bpm.engine.parser.impl;
 
-import com.flowlong.bpm.engine.assist.StringUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.SubProcessModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
-import org.w3c.dom.Element;
 
 /**
  * 子流程节点解析类
@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 public class SubProcessParser extends AbstractNodeParser {
 
     @Override
-    public NodeModel parse(Element element) {
+    public NodeModel parse(ModelElement element) {
         SubProcessModel model = this.parse(new SubProcessModel(), element);
         model.setProcessName(element.getAttribute(ATTR_PROCESS_NAME));
         String version = element.getAttribute(ATTR_VERSION);
@@ -44,7 +44,7 @@ public class SubProcessParser extends AbstractNodeParser {
 //        }
         model.setVersion(ver);
         String form = element.getAttribute(ATTR_FORM);
-        if (StringUtils.isNotEmpty(form)) {
+        if (ObjectUtils.isNotEmpty(form)) {
             model.setForm(form);
         } else {
 //            model.setForm(ConfigHelper.getProperty("subprocessurl"));

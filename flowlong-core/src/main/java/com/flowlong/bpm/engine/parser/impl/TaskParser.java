@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.parser.impl;
 
 import com.flowlong.bpm.engine.model.FieldModel;
+import com.flowlong.bpm.engine.ModelElement;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.TaskModel;
 import com.flowlong.bpm.engine.parser.AbstractNodeParser;
@@ -39,7 +40,7 @@ public class TaskParser extends AbstractNodeParser {
 
 
     @Override
-    public NodeModel parse(Element element) {
+    public NodeModel parse(ModelElement element) {
         TaskModel task = this.parse(new TaskModel(), element);
         task.setForm(element.getAttribute(ATTR_FORM));
         task.setAssignee(element.getAttribute(ATTR_ASSIGNEE));
@@ -52,7 +53,7 @@ public class TaskParser extends AbstractNodeParser {
         task.setAssignmentHandler(element.getAttribute(ATTR_ASSIGNEE_HANDLER));
         task.setTaskPassPercentage(element.getAttribute(ATTR_TASK_PASS_PERCENTAGE));
         NodeList fieldList = element.getElementsByTagName(ATTR_FIELD);
-        List<FieldModel> fields = new ArrayList<FieldModel>();
+        List<FieldModel> fields = new ArrayList<>();
         for (int i = 0; i < fieldList.getLength(); i++) {
             Element item = (Element) fieldList.item(i);
             FieldModel fieldModel = new FieldModel();

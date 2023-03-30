@@ -93,7 +93,7 @@ public class DateUtils {
      * @return Date类型
      */
     public static Date processTime(Map<String, Object> args, String parameter) {
-        if (StringUtils.isEmpty(parameter)) {
+        if (ObjectUtils.isEmpty(parameter)) {
             return null;
         }
         Object data = args.get(parameter);
