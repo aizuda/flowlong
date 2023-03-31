@@ -16,8 +16,8 @@ package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.PerformType;
+import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,12 +45,12 @@ public class HisTask extends Task {
      */
     protected Integer taskState;
 
-    public void setTaskState(InstanceState instanceState) {
-        this.taskState = instanceState.getValue();
+    public void setTaskState(TaskState taskState) {
+        this.taskState = taskState.getValue();
     }
 
     public void setTaskState(Integer taskState) {
-        Assert.notNull(InstanceState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
+        Assert.notNull(TaskState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
         this.taskState = taskState;
     }
 

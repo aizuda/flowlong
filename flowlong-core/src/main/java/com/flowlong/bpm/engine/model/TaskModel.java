@@ -121,12 +121,12 @@ public class TaskModel extends WorkModel {
     protected void run(FlowLongContext flowLongContext, Execution execution) {
         if (performType == null || performType.equalsIgnoreCase(PERFORM_TYPE_ANY)) {
             /**
-             * any方式，直接执行输出变迁
+             * any 方式，直接执行输出变迁
              */
             runOutTransition(flowLongContext, execution);
         } else if(performType.equalsIgnoreCase(PERFORM_TYPE_ALL)) {
             /**
-             * all方式，需要判断是否已全部合并
+             * all 方式，需要判断是否已全部合并
              * 由于all方式分配任务，是每人一个任务
              * 那么此时需要判断之前分配的所有任务都执行完成后，才可执行下一步，否则不处理
              */
@@ -136,7 +136,7 @@ public class TaskModel extends WorkModel {
             }
         } else if(performType.equalsIgnoreCase(PERFORM_TYPE_PERCENTAGE)) {
             /**
-             * PERCENTAGE方式 需要判断当前通过人数是否>=通过百分比
+             * percentage 方式 需要判断当前通过人数是否>=通过百分比
              * 需要判断当前通过人数是否>=通过百分比，才可执行下一步，否则不处理
              */
             Task task = execution.getTask();

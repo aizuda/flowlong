@@ -61,12 +61,12 @@ public interface QueryService {
      * @return HistoryTask 历史任务对象
      */
     HisTask getHistTask(Long taskId);
-    
+
     /**
      * 根据任务名称查询历史任务对象
      *
      * @param instanceId
-     * @param taskName 任务名称(亦是节点名称)
+     * @param taskName   任务名称(亦是节点名称)
      * @return com.flowlong.bpm.engine.entity.HisTask
      */
     HisTask getHistoryTaskByName(Long instanceId, String taskName);
@@ -99,24 +99,26 @@ public interface QueryService {
 
     /**
      * 根据父流程实例ID获取流程实例
+     *
      * @param parentInstanceId 父流程实例ID
      * @return 子流程实例列表
      */
     List<Instance> getActiveInstances(Long parentInstanceId);
 
     /**
-     * 根据实例ID和活动名称获取当前节点激活的任务
+     * 根据实例ID和任务节点名称获取当前节点激活的任务
      *
      * @param instanceId 实例ID
-     * @param activeNodes 活动任务名称
+     * @param taskNames  任务节点名称
      * @return 子任务列表
      */
-    List<Task> getActiveTasks(Long instanceId, List<String> activeNodes);
+    List<Task> getActiveTasks(Long instanceId, List<String> taskNames);
 
     /**
-     * 根据实例ID和活动名称获取当前节点所有任务
+     * 根据实例ID和任务节点名称获取当前节点所有任务
+     *
      * @param instanceId 实例ID
-     * @param activeNodes 活动名称
+     * @param taskNames  任务节点名称
      */
-    List<HisTask> getHisActiveTasks(Long instanceId, List<String> activeNodes);
+    List<HisTask> getHisActiveTasks(Long instanceId, List<String> taskNames);
 }

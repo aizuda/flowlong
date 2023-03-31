@@ -50,7 +50,9 @@ public interface TaskService {
      * @param taskId 任务ID
      * @return Task 任务对象
      */
-    Task complete(Long taskId);
+    default Task complete(Long taskId) {
+        return this.complete(taskId, null);
+    }
 
     /**
      * 完成指定的任务，删除活动任务记录，创建历史任务
@@ -59,7 +61,9 @@ public interface TaskService {
      * @param userId 用户ID
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String userId);
+    default Task complete(Long taskId, String userId) {
+        return this.complete(taskId, userId, null);
+    }
 
     /**
      * 根据任务ID，创建人ID完成任务

@@ -23,8 +23,8 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.PerformType;
+import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
@@ -77,22 +77,6 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * 完成指定任务
-     */
-    @Override
-    public Task complete(Long taskId) {
-        return complete(taskId, null, null);
-    }
-
-    /**
-     * 完成指定任务
-     */
-    @Override
-    public Task complete(Long taskId, String userId) {
-        return complete(taskId, userId, null);
-    }
-
-    /**
-     * 完成指定任务
      * 该方法仅仅结束活动任务，并不能驱动流程继续执行
      */
     @Override
@@ -105,7 +89,7 @@ public class TaskServiceImpl implements TaskService {
         // 迁移 task 信息到 flw_his_task
         HisTask hisTask = HisTask.of(task);
         hisTask.setFinishTime(DateUtils.getCurrentDate());
-        hisTask.setTaskState(InstanceState.finish);
+        hisTask.setTaskState(TaskState.finish);
         hisTask.setCreateBy(userId);
         hisTaskMapper.insert(hisTask);
 
@@ -157,7 +141,7 @@ public class TaskServiceImpl implements TaskService {
             // 1，更新历史任务状态为超时，设置完成时间
             HisTask hisTask = new HisTask();
             hisTask.setId(taskId);
-            hisTask.setTaskState(InstanceState.timeout);
+            hisTask.setTaskState(TaskState.timeout);
             hisTask.setFinishTime(DateUtils.getCurrentDate());
             hisTaskMapper.updateById(hisTask);
 
@@ -185,7 +169,7 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setFinishTime(hisTask.getCreateTime());
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
-        hisTask.setTaskState(InstanceState.finish);
+        hisTask.setTaskState(TaskState.finish);
         hisTask.setTaskType(TaskType.record);
         hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         hisTask.setVariable(execution.getArgs());
