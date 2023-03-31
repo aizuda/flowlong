@@ -14,11 +14,15 @@
  */
 package test.mysql.task;
 
+import com.flowlong.bpm.engine.model.FieldModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.engine.model.TaskModel;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
+
+import java.util.List;
 
 /**
  * 简单测试获取流程field
@@ -35,11 +39,14 @@ public class TestField extends MysqlTest {
     @Test
     public void testField() {
         ProcessModel processModel = flowLongEngine.processService().getProcessById(processId).getProcessModel();
-        // 获取名称为task1的task
-        TaskModel taskModel = (TaskModel) processModel.getNode("task1");
+        Assertions.assertNotNull(processModel);
 
-        // 获取task下面的field
-        System.out.println("taskModel.getFields() : " + taskModel.getFields());
+        TaskModel taskModel = (TaskModel) processModel.getNode("task1");
+        Assertions.assertNotNull(taskModel);
+        FieldModel fieldModel = taskModel.getFields().get(0);
+        Assertions.assertEquals(fieldModel.getName(), "applyUser");
+        Assertions.assertEquals(fieldModel.getAttrMap().size(), 9);
+        Assertions.assertEquals(fieldModel.getAttrMap().get("lineBR"), "false");
     }
 
 }

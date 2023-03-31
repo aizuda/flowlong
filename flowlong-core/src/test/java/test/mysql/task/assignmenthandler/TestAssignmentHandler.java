@@ -24,18 +24,19 @@ import java.util.List;
 
 public class TestAssignmentHandler extends MysqlTest {
 
-	@BeforeEach
-	public void before() {
-		processId = this.deployByResource("test/task/assignmentthandler.long");
-	}
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/assignmentthandler.long");
+    }
 
-	@Test
-	public void test() {
-		Instance instance = flowLongEngine.startInstanceById(processId, "2");
-		System.out.println("instance=" + instance);
-		List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		for(Task task : tasks) {
-			flowLongEngine.executeTask(task.getId(), "admin");
-		}
-	}
+    @Test
+    public void test() {
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
+
+        System.out.println("instance=" + instance);
+        List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        for (Task task : tasks) {
+            flowLongEngine.executeTask(task.getId(), testUser2);
+        }
+    }
 }

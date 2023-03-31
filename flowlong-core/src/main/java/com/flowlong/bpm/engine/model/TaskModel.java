@@ -285,32 +285,4 @@ public class TaskModel extends WorkModel {
         return models;
     }
 
-    /**
-     * 参与类型
-     */
-    public enum PerformType {
-        ANY, ALL, PERCENTAGE;
-    }
-
-    /**
-     * 任务类型
-     */
-    public enum TaskType {
-        /**
-         * 主办
-         */
-        Major,
-        /**
-         * 协助
-         */
-        Assist,
-        /**
-         * 会签
-         */
-        Countersign,
-        /**
-         * 仅作为记录
-         */
-        Record;
-    }
 }

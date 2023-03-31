@@ -15,7 +15,11 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -96,7 +100,7 @@ public class Task extends BaseEntity {
     protected Date finishTime;
 
     public boolean major() {
-        return Objects.equals(this.taskType, TaskModel.TaskType.Major.ordinal());
+        return Objects.equals(this.taskType, TaskType.major.getValue());
     }
 
     public Map<String, Object> variableMap() {
@@ -104,15 +108,33 @@ public class Task extends BaseEntity {
         return null == map ? Collections.emptyMap() : map;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
     public void setVariable(String variable) {
         this.variable = variable;
     }
 
+    public void setTaskType(TaskType taskType) {
+        this.taskType = taskType.getValue();
+    }
+
+    public void setTaskType(Integer taskType) {
+        Assert.notNull(TaskType.get(taskType), "插入的任务类型异常 [taskType=" + taskType + "]");
+        this.taskType = taskType;
+    }
+
     public void setVariable(Map<String, Object> args) {
         this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
+    }
+
+    public Task cloneTask(String userId) throws CloneNotSupportedException {
+        Task newTask = (Task) this.clone();
+        newTask.setCreateTime(DateUtils.getCurrentDate());
+        newTask.setId(null);
+        if (ObjectUtils.isNotEmpty(userId)) {
+            newTask.setCreateBy(userId);
+            Map<String, Object> taskData = this.variableMap();
+            taskData.put(Task.KEY_ACTOR, userId);
+            newTask.setVariable(taskData);
+        }
+        return newTask;
     }
 }

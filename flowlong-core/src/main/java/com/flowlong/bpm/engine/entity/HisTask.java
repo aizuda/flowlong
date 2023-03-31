@@ -17,11 +17,13 @@ package com.flowlong.bpm.engine.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.model.TaskModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Objects;
 
 /**
  * 历史任务实体类
@@ -85,7 +87,7 @@ public class HisTask extends Task {
     }
 
     public boolean isPerformAny() {
-        return this.performType.intValue() == TaskModel.PerformType.ANY.ordinal();
+        return Objects.equals(this.performType, PerformType.any.getValue());
     }
 
 }

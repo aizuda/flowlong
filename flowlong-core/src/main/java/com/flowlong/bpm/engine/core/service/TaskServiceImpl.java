@@ -24,6 +24,8 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.core.enums.PerformType;
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
@@ -60,7 +62,9 @@ public class TaskServiceImpl implements TaskService {
     private HisTaskMapper hisTaskMapper;
     private HisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
+                           ProcessMapper processMapper, InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper,
+                           HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
@@ -182,7 +186,7 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setDisplayName(model.getDisplayName());
         hisTask.setTaskName(model.getName());
         hisTask.setTaskState(InstanceState.finish);
-        hisTask.setTaskType(TaskModel.TaskType.Record.ordinal());
+        hisTask.setTaskType(TaskType.record);
         hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         hisTask.setVariable(execution.getArgs());
         hisTaskMapper.insert(hisTask);
@@ -234,68 +238,45 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 向指定任务添加参与者
-     * 该方法根据performType类型判断是否需要创建新的活动任务
+     * 向指定的任务ID添加参与者
+     *
+     * @param taskId   任务ID
+     * @param taskType 参与类型 {@link TaskType}
+     * @param actors   参与者
      */
     @Override
-    public void addTaskActor(Long taskId, Integer performType, List<String> actors) {
+    public void addTaskActor(Long taskId, TaskType taskType, List<String> actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         if (!task.major() || ObjectUtils.isEmpty(actors)) {
             return;
         }
-        if (performType == null) {
-            performType = task.getPerformType();
+        if (taskType == null) {
+            taskType = TaskType.get(task.getPerformType());
         }
-        if (performType == null) {
-            performType = 0;
-        }
-        switch (performType) {
-            case 0:
-                actors.forEach(t -> this.assignTask(task.getId(), t));
-                Map<String, Object> data = task.variableMap();
-                String oldActor = (String) data.get(Task.KEY_ACTOR);
-                data.put(Task.KEY_ACTOR, oldActor + "," + actors.stream().collect(Collectors.joining(",")));
-                task.setVariable(data);
-                taskMapper.updateById(task);
-                break;
-            case 1:
-                try {
-                    Date currentDate = DateUtils.getCurrentDate();
-                    for (String actor : actors) {
-                        Task newTask = (Task) task.clone();
-                        newTask.setCreateTime(currentDate);
-                        newTask.setCreateBy(actor);
-                        newTask.setId(null);
-                        Map<String, Object> taskData = task.variableMap();
-                        taskData.put(Task.KEY_ACTOR, actor);
-                        task.setVariable(taskData);
-                        taskMapper.insert(newTask);
-                        assignTask(newTask.getId(), actor);
-                    }
-                } catch (CloneNotSupportedException ex) {
-                    throw new FlowLongException("任务对象不支持复制", ex.getCause());
+        if (taskType == TaskType.major) {
+            /**
+             * 普通任务
+             */
+            actors.forEach(t -> this.assignTask(task.getId(), t));
+            Map<String, Object> data = task.variableMap();
+            String oldActor = (String) data.get(Task.KEY_ACTOR);
+            data.put(Task.KEY_ACTOR, oldActor + "," + actors.stream().collect(Collectors.joining(",")));
+            task.setVariable(data);
+            taskMapper.updateById(task);
+        } else if (taskType == TaskType.countersign) {
+            /**
+             * 会签任务
+             */
+            try {
+                for (String actor : actors) {
+                    Task newTask = task.cloneTask(actor);
+                    taskMapper.insert(newTask);
+                    this.assignTask(newTask.getId(), actor);
                 }
-                break;
-            case 2:
-                try {
-                    for (String actor : actors) {
-                        Task newTask = (Task) task.clone();
-                        newTask.setCreateTime(new Date());
-                        newTask.setCreateBy(actor);
-                        newTask.setId(null);
-                        Map<String, Object> taskData = task.variableMap();
-                        taskData.put(Task.KEY_ACTOR, actor);
-                        task.setVariable(taskData);
-                        taskMapper.insert(newTask);
-                        assignTask(newTask.getId(), actor);
-                    }
-                } catch (CloneNotSupportedException ex) {
-                    throw new FlowLongException("任务对象不支持复制", ex.getCause());
-                }
-                break;
-            default:
-                break;
+            } catch (CloneNotSupportedException ex) {
+                throw new FlowLongException("任务对象不支持复制", ex.getCause());
+            }
         }
     }
 
@@ -307,7 +288,8 @@ public class TaskServiceImpl implements TaskService {
         HisTask hist = hisTaskMapper.selectById(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
         List<Task> tasks = new ArrayList<>();
-        if (hist.isPerformAny()) {
+        PerformType performType = PerformType.get(hist.getPerformType());
+        if (performType == PerformType.any) {
             // 根据父任务ID查询所有子任务
             tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
         } else {
@@ -373,18 +355,16 @@ public class TaskServiceImpl implements TaskService {
      * 适用于转派，动态协办处理
      */
     @Override
-    public List<Task> createNewTask(Long taskId, int taskType, List<String> actors) {
+    public List<Task> createNewTask(Long taskId, TaskType taskType, List<String> actors) {
         Assert.isTrue(ObjectUtils.isEmpty(actors), "参与者不能为空");
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         List<Task> tasks = new ArrayList<>();
         try {
-            Task newTask = (Task) task.clone();
-            newTask.setId(null);
+            Task newTask = task.cloneTask(null);
             newTask.setTaskType(taskType);
-            newTask.setCreateTime(DateUtils.getCurrentDate());
             newTask.setParentTaskId(taskId);
-            tasks.add(this.saveTask(newTask, TaskModel.PerformType.ANY, actors));
+            tasks.add(this.saveTask(newTask, PerformType.any, actors));
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException("任务对象不支持复制", e.getCause());
         }
@@ -455,34 +435,34 @@ public class TaskServiceImpl implements TaskService {
 
         List<Task> tasks = new LinkedList<>();
         if (taskModel.isPerformAny()) {
-            //任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
-            task = this.saveTask(task, TaskModel.PerformType.ANY, actors);
+            // 任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
+            task = this.saveTask(task, PerformType.any, actors);
             task.setRemindTime(remindTime);
             tasks.add(task);
         } else if (taskModel.isPerformAll()) {
-            //任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
+            // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
                 try {
-                    singleTask = (Task) task.clone();
+                    singleTask = task.cloneTask(actor);
                 } catch (CloneNotSupportedException e) {
                     singleTask = task;
                 }
-                singleTask = this.saveTask(singleTask, TaskModel.PerformType.ALL, Collections.singletonList(actor));
+                singleTask = this.saveTask(singleTask, PerformType.all, Collections.singletonList(actor));
                 singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
         } else if (taskModel.isPerformPercentage()) {
-            //任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
+            // 任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
                 try {
-                    singleTask = (Task) task.clone();
+                    singleTask = task.cloneTask(actor);
                 } catch (CloneNotSupportedException e) {
                     singleTask = task;
                 }
                 singleTask.setId(null);
-                singleTask = this.saveTask(singleTask, TaskModel.PerformType.PERCENTAGE, Collections.singletonList(actor));
+                singleTask = this.saveTask(singleTask, PerformType.percentage, Collections.singletonList(actor));
                 singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
@@ -505,9 +485,9 @@ public class TaskServiceImpl implements TaskService {
         task.setDisplayName(model.getDisplayName());
         task.setCreateTime(DateUtils.getCurrentDate());
         if (model.isMajor()) {
-            task.setTaskType(TaskModel.TaskType.Major.ordinal());
+            task.setTaskType(TaskType.major);
         } else {
-            task.setTaskType(TaskModel.TaskType.Assist.ordinal());
+            task.setTaskType(TaskType.assist);
         }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         return task;
@@ -520,7 +500,7 @@ public class TaskServiceImpl implements TaskService {
      * @param actors 参与者ID集合
      * @return
      */
-    private Task saveTask(Task task, TaskModel.PerformType performType, List<String> actors) {
+    private Task saveTask(Task task, PerformType performType, List<String> actors) {
         task.setPerformType(performType.ordinal());
         taskMapper.insert(task);
         if (ObjectUtils.isNotEmpty(actors)) {

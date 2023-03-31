@@ -14,8 +14,10 @@
  */
 package test.mysql.task;
 
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -39,11 +41,13 @@ public class TestAssist extends MysqlTest {
     @Test
     public void testAssistTask() {
         Map<String, Object> args = new HashMap<>();
-        args.put("task1.assignee", "1");
-        Instance instance = flowLongEngine.startInstanceByName("assist", 1, "creteUser", args);
+        args.put("task1.assignee", testUser1);
+        Instance instance = flowLongEngine.startInstanceByName("assist", 1, testUser1, args);
+        Assertions.assertNotNull(instance);
+
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        for(Task task : tasks) {
-            flowLongEngine.taskService().createNewTask(task.getId(), 1, "test");
+        for (Task task : tasks) {
+            flowLongEngine.taskService().createNewTask(task.getId(), TaskType.assist, testUser1);
         }
     }
 }

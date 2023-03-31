@@ -14,8 +14,10 @@
  */
 package test.mysql.task;
 
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -35,11 +37,14 @@ public class TestWithdraw extends MysqlTest {
     @Test
     void test() {
         Instance instance = flowLongEngine.startInstanceByName("withdraw", 1);
-        System.out.println("instance=" + instance);
+        Assertions.assertNotNull(instance);
+
         Task task = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()).get(0);
-        Task nextTask = flowLongEngine.taskService().createNewTask(task.getId(), 0, "testWithdraw").get(0);
+        Task nextTask = flowLongEngine.taskService().createNewTask(task.getId(), TaskType.major, testUser1).get(0);
+        Assertions.assertNotNull(nextTask);
+
         flowLongEngine.taskService().complete(task.getId());
-        Task withdrawTask = flowLongEngine.taskService().withdrawTask(task.getId(), "testWithdraw");
-        flowLongEngine.taskService().complete(withdrawTask.getId(), "testWithdraw");
+        Task withdrawTask = flowLongEngine.taskService().withdrawTask(task.getId(), testUser1);
+        flowLongEngine.taskService().complete(withdrawTask.getId(), testUser1);
     }
 }

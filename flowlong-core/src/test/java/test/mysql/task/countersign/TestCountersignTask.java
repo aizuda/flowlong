@@ -26,6 +26,7 @@ import java.util.List;
 
 /**
  * 测试会签任务
+ *
  * @author lijing
  * @since 1.0
  */
@@ -41,11 +42,11 @@ public class TestCountersignTask extends MysqlTest {
      */
     @Test
     public void test() {
-        Instance instance = flowLongEngine.startInstanceById(processId, "2");
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         int count = 0;
         for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getId(), "2");
+            flowLongEngine.executeTask(task.getId(), testUser1);
             count++;
         }
         Assert.isFalse(count == 2, "会签任务执行失败");
@@ -56,7 +57,7 @@ public class TestCountersignTask extends MysqlTest {
      */
     @Test
     public void test1() {
-        Instance instance = flowLongEngine.startInstanceById(processId, "2");
+        Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         Task task = tasks.get(0);
         Long taskId = task.getId();
@@ -64,7 +65,7 @@ public class TestCountersignTask extends MysqlTest {
         taskActor.add("123");
         taskActor.add("456");
         flowLongEngine.taskService().addTaskActor(taskId, taskActor);
-        List<Task> newtasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        Assert.isFalse((tasks.size() + 2) == newtasks.size(), "动态加签失败");
+        List<Task> newTasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        Assert.isFalse((tasks.size() + 2) == newTasks.size(), "动态加签失败");
     }
 }

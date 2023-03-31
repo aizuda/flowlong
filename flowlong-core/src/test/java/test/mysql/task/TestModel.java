@@ -46,8 +46,8 @@ public class TestModel extends MysqlTest {
     @Test
     public void test() {
         Map<String, Object> args = new HashMap<String, Object>();
-        args.put("task1.operator", new String[]{"1"});
-        Instance instance = flowLongEngine.startInstanceByName("simple", null, "2", args);
+        args.put("task1.operator", testUser1);
+        Instance instance = flowLongEngine.startInstanceByName("simple", null, testUser2, args);
         System.out.println("instance=" + instance);
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         for (Task task : tasks) {

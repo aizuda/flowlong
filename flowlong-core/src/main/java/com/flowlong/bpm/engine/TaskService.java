@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.CustomModel;
@@ -131,14 +132,14 @@ public interface TaskService {
     /**
      * 向指定的任务ID添加参与者
      *
-     * @param taskId      任务ID
-     * @param performType 参与类型
-     * @param actors      参与者
+     * @param taskId   任务ID
+     * @param taskType 参与类型 {@link TaskType}
+     * @param actors   参与者
      */
-    void addTaskActor(Long taskId, Integer performType, List<String> actors);
+    void addTaskActor(Long taskId, TaskType taskType, List<String> actors);
 
-    default void addTaskActor(Long taskId, Integer performType, String actor) {
-        this.addTaskActor(taskId, performType, Arrays.asList(actor));
+    default void addTaskActor(Long taskId, TaskType taskType, String actor) {
+        this.addTaskActor(taskId, taskType, Arrays.asList(actor));
     }
 
     /**
@@ -181,13 +182,13 @@ public interface TaskService {
      * 根据已有任务ID、任务类型、参与者创建新的任务
      *
      * @param taskId   主办任务ID
-     * @param taskType 任务类型
+     * @param taskType 任务类型 {@link TaskType}
      * @param actors   参与者集合
      * @return List<Task> 创建任务集合
      */
-    List<Task> createNewTask(Long taskId, int taskType, List<String> actors);
+    List<Task> createNewTask(Long taskId, TaskType taskType, List<String> actors);
 
-    default List<Task> createNewTask(Long taskId, int taskType, String actor) {
+    default List<Task> createNewTask(Long taskId, TaskType taskType, String actor) {
         return this.createNewTask(taskId, taskType, Arrays.asList(actor));
     }
 

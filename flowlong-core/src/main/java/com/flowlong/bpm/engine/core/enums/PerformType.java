@@ -15,37 +15,25 @@
 package com.flowlong.bpm.engine.core.enums;
 
 import java.util.Arrays;
+
 /**
- * 流程状态
+ * 参与类型
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
  * </p>
  *
- * @author 江涛
+ * @author hubin
  * @since 1.0
  */
-public enum InstanceState {
-    /**
-     * 活动
-     */
-    active(0),
-    /**
-     * 结束
-     */
-    finish(1),
-    /**
-     * 超时
-     */
-    timeout(1),
-    /**
-     * 终止
-     */
-    termination(3);
+public enum PerformType {
+    any(0),
+    all(1),
+    percentage(2);
 
     private final int value;
 
-    InstanceState(int value) {
+    PerformType(int value) {
         this.value = value;
     }
 
@@ -53,8 +41,8 @@ public enum InstanceState {
         return value;
     }
 
-    public static InstanceState get(int value) {
-        return Arrays.stream(InstanceState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
+    public static PerformType get(int value) {
+        return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
 
 }

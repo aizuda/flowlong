@@ -14,8 +14,10 @@
  */
 package test.mysql.task;
 
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
@@ -29,20 +31,21 @@ import java.util.List;
  */
 public class TestTransfer extends MysqlTest {
 
-	@BeforeEach
-	public void before() {
-		processId = this.deployByResource("test/task/transfer.long");
-	}
+    @BeforeEach
+    public void before() {
+        processId = this.deployByResource("test/task/transfer.long");
+    }
 
-	@Test
-	public void test() {
-		Instance instance = flowLongEngine.startInstanceByName("transfer", 1);
-		System.out.println("instance=" + instance);
-		List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-		for(Task task : tasks) {
-			flowLongEngine.taskService().createNewTask(task.getId(), 0, "test");
-			flowLongEngine.taskService().complete(task.getId());
-		}
-	}
+    @Test
+    public void test() {
+        Instance instance = flowLongEngine.startInstanceByName("transfer", 1);
+        Assertions.assertNotNull(instance);
+
+        List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        for (Task task : tasks) {
+            flowLongEngine.taskService().createNewTask(task.getId(), TaskType.major, testUser1);
+            flowLongEngine.taskService().complete(task.getId());
+        }
+    }
 
 }
