@@ -217,7 +217,11 @@ public interface TaskService {
      * @param taskId 任务ID
      * @param actors 参与者
      */
-    void removeTaskActor(Long taskId, String... actors);
+    boolean removeTaskActor(Long taskId, List<String> actors);
+
+    default boolean removeTaskActor(Long taskId, String actor) {
+        return removeTaskActor(taskId, Arrays.asList(actor));
+    }
 
     /**
      * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor

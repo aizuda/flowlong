@@ -569,11 +569,11 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public void removeTaskActor(Long taskId, String... actors) {
+    public boolean removeTaskActor(Long taskId, List<String> actors) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (actors == null || actors.length == 0) {
-            return;
+        if (ObjectUtils.isEmpty(actors)) {
+            return false;
         }
         if (task.major()) {
             Map<String, Object> taskData = task.variableMap();
@@ -601,11 +601,19 @@ public class TaskServiceImpl implements TaskService {
                 if (newActor.length() > 0) {
                     newActor.deleteCharAt(newActor.length() - 1);
                 }
+                // 删除参与者表，任务关联关系
+                taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery()
+                        .eq(TaskActor::getTaskId, taskId)
+                        .in(TaskActor::getActorId, actors));
+                // 更新任务参数 JSON 信息
+                Task temp = new Task();
+                temp.setId(taskId);
                 taskData.put(Task.KEY_ACTOR, newActor.toString());
-                task.setVariable(taskData);
-                taskMapper.updateById(task);
+                temp.setVariable(taskData);
+                return taskMapper.updateById(temp) > 0;
             }
         }
+        return false;
     }
 
     /**
