@@ -42,27 +42,6 @@ import java.util.List;
  */
 public class TaskModel extends WorkModel {
     /**
-     * 类型：普通任务
-     */
-    public static final String PERFORM_TYPE_ANY = "ANY";
-    /**
-     * 类型：参与者fork任务
-     */
-    public static final String PERFORM_TYPE_ALL = "ALL";
-
-    /**
-     * 类型：参与者会签百分比
-     */
-    public static final String PERFORM_TYPE_PERCENTAGE = "PERCENTAGE";
-    /**
-     * 类型：主办任务
-     */
-    public static final String TASK_TYPE_MAJOR = "Major";
-    /**
-     * 类型：协办任务
-     */
-    public static final String TASK_TYPE_ASSIST = "Assist";
-    /**
      * 参与者变量名称
      */
     private String assignee;
@@ -75,8 +54,12 @@ public class TaskModel extends WorkModel {
     private String performType = PERFORM_TYPE_ANY;
     /**
      * 任务类型
-     * major：主办任务
-     * aidant：协办任务
+     * <p>
+     * major 主办任务
+     * </p>
+     * <p>
+     * assist 协办任务
+     * </p>
      */
     private String taskType = TASK_TYPE_MAJOR;
     /**

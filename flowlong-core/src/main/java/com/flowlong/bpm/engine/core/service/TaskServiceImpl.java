@@ -550,14 +550,21 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean isAllowed(Task task, String userId) {
+        // 未指定创建人情况，默认为不验证执行权限
+        if (null == task.getCreateBy()) {
+            return true;
+        }
+
+        // 任务执行创建人不存在
         if (ObjectUtils.isEmpty(userId)) {
-            // 任务执行创建人不存在
             return false;
         }
+
         // 如果是admin或者auto，直接返回true
         if (FlowLongEngine.ADMIN.equalsIgnoreCase(userId) || FlowLongEngine.AUTO.equalsIgnoreCase(userId)) {
             return true;
         }
+
         // 任务参与者列表
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, task.getId()));
         if (actors == null || actors.isEmpty()) {

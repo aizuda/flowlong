@@ -28,6 +28,30 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
  * @since 1.0
  */
 public interface ModelInstance {
+    /**
+     * 类型：普通任务
+     */
+    String PERFORM_TYPE_ANY = "ANY";
+
+    /**
+     * 类型：参与者fork任务
+     */
+    String PERFORM_TYPE_ALL = "ALL";
+
+    /**
+     * 类型：参与者会签百分比
+     */
+    String PERFORM_TYPE_PERCENTAGE = "PERCENTAGE";
+
+    /**
+     * 类型：主办任务
+     */
+    String TASK_TYPE_MAJOR = "major";
+
+    /**
+     * 类型：协办任务
+     */
+    String TASK_TYPE_ASSIST = "assist";
 
     /**
      * 执行流程元素
