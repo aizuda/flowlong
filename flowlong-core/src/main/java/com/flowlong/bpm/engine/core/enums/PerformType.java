@@ -29,6 +29,9 @@ import java.util.Arrays;
 public enum PerformType {
     any(0),
     all(1),
+    /**
+     * 会签
+     */
     percentage(2);
 
     private final int value;
@@ -45,4 +48,4 @@ public enum PerformType {
         return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
 
-}
+    }

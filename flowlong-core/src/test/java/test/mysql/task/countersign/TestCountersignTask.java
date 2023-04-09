@@ -14,15 +14,16 @@
  */
 package test.mysql.task.countersign;
 
-import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import test.mysql.MysqlTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 测试会签任务
@@ -46,10 +47,14 @@ public class TestCountersignTask extends MysqlTest {
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
         int count = 0;
         for (Task task : tasks) {
-            flowLongEngine.executeTask(task.getId(), testUser1);
+            String createBy = task.getCreateBy();
+            // 会签任务只允许为 test001 、test002
+            Assertions.assertTrue(Objects.equals(createBy, testUser1)
+                    || Objects.equals(createBy, testUser2));
+            flowLongEngine.executeTask(task.getId(), createBy);
             count++;
         }
-        Assert.isFalse(count == 2, "会签任务执行失败");
+        Assertions.assertEquals(2, count);
     }
 
     /**
@@ -59,13 +64,10 @@ public class TestCountersignTask extends MysqlTest {
     public void test1() {
         Instance instance = flowLongEngine.startInstanceById(processId, testUser1);
         List<Task> tasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        Task task = tasks.get(0);
-        Long taskId = task.getId();
         List<String> taskActor = new ArrayList<>();
-        taskActor.add("123");
-        taskActor.add("456");
-        flowLongEngine.taskService().addTaskActor(taskId, taskActor);
+        taskActor.add(testUser3);
+        flowLongEngine.taskService().addTaskActor(tasks.get(0).getId(), taskActor);
         List<Task> newTasks = flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        Assert.isFalse((tasks.size() + 2) == newTasks.size(), "动态加签失败");
+        Assertions.assertEquals(tasks.size() + 1, newTasks.size());
     }
 }
