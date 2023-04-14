@@ -25,6 +25,8 @@ import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.impl.MergeActorHandler;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +42,8 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
+@Getter
+@Setter
 public class TaskModel extends WorkModel {
     /**
      * 参与者变量名称
@@ -79,21 +83,13 @@ public class TaskModel extends WorkModel {
      */
     private String autoExecute;
     /**
-     * 任务执行后回调类
-     */
-    private String callback;
-    /**
-     * 分配参与者处理类型
-     */
-    private String assignmentHandler;
-    /**
      * 分配参与者处理对象
      */
     private Assignment assignmentHandlerObject;
     /**
      * 字段模型集合
      */
-    private List<FieldModel> fields = null;
+    private List<FieldModel> fields;
 
     /**
      * 任务通过百分比
@@ -154,104 +150,19 @@ public class TaskModel extends WorkModel {
 
     public boolean isAssist() { return TASK_TYPE_ASSIST.equalsIgnoreCase(this.taskType); }
 
-    public String getAssignee() {
-        return assignee;
-    }
-
-    public void setAssignee(String assignee) {
-        this.assignee = assignee;
-    }
-
-    public String getTaskType() {
-        return taskType;
-    }
-
-    public String getExpireTime() {
-        return expireTime;
-    }
-
-    public void setExpireTime(String expireTime) {
-        this.expireTime = expireTime;
-    }
-
-    public void setCallback(String callback) {
-        this.callback = callback;
-    }
-
-    public void setAssignmentHandlerObject(Assignment assignmentHandlerObject) {
-        this.assignmentHandlerObject = assignmentHandlerObject;
-    }
-
-    public String getTaskPassPercentage() {
-        return taskPassPercentage;
-    }
-
-    public void setTaskPassPercentage(String taskPassPercentage) {
-        this.taskPassPercentage = taskPassPercentage;
-    }
-
     public void setTaskType(String taskType) {
         this.taskType = (ObjectUtils.isEmpty(taskType) ? TASK_TYPE_MAJOR : taskType);
-    }
-
-    public String getPerformType() {
-        return performType;
     }
 
     public void setPerformType(String performType) {
         this.performType = (ObjectUtils.isEmpty(performType) ? PERFORM_TYPE_ANY : performType);
     }
 
-    public String getReminderTime() {
-        return reminderTime;
-    }
-
-    public void setReminderTime(String reminderTime) {
-        this.reminderTime = reminderTime;
-    }
-
-    public String getReminderRepeat() {
-        return reminderRepeat;
-    }
-
-    public void setReminderRepeat(String reminderRepeat) {
-        this.reminderRepeat = reminderRepeat;
-    }
-
-    public String getAutoExecute() {
-        return autoExecute;
-    }
-
-    public void setAutoExecute(String autoExecute) {
-        this.autoExecute = autoExecute;
-    }
-
-    public Assignment getAssignmentHandlerObject() {
-        return assignmentHandlerObject;
-    }
-
-    public String getAssignmentHandler() {
-        return assignmentHandler;
-    }
-
-    public void setAssignmentHandler(String assignmentHandlerStr) {
-        if (ObjectUtils.isNotEmpty(assignmentHandlerStr)) {
-            this.assignmentHandler = assignmentHandlerStr;
-            assignmentHandlerObject = (Assignment) ClassUtils.newInstance(assignmentHandlerStr);
+    public void setAssignmentHandler(String assignmentHandler) {
+        if (ObjectUtils.isNotEmpty(assignmentHandler)) {
+            this.assignmentHandlerObject = (Assignment) ClassUtils.newInstance(assignmentHandler);
             Assert.notNull(assignmentHandlerObject, "分配参与者处理类实例化失败");
         }
-    }
-
-    public String getCallback() {
-        return callback;
-    }
-
-    public List<FieldModel> getFields() {
-        return fields;
-    }
-
-    public void setFields(List<FieldModel> fields) {
-        this.fields = fields;
     }
 
     /**
