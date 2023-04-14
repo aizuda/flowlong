@@ -149,7 +149,7 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.deleteById(taskId);
 
             // 3，任务监听器通知
-            this.taskNotify(TaskListener.EVENT_UPDATE, task);
+            this.taskNotify(TaskListener.EVENT_TIMEOUT, task);
         }
         return true;
     }
@@ -490,6 +490,9 @@ public class TaskServiceImpl implements TaskService {
         if (ObjectUtils.isNotEmpty(actors)) {
             actors.forEach(t -> this.assignTask(task.getId(), t));
         }
+
+        // 创建任务监听
+        this.taskNotify(TaskListener.EVENT_CREATE, task);
         return task;
     }
 
