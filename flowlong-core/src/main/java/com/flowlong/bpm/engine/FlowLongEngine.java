@@ -18,7 +18,6 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.model.TaskModel;
 
 import java.util.List;
 import java.util.Map;
@@ -249,5 +248,5 @@ public interface FlowLongEngine {
      * @param model      节点模型
      * @return {@link Task} 任务列表
      */
-    List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model);
+//    List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model);
 }

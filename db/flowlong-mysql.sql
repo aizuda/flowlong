@@ -138,7 +138,7 @@ CREATE TABLE `flw_process`  (
                                 `version` int NOT NULL DEFAULT 1 COMMENT '版本，默认 1',
                                 `instance_url` varchar(200)   NULL DEFAULT NULL COMMENT '实例地址',
                                 `state` tinyint(1) NULL DEFAULT 1 COMMENT '流程是否可用 0，否 1，是',
-                                `content` longblob NULL COMMENT '流程模型定义',
+                                `content` text CHARACTER NULL COMMENT '流程模型定义',
                                 PRIMARY KEY (`id`) USING BTREE,
                                 INDEX `idx_process_name`(`name` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;

@@ -21,8 +21,6 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.model.StartModel;
-import com.flowlong.bpm.engine.parser.ModelParser;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -72,7 +70,7 @@ public class Process extends BaseEntity {
     /**
      * 流程定义xml
      */
-    protected byte[] content;
+    protected String content;
 
     public void setFlowState(FlowState flowState) {
         this.state = flowState.getValue();
@@ -82,7 +80,7 @@ public class Process extends BaseEntity {
      * 模型解析
      */
     public ProcessModel getProcessModel() {
-        return null == this.content ? null : ModelParser.parse(this.content);
+        return null == this.content ? null : ProcessModel.parse(this.content);
     }
 
     /**
@@ -108,9 +106,9 @@ public class Process extends BaseEntity {
      */
     public void executeStartModel(FlowLongContext flowLongContext, Execution execution) {
         this.processModelParser(processModel -> {
-            StartModel start = processModel.getStart();
-            Assert.notNull(start, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
-            start.execute(flowLongContext, execution);
+            NodeModel nodeModel = processModel.getNodeConfig();
+            Assert.notNull(nodeModel, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
+            nodeModel.execute(flowLongContext, execution);
         });
     }
 
@@ -121,7 +119,7 @@ public class Process extends BaseEntity {
      */
     private void processModelParser(Consumer<ProcessModel> consumer) {
         if (null != this.content) {
-            consumer.accept(ModelParser.parse(this.content));
+            consumer.accept(ProcessModel.parse(this.content));
         }
     }
 }

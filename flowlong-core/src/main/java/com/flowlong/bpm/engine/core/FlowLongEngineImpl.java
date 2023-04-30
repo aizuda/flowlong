@@ -25,8 +25,6 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.model.TaskModel;
-import com.flowlong.bpm.engine.model.TransitionModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Collections;
@@ -54,15 +52,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public FlowLongEngine configure(FlowLongContext flowLongContext) {
         this.flowLongContext = flowLongContext;
-//        CacheManager cacheManager = ServiceContext.find(CacheManager.class);
-//        if (cacheManager == null) {
-//            //默认使用内存缓存管理器
-//            cacheManager = new MemoryCacheManager();
-//        }
-//        List<CacheManagerAware> cacheServices = ServiceContext.findList(CacheManagerAware.class);
-//        for (CacheManagerAware cacheService : cacheServices) {
-//            cacheService.setCacheManager(cacheManager);
-//        }
         return this;
     }
 
@@ -275,10 +264,10 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
             // 动态创建转移对象，由转移对象执行execution实例
-            TransitionModel tm = new TransitionModel();
-            tm.setTarget(nodeModel);
-            tm.setEnabled(true);
-            tm.execute(flowLongContext, execution);
+//            TransitionModel tm = new TransitionModel();
+//            tm.setTarget(nodeModel);
+//            tm.setEnabled(true);
+//            tm.execute(flowLongContext, execution);
         }
         return execution.getTasks();
     }
@@ -286,17 +275,17 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     /**
      * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
      */
-    @Override
-    public List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model) {
-        Instance instance = queryService().getInstance(instanceId);
-        Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
-        instance.setLastUpdateBy(createBy);
-        instance.setLastUpdateTime(DateUtils.getCurrentDate());
-        Process process = processService().getProcessById(instance.getProcessId());
-        Execution execution = new Execution(this, process, instance, args);
-        execution.setCreateBy(createBy);
-        return taskService().createTask(model, execution);
-    }
+//    @Override
+//    public List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model) {
+//        Instance instance = queryService().getInstance(instanceId);
+//        Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
+//        instance.setLastUpdateBy(createBy);
+//        instance.setLastUpdateTime(DateUtils.getCurrentDate());
+//        Process process = processService().getProcessById(instance.getProcessId());
+//        Execution execution = new Execution(this, process, instance, args);
+//        execution.setCreateBy(createBy);
+//        return taskService().createTask(model, execution);
+//    }
 
     /**
      * 根据任务ID，创建人ID，参数列表完成任务，并且构造执行对象

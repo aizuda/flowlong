@@ -109,14 +109,12 @@ public class RuntimeServiceImpl implements RuntimeService {
         instance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();
         if (model != null && args != null) {
-            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
-                instance.setExpireTime(new Date(model.getExpireTime()));
-            }
+//            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
+//                instance.setExpireTime(new Date(model.getExpireTime()));
+//            }
             String instanceNo = (String) args.get(FlowLongEngine.ID);
             if (ObjectUtils.isNotEmpty(instanceNo)) {
                 instance.setInstanceNo(instanceNo);
-            } else {
-                instance.setInstanceNo(model.getGenerator().generate(model));
             }
         }
 

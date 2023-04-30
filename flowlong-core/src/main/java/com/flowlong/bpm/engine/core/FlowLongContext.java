@@ -18,15 +18,11 @@ import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.JsonHandler;
 import com.flowlong.bpm.engine.handler.impl.JacksonHandler;
-import com.flowlong.bpm.engine.parser.NodeParser;
-import com.flowlong.bpm.engine.parser.impl.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * FlowLong流程引擎上下文
@@ -60,47 +56,14 @@ public class FlowLongContext {
     public static long REMIND_SCHEDULED_FIXED_DELAY = 5000;
 
     /**
-     * 初始化内置节点解析类 MAP
-     */
-    private static Map<String, NodeParser> NODE_PARSER_MAP = new ConcurrentHashMap<String, NodeParser>() {{
-        put("start", new StartParser());
-        put("task", new TaskParser());
-        put("custom", new CustomParser());
-        put("decision", new DecisionParser());
-        put("subprocess", new SubProcessParser());
-        put("fork", new ForkParser());
-        put("join", new JoinParser());
-        put("end", new EndParser());
-    }};
-
-    public static NodeParser getNodeParser(String key) {
-        return NODE_PARSER_MAP.get(key);
-    }
-
-    /**
-     * 新增自定义节点解析处理器，可覆盖默认节点解析
+     * 默认初始化流程引擎上下文
      *
-     * @param key        节点名称
-     * @param nodeParser 节点解析处理器
+     * @return {@link FlowLongEngine}
+     * @throws FlowLongException
      */
-    public static void addNodeParser(String key, NodeParser nodeParser) {
-        NODE_PARSER_MAP.put(key, nodeParser);
-    }
-
     public FlowLongEngine build() throws FlowLongException {
-        // 默认初始化流程引擎上下文
-        return this.build(null);
-    }
-
-    public FlowLongEngine build(Map<String, NodeParser> nodeParserMap) throws FlowLongException {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
-        }
-        /**
-         * 预留注入自定义节点处理类
-         */
-        if (null != nodeParserMap) {
-            NODE_PARSER_MAP.putAll(nodeParserMap);
         }
         /**
          * 由服务上下文返回流程引擎

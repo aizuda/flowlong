@@ -1,176 +1,144 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * 爱组搭 http://aizuda.com 低代码组件化开发平台
+ * ------------------------------------------
+ * 受知识产权保护，请勿删除版权申明
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.ModelInstance;
-import com.flowlong.bpm.engine.assist.ClassUtils;
-import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
 
 /**
- * 节点元素（存在输入输出的变迁）
+ * 爱组搭 http://aizuda.com
+ * ----------------------------------------
+ * JSON BPM 节点
  *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
- * </p>
- *
- * @author hubin
- * @since 1.0
+ * @author 青苗
+ * @since 2023-03-17
  */
-@Slf4j
 @Getter
 @Setter
-public abstract class NodeModel extends BaseElement implements ModelInstance {
+public class NodeModel implements ModelInstance {
     /**
-     * 输入变迁集合
+     * 节点名称
      */
-    private List<TransitionModel> inputs = new ArrayList<>();
+    private String nodeName;
     /**
-     * 输出变迁集合
+     * 节点类型
+     * <p>
+     * 1，或签 (有一人审批通过即可)
+     * 2，会签 (可同时审批，每个人必须审批通过)
+     * </p>
      */
-    private List<TransitionModel> outputs = new ArrayList<>();
+    private Integer type;
     /**
-     * layout
+     * 审核人类型
      */
-    private String layout;
+    private Integer setType;
     /**
-     * 前置局部拦截器实例集合
+     * 审核人成员
      */
-    protected List<FlowLongInterceptor> preInterceptorList = new ArrayList<>();
+    private List<NodeAssignee> nodeUserList;
     /**
-     * 后置局部拦截器实例集合
+     * 审核角色
      */
-    protected List<FlowLongInterceptor> postInterceptorList = new ArrayList<>();
+    private List<NodeAssignee> nodeRoleList;
+    /**
+     * 指定主管层级
+     */
+    private Integer examineLevel;
+    /**
+     * 自定义连续主管审批层级
+     */
+    private Integer directorLevel;
+    /**
+     * 发起人自选类型
+     */
+    private Integer selectMode;
+    /**
+     * 审批期限超时自动审批
+     */
+    private Boolean termAuto;
+    /**
+     * 审批期限
+     */
+    private Integer term;
+    /**
+     * 审批期限超时后执行类型
+     */
+    private Integer termMode;
+    /**
+     * 多人审批时审批方式
+     */
+    private Integer examineMode;
+    /**
+     * 连续主管审批方式
+     */
+    private Integer directorMode;
+    /**
+     * 条件节点列表
+     */
+    private List<ConditionNode> conditionNodes;
+    /**
+     * 子节点
+     */
+    private NodeModel childNode;
 
-    /**
-     * 根据父节点模型、当前节点模型判断是否可退回。可退回条件：
-     * 1、满足中间无fork、join、subprocess模型
-     * 2、满足父节点模型如果为任务模型时，参与类型为any
-     *
-     * @param parent 父节点模型
-     * @return 是否可以退回
-     */
-    public static boolean canRejected(NodeModel current, NodeModel parent) {
-        if (parent instanceof TaskModel && !((TaskModel) parent).isPerformAny()) {
-            return false;
-        }
-        boolean result = false;
-        for (TransitionModel tm : current.getInputs()) {
-            NodeModel source = tm.getSource();
-            if (source == parent) {
-                return true;
-            }
-            if (source instanceof ForkModel
-                    || source instanceof JoinModel
-                    || source instanceof SubProcessModel
-                    || source instanceof StartModel) {
-                continue;
-            }
-            result = result || canRejected(source, parent);
-        }
-        return result;
-    }
-
-    /**
-     * 具体节点逻辑运行处理
-     *
-     * @param execution 执行对象
-     */
-    protected abstract void run(FlowLongContext flowLongContext, Execution execution);
-
-    /**
-     * 对执行逻辑增加前置、后置拦截处理
-     *
-     * @param execution 执行对象
-     */
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-        this.intercept(flowLongContext, preInterceptorList, execution);
-        this.run(flowLongContext, execution);
-        this.intercept(flowLongContext, postInterceptorList, execution);
+
     }
 
     /**
-     * 运行变迁继续执行
-     *
-     * @param execution 执行对象
+     * 或签 (有一人审批通过即可)
      */
-    protected void runOutTransition(FlowLongContext flowLongContext, Execution execution) {
-        this.getOutputs().forEach(t -> t.enable().execute(flowLongContext, execution));
+    public boolean isPerformAny() {
+        return Objects.equals(1, type);
     }
 
     /**
-     * 拦截方法
-     *
-     * @param flowLongContext 流程引擎上下文
-     * @param interceptorList 拦截器列表
-     * @param execution       执行对象
+     * 会签
      */
-    private void intercept(FlowLongContext flowLongContext, List<FlowLongInterceptor> interceptorList, Execution execution) {
-        try {
-            interceptorList.forEach(i -> i.handle(flowLongContext, execution));
-        } catch (Exception e) {
-            log.error("拦截器执行失败: {}", e.getMessage());
-            throw new FlowLongException(e);
-        }
+    public boolean isPerformAll() {
+        return Objects.equals(1, type);
     }
 
-    public <T> List<T> getNextModels(Class<T> clazz) {
-        List<T> models = new ArrayList<>();
-        for (TransitionModel tm : this.getOutputs()) {
-            addNextModels(models, tm, clazz);
-        }
-        return models;
+    /**
+     * 会签 (可同时审批，每个人必须审批通过)
+     */
+    public boolean isPerformPercentage() {
+        return Objects.equals(2, type);
     }
 
-    protected <T> void addNextModels(List<T> models, TransitionModel tm, Class<T> clazz) {
-        if (clazz.isInstance(tm.getTarget())) {
-            models.add((T) tm.getTarget());
-        } else {
-            for (TransitionModel tm2 : tm.getTarget().getOutputs()) {
-                addNextModels(models, tm2, clazz);
-            }
-        }
-    }
-
-    public void setPreInterceptors(String preInterceptors) {
-        this.parseInterceptor(preInterceptors, i -> this.preInterceptorList.add(i));
-    }
-
-    public void parseInterceptor(String interceptors, Consumer<FlowLongInterceptor> consumer) {
-        if (ObjectUtils.isNotEmpty(interceptors)) {
-            for (String interceptor : interceptors.split(",")) {
-                FlowLongInterceptor instance = (FlowLongInterceptor) ClassUtils.newInstance(interceptor);
-                if (null != instance) {
-                    consumer.accept(instance);
+    /**
+     * 获取process定义的指定节点名称的节点模型
+     *
+     * @param nodeName 节点名称
+     * @return {@link NodeModel}
+     */
+    public NodeModel getNode(String nodeName) {
+        if (null != conditionNodes) {
+            for (ConditionNode conditionNode : conditionNodes) {
+                if (Objects.equals(nodeName, conditionNode.getNodeName())) {
+                    return conditionNode.getChildNode();
+                }
+                NodeModel conditionChildNode = conditionNode.getChildNode();
+                if (null != conditionChildNode) {
+                    return conditionChildNode.getNode(nodeName);
                 }
             }
         }
+        if (null != childNode) {
+            return childNode.getNode(nodeName);
+        }
+        return null;
     }
 
-    public void setPostInterceptors(String postInterceptors) {
-        this.parseInterceptor(postInterceptors, i -> this.postInterceptorList.add(i));
-    }
+
 }

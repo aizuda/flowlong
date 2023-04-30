@@ -15,7 +15,6 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.Assignment;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.TaskService;
@@ -31,10 +30,9 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.listener.TaskListener;
-import com.flowlong.bpm.engine.model.CustomModel;
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.model.TaskModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -152,29 +150,6 @@ public class TaskServiceImpl implements TaskService {
             this.taskNotify(TaskListener.EVENT_TIMEOUT, task);
         }
         return true;
-    }
-
-    /**
-     * 任务历史记录方法
-     *
-     * @param execution 执行对象
-     * @param model     自定义节点模型
-     * @return 历史任务对象
-     */
-    @Override
-    public HisTask history(Execution execution, CustomModel model) {
-        HisTask hisTask = new HisTask();
-        hisTask.setInstanceId(execution.getInstance().getId());
-        hisTask.setCreateTime(DateUtils.getCurrentDate());
-        hisTask.setFinishTime(hisTask.getCreateTime());
-        hisTask.setDisplayName(model.getDisplayName());
-        hisTask.setTaskName(model.getName());
-        hisTask.setTaskState(TaskState.finish);
-        hisTask.setTaskType(TaskType.record);
-        hisTask.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
-        hisTask.setVariable(execution.getArgs());
-        hisTaskMapper.insert(hisTask);
-        return hisTask;
     }
 
     /**
@@ -309,10 +284,11 @@ public class TaskServiceImpl implements TaskService {
         if (Objects.equals(parentTaskId, 0L)) {
             throw new FlowLongException("上一步任务ID为空，无法驳回至上一步处理");
         }
-        NodeModel current = model.getNode(currentTask.getTaskName());
+
         HisTask history = hisTaskMapper.selectById(parentTaskId);
         NodeModel parent = model.getNode(history.getTaskName());
-        if (!NodeModel.canRejected(current, parent)) {
+        NodeModel childNode = parent.getChildNode();
+        if (null == childNode || !Objects.equals(childNode.getNodeName(), currentTask.getTaskName())) {
             throw new FlowLongException("无法驳回至上一步处理，请确认上一步骤并非fork、join、suprocess以及会签任务");
         }
 
@@ -373,7 +349,7 @@ public class TaskServiceImpl implements TaskService {
      * @return TaskModel
      */
     @Override
-    public TaskModel getTaskModel(String taskId) {
+    public NodeModel getTaskModel(String taskId) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task);
         Instance instance = instanceMapper.selectById(task.getInstanceId());
@@ -382,48 +358,45 @@ public class TaskServiceImpl implements TaskService {
         ProcessModel model = process.getProcessModel();
         NodeModel nodeModel = model.getNode(task.getTaskName());
         Assert.notNull(nodeModel, "任务ID无法找到节点模型.");
-        if (nodeModel instanceof TaskModel) {
-            return (TaskModel) nodeModel;
-        } else {
-            throw new IllegalArgumentException("任务ID找到的节点模型不匹配");
-        }
+        return nodeModel;
     }
 
     /**
      * 创建 task 根据 model 决定是否分配参与者
      *
-     * @param taskModel 模型
+     * @param nodeModel 节点模型
      * @param execution 执行对象
      * @return 任务列表
      */
     @Override
-    public List<Task> createTask(TaskModel taskModel, Execution execution) {
+    public List<Task> createTask(NodeModel nodeModel, Execution execution) {
         Map<String, Object> args = execution.getArgs();
-        // 执行参数中获取失效时间，提醒时间
-        Date expireTime = DateUtils.processTime(args, taskModel.getExpireTime());
-        Date remindTime = DateUtils.processTime(args, taskModel.getReminderTime());
-        String form = (String) args.get(taskModel.getForm());
-        String actionUrl = ObjectUtils.isEmpty(form) ? taskModel.getForm() : form;
+//        // 执行参数中获取失效时间，提醒时间，期望完成时间
+//        Date expireTime = DateUtils.processTime(args, nodeModel.getExpireTime());
+//        // 提醒时间
+//        Date remindTime = DateUtils.processTime(args, nodeModel.getReminderTime());
+//        String form = (String) args.get(nodeModel.getForm());
+//        String actionUrl = ObjectUtils.isEmpty(form) ? nodeModel.getForm() : form;
 
         // 执行任务
-        Task task = this.createTaskBase(taskModel, execution);
-        task.setActionUrl(actionUrl);
-        task.setExpireTime(expireTime);
+        Task task = this.createTaskBase(nodeModel, execution);
+//        task.setActionUrl(actionUrl);
+//        task.setExpireTime(expireTime);
 
         // 模型中获取参与者信息
-        List<String> actors = this.getTaskActors(taskModel, execution);
+        List<String> actors = this.getTaskActors(nodeModel, execution);
         if (ObjectUtils.isNotEmpty(actors)) {
             args.put(Task.KEY_ACTOR, actors.stream().collect(Collectors.joining(",")));
         }
         task.setVariable(args);
 
         List<Task> tasks = new LinkedList<>();
-        if (taskModel.isPerformAny()) {
+        if (nodeModel.isPerformAny()) {
             // 任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
             task = this.saveTask(task, PerformType.any, actors);
-            task.setRemindTime(remindTime);
+            // task.setRemindTime(remindTime);
             tasks.add(task);
-        } else if (taskModel.isPerformAll()) {
+        } else if (nodeModel.isPerformAll()) {
             // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
@@ -433,10 +406,10 @@ public class TaskServiceImpl implements TaskService {
                     singleTask = task;
                 }
                 singleTask = this.saveTask(singleTask, PerformType.all, Collections.singletonList(actor));
-                singleTask.setRemindTime(remindTime);
+                // singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
-        } else if (taskModel.isPerformPercentage()) {
+        } else if (nodeModel.isPerformPercentage()) {
             // 任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
@@ -447,7 +420,7 @@ public class TaskServiceImpl implements TaskService {
                 }
                 singleTask.setId(null);
                 singleTask = this.saveTask(singleTask, PerformType.percentage, Collections.singletonList(actor));
-                singleTask.setRemindTime(remindTime);
+                // singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
         }
@@ -461,18 +434,18 @@ public class TaskServiceImpl implements TaskService {
      * @param execution 执行对象
      * @return Task任务对象
      */
-    private Task createTaskBase(TaskModel model, Execution execution) {
+    private Task createTaskBase(NodeModel model, Execution execution) {
         Task task = new Task();
         task.setCreateBy(execution.getCreateBy());
         task.setInstanceId(execution.getInstance().getId());
-        task.setTaskName(model.getName());
-        task.setDisplayName(model.getDisplayName());
+        task.setTaskName(model.getNodeName());
+//        task.setDisplayName(model.getDisplayName());
         task.setCreateTime(DateUtils.getCurrentDate());
-        if (model.isMajor()) {
-            task.setTaskType(TaskType.major);
-        } else {
-            task.setTaskType(TaskType.assist);
-        }
+//        if (model.isMajor()) {
+//            task.setTaskType(TaskType.major);
+//        } else {
+//            task.setTaskType(TaskType.assist);
+//        }
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         return task;
     }
@@ -499,49 +472,25 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
      *
-     * @param model     模型
+     * @param nodeModel 节点模型
      * @param execution 执行对象
      * @return 参与者数组
      */
-    private List<String> getTaskActors(TaskModel model, Execution execution) {
-        Object assigneeObject = null;
-        Assignment handler = model.getAssignmentHandlerObject();
-        if (ObjectUtils.isNotEmpty(model.getAssignee())) {
-            assigneeObject = execution.getArgs().get(model.getAssignee());
-        } else if (null != handler) {
-            if (handler instanceof Assignment) {
-                assigneeObject = handler.assign(model, execution);
-            } else {
-                assigneeObject = handler.assign(execution);
-            }
-        }
-        return this.getTaskActors(null == assigneeObject ? model.getAssignee() : assigneeObject);
-    }
-
-    /**
-     * 根据 task model 指定的 assignee 属性，从args中取值
-     * 将取到的值处理为String[]类型。
-     *
-     * @param actors 参与者对象
-     * @return 参与者数组
-     */
-    private List<String> getTaskActors(Object actors) {
-        if (null == actors) {
-            return null;
-        }
-        if (actors instanceof String) {
-            return Arrays.asList(((String) actors).split(","));
-        } else if (actors instanceof List) {
-            return (List<String>) actors;
-        } else if (actors instanceof Long) {
-            return Arrays.asList(String.valueOf(actors));
-        } else if (actors instanceof Integer) {
-            return Arrays.asList(String.valueOf(actors));
-        } else if (actors instanceof String[]) {
-            return Arrays.asList((String[]) actors);
-        } else {
-            throw new FlowLongException("任务参与者对象[" + actors + "]类型不支持");
-        }
+    private List<String> getTaskActors(NodeModel nodeModel, Execution execution) {
+//        Object assigneeObject = null;
+//        Assignment handler = model.getAssignmentHandlerObject();
+//        if (ObjectUtils.isNotEmpty(model.getAssignee())) {
+//            assigneeObject = execution.getArgs().get(model.getAssignee());
+//        } else if (null != handler) {
+//            if (handler instanceof Assignment) {
+//                assigneeObject = handler.assign(model, execution);
+//            } else {
+//                assigneeObject = handler.assign(execution);
+//            }
+//        }
+//        return this.getTaskActors(null == assigneeObject ? model.getAssignee() : assigneeObject);
+        List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+        return ObjectUtils.isEmpty(nodeUserList) ? null : nodeUserList.stream().map(t -> t.getId()).collect(Collectors.toList());
     }
 
     /**

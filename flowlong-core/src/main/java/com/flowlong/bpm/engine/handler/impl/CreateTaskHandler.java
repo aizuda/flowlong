@@ -20,7 +20,7 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
-import com.flowlong.bpm.engine.model.TaskModel;
+import com.flowlong.bpm.engine.model.NodeModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -40,15 +40,15 @@ public class CreateTaskHandler implements FlowLongHandler {
     /**
      * 任务模型
      */
-    private TaskModel model;
+    private NodeModel nodeModel;
 
     /**
      * 调用者需要提供任务模型
      *
-     * @param model 模型
+     * @param nodeModel 节点模型
      */
-    public CreateTaskHandler(TaskModel model) {
-        this.model = model;
+    public CreateTaskHandler(NodeModel nodeModel) {
+        this.nodeModel = nodeModel;
     }
 
     /**
@@ -56,7 +56,7 @@ public class CreateTaskHandler implements FlowLongHandler {
      */
     @Override
     public void handle(FlowLongContext flowLongContext, Execution execution) {
-        List<Task> tasks = execution.getEngine().taskService().createTask(model, execution);
+        List<Task> tasks = execution.getEngine().taskService().createTask(nodeModel, execution);
         execution.addTasks(tasks);
         /**
          * 从服务上下文中查找任务拦截器列表，依次对task集合进行拦截处理

@@ -45,10 +45,10 @@ public class StreamUtils {
         return stream;
     }
 
-    public static byte[] readBytes(InputStream in) throws IOException {
+    public static String readBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         transfer(in, out);
-        return out.toByteArray();
+        return new String(out.toByteArray());
     }
 
     public static long transfer(InputStream in, OutputStream out)

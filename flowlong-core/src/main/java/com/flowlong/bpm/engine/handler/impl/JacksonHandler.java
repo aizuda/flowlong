@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.handler.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -35,6 +36,7 @@ public class JacksonHandler implements JsonHandler {
 
     static {
         OBJECT_MAPPER.registerModule(new JavaTimeModule());
+        OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override

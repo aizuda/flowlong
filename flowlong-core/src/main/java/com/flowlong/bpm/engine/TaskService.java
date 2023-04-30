@@ -16,11 +16,9 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.enums.TaskType;
-import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.model.CustomModel;
+import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.model.TaskModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -88,15 +86,6 @@ public interface TaskService {
      * @param taskId 任务ID
      */
     boolean taskTimeout(Long taskId);
-
-    /**
-     * 根据执行对象、自定义节点模型创建历史任务记录
-     *
-     * @param execution 执行对象
-     * @param model     自定义节点模型
-     * @return 历史任务
-     */
-    HisTask history(Execution execution, CustomModel model);
 
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
@@ -180,7 +169,7 @@ public interface TaskService {
      * @param execution 执行对象
      * @return List<Task> 创建任务集合
      */
-    List<Task> createTask(TaskModel taskModel, Execution execution);
+    List<Task> createTask(NodeModel taskModel, Execution execution);
 
     /**
      * 根据已有任务ID、任务类型、参与者创建新的任务
@@ -209,7 +198,7 @@ public interface TaskService {
      * @param taskId 任务ID
      * @return
      */
-    TaskModel getTaskModel(String taskId);
+    NodeModel getTaskModel(String taskId);
 
     /**
      * 对指定的任务ID删除参与者

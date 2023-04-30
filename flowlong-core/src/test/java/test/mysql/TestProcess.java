@@ -39,7 +39,7 @@ public class TestProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/task/simple.long");
+        processId = this.deployByResource("test/process.json");
     }
 
     @Test

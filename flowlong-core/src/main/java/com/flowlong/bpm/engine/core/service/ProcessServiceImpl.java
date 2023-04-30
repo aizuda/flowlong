@@ -26,7 +26,6 @@ import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
-import com.flowlong.bpm.engine.parser.ModelParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -46,15 +45,15 @@ import java.util.List;
 @Slf4j
 @Service
 public class ProcessServiceImpl implements ProcessService {
-    private String DEFAULT_SEPARATOR = ".";
-    /**
-     * 流程定义对象cache名称
-     */
-    private String CACHE_ENTITY = "long.process.entity";
-    /**
-     * 流程id、name的cache名称
-     */
-    private String CACHE_NAME = "long.process.name";
+    //    private String DEFAULT_SEPARATOR = ".";
+//    /**
+//     * 流程定义对象cache名称
+//     */
+//    private String CACHE_ENTITY = "long.process.entity";
+//    /**
+//     * 流程id、name的cache名称
+//     */
+//    private String CACHE_NAME = "long.process.name";
     private ProcessMapper processMapper;
     private RuntimeService runtimeService;
 
@@ -139,12 +138,15 @@ public class ProcessServiceImpl implements ProcessService {
     public Long deploy(InputStream input, String createBy, boolean repeat) {
         Assert.notNull(input);
         try {
-            final byte[] bytes = StreamUtils.readBytes(input);
-            ProcessModel processModel = ModelParser.parse(bytes);
+            final String content = StreamUtils.readBytes(input);
+            ProcessModel processModel = ProcessModel.parse(content);
             /**
              * 查询流程信息获取最后版本号
              */
-            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().select(Process::getId, Process::getVersion).eq(Process::getName, processModel.getName()).orderByDesc(Process::getVersion));
+            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
+                    .select(Process::getId, Process::getVersion)
+                    .eq(Process::getName, processModel.getName())
+                    .orderByDesc(Process::getVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
                 Process process = processList.get(0);
@@ -160,9 +162,9 @@ public class ProcessServiceImpl implements ProcessService {
             process.setVersion(version + 1);
             process.setFlowState(FlowState.active);
             process.setName(processModel.getName());
-            process.setDisplayName(processModel.getDisplayName());
+//            process.setDisplayName(processModel.getDisplayName());
             process.setInstanceUrl(processModel.getInstanceUrl());
-            process.setContent(bytes);
+            process.setContent(content);
             process.setCreateBy(createBy);
             process.setCreateTime(DateUtils.getCurrentDate());
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
@@ -184,8 +186,7 @@ public class ProcessServiceImpl implements ProcessService {
         Process process = processMapper.selectById(id);
         Assert.notNull(process);
         try {
-            byte[] bytes = StreamUtils.readBytes(input);
-            process.setContent(bytes);
+            process.setContent(StreamUtils.readBytes(input));
             processMapper.updateById(process);
         } catch (Exception e) {
             e.printStackTrace();

@@ -6,9 +6,9 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 > 关注  https://gitee.com/aizuda/flowlong  点击  star ，排名前 1000 个人，【 企业版本 】 抽 10 个免费 ， 90 个 3 折 点起来吧。
 
-特别说明 `flowlong 是基于 snakerflow 重构的` 更适合中国人的国产工作流引擎 。
+- 项目说明  `flowlong` 中文名 `飞龙` 在天美好愿景！
 
-名字由来 `snakerflow 蛇 （重构进化） flowlong 龙` 中文名 `飞龙` 在天美好愿景！
+- 项目参考 `snakerflow` 设计思想，打造更适合中国人的国产工作流引擎 。
 
 # 贡献力量
 
