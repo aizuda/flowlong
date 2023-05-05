@@ -16,7 +16,6 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.RuntimeService;
-import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
@@ -60,7 +59,7 @@ public class TestProcess extends MysqlTest {
         flowLongEngine.startInstanceById(processId, testUser1, args);
 
         // 卸载指定的定义流程
-        Assert.isTrue(processService.undeploy(processId));
+        Assertions.assertTrue(processService.undeploy(processId));
     }
 
 
@@ -74,8 +73,8 @@ public class TestProcess extends MysqlTest {
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", testUser1);
         // 启动两个流程，然后抄送一个流程，在执行一个流程 测试级联删除
-        Instance ins = this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
-        this.flowLongEngine.startInstanceByName("simple", 1, testUser1, args);
+        Instance ins = this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
+        this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
         // 抄送一个流程为了测试级联删除
         RuntimeService runtimeService = flowLongEngine.runtimeService();
         runtimeService.createCCInstance(ins.getId(), testUser1, testUser3);

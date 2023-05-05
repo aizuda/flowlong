@@ -8,6 +8,7 @@ package com.flowlong.bpm.engine.model;
 import com.flowlong.bpm.engine.ModelInstance;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -92,7 +93,7 @@ public class NodeModel implements ModelInstance {
 
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-
+        new CreateTaskHandler(this).handle(flowLongContext, execution);
     }
 
     /**
