@@ -33,8 +33,10 @@ public class NodeModel implements ModelInstance {
     /**
      * 节点类型
      * <p>
-     * 1，或签 (有一人审批通过即可)
-     * 2，会签 (可同时审批，每个人必须审批通过)
+     * 0，发起人
+     * 1，审批人
+     * 2，抄送人
+     * 3，条件审批
      * </p>
      */
     private Integer type;
@@ -94,27 +96,6 @@ public class NodeModel implements ModelInstance {
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
         new CreateTaskHandler(this).handle(flowLongContext, execution);
-    }
-
-    /**
-     * 或签 (有一人审批通过即可)
-     */
-    public boolean isPerformAny() {
-        return Objects.equals(1, type);
-    }
-
-    /**
-     * 会签
-     */
-    public boolean isPerformAll() {
-        return Objects.equals(1, type);
-    }
-
-    /**
-     * 会签 (可同时审批，每个人必须审批通过)
-     */
-    public boolean isPerformPercentage() {
-        return Objects.equals(2, type);
     }
 
     /**

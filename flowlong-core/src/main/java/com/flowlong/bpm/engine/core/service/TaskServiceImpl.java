@@ -391,12 +391,15 @@ public class TaskServiceImpl implements TaskService {
         task.setVariable(args);
 
         List<Task> tasks = new LinkedList<>();
-        if (nodeModel.isPerformAny()) {
-            // 任务执行方式为参与者中任何一个执行即可驱动流程继续流转，该方法只产生一个task
+        Integer nodeType = nodeModel.getType();
+        if (0 == nodeType || 1 == nodeType) {
+            /**
+             * 0，发起人 1，审批人
+             */
             task = this.saveTask(task, PerformType.any, actors);
             // task.setRemindTime(remindTime);
             tasks.add(task);
-        } else if (nodeModel.isPerformAll()) {
+        } else if (3 == nodeType) {
             // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
@@ -409,7 +412,7 @@ public class TaskServiceImpl implements TaskService {
                 // singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
-        } else if (nodeModel.isPerformPercentage()) {
+        } else if (5 == nodeType) {
             // 任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (String actor : actors) {
                 Task singleTask;
@@ -439,13 +442,9 @@ public class TaskServiceImpl implements TaskService {
         task.setCreateBy(execution.getCreateBy());
         task.setInstanceId(execution.getInstance().getId());
         task.setTaskName(model.getNodeName());
-//        task.setDisplayName(model.getDisplayName());
+        task.setDisplayName(model.getNodeName());
         task.setCreateTime(DateUtils.getCurrentDate());
-//        if (model.isMajor()) {
-//            task.setTaskType(TaskType.major);
-//        } else {
-//            task.setTaskType(TaskType.assist);
-//        }
+        task.setTaskType(model.getType());
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         return task;
     }
