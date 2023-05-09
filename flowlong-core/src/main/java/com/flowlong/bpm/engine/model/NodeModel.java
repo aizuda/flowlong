@@ -5,14 +5,19 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.flowlong.bpm.engine.Expression;
 import com.flowlong.bpm.engine.ModelInstance;
+import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -95,7 +100,35 @@ public class NodeModel implements ModelInstance {
 
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-        new CreateTaskHandler(this).handle(flowLongContext, execution);
+        if (ObjectUtils.isNotEmpty(this.conditionNodes)) {
+            Map<String, Object> args = execution.getArgs();
+            Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
+            Expression expression = flowLongContext.getExpression();
+            Assert.isNull(expression, "Interface Expression not implemented");
+            ConditionNode conditionNode = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+                    .filter(t -> {
+                        // 执行条件分支
+                        final String expr = t.getExpr();
+                        boolean result = true;
+                        if (null != expr) {
+                            try {
+                                result = expression.eval(Boolean.class, expr, args);
+                            } catch (Throwable e) {
+                                result = false;
+                                e.printStackTrace();
+                            }
+                        }
+                        return result;
+                    }).findFirst().get();
+            if (null != conditionNode) {
+                // 执行创建条件任务
+                new CreateTaskHandler(conditionNode.getChildNode()).handle(flowLongContext, execution);
+            }
+        }
+        if (null != childNode && 2 == childNode.getType()) {
+            // 执行创建抄送任务
+            new CreateTaskHandler(childNode).handle(flowLongContext, execution);
+        }
     }
 
     /**
@@ -105,11 +138,11 @@ public class NodeModel implements ModelInstance {
      * @return {@link NodeModel}
      */
     public NodeModel getNode(String nodeName) {
+        if (Objects.equals(this.nodeName, nodeName)) {
+            return this;
+        }
         if (null != conditionNodes) {
             for (ConditionNode conditionNode : conditionNodes) {
-                if (Objects.equals(nodeName, conditionNode.getNodeName())) {
-                    return conditionNode.getChildNode();
-                }
                 NodeModel conditionChildNode = conditionNode.getChildNode();
                 if (null != conditionChildNode) {
                     return conditionChildNode.getNode(nodeName);

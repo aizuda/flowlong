@@ -5,10 +5,12 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 爱组搭 http://aizuda.com
@@ -45,5 +47,16 @@ public class ConditionNode {
      * 子节点
      */
     private NodeModel childNode;
+
+    /**
+     * 字符串 SpEL 表达式条件
+     */
+    public String getExpr() {
+        if (ObjectUtils.isNotEmpty(this.conditionList)) {
+            return conditionList.stream().map(t -> t.getField() + t.getOperator() + t.getValue())
+                    .collect(Collectors.joining(0 == conditionMode ? " && " : " || "));
+        }
+        return null;
+    }
 
 }

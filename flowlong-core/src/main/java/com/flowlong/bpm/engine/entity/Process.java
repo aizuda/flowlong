@@ -19,6 +19,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
+import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -94,7 +95,11 @@ public class Process extends BaseEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.notNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            nodeModel.execute(flowLongContext, execution);
+            NodeModel childNode = nodeModel.getChildNode();
+            if (null != childNode) {
+                // 当前任务结束，执行子节点任务
+                childNode.execute(flowLongContext, execution);
+            }
         });
     }
 
@@ -108,7 +113,8 @@ public class Process extends BaseEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNodeConfig();
             Assert.notNull(nodeModel, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
-            nodeModel.execute(flowLongContext, execution);
+            // 创建首个审批任务
+            new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
         });
     }
 

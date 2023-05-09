@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.assist;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Java 对象判断处理帮助类
@@ -43,6 +44,8 @@ public class ObjectUtils {
             return null == str || str.length() == 0;
         } else if (obj instanceof Collection) {
             return ((Collection<?>) obj).isEmpty();
+        } else if (obj instanceof Map) {
+            return ((Map) obj).isEmpty();
         }
         return false;
     }
