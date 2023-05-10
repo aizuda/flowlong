@@ -21,5 +21,5 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 - 设计器
 
-<img src="https://foruda.gitee.com/images/1679302153417318855/7f7306c1_12260.png" alt="flowlong" width="500px" height="262px">
+<img src="https://foruda.gitee.com/images/1683680723972384655/f957e75d_12260.png" alt="flowlong" width="500px" height="262px">
 
