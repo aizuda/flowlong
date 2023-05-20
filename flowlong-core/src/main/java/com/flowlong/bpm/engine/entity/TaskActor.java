@@ -52,6 +52,14 @@ public class TaskActor implements Serializable {
      * 关联的参与者ID（参与者可以为用户、部门、角色）
      */
     protected String actorId;
+    /**
+     * 关联的参与者名称
+     */
+    protected String actorName;
+    /**
+     * 类型 0，用户 1，角色 2，部门
+     */
+    protected Integer type;
 
     public static TaskActor of(Long taskId, String actorId) {
         TaskActor taskActor = new TaskActor();

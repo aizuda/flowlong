@@ -92,6 +92,8 @@ CREATE TABLE `flw_his_task_actor`  (
                                        `tenant_id` varchar(50)   NULL DEFAULT NULL COMMENT '租户ID',
                                        `task_id` bigint NOT NULL COMMENT '任务ID',
                                        `actor_id` varchar(300)   NOT NULL COMMENT '参与者ID',
+                                       `actor_name` varchar(300)   NOT NULL COMMENT '参与者名称',
+                                       `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
                                        PRIMARY KEY (`id`) USING BTREE,
                                        INDEX `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                        CONSTRAINT `fk_his_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_his_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -201,6 +203,8 @@ CREATE TABLE `flw_task_actor`  (
                                    `tenant_id` varchar(50)   NULL DEFAULT NULL COMMENT '租户ID',
                                    `task_id` bigint NOT NULL COMMENT '任务ID',
                                    `actor_id` varchar(300)   NOT NULL COMMENT '参与者ID',
+                                   `actor_name` varchar(300)   NOT NULL COMMENT '参与者名称',
+                                   `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                    CONSTRAINT `fk__task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
