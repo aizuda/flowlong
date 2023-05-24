@@ -55,6 +55,7 @@ public class TestProcess extends MysqlTest {
 
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
+        args.put("day", 8);
         args.put("assignee", testUser1);
         Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
 

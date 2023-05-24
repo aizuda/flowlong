@@ -130,9 +130,9 @@ public class Task extends BaseEntity {
         newTask.setId(null);
         if (ObjectUtils.isNotEmpty(userId)) {
             newTask.setCreateBy(userId);
-            Map<String, Object> taskData = this.variableMap();
-            taskData.put(Task.KEY_ACTOR, userId);
-            newTask.setVariable(taskData);
+//            Map<String, Object> taskData = this.variableMap();
+//            taskData.put(Task.KEY_ACTOR, userId);
+//            newTask.setVariable(taskData);
         }
         return newTask;
     }

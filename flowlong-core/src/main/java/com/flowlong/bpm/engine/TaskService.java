@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 
@@ -102,47 +103,47 @@ public interface TaskService {
      * 该方法会导致流程状态不可控，请慎用
      * </p>
      *
-     * @param taskId 历史任务ID
-     * @param userId 用户ID
+     * @param taskId    历史任务ID
+     * @param taskActor 任务参与者
      * @return {@link Task} 唤醒后的任务对象
      */
-    Task resume(Long taskId, String userId);
+    Task resume(Long taskId, TaskActor taskActor);
 
     /**
      * 向指定的任务ID添加参与者
      *
-     * @param taskId 任务ID
-     * @param actors 参与者
+     * @param taskId     任务ID
+     * @param taskActors 参与者列表
      */
-    default void addTaskActor(Long taskId, List<String> actors) {
-        this.addTaskActor(taskId, null, actors);
+    default void addTaskActor(Long taskId, List<TaskActor> taskActors) {
+        this.addTaskActor(taskId, null, taskActors);
     }
 
-    default void addTaskActor(Long taskId, String actor) {
-        this.addTaskActor(taskId, Arrays.asList(actor));
+    default void addTaskActor(Long taskId, TaskActor taskActor) {
+        this.addTaskActor(taskId, Arrays.asList(taskActor));
     }
 
     /**
      * 向指定的任务ID添加参与者
      *
-     * @param taskId   任务ID
-     * @param taskType 参与类型 {@link TaskType}
-     * @param actors   参与者
+     * @param taskId     任务ID
+     * @param taskType   参与类型 {@link TaskType}
+     * @param taskActors 参与者列表
      */
-    void addTaskActor(Long taskId, TaskType taskType, List<String> actors);
+    void addTaskActor(Long taskId, TaskType taskType, List<TaskActor> taskActors);
 
-    default void addTaskActor(Long taskId, TaskType taskType, String actor) {
-        this.addTaskActor(taskId, taskType, Arrays.asList(actor));
+    default void addTaskActor(Long taskId, TaskType taskType, TaskActor taskActor) {
+        this.addTaskActor(taskId, taskType, Arrays.asList(taskActor));
     }
 
     /**
      * 根据任务ID、创建人撤回任务
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人
+     * @param taskId    任务ID
+     * @param taskActor 任务参与者
      * @return Task 任务对象
      */
-    Task withdrawTask(Long taskId, String createBy);
+    Task withdrawTask(Long taskId, TaskActor taskActor);
 
     /**
      * 根据当前任务对象驳回至上一步处理
@@ -174,15 +175,15 @@ public interface TaskService {
     /**
      * 根据已有任务ID、任务类型、参与者创建新的任务
      *
-     * @param taskId   主办任务ID
-     * @param taskType 任务类型 {@link TaskType}
-     * @param actors   参与者集合
+     * @param taskId     主办任务ID
+     * @param taskType   任务类型 {@link TaskType}
+     * @param taskActors 参与者集合
      * @return List<Task> 创建任务集合
      */
-    List<Task> createNewTask(Long taskId, TaskType taskType, List<String> actors);
+    List<Task> createNewTask(Long taskId, TaskType taskType, List<TaskActor> taskActors);
 
-    default List<Task> createNewTask(Long taskId, TaskType taskType, String actor) {
-        return this.createNewTask(taskId, taskType, Arrays.asList(actor));
+    default List<Task> createNewTask(Long taskId, TaskType taskType, TaskActor taskActor) {
+        return this.createNewTask(taskId, taskType, Arrays.asList(taskActor));
     }
 
     /**

@@ -53,7 +53,7 @@ public class ConditionNode {
      */
     public String getExpr() {
         if (ObjectUtils.isNotEmpty(this.conditionList)) {
-            return conditionList.stream().map(t -> t.getField() + t.getOperator() + t.getValue())
+            return conditionList.stream().map(t -> "#" + t.getField() + t.getOperator() + t.getValue())
                     .collect(Collectors.joining(0 == conditionMode ? " && " : " || "));
         }
         return null;

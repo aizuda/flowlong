@@ -61,6 +61,22 @@ public class TaskActor implements Serializable {
      */
     protected Integer type;
 
+    public static TaskActor ofUser(String actorId, String actorName) {
+        return of(actorId, actorName, 0);
+    }
+
+    public static TaskActor ofRole(String actorId, String actorName) {
+        return of(actorId, actorName, 1);
+    }
+
+    protected static TaskActor of(String actorId, String actorName, Integer type) {
+        TaskActor taskActor = new TaskActor();
+        taskActor.setActorId(actorId);
+        taskActor.setActorName(actorName);
+        taskActor.setType(type);
+        return taskActor;
+    }
+
     public static TaskActor of(Long taskId, String actorId) {
         TaskActor taskActor = new TaskActor();
         taskActor.setTaskId(taskId);

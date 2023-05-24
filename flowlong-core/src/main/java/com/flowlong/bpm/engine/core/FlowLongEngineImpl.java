@@ -82,7 +82,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public Instance startInstanceById(Long id, String createBy, Map<String, Object> args) {
         if (args == null) {
-            args = new HashMap<>(0);
+            args = new HashMap<>(16);
         }
         Process process = processService().getProcessById(id);
         processService().check(process, id);
@@ -92,7 +92,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public Instance startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName) {
         if (args == null) {
-            args = new HashMap<>(0);
+            args = new HashMap<>(16);
         }
         Process process = processService().getProcessById(id);
         processService().check(process, id);
