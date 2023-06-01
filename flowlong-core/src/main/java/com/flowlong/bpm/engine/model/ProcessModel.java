@@ -10,6 +10,8 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
  * 爱组搭 http://aizuda.com
  * ----------------------------------------
@@ -50,8 +52,32 @@ public class ProcessModel {
      * @param content 流程定义内容
      */
     public static ProcessModel parse(String content) {
-        ProcessModel bpmModel = FlowLongContext.JSON_HANDLER.fromJson(content, ProcessModel.class);
-        Assert.isNull(bpmModel, "bpmn json parser error");
-        return bpmModel;
+        ProcessModel processModel = FlowLongContext.JSON_HANDLER.fromJson(content, ProcessModel.class);
+        Assert.isNull(processModel, "process model json parser error");
+        processModel.buildParentNode(processModel.getNodeConfig());
+        return processModel;
+    }
+
+    /**
+     * 构建父节点
+     *
+     * @param rootNode 根节点
+     */
+    protected void buildParentNode(NodeModel rootNode) {
+        List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
+        if (null != conditionNodes) {
+            for (ConditionNode conditionNode : conditionNodes) {
+                NodeModel conditionChildNode = conditionNode.getChildNode();
+                if (null != conditionChildNode) {
+                    conditionChildNode.setParentNode(rootNode);
+                    this.buildParentNode(conditionChildNode);
+                }
+            }
+        }
+        NodeModel childNode = rootNode.getChildNode();
+        if (null != childNode) {
+            childNode.setParentNode(rootNode);
+            this.buildParentNode(childNode);
+        }
     }
 }

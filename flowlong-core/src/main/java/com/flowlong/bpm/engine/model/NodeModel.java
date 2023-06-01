@@ -42,6 +42,7 @@ public class NodeModel implements ModelInstance {
      * 1，审批人
      * 2，抄送人
      * 3，条件审批
+     * 4，条件分支
      * </p>
      */
     private Integer type;
@@ -94,9 +95,17 @@ public class NodeModel implements ModelInstance {
      */
     private List<ConditionNode> conditionNodes;
     /**
+     * 允许发起人自选抄送人
+     */
+    private Boolean userSelectFlag;
+    /**
      * 子节点
      */
     private NodeModel childNode;
+    /**
+     * 父节点，模型 json 不存在该属性、属于逻辑节点
+     */
+    private NodeModel parentNode;
 
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
@@ -125,9 +134,12 @@ public class NodeModel implements ModelInstance {
                 new CreateTaskHandler(conditionNode.getChildNode()).handle(flowLongContext, execution);
             }
         }
-        if (null != childNode && 2 == childNode.getType()) {
-            // 执行创建抄送任务
-            new CreateTaskHandler(childNode).handle(flowLongContext, execution);
+
+        if (Objects.equals(2, this.type)) {
+            /**
+             * 执行创建抄送任务
+             */
+            new CreateTaskHandler(this).handle(flowLongContext, execution);
         }
     }
 
@@ -155,5 +167,10 @@ public class NodeModel implements ModelInstance {
         return null;
     }
 
-
+    /**
+     * 判断是否为条件节点
+     */
+    public boolean isConditionNode() {
+        return 3 == type || 4 == type;
+    }
 }

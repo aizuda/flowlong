@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -96,11 +97,33 @@ public class Process extends BaseEntity {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.notNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
             NodeModel childNode = nodeModel.getChildNode();
-            if (null != childNode) {
+            if (null == childNode) {
+                // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
+                NodeModel nextNode = this.findNextNode(nodeModel);
+                if (null != nextNode) {
+                    nextNode.execute(flowLongContext, execution);
+                }
+            } else {
                 // 当前任务结束，执行子节点任务
                 childNode.execute(flowLongContext, execution);
             }
         });
+    }
+
+    private NodeModel findNextNode(NodeModel nodeModel) {
+        NodeModel parentNode = nodeModel.getParentNode();
+        if (null == parentNode || Objects.equals(0, parentNode.getType())) {
+            // 递归至发起节点，流程结束
+            return null;
+        }
+
+        if (parentNode.isConditionNode()) {
+            // 条件执行节点，返回子节点
+            return parentNode.getChildNode();
+        }
+
+        // 往上继续找下一个执行节点
+        return this.findNextNode(parentNode);
     }
 
     /**

@@ -35,12 +35,14 @@ import lombok.ToString;
 @TableName("flw_his_task_actor")
 public class HisTaskActor extends TaskActor {
 
-    public static HisTaskActor of(TaskActor actor) {
+    public static HisTaskActor of(TaskActor taskActor) {
         HisTaskActor hisTaskActor = new HisTaskActor();
-        hisTaskActor.id = actor.getId();
-        hisTaskActor.tenantId = actor.getTenantId();
-        hisTaskActor.taskId = actor.getTaskId();
-        hisTaskActor.actorId = actor.getActorId();
+        hisTaskActor.id = taskActor.getId();
+        hisTaskActor.tenantId = taskActor.getTenantId();
+        hisTaskActor.taskId = taskActor.getTaskId();
+        hisTaskActor.type = taskActor.getType();
+        hisTaskActor.actorId = taskActor.getActorId();
+        hisTaskActor.actorName = taskActor.getActorName();
         return hisTaskActor;
     }
 }

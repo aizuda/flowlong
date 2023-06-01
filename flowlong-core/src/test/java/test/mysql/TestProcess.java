@@ -64,6 +64,11 @@ public class TestProcess extends MysqlTest {
         // 执行任务
         tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
 
+        // 获取活跃的任务
+        List<Task> tasks2 = this.flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
+        // 执行任务
+        tasks2.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
+
         // 卸载指定的定义流程
         // Assertions.assertTrue(processService.undeploy(processId));
     }

@@ -28,7 +28,7 @@
             "setType": 1,
             "nodeUserList": [
               {
-                "id": "360000197302144442",
+                "id": "test001",
                 "name": "何敏"
               }
             ],
@@ -72,7 +72,7 @@
         "userSelectFlag": true,
         "nodeUserList": [
           {
-            "id": "220000200908305857",
+            "id": "test002",
             "name": "何秀英"
           }
         ]

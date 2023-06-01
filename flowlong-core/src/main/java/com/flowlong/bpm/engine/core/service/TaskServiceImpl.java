@@ -390,19 +390,21 @@ public class TaskServiceImpl implements TaskService {
 //        task.setVariable(args);
 
         List<Task> tasks = new LinkedList<>();
+
+        // 处理流程任务
         Integer nodeType = nodeModel.getType();
         if (0 == nodeType || 1 == nodeType) {
             /**
              * 0，发起人 1，审批人
              */
-            task = this.saveTask(task, PerformType.any, taskActors);
             // task.setRemindTime(remindTime);
-            tasks.add(task);
+            tasks.add(this.saveTask(task, PerformType.any, taskActors));
         } else if (2 == nodeType) {
             /**
-             * 2，抄送
+             * 2，抄送任务
              */
-            System.out.println("抄送任务" + nodeModel.getNodeName());
+            List<TaskActor> copyTaskActors = this.getTaskActors(nodeModel, execution);
+            tasks.add(this.saveTask(task, PerformType.copy, copyTaskActors));
         } else if (3 == nodeType) {
             // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (TaskActor taskActor : taskActors) {

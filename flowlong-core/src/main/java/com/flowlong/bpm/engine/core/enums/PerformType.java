@@ -32,7 +32,11 @@ public enum PerformType {
     /**
      * 会签
      */
-    percentage(2);
+    percentage(2),
+    /**
+     * 抄送
+     */
+    copy(3);
 
     private final int value;
 

@@ -62,11 +62,11 @@ public class Task extends BaseEntity {
      */
     protected String displayName;
     /**
-     * 任务类型（0：主办任务；1：协办任务）
+     * 任务类型（0，主办任务 1，协办任务）
      */
     protected Integer taskType;
     /**
-     * 参与方式（0：普通任务；1：参与者会签任务）
+     * 参与方式（0，普通任务 1，参与者会签任务 2，抄送任务）
      */
     protected Integer performType;
     /**

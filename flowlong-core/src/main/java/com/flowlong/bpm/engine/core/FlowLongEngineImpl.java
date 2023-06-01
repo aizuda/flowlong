@@ -309,9 +309,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         instance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
-        if (!task.major()) {
-            return null;
-        }
+//        if (!task.major()) {
+//            return null;
+//        }
         Map<String, Object> instanceMaps = instance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
