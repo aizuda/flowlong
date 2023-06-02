@@ -9,25 +9,6 @@ CREATE DATABASE IF NOT EXISTS `flowlong` charset utf8mb4 collate utf8mb4_unicode
 USE `flowlong`;
 
 -- ----------------------------
--- Table structure for flw_cc_instance
--- ----------------------------
-DROP TABLE IF EXISTS `flw_cc_instance`;
-
-
-CREATE TABLE `flw_cc_instance`  (
-                                    `id` bigint NOT NULL COMMENT '主键ID',
-                                    `tenant_id` varchar(50)   NULL DEFAULT NULL COMMENT '租户ID',
-                                    `create_by` varchar(50)   NULL DEFAULT NULL COMMENT '创建人',
-                                    `create_time` timestamp NOT NULL COMMENT '创建时间',
-                                    `instance_id` bigint NULL DEFAULT NULL COMMENT '流程实例ID',
-                                    `actor_id` varchar(300)   NULL DEFAULT NULL COMMENT '参与者ID',
-                                    `state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，结束 1，活动',
-                                    `finish_time` timestamp NULL DEFAULT NULL COMMENT '完成时间',
-                                    PRIMARY KEY (`id`) USING BTREE,
-                                    INDEX `idx_cc_instance_instance_id`(`instance_id` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送实例表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for flw_his_instance
 -- ----------------------------
 DROP TABLE IF EXISTS `flw_his_instance`;
@@ -209,5 +190,21 @@ CREATE TABLE `flw_task_actor`  (
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                    CONSTRAINT `fk__task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务参与者表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for flw_task_cc
+-- ----------------------------
+DROP TABLE IF EXISTS `flw_task_cc`;
+CREATE TABLE `flw_task_cc`  (
+                                `id` bigint NOT NULL COMMENT '主键 ID',
+                                `tenant_id` varchar(50)   NULL DEFAULT NULL COMMENT '租户ID',
+                                `task_id` bigint NOT NULL COMMENT '任务ID',
+                                `actor_id` varchar(300)   NOT NULL COMMENT '参与者ID',
+                                `actor_name` varchar(300)   NOT NULL COMMENT '参与者名称',
+                                `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
+                                `state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，结束 1，活动',
+                                `finish_time` timestamp NULL DEFAULT NULL COMMENT '完成时间',
+                                PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送任务表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -15,15 +15,15 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 抄送实例实体类
+ * 抄送任务实体类
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
@@ -35,16 +35,32 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@TableName("flw_cc_instance")
-public class CCInstance extends BaseEntity {
+@TableName("flw_task_cc")
+public class TaskCc implements Serializable {
     /**
-     * 流程实例ID
+     * 主键ID
      */
-    protected Long instanceId;
+    protected Long id;
     /**
-     * 参与者ID
+     * 租户ID
+     */
+    protected String tenantId;
+    /**
+     * 关联的任务ID
+     */
+    protected Long taskId;
+    /**
+     * 关联的参与者ID（参与者可以为用户、部门、角色）
      */
     protected String actorId;
+    /**
+     * 关联的参与者名称
+     */
+    protected String actorName;
+    /**
+     * 类型 0，用户 1，角色 2，部门
+     */
+    protected Integer type;
     /**
      * 状态 0，结束 1，活动
      */
@@ -54,17 +70,4 @@ public class CCInstance extends BaseEntity {
      */
     protected Date finishTime;
 
-    public void setInstanceState(InstanceState instanceState) {
-        this.state = instanceState.getValue();
-    }
-
-    public static CCInstance activeState(Long instanceId, String actorId, String createBy, Date createTime) {
-        CCInstance ccInstance = new CCInstance();
-        ccInstance.instanceId = instanceId;
-        ccInstance.actorId = actorId;
-        ccInstance.createBy = createBy;
-        ccInstance.state = InstanceState.active.getValue();
-        ccInstance.createTime = createTime;
-        return ccInstance;
-    }
 }

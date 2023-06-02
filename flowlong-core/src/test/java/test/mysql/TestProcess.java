@@ -15,7 +15,6 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
-import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
@@ -87,8 +86,8 @@ public class TestProcess extends MysqlTest {
         Instance ins = this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
         this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
         // 抄送一个流程为了测试级联删除
-        RuntimeService runtimeService = flowLongEngine.runtimeService();
-        runtimeService.createCCInstance(ins.getId(), testUser1, testUser3);
+        // RuntimeService runtimeService = flowLongEngine.runtimeService();
+        // runtimeService.createCCInstance(ins.getId(), testUser1, testUser3);
         // 获取活跃的任务
         List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
         // 执行任务

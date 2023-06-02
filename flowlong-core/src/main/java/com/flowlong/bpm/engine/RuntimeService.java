@@ -17,8 +17,6 @@ package com.flowlong.bpm.engine;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,47 +60,6 @@ public interface RuntimeService {
      * @param args       变量数据
      */
     void addVariable(Long instanceId, Map<String, Object> args);
-
-    /**
-     * 创建抄送实例
-     *
-     * @param instanceId 流程实例ID
-     * @param createBy   创建人ID
-     * @param actorIds   参与者ID集合
-     */
-    void createCCInstance(Long instanceId, String createBy, List<String> actorIds);
-
-    /**
-     * 创建抄送实例
-     *
-     * @param instanceId 流程实例ID
-     * @param createBy   创建人ID
-     * @param actorId    参与者ID
-     */
-    default void createCCInstance(Long instanceId, String createBy, String actorId) {
-        this.createCCInstance(instanceId, createBy, Arrays.asList(actorId));
-    }
-
-    /**
-     * 结束抄送实例
-     *
-     * @param instanceId 流程实例ID
-     * @param actorIds   参与者ID
-     * @return 更新是否成功
-     */
-    boolean finishCCInstance(Long instanceId, List<String> actorIds);
-
-    default boolean finishCCInstance(Long instanceId, String actorId) {
-        return this.finishCCInstance(instanceId, Arrays.asList(actorId));
-    }
-
-    /**
-     * 删除抄送记录
-     *
-     * @param instanceId 流程实例ID
-     * @param actorId    参与者ID
-     */
-    void deleteCCInstance(Long instanceId, String actorId);
 
     /**
      * 流程实例正常完成

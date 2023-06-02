@@ -23,7 +23,6 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
-import com.flowlong.bpm.engine.core.mapper.CCInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
@@ -56,20 +55,17 @@ public class RuntimeServiceImpl implements RuntimeService {
     private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
-    private CCInstanceMapper ccInstanceMapper;
     private SurrogateMapper surrogateMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper, CCInstanceMapper ccInstanceMapper,
-                              SurrogateMapper surrogateMapper) {
+                              HisInstanceMapper hisInstanceMapper, SurrogateMapper surrogateMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
-        this.ccInstanceMapper = ccInstanceMapper;
         this.surrogateMapper = surrogateMapper;
     }
 
@@ -121,45 +117,6 @@ public class RuntimeServiceImpl implements RuntimeService {
         instance.setVariable(args);
         this.saveInstance(instance);
         return instance;
-    }
-
-    /**
-     * 创建抄送实例
-     *
-     * @param instanceId 流程实例ID
-     * @param createBy   创建人ID
-     * @param actorIds   参与者ID集合
-     */
-    @Override
-    public void createCCInstance(Long instanceId, String createBy, List<String> actorIds) {
-        if (ObjectUtils.isNotEmpty(actorIds)) {
-            Date currentDate = DateUtils.getCurrentDate();
-            actorIds.forEach(actorId -> CCInstance.activeState(instanceId, actorId, createBy, currentDate));
-        }
-    }
-
-    /**
-     * 结束抄送实例
-     *
-     * @param instanceId 流程实例ID
-     * @param actorIds   参与者ID
-     * @return 更新是否成功
-     */
-    @Override
-    public boolean finishCCInstance(Long instanceId, List<String> actorIds) {
-        CCInstance ccInstance = new CCInstance();
-        ccInstance.setInstanceState(InstanceState.finish);
-        ccInstance.setFinishTime(DateUtils.getCurrentDate());
-        return ccInstanceMapper.update(ccInstance, Wrappers.<CCInstance>lambdaUpdate()
-                .eq(CCInstance::getInstanceId, instanceId)
-                .in(CCInstance::getActorId, actorIds)) > 0;
-    }
-
-    @Override
-    public void deleteCCInstance(Long instanceId, String actorId) {
-        ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaUpdate()
-                .eq(CCInstance::getInstanceId, instanceId)
-                .eq(CCInstance::getActorId, actorId));
     }
 
     /**
@@ -280,7 +237,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                 // 删除活动任务相关信息
                 taskService.cascadeRemoveByInstanceId(t.getId());
                 // 删除抄送实例列表
-                ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
+                // ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
             });
         }
 
