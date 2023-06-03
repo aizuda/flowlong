@@ -32,7 +32,7 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class BaseEntity implements Serializable, Cloneable {
+public class FlowEntity implements Serializable, Cloneable {
     /**
      * 主键ID
      */

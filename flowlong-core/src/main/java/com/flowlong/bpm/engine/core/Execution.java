@@ -74,7 +74,7 @@ public class Execution implements Serializable {
      */
     private String createBy;
     /**
-     * 任务
+     * 当前执行任务
      */
     private Task task;
     /**

@@ -36,7 +36,7 @@ import java.util.Date;
 @Setter
 @ToString
 @TableName("flw_surrogate")
-public class Surrogate extends BaseEntity {
+public class Surrogate extends FlowEntity {
     /**
      * 流程ID
      */

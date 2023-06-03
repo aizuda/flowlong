@@ -21,6 +21,7 @@ import com.flowlong.bpm.engine.entity.Task;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * FlowLong流程引擎接口
@@ -107,7 +108,7 @@ public interface FlowLongEngine {
      * @param id 流程定义ID
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceById(Long id);
+    Optional<Instance> startInstanceById(Long id);
 
     /**
      * 根据流程定义ID，创建人ID启动流程实例
@@ -116,7 +117,7 @@ public interface FlowLongEngine {
      * @param createBy 创建人ID
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceById(Long id, String createBy);
+    Optional<Instance> startInstanceById(Long id, String createBy);
 
     /**
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
@@ -126,7 +127,7 @@ public interface FlowLongEngine {
      * @param args     参数列表
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceById(Long id, String createBy, Map<String, Object> args);
+    Optional<Instance> startInstanceById(Long id, String createBy, Map<String, Object> args);
 
     /**
      * 根据流程定义ID，父流程实例ID，创建人ID，参数列表启动流程实例
@@ -138,7 +139,7 @@ public interface FlowLongEngine {
      * @param parentName 父流程实例名称
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName);
+    Optional<Instance> startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName);
 
     /**
      * 根据流程名称启动流程实例
@@ -146,7 +147,7 @@ public interface FlowLongEngine {
      * @param name 流程定义名称
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByName(String name);
+    Optional<Instance> startInstanceByName(String name);
 
     /**
      * 根据流程名称、版本号启动流程实例
@@ -155,7 +156,7 @@ public interface FlowLongEngine {
      * @param version 版本号
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByName(String name, Integer version);
+    Optional<Instance> startInstanceByName(String name, Integer version);
 
     /**
      * 根据流程名称、版本号、创建人启动流程实例
@@ -165,7 +166,7 @@ public interface FlowLongEngine {
      * @param createBy 创建人
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByName(String name, Integer version, String createBy);
+    Optional<Instance> startInstanceByName(String name, Integer version, String createBy);
 
     /**
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
@@ -176,7 +177,7 @@ public interface FlowLongEngine {
      * @param args     参数列表
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args);
+    Optional<Instance> startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args);
 
     /**
      * 根据父执行对象启动子流程实例
@@ -184,7 +185,7 @@ public interface FlowLongEngine {
      * @param execution 执行对象
      * @return {@link Instance} 流程实例
      */
-    Instance startInstanceByExecution(Execution execution);
+    Optional<Instance> startInstanceByExecution(Execution execution);
 
     /**
      * 根据任务ID执行任务

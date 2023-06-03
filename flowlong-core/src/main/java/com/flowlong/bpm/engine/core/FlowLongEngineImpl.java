@@ -27,10 +27,7 @@ import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 基本的流程引擎实现类
@@ -64,7 +61,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID启动流程实例
      */
     @Override
-    public Instance startInstanceById(Long id) {
+    public Optional<Instance> startInstanceById(Long id) {
         return startInstanceById(id, null, null);
     }
 
@@ -72,7 +69,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人ID启动流程实例
      */
     @Override
-    public Instance startInstanceById(Long id, String createBy) {
+    public Optional<Instance> startInstanceById(Long id, String createBy) {
         return startInstanceById(id, createBy, null);
     }
 
@@ -80,21 +77,21 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      */
     @Override
-    public Instance startInstanceById(Long id, String createBy, Map<String, Object> args) {
+    public Optional<Instance> startInstanceById(Long id, String createBy, Map<String, Object> args) {
         if (args == null) {
             args = new HashMap<>(16);
         }
-        Process process = processService().getProcessById(id);
+        Process process = processService().getProcessById(id).get();
         processService().check(process, id);
         return startProcess(process, createBy, args);
     }
 
     @Override
-    public Instance startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName) {
+    public Optional<Instance> startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName) {
         if (args == null) {
             args = new HashMap<>(16);
         }
-        Process process = processService().getProcessById(id);
+        Process process = processService().getProcessById(id).get();
         processService().check(process, id);
         return startProcess(process, createBy, args, parentId, parentName);
     }
@@ -105,7 +102,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @since 1.0
      */
     @Override
-    public Instance startInstanceByName(String name) {
+    public Optional<Instance> startInstanceByName(String name) {
         return startInstanceByName(name, null, null, null);
     }
 
@@ -115,7 +112,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @since 1.0
      */
     @Override
-    public Instance startInstanceByName(String name, Integer version) {
+    public Optional<Instance> startInstanceByName(String name, Integer version) {
         return startInstanceByName(name, version, null, null);
     }
 
@@ -125,7 +122,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @since 1.0
      */
     @Override
-    public Instance startInstanceByName(String name, Integer version,
+    public Optional<Instance> startInstanceByName(String name, Integer version,
                                         String createBy) {
         return startInstanceByName(name, version, createBy, null);
     }
@@ -136,32 +133,32 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @since 1.0
      */
     @Override
-    public Instance startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args) {
-        Process process = processService().getProcessByVersion(name, version);
+    public Optional<Instance> startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args) {
+        Process process = processService().getProcessByVersion(name, version).get();
         return this.startProcess(process, createBy, args);
     }
 
-    protected Instance startProcess(Process process, String createBy, Map<String, Object> args) {
+    protected Optional<Instance> startProcess(Process process, String createBy, Map<String, Object> args) {
         return startProcess(process, createBy, args, null, null);
     }
 
-    protected Instance startProcess(Process process, String createBy, Map<String, Object> args, Long parentId, String parentNodeName) {
+    protected Optional<Instance> startProcess(Process process, String createBy, Map<String, Object> args, Long parentId, String parentNodeName) {
         Execution execution = this.execute(process, createBy, args, parentId, parentNodeName);
         // 执行启动模型
         process.executeStartModel(flowLongContext, execution);
-        return execution.getInstance();
+        return Optional.ofNullable(execution.getInstance());
     }
 
     /**
      * 根据父执行对象启动子流程实例（用于启动子流程）
      */
     @Override
-    public Instance startInstanceByExecution(Execution execution) {
+    public Optional<Instance> startInstanceByExecution(Execution execution) {
         Process process = execution.getProcess();
         Execution current = execute(process, execution.getCreateBy(), execution.getArgs(),
                 execution.getParentInstance().getId(), execution.getParentNodeName());
         process.executeStartModel(flowLongContext, current);
-        return current.getInstance();
+        return Optional.ofNullable(current.getInstance());
     }
 
     /**
@@ -321,7 +318,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Process process = processService().getProcessById(instance.getProcessId());
+        Process process = processService().getProcessById(instance.getProcessId()).get();
         Execution execution = new Execution(this, process, instance, args);
         execution.setCreateBy(createBy);
         execution.setTask(task);

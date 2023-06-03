@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 流程定义业务类
@@ -86,8 +87,8 @@ public class ProcessServiceImpl implements ProcessService {
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
     @Override
-    public Process getProcessById(Long id) {
-        return processMapper.selectById(id);
+    public Optional<Process> getProcessById(Long id) {
+        return Optional.ofNullable(processMapper.selectById(id));
     }
 
     /**
@@ -95,7 +96,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
     @Override
-    public Process getProcessByName(String name) {
+    public Optional<Process> getProcessByName(String name) {
         return getProcessByVersion(name, null);
     }
 
@@ -107,13 +108,13 @@ public class ProcessServiceImpl implements ProcessService {
      * @return {@link Process}
      */
     @Override
-    public Process getProcessByVersion(String name, Integer version) {
+    public Optional<Process> getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
         List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getName, name).eq(null != version, Process::getVersion, version).orderByDesc(Process::getVersion));
         if (ObjectUtils.isEmpty(processList)) {
             throw new FlowLongException("process [" + name + "] does not exist");
         }
-        return processList.get(0);
+        return Optional.ofNullable(processList.get(0));
     }
 
     /**

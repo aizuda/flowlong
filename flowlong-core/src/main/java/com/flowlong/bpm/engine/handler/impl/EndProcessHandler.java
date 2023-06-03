@@ -62,7 +62,7 @@ public class EndProcessHandler implements FlowLongHandler {
             if (parentInstance == null) {
                 return;
             }
-            Process process = engine.processService().getProcessById(parentInstance.getProcessId());
+            Process process = engine.processService().getProcessById(parentInstance.getProcessId()).get();
             Execution newExecution = new Execution(engine, process, parentInstance, execution.getArgs());
             newExecution.setChildInstanceId(instance.getId());
             newExecution.setTask(execution.getTask());

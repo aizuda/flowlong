@@ -22,6 +22,7 @@ import com.flowlong.bpm.engine.entity.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 查询服务实现类
@@ -86,8 +87,8 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<Task> getActiveTasksByInstanceId(Long instanceId) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+    public Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId) {
+        return Optional.ofNullable(taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId)));
     }
 
     @Override

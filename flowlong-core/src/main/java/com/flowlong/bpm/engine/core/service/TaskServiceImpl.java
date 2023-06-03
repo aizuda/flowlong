@@ -30,6 +30,7 @@ import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.listener.TaskListener;
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,16 +56,21 @@ public class TaskServiceImpl implements TaskService {
     private TaskListener taskListener;
     private InstanceMapper instanceMapper;
     private TaskMapper taskMapper;
+    private TaskCcMapper taskCcMapper;
     private TaskActorMapper taskActorMapper;
     private HisTaskMapper hisTaskMapper;
     private HisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener, ProcessMapper processMapper, InstanceMapper instanceMapper, TaskMapper taskMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+    public TaskServiceImpl(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
+                           ProcessMapper processMapper, InstanceMapper instanceMapper, TaskMapper taskMapper,
+                           TaskCcMapper taskCcMapper, TaskActorMapper taskActorMapper, HisTaskMapper hisTaskMapper,
+                           HisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
         this.instanceMapper = instanceMapper;
         this.taskMapper = taskMapper;
+        this.taskCcMapper = taskCcMapper;
         this.taskActorMapper = taskActorMapper;
         this.hisTaskMapper = hisTaskMapper;
         this.hisTaskActorMapper = hisTaskActorMapper;
@@ -258,13 +264,13 @@ public class TaskServiceImpl implements TaskService {
         if (tasks == null || tasks.isEmpty()) {
             throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
         }
-        List<Long> taskIds = tasks.stream().map(BaseEntity::getId).collect(Collectors.toList());
+        List<Long> taskIds = tasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
         // 查询任务参与者
         List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds)).stream().map(TaskActor::getId).collect(Collectors.toList());
         if (!taskActorIds.isEmpty()) {
             taskActorMapper.deleteBatchIds(taskActorIds);
         }
-        taskMapper.deleteBatchIds(tasks.stream().map(BaseEntity::getId).collect(Collectors.toList()));
+        taskMapper.deleteBatchIds(tasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
         Task task = hist.undoTask();
         task.setCreateTime(DateUtils.getCurrentDate());
@@ -403,8 +409,12 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 2，抄送任务
              */
-            List<TaskActor> copyTaskActors = this.getTaskActors(nodeModel, execution);
-            tasks.add(this.saveTask(task, PerformType.copy, copyTaskActors));
+            this.saveTaskCc(nodeModel, execution);
+            NodeModel nextNode = nodeModel.getChildNode();
+            if (null != nextNode) {
+                // 继续执行普通任务
+                this.createTask(nextNode, execution);
+            }
         } else if (3 == nodeType) {
             // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
             for (TaskActor taskActor : taskActors) {
@@ -437,20 +447,49 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 根据模型、执行对象、任务类型构建基本的task对象
+     * 保存抄送任务
      *
-     * @param model     模型
+     * @param nodeModel 节点模型
      * @param execution 执行对象
      * @return Task任务对象
      */
-    private Task createTaskBase(NodeModel model, Execution execution) {
+    public void saveTaskCc(NodeModel nodeModel, Execution execution) {
+        if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
+            Long parentTaskId = execution.getTask().getId();
+            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+            for (NodeAssignee nodeUser : nodeUserList) {
+                TaskCc taskCc = new TaskCc();
+                taskCc.setParentTaskId(execution.getTask().getId());
+                taskCc.setCreateBy(execution.getCreateBy());
+                taskCc.setCreateTime(DateUtils.getCurrentDate());
+                taskCc.setInstanceId(execution.getInstance().getId());
+                taskCc.setParentTaskId(parentTaskId);
+                taskCc.setTaskName(nodeModel.getNodeName());
+                taskCc.setDisplayName(nodeModel.getNodeName());
+                taskCc.setActorId(nodeUser.getId());
+                taskCc.setActorName(nodeUser.getName());
+                taskCc.setType(0);
+                taskCc.setState(1);
+                taskCcMapper.insert(taskCc);
+            }
+        }
+    }
+
+    /**
+     * 根据模型、执行对象、任务类型构建基本的task对象
+     *
+     * @param nodeModel 节点模型
+     * @param execution 执行对象
+     * @return Task任务对象
+     */
+    private Task createTaskBase(NodeModel nodeModel, Execution execution) {
         Task task = new Task();
         task.setCreateBy(execution.getCreateBy());
-        task.setInstanceId(execution.getInstance().getId());
-        task.setTaskName(model.getNodeName());
-        task.setDisplayName(model.getNodeName());
         task.setCreateTime(DateUtils.getCurrentDate());
-        task.setTaskType(model.getType());
+        task.setInstanceId(execution.getInstance().getId());
+        task.setTaskName(nodeModel.getNodeName());
+        task.setDisplayName(nodeModel.getNodeName());
+        task.setTaskType(nodeModel.getType());
         task.setParentTaskId(execution.getTask() == null ? 0L : execution.getTask().getId());
         return task;
     }
@@ -574,7 +613,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor
+     * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_cc, flw_task_actor
      *
      * @param instanceId 流程实例ID
      */
@@ -595,5 +634,8 @@ public class TaskServiceImpl implements TaskService {
             taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
             taskMapper.delete(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
         }
+
+        // 删除任务抄送
+        // TODO
     }
 }

@@ -18,6 +18,7 @@ import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.entity.Process;
 
 import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * 流程定义业务类
@@ -53,7 +54,7 @@ public interface ProcessService {
      * @param id 流程定义id
      * @return Process 流程定义对象
      */
-    Process getProcessById(Long id);
+    Optional<Process> getProcessById(Long id);
 
     /**
      * 根据流程name获取流程定义对象
@@ -61,7 +62,7 @@ public interface ProcessService {
      * @param name 流程定义名称
      * @return Process 流程定义对象
      */
-    Process getProcessByName(String name);
+    Optional<Process> getProcessByName(String name);
 
     /**
      * 根据流程名称或版本号查找流程定义对象
@@ -70,7 +71,7 @@ public interface ProcessService {
      * @param version 版本号
      * @return {@link Process}
      */
-    Process getProcessByVersion(String name, Integer version);
+    Optional<Process> getProcessByVersion(String name, Integer version);
 
     /**
      * 根据本地 resource 资源名称部署流程

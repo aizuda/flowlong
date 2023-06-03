@@ -110,6 +110,9 @@ public class NodeModel implements ModelInstance {
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
         if (ObjectUtils.isNotEmpty(this.conditionNodes)) {
+            /**
+             * 执行条件分支
+             */
             Map<String, Object> args = execution.getArgs();
             Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
@@ -130,15 +133,17 @@ public class NodeModel implements ModelInstance {
                         return result;
                     }).findFirst().get();
             if (null != conditionNode) {
-                // 执行创建条件任务
+                /**
+                 * 执行创建条件任务
+                 */
                 new CreateTaskHandler(conditionNode.getChildNode()).handle(flowLongContext, execution);
             }
         }
 
+        /**
+         * 执行创建抄送任务
+         */
         if (Objects.equals(2, this.type)) {
-            /**
-             * 执行创建抄送任务
-             */
             new CreateTaskHandler(this).handle(flowLongContext, execution);
         }
     }

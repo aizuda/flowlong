@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine;
 import com.flowlong.bpm.engine.entity.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 流程相关的查询服务
@@ -79,7 +80,7 @@ public interface QueryService {
      */
     List<Task> getTasksByInstanceId(Long instanceId);
 
-    List<Task> getActiveTasksByInstanceId(Long instanceId);
+    Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取活动任务参与者数组

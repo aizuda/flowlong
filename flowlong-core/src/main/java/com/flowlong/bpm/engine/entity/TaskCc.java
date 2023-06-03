@@ -19,7 +19,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -36,19 +35,23 @@ import java.util.Date;
 @Setter
 @ToString
 @TableName("flw_task_cc")
-public class TaskCc implements Serializable {
+public class TaskCc extends FlowEntity {
     /**
-     * 主键ID
+     * 流程实例ID
      */
-    protected Long id;
+    protected Long instanceId;
     /**
-     * 租户ID
+     * 父任务ID
      */
-    protected String tenantId;
+    protected Long parentTaskId;
     /**
-     * 关联的任务ID
+     * 任务名称
      */
-    protected Long taskId;
+    protected String taskName;
+    /**
+     * 任务显示名称
+     */
+    protected String displayName;
     /**
      * 关联的参与者ID（参与者可以为用户、部门、角色）
      */

@@ -15,16 +15,11 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Task;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +27,6 @@ import java.util.Map;
  *
  * @author xdg
  */
-@Slf4j
 public class TestProcess extends MysqlTest {
 
     @BeforeEach
@@ -45,28 +39,22 @@ public class TestProcess extends MysqlTest {
         ProcessService processService = flowLongEngine.processService();
 
         // 根据流程定义ID查询
-        Process process = processService.getProcessById(processId);
-        Assertions.assertNotNull(process);
-
-        // 根据流程定义ID和版本号查询
-        process = processService.getProcessByVersion(process.getName(), process.getVersion());
-        Assertions.assertNotNull(process);
+        processService.getProcessById(processId).ifPresent(p ->
+                // 根据流程定义ID和版本号查询
+                Assertions.assertNotNull(processService.getProcessByVersion(p.getName(), p.getVersion()).get()));
 
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
         args.put("day", 8);
         args.put("assignee", testUser1);
-        Instance instance = flowLongEngine.startInstanceById(processId, testUser1, args);
+        flowLongEngine.startInstanceById(processId, testUser1, args).ifPresent(instance -> {
 
-        // 获取活跃的任务
-        List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        // 执行任务
-        tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
+            // 发起，执行条件路由
+            this.executeActiveTasks(instance.getId(), testUser1);
 
-        // 获取活跃的任务
-        List<Task> tasks2 = this.flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId());
-        // 执行任务
-        tasks2.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
+            // 领导审批，流程结束
+            this.executeActiveTasks(instance.getId(), testUser1);
+        });
 
         // 卸载指定的定义流程
         // Assertions.assertTrue(processService.undeploy(processId));
@@ -78,20 +66,8 @@ public class TestProcess extends MysqlTest {
      */
     @Test
     public void cascadeRemove() {
-        log.info("开始测试级联删除");
         ProcessService processService = flowLongEngine.processService();
-        Map<String, Object> args = new HashMap<>();
-        args.put("task1.assignee", testUser1);
-        // 启动两个流程，然后抄送一个流程，在执行一个流程 测试级联删除
-        Instance ins = this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
-        this.flowLongEngine.startInstanceByName("请假审批", 1, testUser1, args);
-        // 抄送一个流程为了测试级联删除
-        // RuntimeService runtimeService = flowLongEngine.runtimeService();
-        // runtimeService.createCCInstance(ins.getId(), testUser1, testUser3);
-        // 获取活跃的任务
-        List<Task> tasks = this.flowLongEngine.queryService().getActiveTasksByInstanceId(ins.getId());
-        // 执行任务
-        tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), testUser1));
+
         // 测试级联删除
         processService.cascadeRemove(processId);
     }

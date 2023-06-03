@@ -34,7 +34,6 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -205,10 +204,11 @@ public class RuntimeServiceImpl implements RuntimeService {
         Instance instance = instanceMapper.selectById(instanceId);
         if (null != instance) {
             // 实例相关任务强制完成
-            List<Task> tasks = queryService.getActiveTasksByInstanceId(instanceId);
-            for (Task task : tasks) {
-                taskService.complete(task.getId(), createBy);
-            }
+            queryService.getActiveTasksByInstanceId(instanceId).ifPresent(tasks -> {
+                for (Task task : tasks) {
+                    taskService.complete(task.getId(), createBy);
+                }
+            });
 
             // 更新历史实例设置状态为终止
             HisInstance hisInstance = HisInstance.of(instance, InstanceState.termination);

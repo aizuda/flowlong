@@ -26,4 +26,15 @@ import test.TestFlowLong;
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
 
+    /**
+     * 执行当前活跃用户
+     *
+     * @param instanceId 流程实例ID
+     * @param createBy   创建人ID
+     */
+    public void executeActiveTasks(Long instanceId, String createBy) {
+        this.flowLongEngine.queryService().getActiveTasksByInstanceId(instanceId)
+                .ifPresent(tasks -> tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), createBy)));
+    }
+
 }

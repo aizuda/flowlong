@@ -43,7 +43,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @TableName("flw_task")
-public class Task extends BaseEntity {
+public class Task extends FlowEntity {
     public static final String KEY_ACTOR = "S-ACTOR";
     /**
      * 流程实例ID

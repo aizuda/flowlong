@@ -38,7 +38,7 @@ import java.util.Map;
 @Setter
 @ToString
 @TableName("flw_instance")
-public class Instance extends BaseEntity {
+public class Instance extends FlowEntity {
     /**
      * 流程定义ID
      */

@@ -20,6 +20,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
+import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -43,7 +44,7 @@ import java.util.function.Consumer;
 @Setter
 @ToString
 @TableName("flw_process")
-public class Process extends BaseEntity {
+public class Process extends FlowEntity {
     /**
      * 流程定义名称
      */
@@ -96,16 +97,34 @@ public class Process extends BaseEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.notNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            NodeModel childNode = nodeModel.getChildNode();
-            if (null == childNode) {
+            NodeModel executeNode = nodeModel.getChildNode();
+            if (null == executeNode) {
                 // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
-                NodeModel nextNode = this.findNextNode(nodeModel);
-                if (null != nextNode) {
-                    nextNode.execute(flowLongContext, execution);
+                executeNode = this.findNextNode(nodeModel);
+            }
+
+            /**
+             * 执行节点任务
+             */
+            if (null != executeNode) {
+                // 执行流程节点
+                executeNode.execute(flowLongContext, execution);
+
+                /**
+                 * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点
+                 * 执行结束流程处理器
+                 */
+                if (null == executeNode.getChildNode() && null == executeNode.getConditionNodes()) {
+                    NodeModel nextNode = this.findNextNode(executeNode);
+                    if (null == nextNode || Objects.equals(executeNode.getNodeName(), nextNode.getNodeName())) {
+                        new EndProcessHandler().handle(flowLongContext, execution);
+                    }
                 }
             } else {
-                // 当前任务结束，执行子节点任务
-                childNode.execute(flowLongContext, execution);
+                /**
+                 * 无执行节点流程结束
+                 */
+                new EndProcessHandler().handle(flowLongContext, execution);
             }
         });
     }
