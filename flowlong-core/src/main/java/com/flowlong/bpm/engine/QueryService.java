@@ -116,10 +116,10 @@ public interface QueryService {
     List<Task> getActiveTasks(Long instanceId, List<String> taskNames);
 
     /**
-     * 根据实例ID和任务节点名称获取当前节点所有任务
+     * 根据实例ID获取实例所有历史任务，时间倒序
      *
      * @param instanceId 实例ID
-     * @param taskNames  任务节点名称
+     * @return 历史任务列表
      */
-    List<HisTask> getHisActiveTasks(Long instanceId, List<String> taskNames);
+    Optional<List<HisTask>> getHisTasksByInstanceId(Long instanceId);
 }

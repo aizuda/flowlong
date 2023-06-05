@@ -16,7 +16,6 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
-import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.*;
 import org.springframework.stereotype.Service;
@@ -114,11 +113,10 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<HisTask> getHisActiveTasks(Long instanceId, List<String> taskNames) {
-        return hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
+    public Optional<List<HisTask>> getHisTasksByInstanceId(Long instanceId) {
+        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
                 .eq(HisTask::getInstanceId, instanceId)
-                .eq(HisTask::getTaskState, TaskState.active)
-                .in(HisTask::getTaskName, taskNames));
+                .orderByDesc(HisTask::getCreateTime)));
     }
 
 }

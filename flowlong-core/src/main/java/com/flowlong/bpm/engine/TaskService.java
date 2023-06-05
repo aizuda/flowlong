@@ -24,6 +24,7 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 任务业务类，包括以下服务：
@@ -143,7 +144,7 @@ public interface TaskService {
      * @param taskActor 任务参与者
      * @return Task 任务对象
      */
-    Task withdrawTask(Long taskId, TaskActor taskActor);
+    Optional<Task> withdrawTask(Long taskId, TaskActor taskActor);
 
     /**
      * 根据当前任务对象驳回至上一步处理

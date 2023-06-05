@@ -192,7 +192,6 @@ public class TaskServiceImpl implements TaskService {
 
         // 历史任务恢复
         Task task = histTask.undoTask();
-        task.setCreateTime(DateUtils.getCurrentDate());
         taskMapper.insert(task);
 
         // 分配任务
@@ -245,38 +244,44 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * 撤回指定的任务
+     *
+     * @param taskId    任务ID
+     * @param taskActor 任务参与者
+     * @return
      */
     @Override
-    public Task withdrawTask(Long taskId, TaskActor taskActor) {
+    public Optional<Task> withdrawTask(Long taskId, TaskActor taskActor) {
         HisTask hist = hisTaskMapper.selectById(taskId);
         Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-        List<Task> tasks = new ArrayList<>();
+        List<Task> tasks = null;
         PerformType performType = PerformType.get(hist.getPerformType());
         if (performType == PerformType.any) {
             // 根据父任务ID查询所有子任务
             tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
         } else {
-            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, hist.getInstanceId()).eq(HisTask::getTaskName, hist.getTaskName()).eq(HisTask::getParentTaskId, hist.getParentTaskId())).stream().map(HisTask::getId).collect(Collectors.toList());
-            if (!hisTaskIds.isEmpty()) {
+            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, hist.getInstanceId())
+                    .eq(HisTask::getTaskName, hist.getTaskName()).eq(HisTask::getParentTaskId, hist.getParentTaskId()))
+                    .stream().map(HisTask::getId).collect(Collectors.toList());
+            if (ObjectUtils.isNotEmpty(hisTaskIds)) {
                 tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
             }
         }
-        if (tasks == null || tasks.isEmpty()) {
+        if (ObjectUtils.isEmpty(tasks)) {
             throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
         }
         List<Long> taskIds = tasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
         // 查询任务参与者
-        List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds)).stream().map(TaskActor::getId).collect(Collectors.toList());
-        if (!taskActorIds.isEmpty()) {
+        List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds))
+                .stream().map(TaskActor::getId).collect(Collectors.toList());
+        if (ObjectUtils.isNotEmpty(taskActorIds)) {
             taskActorMapper.deleteBatchIds(taskActorIds);
         }
         taskMapper.deleteBatchIds(tasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
         Task task = hist.undoTask();
-        task.setCreateTime(DateUtils.getCurrentDate());
         taskMapper.insert(task);
         assignTask(task.getId(), taskActor);
-        return task;
+        return Optional.ofNullable(task);
     }
 
     /**
@@ -297,7 +302,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Task task = history.undoTask();
-        task.setCreateTime(DateUtils.getCurrentDate());
         task.setCreateBy(history.getCreateBy());
         taskMapper.insert(task);
         // assignTask(task.getId(), task.getCreateBy());

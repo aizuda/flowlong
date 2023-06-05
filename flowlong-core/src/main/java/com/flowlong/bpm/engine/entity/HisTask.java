@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -80,6 +81,7 @@ public class HisTask extends Task {
             Task task = (Task) this.clone();
             task.setId(null);
             task.setFinishTime(null);
+            task.setCreateTime(DateUtils.getCurrentDate());
             return task;
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException(e);
