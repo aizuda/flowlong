@@ -35,7 +35,7 @@ public class TestController {
     public Instance instanceStart() {
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
-        return flowLongEngine.startInstanceByName("simple", null, "testUser", args);
+        return flowLongEngine.startInstanceByName("simple", null, "testUser", args).get();
     }
 
 }

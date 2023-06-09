@@ -16,9 +16,9 @@ package com.flowlong.bpm.engine.core.service;
 
 import com.flowlong.bpm.engine.ManagerService;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
-import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
-import com.flowlong.bpm.engine.entity.Surrogate;
+import com.flowlong.bpm.engine.core.enums.TaskState;
+import com.flowlong.bpm.engine.core.mapper.TaskDelegateMapper;
+import com.flowlong.bpm.engine.entity.TaskDelegate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,33 +33,37 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ManagerServiceImpl implements ManagerService {
-    private SurrogateMapper surrogateMapper;
+    private TaskDelegateMapper taskDelegateMapper;
 
-    public ManagerServiceImpl(SurrogateMapper surrogateMapper) {
-        this.surrogateMapper = surrogateMapper;
+    public ManagerServiceImpl(TaskDelegateMapper taskDelegateMapper) {
+        this.taskDelegateMapper = taskDelegateMapper;
     }
 
+    /**
+     * 1，委托到某一个人
+     * 2，委托到多个人共同决策
+     */
     @Override
-    public void saveOrUpdate(Surrogate surrogate) {
-        Assert.notNull(surrogate);
-        surrogate.setState(InstanceState.active);
-        if (null == surrogate.getId()) {
-            surrogateMapper.insert(surrogate);
+    public void saveOrUpdate(TaskDelegate taskDelegate) {
+        Assert.notNull(taskDelegate);
+        taskDelegate.setState(TaskState.active);
+        if (null == taskDelegate.getId()) {
+            taskDelegateMapper.insert(taskDelegate);
         } else {
-            surrogateMapper.updateById(surrogate);
+            taskDelegateMapper.updateById(taskDelegate);
         }
     }
 
     @Override
     public void deleteSurrogate(String id) {
-        Surrogate surrogate = getSurrogate(id);
+        TaskDelegate surrogate = getSurrogate(id);
         Assert.notNull(surrogate);
-        surrogateMapper.deleteById(id);
+        taskDelegateMapper.deleteById(id);
     }
 
     @Override
-    public Surrogate getSurrogate(String id) {
-        return surrogateMapper.selectById(id);
+    public TaskDelegate getSurrogate(String id) {
+        return taskDelegateMapper.selectById(id);
     }
 
     @Override

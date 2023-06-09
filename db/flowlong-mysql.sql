@@ -129,28 +129,6 @@ CREATE TABLE `flw_process`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for flw_surrogate
--- ----------------------------
-DROP TABLE IF EXISTS `flw_surrogate`;
-CREATE TABLE `flw_surrogate`  (
-                                  `id` bigint NOT NULL COMMENT '主键ID',
-                                  `tenant_id` varchar(50) COMMENT '租户ID',
-                                  `create_by` varchar(50) COMMENT '创建人',
-                                  `create_time` timestamp NOT NULL COMMENT '创建时间',
-                                  `process_id` bigint COMMENT '流程ID',
-                                  `process_name` varchar(100) COMMENT '流程名称',
-                                  `empower` varchar(50) COMMENT '授权人',
-                                  `surrogate` varchar(50) COMMENT '代理人',
-                                  `state` tinyint(1) COMMENT '状态',
-                                  `start_time` timestamp COMMENT '开始时间',
-                                  `end_time` timestamp COMMENT '结束时间',
-                                  `operation_time` timestamp COMMENT '操作时间',
-                                  PRIMARY KEY (`id`) USING BTREE,
-                                  INDEX `idx_surrogate_process_id`(`process_id` ASC) USING BTREE,
-                                  CONSTRAINT `fk_surrogate_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '委托代理表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for flw_task
 -- ----------------------------
 DROP TABLE IF EXISTS `flw_task`;
@@ -171,7 +149,7 @@ CREATE TABLE `flw_task`  (
                              `expire_time` timestamp COMMENT '任务期望完成时间',
                              `remind_time` timestamp COMMENT '提醒时间',
                              `remind_repeat` tinyint(1) NOT NULL DEFAULT 0 COMMENT '提醒次数',
-                             `finish_time` timestamp COMMENT '任务完成时间',
+                             `finish_time` timestamp COMMENT '完成时间',
                              PRIMARY KEY (`id`) USING BTREE,
                              INDEX `idx_task_instance_id`(`instance_id` ASC) USING BTREE,
                              CONSTRAINT `fk_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -213,5 +191,28 @@ CREATE TABLE `flw_task_cc`  (
                                 `finish_time` timestamp COMMENT '完成时间',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送任务表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for flw_task_delegate
+-- ----------------------------
+DROP TABLE IF EXISTS `flw_task_delegate`;
+CREATE TABLE `flw_task_delegate`  (
+                                `id` bigint NOT NULL COMMENT '主键ID',
+                                `tenant_id` varchar(50) COMMENT '租户ID',
+                                `create_by` varchar(50) COMMENT '创建人',
+                                `create_time` timestamp COMMENT '创建时间',
+                                `instance_id` bigint NOT NULL COMMENT '流程实例ID',
+                                `parent_task_id` bigint COMMENT '父任务ID',
+                                `task_name` varchar(100) NOT NULL COMMENT '任务名称',
+                                `display_name` varchar(200) NOT NULL COMMENT '任务显示名称',
+                                `assignee_id` varchar(300) NOT NULL COMMENT '办理人ID',
+                                `assignee` varchar(50) COMMENT '办理人',
+                                `attorney_id` varchar(300) NOT NULL COMMENT '代理人ID',
+                                `attorney` varchar(50) COMMENT '代理人',
+                                `state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，结束 1，活动',
+                                `operation_time` timestamp COMMENT '操作时间',
+                                `finish_time` timestamp COMMENT '完成时间',
+                                PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '委托任务表' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

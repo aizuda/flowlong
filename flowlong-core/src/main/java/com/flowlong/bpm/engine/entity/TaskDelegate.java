@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.core.enums.TaskState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,7 +23,7 @@ import lombok.ToString;
 import java.util.Date;
 
 /**
- * 委托代理实体类
+ * 委托任务实体类
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
@@ -35,42 +35,55 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@TableName("flw_surrogate")
-public class Surrogate extends FlowEntity {
+@TableName("flw_task_delegate")
+public class TaskDelegate extends FlowEntity {
     /**
-     * 流程ID
+     * 流程实例ID
      */
-    protected Long processId;
+    protected Long instanceId;
     /**
-     * 流程名称
+     * 父任务ID
      */
-    protected String processName;
+    protected Long parentTaskId;
     /**
-     * 授权人
+     * 任务名称
      */
-    protected String empower;
+    protected String taskName;
+    /**
+     * 任务显示名称
+     */
+    protected String displayName;
+    /**
+     * 办理人ID
+     */
+    protected String assigneeId;
+    /**
+     * 办理人
+     */
+    protected String assignee;
+    /**
+     * 代理人ID
+     */
+    protected String attorneyId;
     /**
      * 代理人
      */
-    protected String surrogate;
+    protected String attorney;
     /**
-     * 状态
+     * 状态 0，结束 1，活动
      */
     protected Integer state;
-    /**
-     * 开始时间
-     */
-    protected Date startTime;
-    /**
-     * 结束时间
-     */
-    protected Date endTime;
     /**
      * 操作时间
      */
     protected Date operationTime;
+    /**
+     * 完成时间
+     */
+    protected Date finishTime;
 
-    public void setState(InstanceState instanceState) {
-        this.state = instanceState.getValue();
+    public void setState(TaskState state) {
+        this.state = state.getValue();
     }
+
 }

@@ -94,7 +94,7 @@ public class Task extends FlowEntity {
      */
     protected Integer remindRepeat;
     /**
-     * 任务完成时间
+     * 完成时间
      */
     protected Date finishTime;
 

@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.entity.Surrogate;
+import com.flowlong.bpm.engine.entity.TaskDelegate;
 
 /**
  * 管理服务接口,用于流程管理控制服务
@@ -32,9 +32,9 @@ public interface ManagerService {
     /**
      * 保存或更新委托代理对象
      *
-     * @param surrogate 委托代理对象
+     * @param taskDelegate 委托代理对象
      */
-    void saveOrUpdate(Surrogate surrogate);
+    void saveOrUpdate(TaskDelegate taskDelegate);
 
     /**
      * 删除委托代理对象
@@ -49,7 +49,7 @@ public interface ManagerService {
      * @param id ID
      * @return surrogate 委托代理对象
      */
-    Surrogate getSurrogate(String id);
+    TaskDelegate getSurrogate(String id);
 
     /**
      * 根据授权人、流程名称获取最终代理人

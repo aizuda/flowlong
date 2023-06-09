@@ -25,9 +25,11 @@ import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
-import com.flowlong.bpm.engine.core.mapper.SurrogateMapper;
+import com.flowlong.bpm.engine.core.mapper.TaskDelegateMapper;
+import com.flowlong.bpm.engine.entity.HisInstance;
+import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -54,12 +56,12 @@ public class RuntimeServiceImpl implements RuntimeService {
     private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
-    private SurrogateMapper surrogateMapper;
+    private TaskDelegateMapper surrogateMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper, SurrogateMapper surrogateMapper) {
+                              HisInstanceMapper hisInstanceMapper, TaskDelegateMapper surrogateMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
@@ -236,8 +238,11 @@ public class RuntimeServiceImpl implements RuntimeService {
             hisInstances.forEach(t -> {
                 // 删除活动任务相关信息
                 taskService.cascadeRemoveByInstanceId(t.getId());
-                // 删除抄送实例列表
+                // 删除抄送任务
                 // ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
+
+                // 删除代理任务
+
             });
         }
 
@@ -246,9 +251,6 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 删除实例
         instanceMapper.delete(Wrappers.<Instance>lambdaQuery().eq(Instance::getProcessId, processId));
-
-        // 删除与流程相关的委托代理
-        surrogateMapper.delete(Wrappers.<Surrogate>lambdaQuery().eq(Surrogate::getProcessId, processId));
     }
 
 }
