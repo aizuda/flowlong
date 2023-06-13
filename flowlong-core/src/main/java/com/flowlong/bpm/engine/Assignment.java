@@ -33,7 +33,7 @@ public interface Assignment {
      * 分配参与者方法，可获取到当前的执行对象
      *
      * @param execution 执行对象
-     * @return Object 参与者对象
+     * @return Object 任务参与者
      */
     default Object assign(Execution execution) {
         return assign(null, execution);
@@ -44,7 +44,7 @@ public interface Assignment {
      *
      * @param nodeModel 节点模型
      * @param execution 执行对象
-     * @return Object 参与者对象
+     * @return Object 任务参与者
      */
     Object assign(NodeModel nodeModel, Execution execution);
 

@@ -36,13 +36,17 @@ public enum TaskState {
      */
     finish(1),
     /**
+     * 拒绝
+     */
+    reject(2),
+    /**
      * 超时
      */
-    timeout(1),
+    timeout(3),
     /**
      * 终止
      */
-    termination(3);
+    termination(4);
 
     private final int value;
 

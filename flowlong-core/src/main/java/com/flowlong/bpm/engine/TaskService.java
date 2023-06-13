@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.entity.TaskActor;
 import com.flowlong.bpm.engine.model.NodeModel;
-import com.flowlong.bpm.engine.model.ProcessModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +69,7 @@ public interface TaskService {
      *
      * @param taskId 任务ID
      * @param userId 用户ID
-     * @param args   参数集合
+     * @param args   任务参数
      * @return Task 任务对象
      */
     Task complete(Long taskId, String userId, Map<String, Object> args);
@@ -92,11 +91,11 @@ public interface TaskService {
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
      *
-     * @param taskId 任务ID
-     * @param userId 用户ID
+     * @param taskId    任务ID
+     * @param taskActor 任务参与者
      * @return Task 任务对象
      */
-    Task claim(Long taskId, String userId);
+    Task claim(Long taskId, TaskActor taskActor);
 
     /**
      * 唤醒历史任务
@@ -149,11 +148,16 @@ public interface TaskService {
     /**
      * 根据当前任务对象驳回至上一步处理
      *
-     * @param model       流程定义模型，用以获取上一步模型对象
      * @param currentTask 当前任务对象
+     * @param taskActor   任务参与者
+     * @param args        任务参数
      * @return Task 任务对象
      */
-    Task rejectTask(ProcessModel model, Task currentTask);
+    Optional<Task> rejectTask(Task currentTask, TaskActor taskActor, Map<String, Object> args);
+
+    default Optional<Task> rejectTask(Task currentTask, TaskActor taskActor) {
+        return rejectTask(currentTask, taskActor, null);
+    }
 
     /**
      * 根据 taskId、createBy 判断创建人createBy是否允许执行任务

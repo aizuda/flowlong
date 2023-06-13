@@ -246,7 +246,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Assert.notNull(processModel, "当前任务未找到流程定义模型");
         if (ObjectUtils.isEmpty(nodeName)) {
             // 驳回当前任务
-            execution.addTask(taskService().rejectTask(processModel, execution.getTask()));
+            execution.addTask(taskService().rejectTask(execution.getTask(), null).get());
         } else {
             // 委派获取历史任务信息
             switch (jumpMode) {

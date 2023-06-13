@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -82,6 +83,20 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Task complete(Long taskId, String userId, Map<String, Object> args) {
+        return this.executeTask(taskId, userId, args, TaskState.finish, TaskListener.EVENT_COMPLETE);
+    }
+
+    /**
+     * 执行任务
+     *
+     * @param taskId    任务ID
+     * @param userId    用户ID
+     * @param args      执行参数
+     * @param taskState 任务状态
+     * @param event     执行事件
+     * @return
+     */
+    protected Task executeTask(Long taskId, String userId, Map<String, Object> args, TaskState taskState, String event) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
         task.setVariable(args);
@@ -90,7 +105,7 @@ public class TaskServiceImpl implements TaskService {
         // 迁移 task 信息到 flw_his_task
         HisTask hisTask = HisTask.of(task);
         hisTask.setFinishTime(DateUtils.getCurrentDate());
-        hisTask.setTaskState(TaskState.finish);
+        hisTask.setTaskState(taskState);
         hisTask.setCreateBy(userId);
         hisTaskMapper.insert(hisTask);
 
@@ -107,7 +122,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.deleteById(taskId);
 
         // 任务监听器通知
-        this.taskNotify(TaskListener.EVENT_COMPLETE, task);
+        this.taskNotify(event, task);
         return task;
     }
 
@@ -157,22 +172,18 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
-     *
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     * @return
      */
     @Override
-    public Task claim(Long taskId, String userId) {
+    public Task claim(Long taskId, TaskActor taskActor) {
         Task task = taskMapper.selectById(taskId);
         Assert.notNull(task, "指定的任务[id=" + taskId + "]不存在");
-        if (!isAllowed(task, userId)) {
-            throw new FlowLongException("当前执行用户ID [" + userId + "] 不允许提取任务 [taskId=" + taskId + "]");
+        if (!isAllowed(task, taskActor.getActorId())) {
+            throw new FlowLongException("当前执行用户ID [" + taskActor.getActorName() + "] 不允许提取任务 [taskId=" + taskId + "]");
         }
         // 删除任务参与者
         taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
         // 插入当前用户ID作为唯一参与者
-        taskActorMapper.insert(TaskActor.of(taskId, userId));
+        taskActorMapper.insert(taskActor);
         return task;
     }
 
@@ -251,70 +262,75 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<Task> withdrawTask(Long taskId, TaskActor taskActor) {
-        HisTask hist = hisTaskMapper.selectById(taskId);
-        Assert.notNull(hist, "指定的历史任务[id=" + taskId + "]不存在");
-        List<Task> tasks = null;
-        PerformType performType = PerformType.get(hist.getPerformType());
-        if (performType == PerformType.any) {
-            // 根据父任务ID查询所有子任务
-            tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hist.getId()));
-        } else {
-            List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, hist.getInstanceId())
-                    .eq(HisTask::getTaskName, hist.getTaskName()).eq(HisTask::getParentTaskId, hist.getParentTaskId()))
-                    .stream().map(HisTask::getId).collect(Collectors.toList());
-            if (ObjectUtils.isNotEmpty(hisTaskIds)) {
-                tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
+        return this.undoHisTask(taskId, taskActor, hisTask -> {
+            List<Task> tasks = null;
+            PerformType performType = PerformType.get(hisTask.getPerformType());
+            if (performType == PerformType.any) {
+                // 根据父任务ID查询所有子任务
+                tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hisTask.getId()));
+            } else {
+                List<Long> hisTaskIds = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, hisTask.getInstanceId())
+                                .eq(HisTask::getTaskName, hisTask.getTaskName()).eq(HisTask::getParentTaskId, hisTask.getParentTaskId()))
+                        .stream().map(HisTask::getId).collect(Collectors.toList());
+                if (ObjectUtils.isNotEmpty(hisTaskIds)) {
+                    tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().in(Task::getParentTaskId, hisTaskIds));
+                }
             }
-        }
-        if (ObjectUtils.isEmpty(tasks)) {
-            throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
-        }
-        List<Long> taskIds = tasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
-        // 查询任务参与者
-        List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds))
-                .stream().map(TaskActor::getId).collect(Collectors.toList());
-        if (ObjectUtils.isNotEmpty(taskActorIds)) {
-            taskActorMapper.deleteBatchIds(taskActorIds);
-        }
-        taskMapper.deleteBatchIds(tasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+            if (ObjectUtils.isEmpty(tasks)) {
+                throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
+            }
+            List<Long> taskIds = tasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
+            // 查询任务参与者
+            List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds))
+                    .stream().map(TaskActor::getId).collect(Collectors.toList());
+            if (ObjectUtils.isNotEmpty(taskActorIds)) {
+                taskActorMapper.deleteBatchIds(taskActorIds);
+            }
+            taskMapper.deleteBatchIds(tasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+        });
+    }
 
-        Task task = hist.undoTask();
+    @Override
+    public Optional<Task> rejectTask(Task currentTask, TaskActor taskActor, Map<String, Object> args) {
+        Long parentTaskId = currentTask.getParentTaskId();
+        if (Objects.equals(parentTaskId, 0L)) {
+            throw new FlowLongException("上一步任务ID为空，无法驳回至上一步处理");
+        }
+
+        // 执行任务驳回
+        this.executeTask(currentTask.getId(), currentTask.getCreateBy(), args, TaskState.reject, TaskListener.EVENT_REJECT);
+
+        // 撤回父任务
+        return this.undoHisTask(parentTaskId, taskActor, null);
+    }
+
+    /**
+     * 撤回历史任务
+     *
+     * @param hisTaskId       历史任务ID
+     * @param taskActor       任务参与者
+     * @param hisTaskConsumer 历史任务业务处理
+     * @return
+     */
+    protected Optional<Task> undoHisTask(Long hisTaskId, TaskActor taskActor, Consumer<HisTask> hisTaskConsumer) {
+        HisTask hisTask = hisTaskMapper.selectById(hisTaskId);
+        Assert.notNull(hisTask, "指定的历史任务[id=" + hisTaskId + "]不存在");
+        if (null != hisTaskConsumer) {
+            hisTaskConsumer.accept(hisTask);
+        }
+        Task task = hisTask.undoTask();
         taskMapper.insert(task);
         assignTask(task.getId(), taskActor);
         return Optional.ofNullable(task);
     }
 
     /**
-     * 驳回任务
-     */
-    @Override
-    public Task rejectTask(ProcessModel model, Task currentTask) {
-        Long parentTaskId = currentTask.getParentTaskId();
-        if (Objects.equals(parentTaskId, 0L)) {
-            throw new FlowLongException("上一步任务ID为空，无法驳回至上一步处理");
-        }
-
-        HisTask history = hisTaskMapper.selectById(parentTaskId);
-        NodeModel parent = model.getNode(history.getTaskName());
-        NodeModel childNode = parent.getChildNode();
-        if (null == childNode || !Objects.equals(childNode.getNodeName(), currentTask.getTaskName())) {
-            throw new FlowLongException("无法驳回至上一步处理，请确认上一步骤并非fork、join、suprocess以及会签任务");
-        }
-
-        Task task = history.undoTask();
-        task.setCreateBy(history.getCreateBy());
-        taskMapper.insert(task);
-        // assignTask(task.getId(), task.getCreateBy());
-        return task;
-    }
-
-    /**
      * 对指定的任务分配参与者。参与者可以为用户、部门、角色
      *
      * @param taskId    任务ID
-     * @param taskActor 参与者对象
+     * @param taskActor 任务参与者
      */
-    private void assignTask(Long taskId, TaskActor taskActor) {
+    protected void assignTask(Long taskId, TaskActor taskActor) {
         taskActor.setTaskId(taskId);
         taskActorMapper.insert(taskActor);
     }

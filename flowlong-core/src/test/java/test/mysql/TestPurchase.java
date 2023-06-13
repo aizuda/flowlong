@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,11 +49,21 @@ public class TestPurchase extends MysqlTest {
             // 领导审批
             this.executeActiveTasks(instance.getId(), testUser1);
 
+            TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+
+            // 撤回任务（领导审批）
             QueryService queryService = flowLongEngine.queryService();
             List<HisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
             HisTask hisTask = hisTasks.get(0);
             TaskService taskService = flowLongEngine.taskService();
-            taskService.withdrawTask(hisTask.getId(), TaskActor.ofUser(testUser1, "测试"));
+            taskService.withdrawTask(hisTask.getId(), testActor);
+
+            // 驳回任务（领导审批驳回，任务至发起人）
+            queryService.getActiveTasksByInstanceId(instance.getId()).ifPresent(tasks -> tasks.forEach(t ->
+                    taskService.rejectTask(t, testActor, new HashMap<String, Object>() {{
+                        put("reason", "不符合要求");
+                    }})
+            ));
 
             // 经理确认，流程结束
             // this.executeActiveTasks(instance.getId(), "1000");

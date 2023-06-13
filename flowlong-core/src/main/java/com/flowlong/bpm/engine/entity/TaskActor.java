@@ -76,11 +76,4 @@ public class TaskActor implements Serializable {
         taskActor.setType(type);
         return taskActor;
     }
-
-    public static TaskActor of(Long taskId, String actorId) {
-        TaskActor taskActor = new TaskActor();
-        taskActor.setTaskId(taskId);
-        taskActor.setActorId(actorId);
-        return taskActor;
-    }
 }

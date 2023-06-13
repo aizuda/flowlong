@@ -31,6 +31,7 @@ public interface FlowLongListener<T> {
     String EVENT_TERMINATE = "terminate";
     String EVENT_UPDATE = "update";
     String EVENT_DELETE = "delete";
+    String EVENT_REJECT = "reject";
     String EVENT_TIMEOUT = "timeout";
 
     void notify(String event, T t);
