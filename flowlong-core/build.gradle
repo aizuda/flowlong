@@ -1,7 +1,7 @@
 description "Spring Boot 启动模块"
 
 dependencies {
-    api project(":flowlong-annotation")
+    // api project(":flowlong-annotation")
 
     compileOnly("org.springframework.boot:spring-boot-starter-json")
     compileOnly("org.springframework:spring-context")

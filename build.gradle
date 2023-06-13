@@ -64,7 +64,6 @@ subprojects {
         }
 
         dependencies {
-            dependency("commons-dbutils:commons-dbutils:1.7")
             dependency("mysql:mysql-connector-java:8.0.32")
 
             // orm db
