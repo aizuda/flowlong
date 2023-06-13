@@ -62,7 +62,9 @@ public interface ProcessService {
      * @param name 流程定义名称
      * @return Process 流程定义对象
      */
-    Optional<Process> getProcessByName(String name);
+    default Optional<Process> getProcessByName(String name) {
+        return getProcessByVersion(name, null);
+    }
 
     /**
      * 根据流程名称或版本号查找流程定义对象
@@ -91,7 +93,9 @@ public interface ProcessService {
      * @param repeat 是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    Long deploy(InputStream input, boolean repeat);
+    default Long deploy(InputStream input, boolean repeat) {
+        return deploy(input, null, repeat);
+    }
 
     /**
      * 根据InputStream输入流，部署流程定义

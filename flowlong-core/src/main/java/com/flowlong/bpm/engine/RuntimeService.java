@@ -39,7 +39,9 @@ public interface RuntimeService {
      * @param args     参数列表
      * @return Instance 活动流程实例对象
      */
-    Instance createInstance(Process process, String createBy, Map<String, Object> args);
+    default Instance createInstance(Process process, String createBy, Map<String, Object> args) {
+        return this.createInstance(process, createBy, args, null, null);
+    }
 
     /**
      * 根据流程、创建人员、父流程实例ID创建流程实例
@@ -80,7 +82,9 @@ public interface RuntimeService {
      *
      * @param instanceId 流程实例ID
      */
-    void terminate(Long instanceId);
+    default void terminate(Long instanceId)  {
+        this.terminate(instanceId, FlowLongEngine.ADMIN);
+    }
 
     /**
      * 流程实例强制终止

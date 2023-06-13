@@ -73,19 +73,6 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 创建活动实例
      *
-     * @param process  流程定义对象
-     * @param createBy 创建人员ID
-     * @param args     参数列表
-     * @return
-     */
-    @Override
-    public Instance createInstance(Process process, String createBy, Map<String, Object> args) {
-        return createInstance(process, createBy, args, null, null);
-    }
-
-    /**
-     * 创建活动实例
-     *
      * @param process        流程定义对象
      * @param createBy       创建人员ID
      * @param args           参数列表
@@ -183,16 +170,6 @@ public class RuntimeServiceImpl implements RuntimeService {
         if (null != instanceListener) {
             instanceListener.notify(event, hisInstance);
         }
-    }
-
-    /**
-     * 强制中止流程实例
-     *
-     * @param instanceId 流程实例ID
-     */
-    @Override
-    public void terminate(Long instanceId) {
-        this.terminate(instanceId, FlowLongEngine.ADMIN);
     }
 
     /**

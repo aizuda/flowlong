@@ -92,15 +92,6 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     /**
-     * 根据name获取process对象
-     * 先通过cache获取，如果返回空，就从数据库读取并put
-     */
-    @Override
-    public Optional<Process> getProcessByName(String name) {
-        return getProcessByVersion(name, null);
-    }
-
-    /**
      * 根据流程名称或版本号查找流程定义对象
      *
      * @param name    流程定义名称
@@ -115,16 +106,6 @@ public class ProcessServiceImpl implements ProcessService {
             throw new FlowLongException("process [" + name + "] does not exist");
         }
         return Optional.ofNullable(processList.get(0));
-    }
-
-    /**
-     * 根据流程定义xml的输入流解析为字节数组，保存至数据库中，并且put到缓存中
-     *
-     * @param input 定义输入流
-     */
-    @Override
-    public Long deploy(InputStream input, boolean repeat) {
-        return deploy(input, null, repeat);
     }
 
     /**

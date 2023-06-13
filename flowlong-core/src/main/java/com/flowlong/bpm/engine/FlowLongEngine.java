@@ -188,21 +188,15 @@ public interface FlowLongEngine {
     Optional<Instance> startInstanceByExecution(Execution execution);
 
     /**
-     * 根据任务ID执行任务
-     *
-     * @param taskId 任务ID
-     * @return {@link Task} 任务列表
-     */
-    List<Task> executeTask(Long taskId);
-
-    /**
      * 根据任务ID，创建人ID执行任务
      *
      * @param taskId   任务ID
      * @param createBy 创建人ID
      * @return List<Task> 任务集合
      */
-    List<Task> executeTask(Long taskId, String createBy);
+    default Optional<List<Task>> executeTask(Long taskId, String createBy) {
+        return this.executeTask(taskId, createBy, null);
+    }
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务
@@ -212,7 +206,7 @@ public interface FlowLongEngine {
      * @param args     参数列表
      * @return {@link Task} 任务列表
      */
-    List<Task> executeTask(Long taskId, String createBy, Map<String, Object> args);
+    Optional<List<Task>> executeTask(Long taskId, String createBy, Map<String, Object> args);
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点

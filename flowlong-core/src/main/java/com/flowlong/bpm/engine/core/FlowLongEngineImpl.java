@@ -183,33 +183,17 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID执行任务
-     */
-    @Override
-    public List<Task> executeTask(Long taskId) {
-        return executeTask(taskId, null);
-    }
-
-    /**
-     * 根据任务ID，创建人ID执行任务
-     */
-    @Override
-    public List<Task> executeTask(Long taskId, String createBy) {
-        return executeTask(taskId, createBy, null);
-    }
-
-    /**
      * 根据任务ID，创建人ID，参数列表执行任务
      */
     @Override
-    public List<Task> executeTask(Long taskId, String createBy, Map<String, Object> args) {
+    public Optional<List<Task>> executeTask(Long taskId, String createBy, Map<String, Object> args) {
         //完成任务，并且构造执行对象
         Execution execution = execute(taskId, createBy, args);
         if (execution == null) {
-            return Collections.emptyList();
+            return Optional.empty();
         }
         execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getTask().getTaskName());
-        return execution.getTasks();
+        return Optional.of(execution.getTasks());
     }
 
     /**
