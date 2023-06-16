@@ -298,7 +298,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 执行任务驳回
-        this.executeTask(currentTask.getId(), currentTask.getCreateBy(), args, TaskState.reject, TaskListener.EVENT_REJECT);
+        this.executeTask(currentTask.getId(), taskActor.getActorId(), args, TaskState.reject, TaskListener.EVENT_REJECT);
 
         // 撤回父任务
         return this.undoHisTask(parentTaskId, taskActor, null);

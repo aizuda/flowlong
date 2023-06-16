@@ -74,10 +74,11 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public HisTask getHistoryTaskByName(Long instanceId, String taskName) {
-        return hisTaskMapper.selectOne(Wrappers.<HisTask>lambdaQuery()
+    public Optional<List<HisTask>> getHisTasksByName(Long instanceId, String taskName) {
+        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
                 .eq(HisTask::getInstanceId, instanceId)
-                .eq(HisTask::getTaskName, taskName));
+                .eq(HisTask::getTaskName, taskName)
+                .orderByDesc(HisTask::getCreateTime)));
     }
 
     @Override

@@ -17,17 +17,18 @@ package com.flowlong.bpm.engine.core;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.ObjectUtils;
-import com.flowlong.bpm.engine.core.enums.JumpMode;
-import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * 基本的流程引擎实现类
@@ -123,7 +124,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public Optional<Instance> startInstanceByName(String name, Integer version,
-                                        String createBy) {
+                                                  String createBy) {
         return startInstanceByName(name, version, createBy, null);
     }
 
@@ -186,9 +187,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务ID，创建人ID，参数列表执行任务
      */
     @Override
-    public Optional<List<Task>> executeTask(Long taskId, String createBy, Map<String, Object> args) {
+    public Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor, Map<String, Object> args) {
         //完成任务，并且构造执行对象
-        Execution execution = execute(taskId, createBy, args);
+        Execution execution = this.execute(taskId, taskActor, args);
         if (execution == null) {
             return Optional.empty();
         }
@@ -197,96 +198,45 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
-     * 1、nodeName为null时，则驳回至上一步处理
-     * 2、nodeName不为null时，则任意跳转，即动态创建转移
+     * 执行任务并跳转到指定节点
      */
-    @Override
-    public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName) {
-        return this.executeAndJumpTask(taskId, createBy, args, nodeName, JumpMode.all);
-    }
-
-    @Override
-    public List<Task> retreatTask(Long taskId, String createBy, Map<String, Object> args, String nodeName) {
-        return this.executeAndJumpTask(taskId, createBy, args, nodeName, JumpMode.retreat);
-    }
-
-    /**
-     * 根据任务ID，创建人ID，参数列表执行任务，并且根据节点名称与跳转模式跳转到指定节点
-     *
-     * @param taskId   任务ID
-     * @param createBy 创建人
-     * @param args     参数
-     * @param nodeName 节点名称
-     * @param jumpMode 跳转模式
-     * @return {@link Task} 任务列表
-     */
-    public List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName, JumpMode jumpMode) {
-        Execution execution = this.execute(taskId, createBy, args);
-        if (execution == null) {
-            return Collections.emptyList();
+    public Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, TaskActor taskActor, Map<String, Object> args) {
+        // 执行当前任务
+        Execution execution = this.execute(taskId, taskActor, args);
+        if (null == execution) {
+            return Optional.empty();
         }
         ProcessModel processModel = execution.getProcess().getProcessModel();
         Assert.notNull(processModel, "当前任务未找到流程定义模型");
-        if (ObjectUtils.isEmpty(nodeName)) {
-            // 驳回当前任务
-            execution.addTask(taskService().rejectTask(execution.getTask(), null).get());
-        } else {
-            // 委派获取历史任务信息
-            switch (jumpMode) {
-                case advance:
-                    // todo: 暂未扩展节点前进逻辑
-                    break;
-                case retreat:
-                    HisTask appointTask = queryService().getHistoryTaskByName(execution.getInstance().getId(), nodeName);
-                    Assert.notNull(appointTask, "未在当前实例中找到对应任务历史记录");
-                    break;
-            }
-            NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
-            // 动态创建转移对象，由转移对象执行execution实例
-//            TransitionModel tm = new TransitionModel();
-//            tm.setTarget(nodeModel);
-//            tm.setEnabled(true);
-//            tm.execute(flowLongContext, execution);
-        }
-        return execution.getTasks();
-    }
 
-    /**
-     * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
-     */
-//    @Override
-//    public List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model) {
-//        Instance instance = queryService().getInstance(instanceId);
-//        Assert.notNull(instance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
-//        instance.setLastUpdateBy(createBy);
-//        instance.setLastUpdateTime(DateUtils.getCurrentDate());
-//        Process process = processService().getProcessById(instance.getProcessId());
-//        Execution execution = new Execution(this, process, instance, args);
-//        execution.setCreateBy(createBy);
-//        return taskService().createTask(model, execution);
-//    }
+        // 查找模型节点
+        NodeModel nodeModel = processModel.getNode(nodeName);
+        Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
+
+        // 创建当前节点任务
+        nodeModel.createTask(flowLongContext, execution);
+        return Optional.of(execution.getTasks());
+    }
 
     /**
      * 根据任务ID，创建人ID，参数列表完成任务，并且构造执行对象
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人
-     * @param args     参数列表
+     * @param taskId    任务ID
+     * @param taskActor 任务执行者
+     * @param args      参数列表
      * @return Execution
      */
-    protected Execution execute(Long taskId, String createBy, Map<String, Object> args) {
+    protected Execution execute(Long taskId, TaskActor taskActor, Map<String, Object> args) {
         if (args == null) {
             args = new HashMap<>();
         }
-        Task task = taskService().complete(taskId, createBy, args);
+        Task task = taskService().complete(taskId, taskActor.getActorId(), args);
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }
         Instance instance = queryService().getInstance(task.getInstanceId());
         Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
-        instance.setLastUpdateBy(createBy);
+        instance.setLastUpdateBy(taskActor.getActorName());
         instance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(instance);
         //协办任务完成不产生执行对象
@@ -304,7 +254,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         Process process = processService().getProcessById(instance.getProcessId()).get();
         Execution execution = new Execution(this, process, instance, args);
-        execution.setCreateBy(createBy);
+        execution.setCreateBy(taskActor.getActorName());
         execution.setTask(task);
         return execution;
     }

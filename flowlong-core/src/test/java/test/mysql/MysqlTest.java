@@ -14,10 +14,14 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import test.TestFlowLong;
+
+import java.util.function.Consumer;
 
 /**
  * Mysql 测试基类
@@ -30,11 +34,15 @@ public class MysqlTest extends TestFlowLong {
      * 执行当前活跃用户
      *
      * @param instanceId 流程实例ID
-     * @param createBy   创建人ID
+     * @param taskActor  任务执行者
      */
-    public void executeActiveTasks(Long instanceId, String createBy) {
+    public void executeActiveTasks(Long instanceId, TaskActor taskActor) {
+        this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), taskActor));
+    }
+
+    public void executeActiveTasks(Long instanceId, Consumer<Task> taskConsumer) {
         this.flowLongEngine.queryService().getActiveTasksByInstanceId(instanceId)
-                .ifPresent(tasks -> tasks.forEach(t -> this.flowLongEngine.executeTask(t.getId(), createBy)));
+                .ifPresent(tasks -> tasks.forEach(t -> taskConsumer.accept(t)));
     }
 
 }

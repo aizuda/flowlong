@@ -37,7 +37,6 @@ public class HisTaskActor extends TaskActor {
 
     public static HisTaskActor of(TaskActor taskActor) {
         HisTaskActor hisTaskActor = new HisTaskActor();
-        hisTaskActor.id = taskActor.getId();
         hisTaskActor.tenantId = taskActor.getTenantId();
         hisTaskActor.taskId = taskActor.getTaskId();
         hisTaskActor.type = taskActor.getType();

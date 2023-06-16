@@ -15,6 +15,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,8 @@ public class TestProcess extends MysqlTest {
                 // 根据流程定义ID和版本号查询
                 Assertions.assertNotNull(processService.getProcessByVersion(p.getName(), p.getVersion()).get()));
 
+        TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
         args.put("day", 8);
@@ -50,10 +53,10 @@ public class TestProcess extends MysqlTest {
         flowLongEngine.startInstanceById(processId, testUser1, args).ifPresent(instance -> {
 
             // 发起，执行条件路由
-            this.executeActiveTasks(instance.getId(), testUser1);
+            this.executeActiveTasks(instance.getId(), testActor);
 
             // 领导审批，流程结束
-            this.executeActiveTasks(instance.getId(), testUser1);
+            this.executeActiveTasks(instance.getId(), testActor);
         });
 
         // 卸载指定的定义流程

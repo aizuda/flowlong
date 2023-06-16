@@ -18,6 +18,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.util.List;
 import java.util.Map;
@@ -190,23 +191,23 @@ public interface FlowLongEngine {
     /**
      * 根据任务ID，创建人ID执行任务
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
+     * @param taskId    任务ID
+     * @param taskActor 任务执行者
      * @return List<Task> 任务集合
      */
-    default Optional<List<Task>> executeTask(Long taskId, String createBy) {
-        return this.executeTask(taskId, createBy, null);
+    default Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor) {
+        return this.executeTask(taskId, taskActor, null);
     }
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
-     * @param args     参数列表
+     * @param taskId    任务ID
+     * @param taskActor 任务执行者
+     * @param args      参数列表
      * @return {@link Task} 任务列表
      */
-    Optional<List<Task>> executeTask(Long taskId, String createBy, Map<String, Object> args);
+    Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor, Map<String, Object> args);
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
@@ -215,33 +216,15 @@ public interface FlowLongEngine {
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
      * </p>
      *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
-     * @param args     参数列表
-     * @param nodeName 跳转的节点名称
+     * @param taskId    任务ID
+     * @param nodeName  跳转的节点名称
+     * @param taskActor 任务执行者
+     * @param args      参数列表
      * @return List<Task> 任务集合
      */
-    List<Task> executeAndJumpTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
+    Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, TaskActor taskActor, Map<String, Object> args);
 
-    /**
-     * 根据流程ID，创建人ID，参数列表结束当前任务并根据nodeName回退到历史节点
-     *
-     * @param taskId   任务ID
-     * @param createBy 创建人ID
-     * @param args     参数列表
-     * @param nodeName 节点名称
-     * @return {@link Task} 任务列表
-     */
-    List<Task> retreatTask(Long taskId, String createBy, Map<String, Object> args, String nodeName);
-
-    /**
-     * 根据流程实例ID，创建人ID，参数列表按照节点模型model创建新的自由任务
-     *
-     * @param instanceId 流程实例ID
-     * @param createBy   创建人ID
-     * @param args       参数列表
-     * @param model      节点模型
-     * @return {@link Task} 任务列表
-     */
-//    List<Task> createFreeTask(Long instanceId, String createBy, Map<String, Object> args, TaskModel model);
+    default Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, TaskActor taskActor) {
+        return this.executeAndJumpTask(taskId, nodeName, taskActor, null);
+    }
 }

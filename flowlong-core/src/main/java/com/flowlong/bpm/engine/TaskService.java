@@ -139,7 +139,7 @@ public interface TaskService {
     /**
      * 根据任务ID、创建人撤回任务
      *
-     * @param taskId    任务ID
+     * @param taskId    待撤回历史任务ID
      * @param taskActor 任务参与者
      * @return Task 任务对象
      */

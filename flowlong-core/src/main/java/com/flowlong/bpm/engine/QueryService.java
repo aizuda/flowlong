@@ -64,13 +64,13 @@ public interface QueryService {
     HisTask getHistTask(Long taskId);
 
     /**
-     * 根据任务名称查询历史任务对象
+     * 根据任务名称查询历史任务对象列表
      *
      * @param instanceId
      * @param taskName   任务名称(亦是节点名称)
-     * @return com.flowlong.bpm.engine.entity.HisTask
+     * @return 历史任务节点列表
      */
-    HisTask getHistoryTaskByName(Long instanceId, String taskName);
+    Optional<List<HisTask>> getHisTasksByName(Long instanceId, String taskName);
 
     /**
      * 通过流程实例ID获取任务列表

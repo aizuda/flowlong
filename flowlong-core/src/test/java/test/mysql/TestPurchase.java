@@ -43,13 +43,13 @@ public class TestPurchase extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testUser1).ifPresent(instance -> {
 
+            TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+
             // 发起
-            this.executeActiveTasks(instance.getId(), testUser1);
+            this.executeActiveTasks(instance.getId(), testActor);
 
             // 领导审批
-            this.executeActiveTasks(instance.getId(), testUser1);
-
-            TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+            this.executeActiveTasks(instance.getId(), testActor);
 
             // 撤回任务（领导审批）
             QueryService queryService = flowLongEngine.queryService();
@@ -59,14 +59,19 @@ public class TestPurchase extends MysqlTest {
             taskService.withdrawTask(hisTask.getId(), testActor);
 
             // 驳回任务（领导审批驳回，任务至发起人）
-            queryService.getActiveTasksByInstanceId(instance.getId()).ifPresent(tasks -> tasks.forEach(t ->
+            this.executeActiveTasks(instance.getId(), t ->
                     taskService.rejectTask(t, testActor, new HashMap<String, Object>() {{
                         put("reason", "不符合要求");
                     }})
-            ));
+            );
+
+            // 执行当前任务并跳到【经理确认】节点
+            this.executeActiveTasks(instance.getId(), t ->
+                    flowLongEngine.executeAndJumpTask(t.getId(), "经理确认", testActor)
+            );
 
             // 经理确认，流程结束
-            // this.executeActiveTasks(instance.getId(), "1000");
+            this.executeActiveTasks(instance.getId(), testActor);
         });
     }
 }

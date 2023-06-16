@@ -136,7 +136,7 @@ public class NodeModel implements ModelInstance {
                 /**
                  * 执行创建条件任务
                  */
-                new CreateTaskHandler(conditionNode.getChildNode()).handle(flowLongContext, execution);
+                this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
             }
         }
 
@@ -144,8 +144,16 @@ public class NodeModel implements ModelInstance {
          * 执行创建抄送任务
          */
         if (Objects.equals(2, this.type)) {
-            new CreateTaskHandler(this).handle(flowLongContext, execution);
+            this.createTask(flowLongContext, execution);
         }
+    }
+
+    public void createTask(FlowLongContext flowLongContext, Execution execution) {
+        this.createTask(this, flowLongContext, execution);
+    }
+
+    protected void createTask(NodeModel nodeModel, FlowLongContext flowLongContext, Execution execution) {
+        new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
     }
 
     /**

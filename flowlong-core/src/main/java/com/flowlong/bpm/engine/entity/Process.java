@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
-import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -156,7 +155,7 @@ public class Process extends FlowEntity {
             NodeModel nodeModel = processModel.getNodeConfig();
             Assert.notNull(nodeModel, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
             // 创建首个审批任务
-            new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
+            nodeModel.createTask(flowLongContext, execution);
         });
     }
 
