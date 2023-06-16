@@ -42,6 +42,10 @@ public class FlowEntity implements Serializable, Cloneable {
      */
     protected String tenantId;
     /**
+     * 创建人ID
+     */
+    protected String createId;
+    /**
      * 创建人
      */
     protected String createBy;

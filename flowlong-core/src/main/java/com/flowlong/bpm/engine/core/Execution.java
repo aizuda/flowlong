@@ -70,6 +70,10 @@ public class Execution implements Serializable {
      */
     private Map<String, Object> args;
     /**
+     * 创建人ID
+     */
+    private String createId;
+    /**
      * 创建人
      */
     private String createBy;
@@ -103,6 +107,7 @@ public class Execution implements Serializable {
         this.args = execution.getArgs();
         this.parentInstance = execution.getInstance();
         this.parentNodeName = parentNodeName;
+        this.createId = execution.getCreateId();
         this.createBy = execution.getCreateBy();
     }
 

@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.io.InputStream;
 import java.util.Optional;
@@ -33,14 +34,6 @@ import java.util.Optional;
 public interface ProcessService {
 
     /**
-     * 检查流程定义对象
-     *
-     * @param process 流程定义对象
-     * @param id      流程定义ID
-     */
-    void check(Process process, Long id);
-
-    /**
      * 更新流程定义的类别
      *
      * @param id   流程定义id
@@ -54,17 +47,7 @@ public interface ProcessService {
      * @param id 流程定义id
      * @return Process 流程定义对象
      */
-    Optional<Process> getProcessById(Long id);
-
-    /**
-     * 根据流程name获取流程定义对象
-     *
-     * @param name 流程定义名称
-     * @return Process 流程定义对象
-     */
-    default Optional<Process> getProcessByName(String name) {
-        return getProcessByVersion(name, null);
-    }
+    Process getProcessById(Long id);
 
     /**
      * 根据流程名称或版本号查找流程定义对象
@@ -73,39 +56,33 @@ public interface ProcessService {
      * @param version 版本号
      * @return {@link Process}
      */
-    Optional<Process> getProcessByVersion(String name, Integer version);
+    Process getProcessByVersion(String name, Integer version);
+
+    default Process getProcessByName(String name) {
+        return getProcessByVersion(name, null);
+    }
 
     /**
      * 根据本地 resource 资源名称部署流程
      *
      * @param resourceName 资源名称
+     * @param taskActor    流程任务部署者
      * @param repeat       是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    default Long deployByResource(String resourceName, boolean repeat) {
-        return this.deploy(StreamUtils.getResourceAsStream(resourceName), repeat);
+    default Long deployByResource(String resourceName, TaskActor taskActor, boolean repeat) {
+        return this.deploy(StreamUtils.getResourceAsStream(resourceName), taskActor, repeat);
     }
 
     /**
      * 根据InputStream输入流，部署流程定义
      *
-     * @param input  流程定义输入流
-     * @param repeat 是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @param input     流程定义输入流
+     * @param taskActor 流程任务部署者
+     * @param repeat    是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    default Long deploy(InputStream input, boolean repeat) {
-        return deploy(input, null, repeat);
-    }
-
-    /**
-     * 根据InputStream输入流，部署流程定义
-     *
-     * @param input    流程定义输入流
-     * @param createBy 创建人
-     * @param repeat   是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
-     * @return 流程定义ID
-     */
-    Long deploy(InputStream input, String createBy, boolean repeat);
+    Long deploy(InputStream input, TaskActor taskActor, boolean repeat);
 
     /**
      * 根据InputStream输入流，部署流程定义

@@ -26,10 +26,8 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.TaskDelegateMapper;
-import com.flowlong.bpm.engine.entity.HisInstance;
-import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -56,39 +54,30 @@ public class RuntimeServiceImpl implements RuntimeService {
     private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
-    private TaskDelegateMapper surrogateMapper;
+    private TaskDelegateMapper taskDelegateMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper, TaskDelegateMapper surrogateMapper) {
+                              HisInstanceMapper hisInstanceMapper, TaskDelegateMapper taskDelegateMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
-        this.surrogateMapper = surrogateMapper;
+        this.taskDelegateMapper = taskDelegateMapper;
     }
 
     /**
      * 创建活动实例
-     *
-     * @param process        流程定义对象
-     * @param createBy       创建人员ID
-     * @param args           参数列表
-     * @param parentId       父流程实例ID
-     * @param parentNodeName 父流程节点模型
-     * @return
      */
     @Override
-    public Instance createInstance(Process process, String createBy, Map<String, Object> args,
-                                   Long parentId, String parentNodeName) {
+    public Instance createInstance(Process process, TaskActor taskActor, Map<String, Object> args) {
         Instance instance = new Instance();
-        instance.setParentId(parentId);
-        instance.setParentNodeName(parentNodeName);
         instance.setCreateTime(DateUtils.getCurrentDate());
         instance.setLastUpdateTime(instance.getCreateTime());
-        instance.setCreateBy(createBy);
+        instance.setCreateId(taskActor.getActorId());
+        instance.setCreateBy(taskActor.getActorName());
         instance.setLastUpdateBy(instance.getCreateBy());
         instance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();

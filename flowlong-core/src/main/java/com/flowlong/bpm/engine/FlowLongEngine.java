@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
@@ -79,7 +78,7 @@ public interface FlowLongEngine {
     /**
      * 获取实例服务
      *
-     * @return QueryService 流程实例服务
+     * @return RuntimeService 流程实例运行业务服务
      */
     default RuntimeService runtimeService() {
         return getContext().getRuntimeService();
@@ -95,108 +94,32 @@ public interface FlowLongEngine {
     }
 
     /**
-     * 获取管理服务
-     *
-     * @return ManagerService 管理服务
-     */
-    default ManagerService managerService() {
-        return getContext().getManagerService();
-    }
-
-    /**
-     * 根据流程定义ID启动流程实例
-     *
-     * @param id 流程定义ID
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceById(Long id);
-
-    /**
-     * 根据流程定义ID，创建人ID启动流程实例
-     *
-     * @param id       流程定义ID
-     * @param createBy 创建人ID
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceById(Long id, String createBy);
-
-    /**
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      *
-     * @param id       流程定义ID
-     * @param createBy 创建人ID
-     * @param args     参数列表
+     * @param id        流程定义ID
+     * @param taskActor 流程实例任务启动者
+     * @param args      参数列表
      * @return {@link Instance} 流程实例
      */
-    Optional<Instance> startInstanceById(Long id, String createBy, Map<String, Object> args);
+    Optional<Instance> startInstanceById(Long id, TaskActor taskActor, Map<String, Object> args);
 
-    /**
-     * 根据流程定义ID，父流程实例ID，创建人ID，参数列表启动流程实例
-     *
-     * @param id         流程定义ID
-     * @param createBy   创建人ID
-     * @param args       参数列表
-     * @param parentId   父流程实例ID
-     * @param parentName 父流程实例名称
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName);
-
-    /**
-     * 根据流程名称启动流程实例
-     *
-     * @param name 流程定义名称
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceByName(String name);
-
-    /**
-     * 根据流程名称、版本号启动流程实例
-     *
-     * @param name    流程定义名称
-     * @param version 版本号
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceByName(String name, Integer version);
-
-    /**
-     * 根据流程名称、版本号、创建人启动流程实例
-     *
-     * @param name     流程定义名称
-     * @param version  版本号
-     * @param createBy 创建人
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceByName(String name, Integer version, String createBy);
+    default Optional<Instance> startInstanceById(Long id, TaskActor taskActor) {
+        return this.startInstanceById(id, taskActor, null);
+    }
 
     /**
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
-     * @param name     流程定义名称
-     * @param version  版本号
-     * @param createBy 创建人
-     * @param args     参数列表
+     * @param name      流程定义名称
+     * @param version   版本号
+     * @param taskActor 流程实例任务启动者
+     * @param args      参数列表
      * @return {@link Instance} 流程实例
      */
-    Optional<Instance> startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args);
+    Optional<Instance> startInstanceByName(String name, Integer version, TaskActor taskActor, Map<String, Object> args);
 
-    /**
-     * 根据父执行对象启动子流程实例
-     *
-     * @param execution 执行对象
-     * @return {@link Instance} 流程实例
-     */
-    Optional<Instance> startInstanceByExecution(Execution execution);
-
-    /**
-     * 根据任务ID，创建人ID执行任务
-     *
-     * @param taskId    任务ID
-     * @param taskActor 任务执行者
-     * @return List<Task> 任务集合
-     */
-    default Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor) {
-        return this.executeTask(taskId, taskActor, null);
+    default Optional<Instance> startInstanceByName(String name, Integer version, TaskActor taskActor) {
+        return this.startInstanceByName(name, version, taskActor, null);
     }
 
     /**
@@ -208,6 +131,11 @@ public interface FlowLongEngine {
      * @return {@link Task} 任务列表
      */
     Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor, Map<String, Object> args);
+
+    default Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor) {
+        return this.executeTask(taskId, taskActor, null);
+    }
+
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点

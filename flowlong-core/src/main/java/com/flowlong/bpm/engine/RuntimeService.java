@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.util.Map;
 
@@ -34,26 +35,12 @@ public interface RuntimeService {
     /**
      * 根据流程、创建人员、父流程实例ID创建流程实例
      *
-     * @param process  流程定义对象
-     * @param createBy 创建人员ID
-     * @param args     参数列表
-     * @return Instance 活动流程实例对象
-     */
-    default Instance createInstance(Process process, String createBy, Map<String, Object> args) {
-        return this.createInstance(process, createBy, args, null, null);
-    }
-
-    /**
-     * 根据流程、创建人员、父流程实例ID创建流程实例
-     *
      * @param process        流程定义对象
-     * @param createBy       创建人员ID
+     * @param taskActor      流程实例任务启动者
      * @param args           参数列表
-     * @param parentId       父流程实例ID
-     * @param parentNodeName 父流程节点模型
      * @return 活动流程实例对象
      */
-    Instance createInstance(Process process, String createBy, Map<String, Object> args, Long parentId, String parentNodeName);
+    Instance createInstance(Process process, TaskActor taskActor, Map<String, Object> args);
 
     /**
      * 向指定实例id添加全局变量数据
@@ -82,7 +69,7 @@ public interface RuntimeService {
      *
      * @param instanceId 流程实例ID
      */
-    default void terminate(Long instanceId)  {
+    default void terminate(Long instanceId) {
         this.terminate(instanceId, FlowLongEngine.ADMIN);
     }
 

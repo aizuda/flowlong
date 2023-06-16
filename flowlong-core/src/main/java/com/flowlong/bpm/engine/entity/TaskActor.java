@@ -69,6 +69,10 @@ public class TaskActor implements Serializable {
         return of(actorId, actorName, 1);
     }
 
+    public static TaskActor ofDepartment(String actorId, String actorName) {
+        return of(actorId, actorName, 2);
+    }
+
     protected static TaskActor of(String actorId, String actorName, Integer type) {
         TaskActor taskActor = new TaskActor();
         taskActor.setActorId(actorId);

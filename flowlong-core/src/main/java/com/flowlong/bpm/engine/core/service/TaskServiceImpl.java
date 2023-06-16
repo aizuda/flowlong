@@ -293,14 +293,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Optional<Task> rejectTask(Task currentTask, TaskActor taskActor, Map<String, Object> args) {
         Long parentTaskId = currentTask.getParentTaskId();
-        if (Objects.equals(parentTaskId, 0L)) {
-            throw new FlowLongException("上一步任务ID为空，无法驳回至上一步处理");
-        }
+        Assert.isTrue(Objects.equals(parentTaskId, 0L), "上一步任务ID为空，无法驳回至上一步处理");
 
         // 执行任务驳回
         this.executeTask(currentTask.getId(), taskActor.getActorId(), args, TaskState.reject, TaskListener.EVENT_REJECT);
 
-        // 撤回父任务
+        // 撤回至上一级任务
         return this.undoHisTask(parentTaskId, taskActor, null);
     }
 
@@ -480,6 +478,7 @@ public class TaskServiceImpl implements TaskService {
             for (NodeAssignee nodeUser : nodeUserList) {
                 TaskCc taskCc = new TaskCc();
                 taskCc.setParentTaskId(execution.getTask().getId());
+                taskCc.setCreateId(execution.getCreateId());
                 taskCc.setCreateBy(execution.getCreateBy());
                 taskCc.setCreateTime(DateUtils.getCurrentDate());
                 taskCc.setInstanceId(execution.getInstance().getId());
@@ -504,6 +503,7 @@ public class TaskServiceImpl implements TaskService {
      */
     private Task createTaskBase(NodeModel nodeModel, Execution execution) {
         Task task = new Task();
+        task.setCreateId(execution.getCreateId());
         task.setCreateBy(execution.getCreateBy());
         task.setCreateTime(DateUtils.getCurrentDate());
         task.setInstanceId(execution.getInstance().getId());

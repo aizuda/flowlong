@@ -15,11 +15,10 @@ DROP TABLE IF EXISTS `flw_his_instance`;
 CREATE TABLE `flw_his_instance`  (
                                      `id` bigint NOT NULL COMMENT '主键ID',
                                      `tenant_id` varchar(50) COMMENT '租户ID',
-                                     `create_by` varchar(50) COMMENT '创建人',
-                                     `create_time` timestamp COMMENT '创建时间',
+                                     `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                     `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                     `create_time` timestamp NOT NULL COMMENT '创建时间',
                                      `process_id` bigint NOT NULL COMMENT '流程定义ID',
-                                     `parent_id` bigint COMMENT '父流程ID',
-                                     `parent_node_name` varchar(100) COMMENT '父流程依赖的节点名称',
                                      `priority` tinyint(1) COMMENT '优先级',
                                      `instance_no` varchar(50) COMMENT '流程实例编号',
                                      `business_key` varchar(100) COMMENT '业务KEY',
@@ -32,7 +31,6 @@ CREATE TABLE `flw_his_instance`  (
                                      `end_time` timestamp COMMENT '结束时间',
                                      PRIMARY KEY (`id`) USING BTREE,
                                      INDEX `idx_his_instance_process_id`(`process_id` ASC) USING BTREE,
-                                     INDEX `idx_his_instance_parent_id`(`parent_id` ASC) USING BTREE,
                                      CONSTRAINT `fk_his_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
 
@@ -43,8 +41,9 @@ DROP TABLE IF EXISTS `flw_his_task`;
 CREATE TABLE `flw_his_task`  (
                                  `id` bigint NOT NULL COMMENT '主键ID',
                                  `tenant_id` varchar(50) COMMENT '租户ID',
-                                 `create_by` varchar(50) COMMENT '处理人',
-                                 `create_time` timestamp COMMENT '创建时间',
+                                 `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                 `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                 `create_time` timestamp NOT NULL COMMENT '创建时间',
                                  `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                  `parent_task_id` bigint COMMENT '父任务ID',
                                  `task_name` varchar(100)   NOT NULL COMMENT '任务名称',
@@ -88,11 +87,10 @@ DROP TABLE IF EXISTS `flw_instance`;
 CREATE TABLE `flw_instance`  (
                                  `id` bigint NOT NULL COMMENT '主键ID',
                                  `tenant_id` varchar(50) COMMENT '租户ID',
-                                 `create_by` varchar(50) COMMENT '创建人',
-                                 `create_time` timestamp COMMENT '创建时间',
+                                 `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                 `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                 `create_time` timestamp NOT NULL COMMENT '创建时间',
                                  `process_id` bigint NOT NULL COMMENT '流程定义ID',
-                                 `parent_id` bigint COMMENT '父流程ID',
-                                 `parent_node_name` varchar(100) COMMENT '父流程依赖的节点名称',
                                  `priority` tinyint(1) COMMENT '优先级',
                                  `instance_no` varchar(50) COMMENT '流程实例编号',
                                  `business_key` varchar(100) COMMENT '业务KEY',
@@ -103,9 +101,7 @@ CREATE TABLE `flw_instance`  (
                                  `last_update_time` timestamp COMMENT '上次更新时间',
                                  PRIMARY KEY (`id`) USING BTREE,
                                  INDEX `idx_instance_process_id`(`process_id` ASC) USING BTREE,
-                                 INDEX `idx_instance_parent_id`(`parent_id` ASC) USING BTREE,
-                                 CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-                                 CONSTRAINT `fk_instance_parent_id` FOREIGN KEY (`parent_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+                                 CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -115,7 +111,8 @@ DROP TABLE IF EXISTS `flw_process`;
 CREATE TABLE `flw_process`  (
                                 `id` bigint NOT NULL COMMENT '主键ID',
                                 `tenant_id` varchar(50) COMMENT '租户ID',
-                                `create_by` varchar(50) COMMENT '创建人',
+                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
                                 `create_time` timestamp NOT NULL COMMENT '创建时间',
                                 `name` varchar(100) NOT NULL COMMENT '流程名称',
                                 `display_name` varchar(200) COMMENT '流程显示名称',
@@ -135,8 +132,9 @@ DROP TABLE IF EXISTS `flw_task`;
 CREATE TABLE `flw_task`  (
                              `id` bigint NOT NULL COMMENT '主键ID',
                              `tenant_id` varchar(50) COMMENT '租户ID',
-                             `create_by` varchar(50) COMMENT '创建人',
-                             `create_time` timestamp COMMENT '创建时间',
+                             `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                             `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                             `create_time` timestamp NOT NULL COMMENT '创建时间',
                              `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                              `parent_task_id` bigint COMMENT '父任务ID',
                              `task_name` varchar(100) NOT NULL COMMENT '任务名称',
@@ -178,8 +176,9 @@ DROP TABLE IF EXISTS `flw_task_cc`;
 CREATE TABLE `flw_task_cc`  (
                                 `id` bigint NOT NULL COMMENT '主键ID',
                                 `tenant_id` varchar(50) COMMENT '租户ID',
-                                `create_by` varchar(50) COMMENT '创建人',
-                                `create_time` timestamp COMMENT '创建时间',
+                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                `create_time` timestamp NOT NULL COMMENT '创建时间',
                                 `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                 `parent_task_id` bigint COMMENT '父任务ID',
                                 `task_name` varchar(100) NOT NULL COMMENT '任务名称',
@@ -199,8 +198,9 @@ DROP TABLE IF EXISTS `flw_task_delegate`;
 CREATE TABLE `flw_task_delegate`  (
                                 `id` bigint NOT NULL COMMENT '主键ID',
                                 `tenant_id` varchar(50) COMMENT '租户ID',
-                                `create_by` varchar(50) COMMENT '创建人',
-                                `create_time` timestamp COMMENT '创建时间',
+                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                `create_time` timestamp NOT NULL COMMENT '创建时间',
                                 `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                 `parent_task_id` bigint COMMENT '父任务ID',
                                 `task_name` varchar(100) NOT NULL COMMENT '任务名称',

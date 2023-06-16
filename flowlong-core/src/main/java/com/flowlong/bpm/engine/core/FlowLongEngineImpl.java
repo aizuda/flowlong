@@ -59,73 +59,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程定义ID启动流程实例
-     */
-    @Override
-    public Optional<Instance> startInstanceById(Long id) {
-        return startInstanceById(id, null, null);
-    }
-
-    /**
-     * 根据流程定义ID，创建人ID启动流程实例
-     */
-    @Override
-    public Optional<Instance> startInstanceById(Long id, String createBy) {
-        return startInstanceById(id, createBy, null);
-    }
-
-    /**
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      */
     @Override
-    public Optional<Instance> startInstanceById(Long id, String createBy, Map<String, Object> args) {
-        if (args == null) {
-            args = new HashMap<>(16);
+    public Optional<Instance> startInstanceById(Long id, TaskActor taskActor, Map<String, Object> args) {
+        Process process = processService().getProcessById(id);
+        if (null == process) {
+            return Optional.empty();
         }
-        Process process = processService().getProcessById(id).get();
-        processService().check(process, id);
-        return startProcess(process, createBy, args);
-    }
-
-    @Override
-    public Optional<Instance> startInstanceByIdAndParentId(Long id, String createBy, Map<String, Object> args, Long parentId, String parentName) {
-        if (args == null) {
-            args = new HashMap<>(16);
-        }
-        Process process = processService().getProcessById(id).get();
-        processService().check(process, id);
-        return startProcess(process, createBy, args, parentId, parentName);
-    }
-
-    /**
-     * 根据流程名称启动流程实例
-     *
-     * @since 1.0
-     */
-    @Override
-    public Optional<Instance> startInstanceByName(String name) {
-        return startInstanceByName(name, null, null, null);
-    }
-
-    /**
-     * 根据流程名称、版本号启动流程实例
-     *
-     * @since 1.0
-     */
-    @Override
-    public Optional<Instance> startInstanceByName(String name, Integer version) {
-        return startInstanceByName(name, version, null, null);
-    }
-
-    /**
-     * 根据流程名称、版本号、创建人启动流程实例
-     *
-     * @since 1.0
-     */
-    @Override
-    public Optional<Instance> startInstanceByName(String name, Integer version,
-                                                  String createBy) {
-        return startInstanceByName(name, version, createBy, null);
+        return this.startProcess(process.checkState(), taskActor, args);
     }
 
     /**
@@ -134,52 +76,38 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @since 1.0
      */
     @Override
-    public Optional<Instance> startInstanceByName(String name, Integer version, String createBy, Map<String, Object> args) {
-        Process process = processService().getProcessByVersion(name, version).get();
-        return this.startProcess(process, createBy, args);
+    public Optional<Instance> startInstanceByName(String name, Integer version, TaskActor taskActor, Map<String, Object> args) {
+        Process process = processService().getProcessByVersion(name, version);
+        return this.startProcess(process, taskActor, args);
     }
 
-    protected Optional<Instance> startProcess(Process process, String createBy, Map<String, Object> args) {
-        return startProcess(process, createBy, args, null, null);
-    }
-
-    protected Optional<Instance> startProcess(Process process, String createBy, Map<String, Object> args, Long parentId, String parentNodeName) {
-        Execution execution = this.execute(process, createBy, args, parentId, parentNodeName);
+    /**
+     * 启动流程实例
+     */
+    protected Optional<Instance> startProcess(Process process, TaskActor taskActor, Map<String, Object> args) {
+        Execution execution = this.execute(process, taskActor, args);
         // 执行启动模型
         process.executeStartModel(flowLongContext, execution);
         return Optional.ofNullable(execution.getInstance());
     }
 
-    /**
-     * 根据父执行对象启动子流程实例（用于启动子流程）
-     */
-    @Override
-    public Optional<Instance> startInstanceByExecution(Execution execution) {
-        Process process = execution.getProcess();
-        Execution current = execute(process, execution.getCreateBy(), execution.getArgs(),
-                execution.getParentInstance().getId(), execution.getParentNodeName());
-        process.executeStartModel(flowLongContext, current);
-        return Optional.ofNullable(current.getInstance());
-    }
 
     /**
      * 创建流程实例，并返回执行对象
      *
      * @param process        流程定义
-     * @param createBy       创建人
+     * @param taskActor      流程实例任务启动者
      * @param args           参数列表
-     * @param parentId       父流程实例ID
-     * @param parentNodeName 启动子流程的父流程节点名称
      * @return Execution
      */
-    protected Execution execute(Process process, String createBy, Map<String, Object> args,
-                                Long parentId, String parentNodeName) {
-        Instance instance = runtimeService().createInstance(process, createBy, args, parentId, parentNodeName);
+    protected Execution execute(Process process, TaskActor taskActor, Map<String, Object> args) {
+        Instance instance = runtimeService().createInstance(process, taskActor, args);
         if (log.isDebugEnabled()) {
             log.debug("创建流程实例对象:" + instance);
         }
         Execution current = new Execution(this, process, instance, args);
-        current.setCreateBy(createBy);
+        current.setCreateId(taskActor.getActorId());
+        current.setCreateBy(taskActor.getActorName());
         return current;
     }
 
@@ -252,8 +180,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Process process = processService().getProcessById(instance.getProcessId()).get();
+        Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
+        execution.setCreateId(taskActor.getActorId());
         execution.setCreateBy(taskActor.getActorName());
         execution.setTask(task);
         return execution;

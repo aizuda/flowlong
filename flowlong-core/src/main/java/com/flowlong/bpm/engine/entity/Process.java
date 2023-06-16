@@ -19,6 +19,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
+import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -168,5 +169,15 @@ public class Process extends FlowEntity {
         if (null != this.content) {
             consumer.accept(ProcessModel.parse(this.content));
         }
+    }
+
+    /**
+     * 流程状态验证
+     */
+    public Process checkState() {
+        if (Objects.equals(0, this.state)) {
+            throw new FlowLongException("指定的流程定义[id=" + this.id + ",version=" + this.version + "]为非活动状态");
+        }
+        return this;
     }
 }

@@ -63,14 +63,12 @@ public class MysqlConfig {
 
     @Bean
     public FlowLongEngine flowLongEngine(ProcessService processService, QueryService queryService,
-                                         RuntimeService runtimeService, TaskService taskService,
-                                         ManagerService managerService, Expression expression) {
+                                         RuntimeService runtimeService, TaskService taskService, Expression expression) {
         FlowLongContext flc = new FlowLongContext();
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
-        flc.setManagerService(managerService);
         flc.setExpression(expression);
         return flc.build();
     }

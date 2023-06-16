@@ -15,7 +15,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.Process;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class TestProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/process.json");
+        processId = this.deployByResource("test/process.json", testActor);
     }
 
     @Test
@@ -40,17 +40,17 @@ public class TestProcess extends MysqlTest {
         ProcessService processService = flowLongEngine.processService();
 
         // 根据流程定义ID查询
-        processService.getProcessById(processId).ifPresent(p ->
-                // 根据流程定义ID和版本号查询
-                Assertions.assertNotNull(processService.getProcessByVersion(p.getName(), p.getVersion()).get()));
-
-        TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+        Process process = processService.getProcessById(processId);
+        if (null != process) {
+            // 根据流程定义ID和版本号查询
+            Assertions.assertNotNull(processService.getProcessByVersion(process.getName(), process.getVersion()));
+        }
 
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
         args.put("day", 8);
         args.put("assignee", testUser1);
-        flowLongEngine.startInstanceById(processId, testUser1, args).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, testActor, args).ifPresent(instance -> {
 
             // 发起，执行条件路由
             this.executeActiveTasks(instance.getId(), testActor);

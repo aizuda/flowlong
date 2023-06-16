@@ -42,7 +42,6 @@ public class FlowLongContext {
     private QueryService queryService;
     private RuntimeService runtimeService;
     private TaskService taskService;
-    private ManagerService managerService;
     private Expression expression;
 
     private List<FlowLongInterceptor> interceptors;

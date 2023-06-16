@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
 
+    protected TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+
     /**
      * 执行当前活跃用户
      *

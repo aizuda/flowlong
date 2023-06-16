@@ -59,6 +59,8 @@ public class HisTask extends Task {
         HisTask hisTask = new HisTask();
         hisTask.id = task.getId();
         hisTask.instanceId = task.getInstanceId();
+        hisTask.createId = task.getCreateId();
+        hisTask.createBy = task.getCreateBy();
         hisTask.createTime = task.getCreateTime();
         hisTask.displayName = task.getDisplayName();
         hisTask.taskName = task.getTaskName();

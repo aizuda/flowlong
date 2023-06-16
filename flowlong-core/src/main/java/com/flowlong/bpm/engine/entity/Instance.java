@@ -44,14 +44,6 @@ public class Instance extends FlowEntity {
      */
     protected Long processId;
     /**
-     * 流程实例为子流程时，该字段标识父流程实例ID
-     */
-    protected Long parentId;
-    /**
-     * 流程实例为子流程时，该字段标识父流程哪个节点模型启动的子流程
-     */
-    protected String parentNodeName;
-    /**
      * 流程实例优先级
      */
     protected Integer priority;

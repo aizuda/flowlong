@@ -15,9 +15,8 @@
 package test;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.InputStream;
 
 /**
  * 测试流程引擎抽象类
@@ -44,11 +43,7 @@ public abstract class TestFlowLong {
     @Autowired
     protected FlowLongEngine flowLongEngine;
 
-    protected Long deployByResource(String resourceName) {
-        return flowLongEngine.processService().deployByResource(resourceName, false);
-    }
-
-    protected Long deploy(InputStream input, String createBy, boolean repeat) {
-        return flowLongEngine.processService().deploy(input, createBy, repeat);
+    protected Long deployByResource(String resourceName, TaskActor taskActor) {
+        return flowLongEngine.processService().deployByResource(resourceName, taskActor, false);
     }
 }

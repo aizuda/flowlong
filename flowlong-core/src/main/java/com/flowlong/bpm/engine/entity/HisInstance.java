@@ -53,33 +53,11 @@ public class HisInstance extends Instance {
         hisInstance.processId = instance.getProcessId();
         hisInstance.createTime = instance.getCreateTime();
         hisInstance.expireTime = instance.getExpireTime();
+        hisInstance.createId = instance.getCreateId();
         hisInstance.createBy = instance.getCreateBy();
-        hisInstance.parentId = instance.getParentId();
         hisInstance.priority = instance.getPriority();
         hisInstance.instanceNo = instance.getInstanceNo();
         hisInstance.variable = instance.getVariable();
         return hisInstance;
-    }
-
-    /**
-     * 根据历史实例撤回活动实例
-     *
-     * @return 活动实例对象
-     */
-    public Instance undo() {
-        Instance instance = new Instance();
-        instance.setId(this.id);
-        instance.setProcessId(this.processId);
-        instance.setParentId(this.parentId);
-        instance.createBy = instance.getCreateBy();
-        instance.setCreateTime(this.createTime);
-        instance.setLastUpdateBy(this.createBy);
-        instance.setLastUpdateTime(this.endTime);
-        instance.setExpireTime(this.expireTime);
-        instance.setInstanceNo(this.instanceNo);
-        instance.setPriority(this.priority);
-        instance.setVariable(this.variable);
-        instance.setVersion(0);
-        return instance;
     }
 }

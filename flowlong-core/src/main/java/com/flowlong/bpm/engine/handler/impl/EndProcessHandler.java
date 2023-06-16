@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 
@@ -53,24 +52,5 @@ public class EndProcessHandler implements FlowLongHandler {
          * 结束当前流程实例
          */
         engine.runtimeService().complete(instance.getId());
-
-        /**
-         * 如果存在父流程，则重新构造Execution执行对象，交给父流程的SubProcessModel模型execute
-         */
-        if (null != instance.getParentId()) {
-            Instance parentInstance = engine.queryService().getInstance(instance.getParentId());
-            if (parentInstance == null) {
-                return;
-            }
-            Process process = engine.processService().getProcessById(parentInstance.getProcessId()).get();
-            Execution newExecution = new Execution(engine, process, parentInstance, execution.getArgs());
-            newExecution.setChildInstanceId(instance.getId());
-            newExecution.setTask(execution.getTask());
-            process.executeNodeModel(flowLongContext, newExecution, instance.getParentNodeName());
-            /**
-             * SubProcessModel执行结果的tasks合并到当前执行对象execution的tasks列表中
-             */
-            execution.addTasks(newExecution.getTasks());
-        }
     }
 }

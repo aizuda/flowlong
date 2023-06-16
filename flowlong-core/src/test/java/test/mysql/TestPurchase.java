@@ -17,7 +17,6 @@ package test.mysql;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.entity.HisTask;
-import com.flowlong.bpm.engine.entity.TaskActor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,15 +34,13 @@ public class TestPurchase extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/purchase.json");
+        processId = this.deployByResource("test/purchase.json", testActor);
     }
 
     @Test
     public void test() {
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testUser1).ifPresent(instance -> {
-
-            TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+        flowLongEngine.startInstanceById(processId, testActor).ifPresent(instance -> {
 
             // 发起
             this.executeActiveTasks(instance.getId(), testActor);

@@ -47,14 +47,12 @@ public class FlowLongAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService,
-                                           RuntimeService runtimeService, TaskService taskService,
-                                           ManagerService managerService) {
+                                           RuntimeService runtimeService, TaskService taskService) {
         FlowLongContext flc = new FlowLongContext();
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
-        flc.setManagerService(managerService);
         return flc;
     }
 
