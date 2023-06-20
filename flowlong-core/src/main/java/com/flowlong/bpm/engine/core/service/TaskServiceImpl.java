@@ -521,9 +521,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 如果是admin或者auto，直接返回true
-        if (FlowLongEngine.ADMIN.equalsIgnoreCase(userId) || FlowLongEngine.AUTO.equalsIgnoreCase(userId)) {
-            return true;
-        }
+//        if (FlowLongEngine.ADMIN.equalsIgnoreCase(userId)) {
+//            return true;
+//        }
 
         // 任务参与者列表
         List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, task.getId()));

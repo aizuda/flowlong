@@ -35,19 +35,6 @@ import java.util.Optional;
  */
 public interface FlowLongEngine {
     /**
-     * 流程管理员
-     */
-    String ADMIN = "long.admin";
-    /**
-     * 流程自动完成
-     */
-    String AUTO = "long.auto";
-    /**
-     * 流程实例ID
-     */
-    String ID = "long.instanceNo";
-
-    /**
      * 根据Configuration对象配置实现类
      *
      * @param config 全局配置对象

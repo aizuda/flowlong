@@ -70,16 +70,16 @@ public interface RuntimeService {
      * @param instanceId 流程实例ID
      */
     default void terminate(Long instanceId) {
-        this.terminate(instanceId, FlowLongEngine.ADMIN);
+        this.terminate(instanceId, FlowCreator.ADMIN);
     }
 
     /**
      * 流程实例强制终止
      *
-     * @param instanceId 流程实例ID
-     * @param createBy   处理人员
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
      */
-    void terminate(Long instanceId, String createBy);
+    void terminate(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 更新流程实例

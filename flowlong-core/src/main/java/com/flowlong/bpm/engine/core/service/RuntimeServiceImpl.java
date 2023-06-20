@@ -27,8 +27,10 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.TaskDelegateMapper;
-import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.entity.HisInstance;
+import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -86,10 +88,6 @@ public class RuntimeServiceImpl implements RuntimeService {
 //            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
 //                instance.setExpireTime(new Date(model.getExpireTime()));
 //            }
-            String instanceNo = (String) args.get(FlowLongEngine.ID);
-            if (ObjectUtils.isNotEmpty(instanceNo)) {
-                instance.setInstanceNo(instanceNo);
-            }
         }
 
         instance.setVariable(args);
@@ -165,17 +163,17 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 强制中止活动实例,并强制完成活动任务
      *
-     * @param instanceId 流程实例ID
-     * @param createBy   处理人员
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
      */
     @Override
-    public void terminate(Long instanceId, String createBy) {
+    public void terminate(Long instanceId, FlowCreator flowCreator) {
         Instance instance = instanceMapper.selectById(instanceId);
         if (null != instance) {
             // 实例相关任务强制完成
             queryService.getActiveTasksByInstanceId(instanceId).ifPresent(tasks -> {
                 for (Task task : tasks) {
-                    taskService.complete(task.getId(), createBy);
+                    taskService.complete(task.getId(), flowCreator);
                 }
             });
 

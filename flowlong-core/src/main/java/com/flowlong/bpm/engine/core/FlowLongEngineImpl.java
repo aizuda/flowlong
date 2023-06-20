@@ -150,7 +150,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (args == null) {
             args = new HashMap<>();
         }
-        Task task = taskService().complete(taskId, flowCreator.getCreateId(), args);
+        Task task = taskService().complete(taskId, flowCreator, args);
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }

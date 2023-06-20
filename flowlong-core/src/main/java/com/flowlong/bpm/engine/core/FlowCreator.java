@@ -43,6 +43,8 @@ public class FlowCreator implements Serializable {
      */
     private String createBy;
 
+    public static FlowCreator ADMIN = new FlowCreator("0", "管理员");
+
     public FlowCreator(String createId, String createBy) {
         this.createId = createId;
         this.createBy = createBy;
