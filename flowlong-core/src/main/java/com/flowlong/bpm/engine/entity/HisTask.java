@@ -17,6 +17,7 @@ package com.flowlong.bpm.engine.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -78,11 +79,13 @@ public class HisTask extends Task {
      *
      * @return 任务对象
      */
-    public Task undoTask() {
+    public Task undoTask(FlowCreator flowCreator) {
         try {
             Task task = (Task) this.clone();
             task.setId(null);
             task.setFinishTime(null);
+            task.setCreateId(flowCreator.getCreateId());
+            task.setCreateBy(flowCreator.getCreateBy());
             task.setCreateTime(DateUtils.getCurrentDate());
             return task;
         } catch (CloneNotSupportedException e) {

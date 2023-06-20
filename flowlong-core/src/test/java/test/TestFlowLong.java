@@ -15,6 +15,7 @@
 package test;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.TaskActor;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,7 +44,7 @@ public abstract class TestFlowLong {
     @Autowired
     protected FlowLongEngine flowLongEngine;
 
-    protected Long deployByResource(String resourceName, TaskActor taskActor) {
-        return flowLongEngine.processService().deployByResource(resourceName, taskActor, false);
+    protected Long deployByResource(String resourceName, FlowCreator flowCreator) {
+        return flowLongEngine.processService().deployByResource(resourceName, flowCreator, false);
     }
 }

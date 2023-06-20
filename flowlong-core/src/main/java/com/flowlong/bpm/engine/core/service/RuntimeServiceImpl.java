@@ -22,6 +22,7 @@ import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
@@ -72,12 +73,12 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public Instance createInstance(Process process, TaskActor taskActor, Map<String, Object> args) {
+    public Instance createInstance(Process process, FlowCreator flowCreator, Map<String, Object> args) {
         Instance instance = new Instance();
         instance.setCreateTime(DateUtils.getCurrentDate());
         instance.setLastUpdateTime(instance.getCreateTime());
-        instance.setCreateId(taskActor.getActorId());
-        instance.setCreateBy(taskActor.getActorName());
+        instance.setCreateId(flowCreator.getCreateId());
+        instance.setCreateBy(flowCreator.getCreateBy());
         instance.setLastUpdateBy(instance.getCreateBy());
         instance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();

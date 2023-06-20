@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.entity.TaskActor;
@@ -44,35 +45,18 @@ import java.util.Optional;
 public interface TaskService {
 
     /**
-     * 完成指定的任务，删除活动任务记录，创建历史任务
-     *
-     * @param taskId 任务ID
-     * @return Task 任务对象
-     */
-    default Task complete(Long taskId) {
-        return this.complete(taskId, null);
-    }
-
-    /**
-     * 完成指定的任务，删除活动任务记录，创建历史任务
-     *
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     * @return Task 任务对象
-     */
-    default Task complete(Long taskId, String userId) {
-        return this.complete(taskId, userId, null);
-    }
-
-    /**
      * 根据任务ID，创建人ID完成任务
      *
-     * @param taskId 任务ID
-     * @param userId 用户ID
-     * @param args   任务参数
+     * @param taskId      任务ID
+     * @param flowCreator 任务完成者
+     * @param args        任务参数
      * @return Task 任务对象
      */
-    Task complete(Long taskId, String userId, Map<String, Object> args);
+    Task complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
+
+    default Task complete(Long taskId, FlowCreator flowCreator) {
+        return this.complete(taskId, flowCreator, null);
+    }
 
     /**
      * 更新任务对象
@@ -110,53 +94,26 @@ public interface TaskService {
     Task resume(Long taskId, TaskActor taskActor);
 
     /**
-     * 向指定的任务ID添加参与者
-     *
-     * @param taskId     任务ID
-     * @param taskActors 参与者列表
-     */
-    default void addTaskActor(Long taskId, List<TaskActor> taskActors) {
-        this.addTaskActor(taskId, null, taskActors);
-    }
-
-    default void addTaskActor(Long taskId, TaskActor taskActor) {
-        this.addTaskActor(taskId, Arrays.asList(taskActor));
-    }
-
-    /**
-     * 向指定的任务ID添加参与者
-     *
-     * @param taskId     任务ID
-     * @param taskType   参与类型 {@link TaskType}
-     * @param taskActors 参与者列表
-     */
-    void addTaskActor(Long taskId, TaskType taskType, List<TaskActor> taskActors);
-
-    default void addTaskActor(Long taskId, TaskType taskType, TaskActor taskActor) {
-        this.addTaskActor(taskId, taskType, Arrays.asList(taskActor));
-    }
-
-    /**
      * 根据任务ID、创建人撤回任务
      *
-     * @param taskId    待撤回历史任务ID
-     * @param taskActor 任务参与者
+     * @param taskId      待撤回历史任务ID
+     * @param flowCreator 任务创建者
      * @return Task 任务对象
      */
-    Optional<Task> withdrawTask(Long taskId, TaskActor taskActor);
+    Optional<Task> withdrawTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 根据当前任务对象驳回至上一步处理
      *
      * @param currentTask 当前任务对象
-     * @param taskActor   任务参与者
+     * @param flowCreator 任务创建者
      * @param args        任务参数
      * @return Task 任务对象
      */
-    Optional<Task> rejectTask(Task currentTask, TaskActor taskActor, Map<String, Object> args);
+    Optional<Task> rejectTask(Task currentTask, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<Task> rejectTask(Task currentTask, TaskActor taskActor) {
-        return rejectTask(currentTask, taskActor, null);
+    default Optional<Task> rejectTask(Task currentTask, FlowCreator flowCreator) {
+        return rejectTask(currentTask, flowCreator, null);
     }
 
     /**
@@ -204,10 +161,23 @@ public interface TaskService {
      * @param taskId 任务ID
      * @return
      */
-    NodeModel getTaskModel(String taskId);
+    NodeModel getTaskModel(Long taskId);
 
     /**
-     * 对指定的任务ID删除参与者
+     * 向指定的任务ID添加参与者【加签】
+     *
+     * @param taskId     任务ID
+     * @param taskType   参与类型 {@link TaskType}
+     * @param taskActors 参与者列表
+     */
+    boolean addTaskActor(Long taskId, TaskType taskType, List<TaskActor> taskActors);
+
+    default boolean addTaskActor(Long taskId, TaskType taskType, TaskActor taskActor) {
+        return this.addTaskActor(taskId, taskType, Arrays.asList(taskActor));
+    }
+
+    /**
+     * 对指定的任务ID删除参与者【减签】
      *
      * @param taskId 任务ID
      * @param actors 参与者

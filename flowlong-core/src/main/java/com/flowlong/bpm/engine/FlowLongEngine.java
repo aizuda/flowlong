@@ -14,10 +14,10 @@
  */
 package com.flowlong.bpm.engine;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.util.List;
 import java.util.Map;
@@ -96,44 +96,44 @@ public interface FlowLongEngine {
     /**
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      *
-     * @param id        流程定义ID
-     * @param taskActor 流程实例任务启动者
-     * @param args      参数列表
+     * @param id          流程定义ID
+     * @param flowCreator 流程实例任务创建者
+     * @param args        参数列表
      * @return {@link Instance} 流程实例
      */
-    Optional<Instance> startInstanceById(Long id, TaskActor taskActor, Map<String, Object> args);
+    Optional<Instance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<Instance> startInstanceById(Long id, TaskActor taskActor) {
-        return this.startInstanceById(id, taskActor, null);
+    default Optional<Instance> startInstanceById(Long id, FlowCreator flowCreator) {
+        return this.startInstanceById(id, flowCreator, null);
     }
 
     /**
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
-     * @param name      流程定义名称
-     * @param version   版本号
-     * @param taskActor 流程实例任务启动者
-     * @param args      参数列表
+     * @param name        流程定义名称
+     * @param version     版本号
+     * @param flowCreator 流程实例任务创建者
+     * @param args        参数列表
      * @return {@link Instance} 流程实例
      */
-    Optional<Instance> startInstanceByName(String name, Integer version, TaskActor taskActor, Map<String, Object> args);
+    Optional<Instance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<Instance> startInstanceByName(String name, Integer version, TaskActor taskActor) {
-        return this.startInstanceByName(name, version, taskActor, null);
+    default Optional<Instance> startInstanceByName(String name, Integer version, FlowCreator flowCreator) {
+        return this.startInstanceByName(name, version, flowCreator, null);
     }
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务
      *
-     * @param taskId    任务ID
-     * @param taskActor 任务执行者
-     * @param args      参数列表
+     * @param taskId      任务ID
+     * @param flowCreator 任务创建者
+     * @param args        参数列表
      * @return {@link Task} 任务列表
      */
-    Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor, Map<String, Object> args);
+    Optional<List<Task>> executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<List<Task>> executeTask(Long taskId, TaskActor taskActor) {
-        return this.executeTask(taskId, taskActor, null);
+    default Optional<List<Task>> executeTask(Long taskId, FlowCreator flowCreator) {
+        return this.executeTask(taskId, flowCreator, null);
     }
 
 
@@ -144,15 +144,15 @@ public interface FlowLongEngine {
      * 2、nodeName不为null时，则任意跳转，即动态创建转移
      * </p>
      *
-     * @param taskId    任务ID
-     * @param nodeName  跳转的节点名称
-     * @param taskActor 任务执行者
-     * @param args      参数列表
+     * @param taskId      任务ID
+     * @param nodeName    跳转的节点名称
+     * @param flowCreator 任务创建者
+     * @param args        参数列表
      * @return List<Task> 任务集合
      */
-    Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, TaskActor taskActor, Map<String, Object> args);
+    Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, TaskActor taskActor) {
-        return this.executeAndJumpTask(taskId, nodeName, taskActor, null);
+    default Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+        return this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
     }
 }

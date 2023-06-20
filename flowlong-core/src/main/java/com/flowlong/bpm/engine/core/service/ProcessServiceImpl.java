@@ -21,10 +21,10 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.assist.StreamUtils;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.TaskActor;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
@@ -104,12 +104,12 @@ public class ProcessServiceImpl implements ProcessService {
      * 根据InputStream输入流，部署流程定义
      *
      * @param input     流程定义输入流
-     * @param taskActor 流程任务部署者
+     * @param flowCreator 流程任务部署者
      * @param repeat    是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return
      */
     @Override
-    public Long deploy(InputStream input, TaskActor taskActor, boolean repeat) {
+    public Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat) {
         Assert.notNull(input);
         try {
             final String content = StreamUtils.readBytes(input);
@@ -139,8 +139,8 @@ public class ProcessServiceImpl implements ProcessService {
 //            process.setDisplayName(processModel.getDisplayName());
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setContent(content);
-            process.setCreateId(taskActor.getActorId());
-            process.setCreateBy(taskActor.getActorName());
+            process.setCreateId(flowCreator.getCreateId());
+            process.setCreateBy(flowCreator.getCreateBy());
             process.setCreateTime(DateUtils.getCurrentDate());
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();

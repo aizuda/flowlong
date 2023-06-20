@@ -34,41 +34,41 @@ public class TestPurchase extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/purchase.json", testActor);
+        processId = this.deployByResource("test/purchase.json", testCreator);
     }
 
     @Test
     public void test() {
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testActor).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
             // 发起
-            this.executeActiveTasks(instance.getId(), testActor);
+            this.executeActiveTasks(instance.getId(), testCreator);
 
             // 领导审批
-            this.executeActiveTasks(instance.getId(), testActor);
+            this.executeActiveTasks(instance.getId(), testCreator);
 
             // 撤回任务（领导审批）
             QueryService queryService = flowLongEngine.queryService();
             List<HisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
             HisTask hisTask = hisTasks.get(0);
             TaskService taskService = flowLongEngine.taskService();
-            taskService.withdrawTask(hisTask.getId(), testActor);
+            taskService.withdrawTask(hisTask.getId(), testCreator);
 
             // 驳回任务（领导审批驳回，任务至发起人）
             this.executeActiveTasks(instance.getId(), t ->
-                    taskService.rejectTask(t, testActor, new HashMap<String, Object>() {{
+                    taskService.rejectTask(t, testCreator, new HashMap<String, Object>() {{
                         put("reason", "不符合要求");
                     }})
             );
 
             // 执行当前任务并跳到【经理确认】节点
             this.executeActiveTasks(instance.getId(), t ->
-                    flowLongEngine.executeAndJumpTask(t.getId(), "经理确认", testActor)
+                    flowLongEngine.executeAndJumpTask(t.getId(), "经理确认", testCreator)
             );
 
             // 经理确认，流程结束
-            this.executeActiveTasks(instance.getId(), testActor);
+            this.executeActiveTasks(instance.getId(), testCreator);
         });
     }
 }

@@ -17,7 +17,6 @@ package com.flowlong.bpm.engine.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
-import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import lombok.Getter;
@@ -124,16 +123,26 @@ public class Task extends FlowEntity {
         this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
     }
 
-    public Task cloneTask(String userId) throws CloneNotSupportedException {
-        Task newTask = (Task) this.clone();
-        newTask.setCreateTime(DateUtils.getCurrentDate());
-        newTask.setId(null);
-        if (ObjectUtils.isNotEmpty(userId)) {
-            newTask.setCreateBy(userId);
-//            Map<String, Object> taskData = this.variableMap();
-//            taskData.put(Task.KEY_ACTOR, userId);
-//            newTask.setVariable(taskData);
+    public Task cloneTask(TaskActor taskActor) {
+        Task newTask = new Task();
+        newTask.setTenantId(tenantId);
+        newTask.setInstanceId(instanceId);
+        newTask.setParentTaskId(parentTaskId);
+        newTask.setTaskName(taskName);
+        newTask.setDisplayName(displayName);
+        newTask.setTaskType(taskType);
+        newTask.setPerformType(performType);
+        newTask.setActionUrl(actionUrl);
+        newTask.setVariable(variable);
+        newTask.setVersion(version);
+        newTask.setExpireTime(expireTime);
+        newTask.setRemindTime(remindTime);
+        newTask.setRemindRepeat(remindRepeat);
+        if (null != taskActor) {
+            newTask.setCreateId(taskActor.getActorId());
+            newTask.setCreateBy(taskActor.getActorName());
         }
+        newTask.setCreateTime(DateUtils.getCurrentDate());
         return newTask;
     }
 }

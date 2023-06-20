@@ -15,11 +15,10 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.assist.StreamUtils;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.io.InputStream;
-import java.util.Optional;
 
 /**
  * 流程定义业务类
@@ -66,23 +65,23 @@ public interface ProcessService {
      * 根据本地 resource 资源名称部署流程
      *
      * @param resourceName 资源名称
-     * @param taskActor    流程任务部署者
+     * @param flowCreator  流程任务部署者
      * @param repeat       是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    default Long deployByResource(String resourceName, TaskActor taskActor, boolean repeat) {
-        return this.deploy(StreamUtils.getResourceAsStream(resourceName), taskActor, repeat);
+    default Long deployByResource(String resourceName, FlowCreator flowCreator, boolean repeat) {
+        return this.deploy(StreamUtils.getResourceAsStream(resourceName), flowCreator, repeat);
     }
 
     /**
      * 根据InputStream输入流，部署流程定义
      *
-     * @param input     流程定义输入流
-     * @param taskActor 流程任务部署者
-     * @param repeat    是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @param input       流程定义输入流
+     * @param flowCreator 流程任务部署者
+     * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    Long deploy(InputStream input, TaskActor taskActor, boolean repeat);
+    Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat);
 
     /**
      * 根据InputStream输入流，部署流程定义

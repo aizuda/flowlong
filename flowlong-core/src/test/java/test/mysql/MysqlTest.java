@@ -14,8 +14,8 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,16 +30,16 @@ import java.util.function.Consumer;
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
 
-    protected TaskActor testActor = TaskActor.ofUser(testUser1, "测试");
+    protected FlowCreator testCreator = new FlowCreator(testUser1, "测试");
 
     /**
      * 执行当前活跃用户
      *
-     * @param instanceId 流程实例ID
-     * @param taskActor  任务执行者
+     * @param instanceId  流程实例ID
+     * @param testCreator 任务创建者
      */
-    public void executeActiveTasks(Long instanceId, TaskActor taskActor) {
-        this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), taskActor));
+    public void executeActiveTasks(Long instanceId, FlowCreator testCreator) {
+        this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), testCreator));
     }
 
     public void executeActiveTasks(Long instanceId, Consumer<Task> taskConsumer) {

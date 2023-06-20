@@ -32,7 +32,7 @@ public class TestProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/process.json", testActor);
+        processId = this.deployByResource("test/process.json", testCreator);
     }
 
     @Test
@@ -50,13 +50,13 @@ public class TestProcess extends MysqlTest {
         Map<String, Object> args = new HashMap<>();
         args.put("day", 8);
         args.put("assignee", testUser1);
-        flowLongEngine.startInstanceById(processId, testActor, args).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 发起，执行条件路由
-            this.executeActiveTasks(instance.getId(), testActor);
+            this.executeActiveTasks(instance.getId(), testCreator);
 
             // 领导审批，流程结束
-            this.executeActiveTasks(instance.getId(), testActor);
+            this.executeActiveTasks(instance.getId(), testCreator);
         });
 
         // 卸载指定的定义流程
