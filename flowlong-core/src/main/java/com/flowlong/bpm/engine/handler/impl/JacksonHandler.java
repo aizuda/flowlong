@@ -25,7 +25,7 @@ import com.flowlong.bpm.engine.handler.JsonHandler;
  * Jackson JSON 解析处理器接口
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin

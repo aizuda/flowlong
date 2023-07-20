@@ -6,6 +6,8 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 - 项目说明  `flowlong` 中文名 `飞龙` 在天美好愿景！
 
+> 不允许非法项目使用，后果自负
+
 # 贡献力量
 
 - [运行单元测试](https://gitee.com/aizuda/flowlong/wikis/%E8%BF%90%E8%A1%8C%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95)
