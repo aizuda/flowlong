@@ -90,6 +90,10 @@ subprojects {
         testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     }
 
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
     // 编译环境 JDK1.8
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8

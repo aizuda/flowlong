@@ -116,6 +116,7 @@ CREATE TABLE `flw_process`  (
                                 `create_time` timestamp NOT NULL COMMENT '创建时间',
                                 `name` varchar(100) NOT NULL COMMENT '流程名称',
                                 `display_name` varchar(200) COMMENT '流程显示名称',
+                                `icon` varchar(255) DEFAULT NULL COMMENT '图标地址',
                                 `type` varchar(100) COMMENT '流程类型',
                                 `version` int NOT NULL DEFAULT 1 COMMENT '版本，默认 1',
                                 `instance_url` varchar(200) COMMENT '实例地址',

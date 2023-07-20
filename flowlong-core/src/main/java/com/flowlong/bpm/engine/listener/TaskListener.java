@@ -20,7 +20,7 @@ import com.flowlong.bpm.engine.entity.Task;
  * 流程任务监听
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin

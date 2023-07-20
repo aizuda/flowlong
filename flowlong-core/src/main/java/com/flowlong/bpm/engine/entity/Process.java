@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  * 流程定义实体类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -53,6 +53,10 @@ public class Process extends FlowEntity {
      * 流程定义显示名称
      */
     protected String displayName;
+    /**
+     * 图标地址
+     */
+    protected String icon;
     /**
      * 流程定义类型（预留字段）
      */

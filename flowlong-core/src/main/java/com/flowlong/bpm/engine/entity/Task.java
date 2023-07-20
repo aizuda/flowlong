@@ -32,7 +32,7 @@ import java.util.Objects;
  * 任务实体类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -61,11 +61,11 @@ public class Task extends FlowEntity {
      */
     protected String displayName;
     /**
-     * 任务类型（0，主办任务 1，协办任务）
+     * 任务类型 {@link com.flowlong.bpm.engine.core.enums.TaskType}
      */
     protected Integer taskType;
     /**
-     * 参与方式（0，普通任务 1，参与者会签任务 2，抄送任务）
+     * 参与方式 {@link com.flowlong.bpm.engine.core.enums.PerformType}
      */
     protected Integer performType;
     /**

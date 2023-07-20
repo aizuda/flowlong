@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
  * 任务执行业务类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -217,7 +217,7 @@ public class TaskServiceImpl implements TaskService {
         return this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<Task> tasks = null;
             PerformType performType = PerformType.get(hisTask.getPerformType());
-            if (performType == PerformType.any) {
+            if (performType == PerformType.countersign) {
                 // 根据父任务ID查询所有子任务
                 tasks = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getParentTaskId, hisTask.getId()));
             } else {
@@ -310,7 +310,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = task.cloneTask(null);
         newTask.setTaskType(taskType);
         newTask.setParentTaskId(taskId);
-        tasks.add(this.saveTask(newTask, PerformType.any, taskActors));
+        tasks.add(this.saveTask(newTask, PerformType.sort, taskActors));
         return tasks;
     }
 
@@ -381,7 +381,7 @@ public class TaskServiceImpl implements TaskService {
              * 0，发起人 1，审批人
              */
             // task.setRemindTime(remindTime);
-            tasks.add(this.saveTask(task, PerformType.any, taskActors));
+            tasks.add(this.saveTask(task, PerformType.sort, taskActors));
         } else if (2 == nodeType) {
             /**
              * 2，抄送任务
@@ -393,19 +393,13 @@ public class TaskServiceImpl implements TaskService {
                 this.createTask(nextNode, execution);
             }
         } else if (3 == nodeType) {
-            // 任务执行方式为参与者中每个都要执行完才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
+            /**
+             * 3，条件审批
+             */
             for (TaskActor taskActor : taskActors) {
                 Task singleTask = task.cloneTask(taskActor);
-                singleTask = this.saveTask(singleTask, PerformType.all, Collections.singletonList(taskActor));
-                // singleTask.setRemindTime(remindTime);
-                tasks.add(singleTask);
-            }
-        } else if (5 == nodeType) {
-            // 任务执行方式为参与者中执行完数/总参与者数 >= 通过百分比才可驱动流程继续流转，该方法根据参与者个数产生对应的task数量
-            for (TaskActor taskActor : taskActors) {
-                Task singleTask = task.cloneTask(taskActor);
-                singleTask.setId(null);
-                singleTask = this.saveTask(singleTask, PerformType.percentage, Collections.singletonList(taskActor));
+                PerformType performType = PerformType.get(nodeModel.getExamineMode());
+                singleTask = this.saveTask(singleTask, performType, Collections.singletonList(taskActor));
                 // singleTask.setRemindTime(remindTime);
                 tasks.add(singleTask);
             }
@@ -471,7 +465,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     private Task saveTask(Task task, PerformType performType, List<TaskActor> taskActors) {
-        task.setPerformType(performType.ordinal());
+        task.setPerformType(performType.getValue());
         taskMapper.insert(task);
         if (ObjectUtils.isNotEmpty(taskActors)) {
             taskActors.forEach(t -> this.assignTask(task.getId(), t));

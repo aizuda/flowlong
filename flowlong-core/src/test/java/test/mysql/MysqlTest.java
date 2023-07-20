@@ -14,6 +14,7 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import test.TestFlowLong;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -30,7 +33,8 @@ import java.util.function.Consumer;
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
 
-    protected FlowCreator testCreator = new FlowCreator(testUser1, "测试");
+    protected FlowCreator testCreator = new FlowCreator(testUser1, "测试001");
+    protected FlowCreator test3Creator = new FlowCreator(testUser3, "测试003");
 
     /**
      * 执行当前活跃用户
@@ -47,4 +51,14 @@ public class MysqlTest extends TestFlowLong {
                 .ifPresent(tasks -> tasks.forEach(t -> taskConsumer.accept(t)));
     }
 
+    public void executeTask(Long instanceId, FlowCreator flowCreator) {
+        QueryService queryService = this.flowLongEngine.queryService();
+        List<Task> taskList = queryService.getTasksByInstanceId(instanceId);
+        for (Task task: taskList) {
+            if (Objects.equals(task.getCreateId(), flowCreator.getCreateId())) {
+                // 执行审批
+                this.flowLongEngine.executeTask(task.getId(), flowCreator);
+            }
+        }
+    }
 }

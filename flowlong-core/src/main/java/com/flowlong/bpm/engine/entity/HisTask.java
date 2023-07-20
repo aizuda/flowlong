@@ -18,20 +18,17 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Objects;
-
 /**
  * 历史任务实体类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -91,10 +88,6 @@ public class HisTask extends Task {
         } catch (CloneNotSupportedException e) {
             throw new FlowLongException(e);
         }
-    }
-
-    public boolean isPerformAny() {
-        return Objects.equals(this.performType, PerformType.any.getValue());
     }
 
 }

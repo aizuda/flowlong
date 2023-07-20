@@ -20,23 +20,29 @@ import java.util.Arrays;
  * 参与类型
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品
+ * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
  * @since 1.0
  */
 public enum PerformType {
-    any(0),
-    all(1),
     /**
-     * 会签
+     * 按顺序依次审批
      */
-    percentage(2),
+    sort(1),
+    /**
+     * 会签 (可同时审批，每个人必须审批通过)
+     */
+    countersign(2),
+    /**
+     * 或签 (有一人审批通过即可)
+     */
+    orSign(3),
     /**
      * 抄送
      */
-    copy(3);
+    copy(4);
 
     private final int value;
 

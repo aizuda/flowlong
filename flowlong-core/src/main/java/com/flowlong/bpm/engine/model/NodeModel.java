@@ -84,6 +84,11 @@ public class NodeModel implements ModelInstance {
     private Integer termMode;
     /**
      * 多人审批时审批方式
+     * <p>
+     * 1，按顺序依次审批
+     * 2，会签 (可同时审批，每个人必须审批通过)
+     * 3，或签 (有一人审批通过即可)
+     * </p>
      */
     private Integer examineMode;
     /**
@@ -117,7 +122,7 @@ public class NodeModel implements ModelInstance {
             Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
-            ConditionNode conditionNode = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+            conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                     .filter(t -> {
                         // 执行条件分支
                         final String expr = t.getExpr();
@@ -131,13 +136,12 @@ public class NodeModel implements ModelInstance {
                             }
                         }
                         return result;
-                    }).findFirst().get();
-            if (null != conditionNode) {
-                /**
-                 * 执行创建条件任务
-                 */
-                this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
-            }
+                    }).findFirst().ifPresent(conditionNode -> {
+                        /**
+                         * 执行创建条件任务
+                         */
+                        this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
+                    });
         }
 
         /**
