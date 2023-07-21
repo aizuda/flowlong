@@ -117,7 +117,7 @@ public class NodeModel implements ModelInstance {
             Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
-            ConditionNode conditionNode = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+            conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                     .filter(t -> {
                         // 执行条件分支
                         final String expr = t.getExpr();
@@ -131,13 +131,12 @@ public class NodeModel implements ModelInstance {
                             }
                         }
                         return result;
-                    }).findFirst().get();
-            if (null != conditionNode) {
-                /**
-                 * 执行创建条件任务
-                 */
-                this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
-            }
+                    }).findFirst().ifPresent(conditionNode -> {
+                        /**
+                         * 执行创建条件任务
+                         */
+                        this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
+                    });
         }
 
         /**

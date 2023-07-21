@@ -30,7 +30,7 @@ public enum PerformType {
     any(0),
     all(1),
     /**
-     * 会签
+     * 百分比，用于会签场景
      */
     percentage(2),
     /**
