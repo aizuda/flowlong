@@ -15,6 +15,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.QueryService;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.HisTask;
 import com.flowlong.bpm.engine.entity.Task;
 import lombok.extern.slf4j.Slf4j;
@@ -52,15 +53,11 @@ public class TestCountersign extends MysqlTest {
             // 发起
             this.executeActiveTasks(instance.getId(), testCreator);
 
-            // 会签任务列表
-            QueryService queryService = flowLongEngine.queryService();
-            List<Task> taskList = queryService.getTasksByInstanceId(instance.getId());
-            for (Task task: taskList) {
-                if (Objects.equals(task.getCreateId(), testCreator.getCreateId())) {
-                    // 测试会签审批人001【审批】
-                    this.flowLongEngine.executeTask(task.getId(), testCreator);
-                }
-            }
+            // 测试会签审批人001【审批】
+            this.executeTask(instance.getId(), testCreator);
+
+            // 测试会签审批人003【审批】
+            this.executeTask(instance.getId(), test3Creator);
 
         });
     }

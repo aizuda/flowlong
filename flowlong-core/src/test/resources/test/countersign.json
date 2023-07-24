@@ -44,47 +44,7 @@
             "term": 0,
             "termMode": 1,
             "examineMode": 1,
-            "directorMode": 0,
-            "childNode": {
-              "nodeName": "二级条件路由",
-              "type": 3,
-              "conditionNodes": [
-                {
-                  "nodeName": "10长期",
-                  "type": 3,
-                  "priorityLevel": 1,
-                  "conditionMode": 1,
-                  "conditionList": [
-                    {
-                      "label": "请假天数",
-                      "field": "day",
-                      "operator": ">",
-                      "value": "10"
-                    }
-                  ],
-                  "childNode": {
-                    "nodeName": "最终审批",
-                    "type": 1,
-                    "setType": 1,
-                    "nodeUserList": [
-                      {
-                        "id": "test10",
-                        "name": "最终审批领导"
-                      }
-                    ],
-                    "nodeRoleList": [],
-                    "examineLevel": 1,
-                    "directorLevel": 1,
-                    "selectMode": 1,
-                    "termAuto": false,
-                    "term": 0,
-                    "termMode": 1,
-                    "examineMode": 1,
-                    "directorMode": 0
-                  }
-                }
-              ]
-            }
+            "directorMode": 0
           }
         },
         {
