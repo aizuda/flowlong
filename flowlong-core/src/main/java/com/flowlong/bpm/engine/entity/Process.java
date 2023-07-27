@@ -54,6 +54,10 @@ public class Process extends FlowEntity {
      */
     protected String displayName;
     /**
+     * 图标地址
+     */
+    protected String icon;
+    /**
      * 流程定义类型（预留字段）
      */
     protected String type;
