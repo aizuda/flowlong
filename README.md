@@ -19,3 +19,8 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 <img src="https://foruda.gitee.com/images/1683680723972384655/f957e75d_12260.png" alt="flowlong" width="500px" height="262px">
 
+# 其它说明
+
+- 基于 [MybatisPlus](https://baomidou.com) 为 ORM 层实现
+- 后端设计参考了 [snakerflow](https://gitee.com/yuqs/snakerflow) 开源工作流实体划分
+- 前端流程设计参考了 [scui](https://gitee.com/lolicode/scui) 工作流模块
