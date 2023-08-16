@@ -17,6 +17,8 @@ import java.util.Map;
 public class TestController {
     protected FlowLongEngine flowLongEngine;
 
+    protected static FlowCreator testCreator = FlowCreator.of("test001", "测试001");
+
     /**
      * 流程部署
      *
@@ -24,7 +26,7 @@ public class TestController {
      */
     @GetMapping("/deploy")
     public Long deployByResource() {
-        return flowLongEngine.processService().deployByResource("process.long", false);
+        return flowLongEngine.processService().deployByResource("process.json", testCreator, false);
     }
 
     /**
@@ -36,8 +38,7 @@ public class TestController {
     public Instance instanceStart() {
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
-        return flowLongEngine.startInstanceByName("simple", null,
-                FlowCreator.of("test001", "测试001"), args).get();
+        return flowLongEngine.startInstanceByName("simple", null, testCreator, args).get();
     }
 
 }

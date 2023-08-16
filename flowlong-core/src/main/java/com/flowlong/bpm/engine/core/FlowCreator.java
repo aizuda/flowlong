@@ -54,4 +54,8 @@ public class FlowCreator implements Serializable {
         this.tenantId = tenantId;
         return this;
     }
+
+    public static FlowCreator of(String createId, String createBy) {
+        return new FlowCreator(createId, createBy);
+    }
 }

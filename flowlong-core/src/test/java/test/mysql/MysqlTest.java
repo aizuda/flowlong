@@ -33,8 +33,8 @@ import java.util.function.Consumer;
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
 
-    protected FlowCreator testCreator = new FlowCreator(testUser1, "测试001");
-    protected FlowCreator test3Creator = new FlowCreator(testUser3, "测试003");
+    protected FlowCreator testCreator = FlowCreator.of(testUser1, "测试001");
+    protected FlowCreator test3Creator = FlowCreator.of(testUser3, "测试003");
 
     /**
      * 执行当前活跃用户
@@ -54,7 +54,7 @@ public class MysqlTest extends TestFlowLong {
     public void executeTask(Long instanceId, FlowCreator flowCreator) {
         QueryService queryService = this.flowLongEngine.queryService();
         List<Task> taskList = queryService.getTasksByInstanceId(instanceId);
-        for (Task task: taskList) {
+        for (Task task : taskList) {
             if (Objects.equals(task.getCreateId(), flowCreator.getCreateId())) {
                 // 执行审批
                 this.flowLongEngine.executeTask(task.getId(), flowCreator);
