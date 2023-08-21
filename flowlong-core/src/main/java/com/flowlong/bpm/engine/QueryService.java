@@ -80,6 +80,8 @@ public interface QueryService {
      */
     List<Task> getTasksByInstanceId(Long instanceId);
 
+    List<Task> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
+
     Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId);
 
     /**

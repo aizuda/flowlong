@@ -17,6 +17,8 @@ package com.flowlong.bpm.engine.core;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
+import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
@@ -28,6 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 基本的流程引擎实现类
@@ -112,41 +116,36 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务ID，创建人ID，参数列表执行任务
      */
     @Override
-    public Optional<List<Task>> executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        //完成任务，并且构造执行对象
-        Execution execution = this.execute(taskId, flowCreator, args);
-        if (execution == null) {
-            return Optional.empty();
-        }
-        execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getTask().getTaskName());
-        return Optional.of(execution.getTasks());
+    public void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+        // 完成任务，并且构造执行对象
+        this.execute(taskId, flowCreator, args, execution -> {
+            // 执行节点模型
+            execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getTask().getTaskName());
+        });
     }
 
     /**
      * 执行任务并跳转到指定节点
      */
-    public Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
+    public void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行当前任务
-        Execution execution = this.execute(taskId, flowCreator, args);
-        if (null == execution) {
-            return Optional.empty();
-        }
-        ProcessModel processModel = execution.getProcess().getProcessModel();
-        Assert.notNull(processModel, "当前任务未找到流程定义模型");
+        this.execute(taskId, flowCreator, args, execution -> {
+            ProcessModel processModel = execution.getProcess().getProcessModel();
+            Assert.notNull(processModel, "当前任务未找到流程定义模型");
 
-        // 查找模型节点
-        NodeModel nodeModel = processModel.getNode(nodeName);
-        Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
+            // 查找模型节点
+            NodeModel nodeModel = processModel.getNode(nodeName);
+            Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
 
-        // 创建当前节点任务
-        nodeModel.createTask(flowLongContext, execution);
-        return Optional.of(execution.getTasks());
+            // 创建当前节点任务
+            nodeModel.createTask(flowLongContext, execution);
+        });
     }
 
     /**
      * 根据任务ID，创建人ID，参数列表完成任务，并且构造执行对象
      */
-    protected Execution execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+    protected void execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Consumer<Execution> executeNextStep) {
         if (args == null) {
             args = new HashMap<>();
         }
@@ -159,10 +158,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         instance.setLastUpdateBy(flowCreator.getCreateId());
         instance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(instance);
-        //协办任务完成不产生执行对象
-//        if (!task.major()) {
-//            return null;
-//        }
+
+        PerformType performType = PerformType.get(task.getPerformType());
+        if (performType == PerformType.countersign) {
+            /**
+             * 会签未全部完成，不继续执行节点模型
+             */
+            List<Task> taskList = queryService().getTasksByInstanceIdAndTaskName(instance.getId(), task.getTaskName());
+            if (ObjectUtils.isNotEmpty(taskList)) {
+                return ;
+            }
+        }
+
         Map<String, Object> instanceMaps = instance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
@@ -177,6 +184,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         execution.setCreateId(flowCreator.getCreateId());
         execution.setCreateBy(flowCreator.getCreateBy());
         execution.setTask(task);
-        return execution;
+        executeNextStep.accept(execution);
     }
 }

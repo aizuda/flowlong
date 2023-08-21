@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Task;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -117,10 +116,10 @@ public interface FlowLongEngine {
      * @param args        参数列表
      * @return {@link Task} 任务列表
      */
-    Optional<List<Task>> executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
+    void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<List<Task>> executeTask(Long taskId, FlowCreator flowCreator) {
-        return this.executeTask(taskId, flowCreator, null);
+    default void executeTask(Long taskId, FlowCreator flowCreator) {
+        this.executeTask(taskId, flowCreator, null);
     }
 
 
@@ -137,9 +136,9 @@ public interface FlowLongEngine {
      * @param args        参数列表
      * @return List<Task> 任务集合
      */
-    Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
+    void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<List<Task>> executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
-        return this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
+    default void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+        this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
     }
 }

@@ -16,6 +16,7 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.entity.Task;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
