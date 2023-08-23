@@ -14,46 +14,51 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
-import java.util.Map;
 
 /**
- * 测试会签流程
+ * 测试或签流程
  *
  * @author 青苗
  */
 @Slf4j
-public class TestCountersign extends MysqlTest {
+public class TestOrSign extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/countersign.json", testCreator);
+        processId = this.deployByResource("test/orSign.json", testCreator);
     }
 
     @Test
     public void test() {
         // 启动指定流程定义ID启动流程实例
-        Map<String, Object> args = new HashMap<>();
-        args.put("day", 8);
-        args.put("assignee", testUser1);
-
-        // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
             // 发起
             this.executeActiveTasks(instance.getId(), testCreator);
 
-            // 测试会签审批人001【审批】
-            this.executeTask(instance.getId(), testCreator);
+            // test1 驳回任务（领导审批驳回，任务至发起人）
+            TaskService taskService = flowLongEngine.taskService();
+            this.executeActiveTasks(instance.getId(), t ->
+                    taskService.rejectTask(t, testCreator, new HashMap<String, Object>() {{
+                        put("reason", "不符合要求");
+                    }})
+            );
 
-            // 测试会签审批人003【审批】
-            this.executeTask(instance.getId(), test3Creator);
+            // 调整申请内容，重新提交审批
+            this.executeActiveTasks(instance.getId(), t ->
+                    flowLongEngine.executeTask(t.getId(), testCreator)
+            );
 
-            // 任务进入抄送人，流程自动结束
+            // test3 领导审批同意
+            this.executeActiveTasks(instance.getId(), test3Creator);
+
+            // 抄送人力资源，流程自动结束
 
         });
     }

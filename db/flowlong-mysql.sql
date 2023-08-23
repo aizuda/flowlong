@@ -167,7 +167,7 @@ CREATE TABLE `flw_task_actor`  (
                                    `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
-                                   CONSTRAINT `fk__task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+                                   CONSTRAINT `fk_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务参与者表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------

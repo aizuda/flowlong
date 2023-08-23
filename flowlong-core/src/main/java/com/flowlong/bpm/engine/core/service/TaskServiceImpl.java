@@ -15,7 +15,6 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
@@ -201,7 +200,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.isNull(instance, "已结束流程任务不支持唤醒");
 
         // 历史任务恢复
-        Task task = histTask.undoTask(null);
+        Task task = histTask.cloneTask(null);
         taskMapper.insert(task);
 
         // 分配任务
@@ -277,7 +276,7 @@ public class TaskServiceImpl implements TaskService {
             hisTaskActors.forEach(t -> {
                 TaskActor taskActor = new TaskActor();
                 taskActor.setTenantId(t.getTenantId());
-                taskActor.setTaskId(t.getTaskId());
+                taskActor.setTaskId(task.getId());
                 taskActor.setType(t.getType());
                 taskActor.setActorId(t.getActorId());
                 taskActor.setActorName(t.getActorName());
@@ -294,6 +293,7 @@ public class TaskServiceImpl implements TaskService {
      * @param taskActor 任务参与者
      */
     protected void assignTask(Long taskId, TaskActor taskActor) {
+        taskActor.setId(null);
         taskActor.setTaskId(taskId);
         taskActorMapper.insert(taskActor);
     }
@@ -306,12 +306,10 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> createNewTask(Long taskId, TaskType taskType, List<TaskActor> taskActors) {
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "参与者不能为空");
         Task task = taskMapper.getCheckById(taskId);
-        List<Task> tasks = new ArrayList<>();
         Task newTask = task.cloneTask(null);
         newTask.setTaskType(taskType);
         newTask.setParentTaskId(taskId);
-        tasks.add(this.saveTask(newTask, PerformType.sort, taskActors));
-        return tasks;
+        return this.saveTask(newTask, PerformType.sort, taskActors);
     }
 
     /**
@@ -352,26 +350,11 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<Task> createTask(NodeModel nodeModel, Execution execution) {
-//        Map<String, Object> args = execution.getArgs();
-//        // 执行参数中获取失效时间，提醒时间，期望完成时间
-//        Date expireTime = DateUtils.processTime(args, nodeModel.getExpireTime());
-//        // 提醒时间
-//        Date remindTime = DateUtils.processTime(args, nodeModel.getReminderTime());
-//        String form = (String) args.get(nodeModel.getForm());
-//        String actionUrl = ObjectUtils.isEmpty(form) ? nodeModel.getForm() : form;
-
         // 执行任务
         Task task = this.createTaskBase(nodeModel, execution);
-//        task.setActionUrl(actionUrl);
-//        task.setExpireTime(expireTime);
 
         // 模型中获取参与者信息
         List<TaskActor> taskActors = this.getTaskActors(nodeModel, execution);
-//        if (ObjectUtils.isNotEmpty(actors)) {
-//            args.put(Task.KEY_ACTOR, taskActors.stream().collect(Collectors.joining(",")));
-//        }
-//        task.setVariable(args);
-
         List<Task> tasks = new LinkedList<>();
 
         // 处理流程任务
@@ -380,8 +363,8 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 0，发起人 1，审批人
              */
-            // task.setRemindTime(remindTime);
-            tasks.add(this.saveTask(task, PerformType.sort, taskActors));
+            PerformType performType = PerformType.get(nodeModel.getExamineMode());
+            tasks.addAll(this.saveTask(task, performType, taskActors));
         } else if (2 == nodeType) {
             /**
              * 2，抄送任务
@@ -396,13 +379,9 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 3，条件审批
              */
-            for (TaskActor taskActor : taskActors) {
-                Task singleTask = task.cloneTask(taskActor);
-                PerformType performType = PerformType.get(nodeModel.getExamineMode());
-                singleTask = this.saveTask(singleTask, performType, Collections.singletonList(taskActor));
-                // singleTask.setRemindTime(remindTime);
-                tasks.add(singleTask);
-            }
+            Task singleTask = task.cloneTask(null);
+            PerformType performType = PerformType.get(nodeModel.getExamineMode());
+            tasks.addAll(this.saveTask(singleTask, performType, taskActors));
         }
         return tasks;
     }
@@ -464,16 +443,44 @@ public class TaskServiceImpl implements TaskService {
      * @param taskActors 参与者ID集合
      * @return
      */
-    private Task saveTask(Task task, PerformType performType, List<TaskActor> taskActors) {
-        task.setPerformType(performType.getValue());
-        taskMapper.insert(task);
-        if (ObjectUtils.isNotEmpty(taskActors)) {
-            taskActors.forEach(t -> this.assignTask(task.getId(), t));
+    protected List<Task> saveTask(Task task, PerformType performType, List<TaskActor> taskActors) {
+        List<Task> tasks = new ArrayList<>();
+        if (performType == PerformType.unknown) {
+            /**
+             * 发起、其它
+             */
+            taskMapper.insert(task);
+            tasks.add(task);
+            return tasks;
         }
 
-        // 创建任务监听
-        this.taskNotify(TaskListener.EVENT_CREATE, task);
-        return task;
+        Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
+        task.setPerformType(performType.getValue());
+        if (performType == PerformType.orSign) {
+            /**
+             * 或签一条任务多个参与者
+             */
+            taskMapper.insert(task);
+            taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            tasks.add(task);
+
+            // 创建任务监听
+            this.taskNotify(TaskListener.EVENT_CREATE, task);
+            return tasks;
+        }
+
+        /**
+         * 按顺序依次审批、会签每个参与者生成一条任务
+         */
+        taskActors.forEach(t -> {
+            Task newTask = task.cloneTask(null);
+            taskMapper.insert(newTask);
+            this.assignTask(newTask.getId(), t);
+
+            // 创建任务监听
+            this.taskNotify(TaskListener.EVENT_CREATE, newTask);
+        });
+        return tasks;
     }
 
     /**

@@ -124,6 +124,14 @@ public class Task extends FlowEntity {
     }
 
     public Task cloneTask(TaskActor taskActor) {
+        if (null != taskActor) {
+            this.createId = taskActor.getActorId();
+            this.createBy = taskActor.getActorName();
+        }
+        return cloneTask(createId, createBy);
+    }
+
+    public Task cloneTask(String createId, String createBy) {
         Task newTask = new Task();
         newTask.setTenantId(tenantId);
         newTask.setInstanceId(instanceId);
@@ -138,10 +146,8 @@ public class Task extends FlowEntity {
         newTask.setExpireTime(expireTime);
         newTask.setRemindTime(remindTime);
         newTask.setRemindRepeat(remindRepeat);
-        if (null != taskActor) {
-            newTask.setCreateId(taskActor.getActorId());
-            newTask.setCreateBy(taskActor.getActorName());
-        }
+        newTask.setCreateId(createId);
+        newTask.setCreateBy(createBy);
         newTask.setCreateTime(DateUtils.getCurrentDate());
         return newTask;
     }

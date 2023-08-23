@@ -83,7 +83,7 @@ public class NodeModel implements ModelInstance {
      */
     private Integer termMode;
     /**
-     * 多人审批时审批方式
+     * 多人审批时审批方式 {@link com.flowlong.bpm.engine.core.enums.PerformType}
      * <p>
      * 1，按顺序依次审批
      * 2，会签 (可同时审批，每个人必须审批通过)

@@ -28,6 +28,10 @@ import java.util.Arrays;
  */
 public enum PerformType {
     /**
+     * 发起、其它
+     */
+    unknown(0),
+    /**
      * 按顺序依次审批
      */
     sort(1),
@@ -54,8 +58,11 @@ public enum PerformType {
         return value;
     }
 
-    public static PerformType get(int value) {
-        return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
+    public static PerformType get(Integer value) {
+        if (null == value) {
+            return unknown;
+        }
+        return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElse(unknown);
     }
 
-    }
+}

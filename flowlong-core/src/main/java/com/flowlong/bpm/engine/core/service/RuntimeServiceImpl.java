@@ -15,7 +15,6 @@
 package com.flowlong.bpm.engine.core.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.TaskService;

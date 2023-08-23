@@ -16,10 +16,8 @@ package com.flowlong.bpm.engine.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.TaskState;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,18 +54,19 @@ public class HisTask extends Task {
     public static HisTask of(Task task) {
         HisTask hisTask = new HisTask();
         hisTask.id = task.getId();
-        hisTask.instanceId = task.getInstanceId();
+        hisTask.tenantId = task.getTenantId();
         hisTask.createId = task.getCreateId();
         hisTask.createBy = task.getCreateBy();
         hisTask.createTime = task.getCreateTime();
-        hisTask.displayName = task.getDisplayName();
-        hisTask.taskName = task.getTaskName();
-        hisTask.taskType = task.getTaskType();
-        hisTask.expireTime = task.getExpireTime();
-        hisTask.actionUrl = task.getActionUrl();
+        hisTask.instanceId = task.getInstanceId();
         hisTask.parentTaskId = task.getParentTaskId();
-        hisTask.variable = task.getVariable();
+        hisTask.taskName = task.getTaskName();
+        hisTask.displayName = task.getDisplayName();
+        hisTask.taskType = task.getTaskType();
         hisTask.performType = task.getPerformType();
+        hisTask.actionUrl = task.getActionUrl();
+        hisTask.variable = task.getVariable();
+        hisTask.expireTime = task.getExpireTime();
         return hisTask;
     }
 
@@ -77,17 +76,7 @@ public class HisTask extends Task {
      * @return 任务对象
      */
     public Task undoTask(FlowCreator flowCreator) {
-        try {
-            Task task = (Task) this.clone();
-            task.setId(null);
-            task.setFinishTime(null);
-            task.setCreateId(flowCreator.getCreateId());
-            task.setCreateBy(flowCreator.getCreateBy());
-            task.setCreateTime(DateUtils.getCurrentDate());
-            return task;
-        } catch (CloneNotSupportedException e) {
-            throw new FlowLongException(e);
-        }
+        return cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
     }
 
 }

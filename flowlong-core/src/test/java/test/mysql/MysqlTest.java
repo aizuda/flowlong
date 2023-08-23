@@ -16,8 +16,8 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -56,7 +56,10 @@ public class MysqlTest extends TestFlowLong {
         QueryService queryService = this.flowLongEngine.queryService();
         List<Task> taskList = queryService.getTasksByInstanceId(instanceId);
         for (Task task : taskList) {
-            if (Objects.equals(task.getCreateId(), flowCreator.getCreateId())) {
+            List<TaskActor> taskActors = queryService.getTaskActorsByTaskId(task.getId());
+            if (null != taskActors && taskActors.stream()
+                    // 找到当前对应审批的任务执行
+                    .anyMatch(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId()))) {
                 // 执行审批
                 this.flowLongEngine.executeTask(task.getId(), flowCreator);
             }
