@@ -469,12 +469,30 @@ public class TaskServiceImpl implements TaskService {
             return tasks;
         }
 
+        if (performType == PerformType.sort) {
+            /**
+             * 按顺序依次审批，一个任务按顺序多个参与者依次添加
+             */
+            taskMapper.insert(task);
+            tasks.add(task);
+
+            // 分配一个参与者
+            this.assignTask(task.getId(), taskActors.get(0));
+
+            // 创建任务监听
+            this.taskNotify(TaskListener.EVENT_CREATE, task);
+            return tasks;
+        }
+
         /**
-         * 按顺序依次审批、会签每个参与者生成一条任务
+         * 会签每个参与者生成一条任务
          */
         taskActors.forEach(t -> {
             Task newTask = task.cloneTask(null);
             taskMapper.insert(newTask);
+            tasks.add(newTask);
+
+            // 分配参与者
             this.assignTask(newTask.getId(), t);
 
             // 创建任务监听

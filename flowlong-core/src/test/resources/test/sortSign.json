@@ -1,6 +1,6 @@
 {
   "id": 1,
-  "name": "报销审批（或签）",
+  "name": "报销审批（按顺序依次审批）",
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
@@ -36,7 +36,7 @@
         "termAuto": false,
         "term": 0,
         "termMode": 1,
-        "examineMode": 3,
+        "examineMode": 1,
         "directorMode": 0,
         "childNode": {
           "nodeName": "抄送人力资源",
