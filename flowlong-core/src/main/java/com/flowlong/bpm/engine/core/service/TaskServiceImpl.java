@@ -154,14 +154,14 @@ public class TaskServiceImpl implements TaskService {
     public boolean taskTimeout(Long taskId) {
         Task task = taskMapper.selectById(taskId);
         if (null != task) {
-            // 1，更新历史任务状态为超时，设置完成时间
-            HisTask hisTask = new HisTask();
-            hisTask.setId(taskId);
-            hisTask.setTaskState(TaskState.timeout);
+            // 1，保存任务状态为超时，设置完成时间
+            HisTask hisTask = HisTask.of(task);
             hisTask.setFinishTime(DateUtils.getCurrentDate());
-            hisTaskMapper.updateById(hisTask);
+            hisTask.setTaskState(TaskState.timeout);
+            hisTaskMapper.insert(hisTask);
 
-            // 2，删除任务
+            // 2，级联删除任务和对应的任务参与者
+            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
             taskMapper.deleteById(taskId);
 
             // 3，任务监听器通知

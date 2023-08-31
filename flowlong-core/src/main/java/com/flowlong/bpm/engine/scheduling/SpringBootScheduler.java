@@ -61,14 +61,16 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                          * 任务提醒
                          */
                         try {
-                            // 1，更新提醒次数减去 1 次
-                            Task temp = new Task();
-                            temp.setId(task.getId());
-                            temp.setRemindRepeat(task.getRemindRepeat() - 1);
-                            taskService.updateTaskById(temp);
+                            if (task.getRemindRepeat() > 0) {
+                                // 1，更新提醒次数减去 1 次
+                                Task temp = new Task();
+                                temp.setId(task.getId());
+                                temp.setRemindRepeat(task.getRemindRepeat() - 1);
+                                taskService.updateTaskById(temp);
 
-                            // 2，调用提醒接口
-                            taskReminder.remind(context, task.getInstanceId(), task.getId());
+                                // 2，调用提醒接口
+                                taskReminder.remind(context, task.getInstanceId(), task.getId());
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
