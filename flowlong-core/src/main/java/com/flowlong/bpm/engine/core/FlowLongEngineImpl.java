@@ -22,14 +22,14 @@ import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -165,10 +165,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
              */
             List<Task> taskList = queryService().getTasksByInstanceIdAndTaskName(instance.getId(), task.getTaskName());
             if (ObjectUtils.isNotEmpty(taskList)) {
-                return ;
+                return;
             }
         }
 
+        // 流程模型
+        Process process = processService().getProcessById(instance.getProcessId());
         Map<String, Object> instanceMaps = instance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
@@ -178,11 +180,38 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Process process = processService().getProcessById(instance.getProcessId());
         Execution execution = new Execution(this, process, instance, args);
         execution.setCreateId(flowCreator.getCreateId());
         execution.setCreateBy(flowCreator.getCreateBy());
         execution.setTask(task);
+
+        /**
+         * 按顺序依次审批，一个任务按顺序多个参与者依次添加
+         */
+        if (performType == PerformType.sort) {
+            NodeModel nodeModel = process.getProcessModel().getNode(task.getTaskName());
+            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+            NodeAssignee nextNodeAssignee = null;
+            boolean findTaskActor = false;
+            for (NodeAssignee nodeAssignee : nodeUserList) {
+                if (findTaskActor) {
+                    // 找到下一个执行人
+                    nextNodeAssignee = nodeAssignee;
+                    break;
+                }
+                if (Objects.equals(nodeAssignee.getId(), flowCreator.getCreateId())) {
+                    findTaskActor = true;
+                }
+            }
+            // 如果下一个顺序执行人存在，创建顺序审批任务
+            if (null != nextNodeAssignee) {
+                execution.setNextTaskActor(TaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));
+                new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
+                return;
+            }
+        }
+
+        // 执行回调逻辑
         executeNextStep.accept(execution);
     }
 }

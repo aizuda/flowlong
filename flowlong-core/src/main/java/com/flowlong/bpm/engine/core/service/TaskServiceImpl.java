@@ -309,7 +309,7 @@ public class TaskServiceImpl implements TaskService {
         Task newTask = task.cloneTask(null);
         newTask.setTaskType(taskType);
         newTask.setParentTaskId(taskId);
-        return this.saveTask(newTask, PerformType.sort, taskActors);
+        return this.saveTask(newTask, PerformType.sort, taskActors, null);
     }
 
     /**
@@ -364,7 +364,7 @@ public class TaskServiceImpl implements TaskService {
              * 0，发起人 1，审批人
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
-            tasks.addAll(this.saveTask(task, performType, taskActors));
+            tasks.addAll(this.saveTask(task, performType, taskActors, execution));
         } else if (2 == nodeType) {
             /**
              * 2，抄送任务
@@ -381,7 +381,7 @@ public class TaskServiceImpl implements TaskService {
              */
             Task singleTask = task.cloneTask(null);
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
-            tasks.addAll(this.saveTask(singleTask, performType, taskActors));
+            tasks.addAll(this.saveTask(singleTask, performType, taskActors, execution));
         }
         return tasks;
     }
@@ -443,7 +443,7 @@ public class TaskServiceImpl implements TaskService {
      * @param taskActors 参与者ID集合
      * @return
      */
-    protected List<Task> saveTask(Task task, PerformType performType, List<TaskActor> taskActors) {
+    protected List<Task> saveTask(Task task, PerformType performType, List<TaskActor> taskActors, Execution execution) {
         List<Task> tasks = new ArrayList<>();
         if (performType == PerformType.unknown) {
             /**
@@ -477,7 +477,11 @@ public class TaskServiceImpl implements TaskService {
             tasks.add(task);
 
             // 分配一个参与者
-            this.assignTask(task.getId(), taskActors.get(0));
+            TaskActor nextTaskActor = null;
+            if (null != execution) {
+                nextTaskActor = execution.getNextTaskActor();
+            }
+            this.assignTask(task.getId(), null == nextTaskActor ? taskActors.get(0) : nextTaskActor);
 
             // 创建任务监听
             this.taskNotify(TaskListener.EVENT_CREATE, task);

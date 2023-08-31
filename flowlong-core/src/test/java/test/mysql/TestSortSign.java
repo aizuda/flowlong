@@ -28,7 +28,7 @@ public class TestSortSign extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/orderSign.json", testCreator);
+        processId = this.deployByResource("test/sortSign.json", testCreator);
     }
 
     @Test

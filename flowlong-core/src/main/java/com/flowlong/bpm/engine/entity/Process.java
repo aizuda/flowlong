@@ -75,7 +75,7 @@ public class Process extends FlowEntity {
      */
     protected Integer state;
     /**
-     * 流程定义xml
+     * 流程模型定义 JSON
      */
     protected String content;
 

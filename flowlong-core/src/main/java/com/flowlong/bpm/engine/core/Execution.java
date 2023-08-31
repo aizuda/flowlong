@@ -18,7 +18,9 @@ import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.TaskActor;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,6 +59,10 @@ public class Execution implements Serializable {
      * 父流程实例
      */
     private Instance parentInstance;
+    /**
+     * 下一个审批参与者
+     */
+    private TaskActor nextTaskActor;
     /**
      * 父流程实例节点名称
      */
