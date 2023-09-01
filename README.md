@@ -10,6 +10,8 @@ FlowLong 飞龙  :tw-1f409: 工作流
 
 > 使用必须遵守国家法律法规，⛔不允许非法项目使用，后果自负❗
 
+[使用登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5)
+
 🚩中国特色流程操作概念
 
 | 支持功能 | 功能描述                                                                    | 完成程度 |

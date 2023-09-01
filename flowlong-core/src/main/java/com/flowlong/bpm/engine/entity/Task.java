@@ -77,9 +77,13 @@ public class Task extends FlowEntity {
      */
     protected String variable;
     /**
-     * 版本，默认 1
+     * 委托人ID
      */
-    protected Integer version;
+    protected String assignorId;
+    /**
+     * 委托人
+     */
+    protected String assignor;
     /**
      * 期望任务完成时间
      */
@@ -142,7 +146,6 @@ public class Task extends FlowEntity {
         newTask.setPerformType(performType);
         newTask.setActionUrl(actionUrl);
         newTask.setVariable(variable);
-        newTask.setVersion(version);
         newTask.setExpireTime(expireTime);
         newTask.setRemindTime(remindTime);
         newTask.setRemindRepeat(remindRepeat);

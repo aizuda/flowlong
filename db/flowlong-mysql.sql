@@ -52,7 +52,8 @@ CREATE TABLE `flw_his_task`  (
                                  `perform_type` tinyint(1) COMMENT '参与类型',
                                  `action_url` varchar(200) COMMENT '任务处理的url',
                                  `variable` text COMMENT '变量json',
-                                 `version` tinyint(1) DEFAULT 1 COMMENT '版本，默认 1',
+                                 `assignorId` varchar(100) NOT NULL COMMENT '委托人ID',
+                                 `assignor` varchar(100) NOT NULL COMMENT '委托人',
                                  `expire_time` timestamp COMMENT '任务期望完成时间',
                                  `remind_time` timestamp COMMENT '提醒时间',
                                  `remind_repeat` tinyint(1) NOT NULL DEFAULT 0 COMMENT '提醒次数',
@@ -72,8 +73,8 @@ CREATE TABLE `flw_his_task_actor`  (
                                        `id` bigint NOT NULL COMMENT '主键 ID',
                                        `tenant_id` varchar(50) COMMENT '租户ID',
                                        `task_id` bigint NOT NULL COMMENT '任务ID',
-                                       `actor_id` varchar(300) NOT NULL COMMENT '参与者ID',
-                                       `actor_name` varchar(300) NOT NULL COMMENT '参与者名称',
+                                       `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
+                                       `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',
                                        `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
                                        PRIMARY KEY (`id`) USING BTREE,
                                        INDEX `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
@@ -144,7 +145,8 @@ CREATE TABLE `flw_task`  (
                              `perform_type` tinyint(1) NULL COMMENT '参与类型',
                              `action_url` varchar(200) COMMENT '任务处理的url',
                              `variable` text COMMENT '变量json',
-                             `version` tinyint(1) DEFAULT 1 COMMENT '版本，默认 1',
+                             `assignorId` varchar(100) NOT NULL COMMENT '委托人ID',
+                             `assignor` varchar(100) NOT NULL COMMENT '委托人',
                              `expire_time` timestamp COMMENT '任务期望完成时间',
                              `remind_time` timestamp COMMENT '提醒时间',
                              `remind_repeat` tinyint(1) NOT NULL DEFAULT 0 COMMENT '提醒次数',
@@ -162,8 +164,8 @@ CREATE TABLE `flw_task_actor`  (
                                    `id` bigint NOT NULL COMMENT '主键 ID',
                                    `tenant_id` varchar(50) COMMENT '租户ID',
                                    `task_id` bigint NOT NULL COMMENT '任务ID',
-                                   `actor_id` varchar(300) NOT NULL COMMENT '参与者ID',
-                                   `actor_name` varchar(300) NOT NULL COMMENT '参与者名称',
+                                   `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
+                                   `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',
                                    `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
@@ -191,29 +193,3 @@ CREATE TABLE `flw_task_cc`  (
                                 `finish_time` timestamp COMMENT '完成时间',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送任务表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for flw_task_delegate
--- ----------------------------
-DROP TABLE IF EXISTS `flw_task_delegate`;
-CREATE TABLE `flw_task_delegate`  (
-                                `id` bigint NOT NULL COMMENT '主键ID',
-                                `tenant_id` varchar(50) COMMENT '租户ID',
-                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
-                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
-                                `create_time` timestamp NOT NULL COMMENT '创建时间',
-                                `instance_id` bigint NOT NULL COMMENT '流程实例ID',
-                                `parent_task_id` bigint COMMENT '父任务ID',
-                                `task_name` varchar(100) NOT NULL COMMENT '任务名称',
-                                `display_name` varchar(200) NOT NULL COMMENT '任务显示名称',
-                                `assignee_id` varchar(300) NOT NULL COMMENT '办理人ID',
-                                `assignee` varchar(50) COMMENT '办理人',
-                                `attorney_id` varchar(300) NOT NULL COMMENT '代理人ID',
-                                `attorney` varchar(50) COMMENT '代理人',
-                                `state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，结束 1，活动',
-                                `operation_time` timestamp COMMENT '操作时间',
-                                `finish_time` timestamp COMMENT '完成时间',
-                                PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '委托任务表' ROW_FORMAT = Dynamic;
-
-SET FOREIGN_KEY_CHECKS = 1;
