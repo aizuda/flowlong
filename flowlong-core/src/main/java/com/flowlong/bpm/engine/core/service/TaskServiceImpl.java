@@ -448,8 +448,10 @@ public class TaskServiceImpl implements TaskService {
         if (performType == PerformType.unknown) {
             // 发起、其它
             taskMapper.insert(task);
-            // 发起人保存参与者
-            taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            if (ObjectUtils.isNotEmpty(taskActors)) {
+                // 发起人保存参与者
+                taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            }
             tasks.add(task);
             return tasks;
         }
