@@ -25,7 +25,6 @@ import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
-import com.flowlong.bpm.engine.core.mapper.TaskDelegateMapper;
 import com.flowlong.bpm.engine.entity.HisInstance;
 import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
@@ -56,18 +55,16 @@ public class RuntimeServiceImpl implements RuntimeService {
     private TaskService taskService;
     private InstanceMapper instanceMapper;
     private HisInstanceMapper hisInstanceMapper;
-    private TaskDelegateMapper taskDelegateMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper, TaskDelegateMapper taskDelegateMapper) {
+                              HisInstanceMapper hisInstanceMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
-        this.taskDelegateMapper = taskDelegateMapper;
     }
 
     /**

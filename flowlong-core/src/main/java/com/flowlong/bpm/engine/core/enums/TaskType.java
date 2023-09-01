@@ -32,17 +32,17 @@ public enum TaskType {
      */
     major(0),
     /**
-     * 协助
+     * 转办
      */
-    assist(1),
+    transfer(1),
+    /**
+     * 委派
+     */
+    delegate(2),
     /**
      * 会签
      */
-    countersign(2),
-    /**
-     * 仅作为记录
-     */
-    record(3);
+    countersign(3);
 
     private final int value;
 
