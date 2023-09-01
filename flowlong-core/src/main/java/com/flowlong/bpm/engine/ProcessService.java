@@ -84,6 +84,16 @@ public interface ProcessService {
     Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat);
 
     /**
+     * 根据流程定义jsonString，部署流程定义
+     *
+     * @param jsonString  流程定义json字符串
+     * @param flowCreator 流程任务部署者
+     * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return 流程定义ID
+     */
+    Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat);
+
+    /**
      * 根据InputStream输入流，部署流程定义
      *
      * @param id    流程定义id

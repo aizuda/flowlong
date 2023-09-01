@@ -113,7 +113,26 @@ public class ProcessServiceImpl implements ProcessService {
         Assert.notNull(input);
         try {
             final String content = StreamUtils.readBytes(input);
-            ProcessModel processModel = ProcessModel.parse(content);
+            return deploy(content, flowCreator, repeat);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new FlowLongException(e);
+        }
+    }
+
+    /**
+     * 根据流程定义json字符串，部署流程定义
+     *
+     * @param jsonString  流程定义json字符串
+     * @param flowCreator 流程任务部署者
+     * @param repeat    是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @return
+     */
+    @Override
+    public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
+        Assert.notNull(jsonString);
+        try {
+            ProcessModel processModel = ProcessModel.parse(jsonString);
             /**
              * 查询流程信息获取最后版本号
              */
@@ -138,7 +157,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setName(processModel.getName());
 //            process.setDisplayName(processModel.getDisplayName());
             process.setInstanceUrl(processModel.getInstanceUrl());
-            process.setContent(content);
+            process.setContent(jsonString);
             process.setCreateId(flowCreator.getCreateId());
             process.setCreateBy(flowCreator.getCreateBy());
             process.setCreateTime(DateUtils.getCurrentDate());
