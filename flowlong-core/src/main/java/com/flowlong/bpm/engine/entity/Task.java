@@ -97,6 +97,10 @@ public class Task extends FlowEntity {
      */
     protected Integer remindRepeat;
     /**
+     * 已阅 0，否 1，是
+     */
+    protected Integer read;
+    /**
      * 完成时间
      */
     protected Date finishTime;

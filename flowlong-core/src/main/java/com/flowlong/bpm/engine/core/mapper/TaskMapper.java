@@ -18,6 +18,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Task;
 
+import java.util.Objects;
+
 /**
  * 任务 Mapper
  *
@@ -39,6 +41,15 @@ public interface TaskMapper extends BaseMapper<Task> {
     default Task getCheckById(Long id) {
         Task task = selectById(id);
         Assert.notNull(task, "指定的任务[id=" + id + "]不存在");
+        if (Objects.equals(0, task.getRead())) {
+            /**
+             * 设置任务为已阅状态
+             */
+            Task temp = new Task();
+            temp.setId(id);
+            temp.setRead(1);
+            this.updateById(task);
+        }
         return task;
     }
 }
