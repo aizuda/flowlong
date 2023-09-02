@@ -187,6 +187,38 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * 根据 任务ID 分配任务给指定办理人、重置任务类型
+     *
+     * @param taskId            任务ID
+     * @param taskType          任务类型
+     * @param taskActor         任务参与者
+     * @param assigneeTaskActor 指定办理人
+     * @return
+     */
+    @Override
+    public boolean assignee(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor) {
+        // 转办权限验证
+        List<TaskActor> taskActors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId)
+                .eq(TaskActor::getActorId, taskActor.getActorId()));
+        Assert.isTrue(ObjectUtils.isEmpty(taskActors), "无权转办该任务");
+
+        // 设置任务为委派任务或者为转办任务
+        Task task = new Task();
+        task.setId(taskId);
+        task.setTaskType(taskType);
+        task.setAssignorId(taskActor.getActorId());
+        task.setAssignor(taskActor.getActorName());
+        taskMapper.updateById(task);
+
+        // 删除任务历史参与者
+        taskActorMapper.deleteBatchIds(taskActors.stream().map(t -> t.getId()).collect(Collectors.toList()));
+
+        // 分配任务给办理人
+        assignTask(taskId, assigneeTaskActor);
+        return true;
+    }
+
+    /**
      * 唤醒指定的历史任务
      */
     @Override

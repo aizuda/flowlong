@@ -82,6 +82,32 @@ public interface TaskService {
     Task claim(Long taskId, TaskActor taskActor);
 
     /**
+     * 根据 任务ID 转办任务
+     *
+     * @param taskId            任务ID
+     * @param taskActor         任务参与者
+     * @param assigneeTaskActor 任务办理人
+     * @return
+     */
+   default boolean transfer(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
+       return this.assignee(taskId, TaskType.transfer, taskActor, assigneeTaskActor);
+   }
+
+    /**
+     * 根据 任务ID 委派任务、代理人办理完任务该任务重新归还给原处理人
+     *
+     * @param taskId            任务ID
+     * @param taskActor         任务参与者
+     * @param assigneeTaskActor 任务办理人
+     * @return
+     */
+    default boolean delegate(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
+        return this.assignee(taskId, TaskType.delegate, taskActor, assigneeTaskActor);
+    }
+
+    boolean assignee(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor);
+
+    /**
      * 唤醒历史任务
      * <p>
      * 该方法会导致流程状态不可控，请慎用
