@@ -446,10 +446,12 @@ public class TaskServiceImpl implements TaskService {
     protected List<Task> saveTask(Task task, PerformType performType, List<TaskActor> taskActors, Execution execution) {
         List<Task> tasks = new ArrayList<>();
         if (performType == PerformType.unknown) {
-            /**
-             * 发起、其它
-             */
+            // 发起、其它
             taskMapper.insert(task);
+            if (ObjectUtils.isNotEmpty(taskActors)) {
+                // 发起人保存参与者
+                taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            }
             tasks.add(task);
             return tasks;
         }
