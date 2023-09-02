@@ -60,6 +60,15 @@ public interface TaskService {
     void updateTaskById(Task task);
 
     /**
+     * 设置任务为已阅状态
+     *
+     * @param taskId    任务ID
+     * @param taskActor 任务参与者
+     * @return
+     */
+    boolean readTask(Long taskId, TaskActor taskActor);
+
+    /**
      * 任务设置超时
      *
      * @param taskId 任务ID
