@@ -97,6 +97,11 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    public Optional<List<TaskActor>> getActiveTaskActorsByInstanceId(Long instanceId) {
+        return Optional.ofNullable(taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getInstanceId, instanceId)));
+    }
+
+    @Override
     public List<TaskActor> getTaskActorsByTaskId(Long taskId) {
         return taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
     }

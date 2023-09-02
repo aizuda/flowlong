@@ -72,6 +72,7 @@ DROP TABLE IF EXISTS `flw_his_task_actor`;
 CREATE TABLE `flw_his_task_actor`  (
                                        `id` bigint NOT NULL COMMENT '主键 ID',
                                        `tenant_id` varchar(50) COMMENT '租户ID',
+                                       `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                        `task_id` bigint NOT NULL COMMENT '任务ID',
                                        `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
                                        `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',
@@ -163,6 +164,7 @@ DROP TABLE IF EXISTS `flw_task_actor`;
 CREATE TABLE `flw_task_actor`  (
                                    `id` bigint NOT NULL COMMENT '主键 ID',
                                    `tenant_id` varchar(50) COMMENT '租户ID',
+                                   `instance_id` bigint NOT NULL COMMENT '流程实例ID',
                                    `task_id` bigint NOT NULL COMMENT '任务ID',
                                    `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
                                    `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',

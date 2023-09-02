@@ -45,6 +45,10 @@ public class TaskActor implements Serializable {
      */
     protected String tenantId;
     /**
+     * 流程实例ID
+     */
+    protected Long instanceId;
+    /**
      * 关联的任务ID
      */
     protected Long taskId;

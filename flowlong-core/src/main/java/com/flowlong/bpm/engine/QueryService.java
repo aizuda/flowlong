@@ -82,7 +82,21 @@ public interface QueryService {
 
     List<Task> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
 
+    /**
+     * 根据 流程实例ID 获取当前活动任务列表
+     *
+     * @param instanceId 流程实例ID
+     * @return 当前活动任务列表
+     */
     Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId);
+
+    /**
+     * 根据 流程实例ID 获取当前活动任务列表
+     *
+     * @param instanceId 流程实例ID
+     * @return 当前活动任务列表
+     */
+    Optional<List<TaskActor>> getActiveTaskActorsByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取活动任务参与者数组

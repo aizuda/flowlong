@@ -214,7 +214,7 @@ public class TaskServiceImpl implements TaskService {
         taskActorMapper.deleteBatchIds(taskActors.stream().map(t -> t.getId()).collect(Collectors.toList()));
 
         // 分配任务给办理人
-        assignTask(taskId, assigneeTaskActor);
+        assignTask(taskId, taskActors.get(0).getInstanceId(), assigneeTaskActor);
         return true;
     }
 
@@ -253,7 +253,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.insert(task);
 
         // 分配任务
-        assignTask(task.getId(), taskActor);
+        assignTask(task.getInstanceId(), taskId, taskActor);
         return task;
     }
 
@@ -338,11 +338,13 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 对指定的任务分配参与者。参与者可以为用户、部门、角色
      *
-     * @param taskId    任务ID
-     * @param taskActor 任务参与者
+     * @param instanceId 实例ID
+     * @param taskId     任务ID
+     * @param taskActor  任务参与者
      */
-    protected void assignTask(Long taskId, TaskActor taskActor) {
+    protected void assignTask(Long instanceId, Long taskId, TaskActor taskActor) {
         taskActor.setId(null);
+        taskActor.setInstanceId(instanceId);
         taskActor.setTaskId(taskId);
         taskActorMapper.insert(taskActor);
     }
@@ -499,7 +501,7 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.insert(task);
             if (ObjectUtils.isNotEmpty(taskActors)) {
                 // 发起人保存参与者
-                taskActors.forEach(t -> this.assignTask(task.getId(), t));
+                taskActors.forEach(t -> this.assignTask(task.getInstanceId(), task.getId(), t));
             }
             tasks.add(task);
             return tasks;
@@ -512,7 +514,7 @@ public class TaskServiceImpl implements TaskService {
              * 或签一条任务多个参与者
              */
             taskMapper.insert(task);
-            taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            taskActors.forEach(t -> this.assignTask(task.getInstanceId(), task.getId(), t));
             tasks.add(task);
 
             // 创建任务监听
@@ -532,7 +534,7 @@ public class TaskServiceImpl implements TaskService {
             if (null != execution) {
                 nextTaskActor = execution.getNextTaskActor();
             }
-            this.assignTask(task.getId(), null == nextTaskActor ? taskActors.get(0) : nextTaskActor);
+            this.assignTask(task.getInstanceId(), task.getId(), null == nextTaskActor ? taskActors.get(0) : nextTaskActor);
 
             // 创建任务监听
             this.taskNotify(TaskListener.EVENT_CREATE, task);
@@ -548,7 +550,7 @@ public class TaskServiceImpl implements TaskService {
             tasks.add(newTask);
 
             // 分配参与者
-            this.assignTask(newTask.getId(), t);
+            this.assignTask(newTask.getInstanceId(), newTask.getId(), t);
 
             // 创建任务监听
             this.taskNotify(TaskListener.EVENT_CREATE, newTask);
@@ -628,7 +630,7 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 普通任务
              */
-            taskActors.forEach(t -> this.assignTask(task.getId(), t));
+            taskActors.forEach(t -> this.assignTask(task.getInstanceId(), task.getId(), t));
         } else if (taskType == TaskType.countersign) {
             /**
              * 会签任务
@@ -636,7 +638,7 @@ public class TaskServiceImpl implements TaskService {
             for (TaskActor taskActor : taskActors) {
                 Task newTask = task.cloneTask(taskActor);
                 taskMapper.insert(newTask);
-                this.assignTask(newTask.getId(), taskActor);
+                this.assignTask(task.getInstanceId(), newTask.getId(), taskActor);
             }
         }
         return true;
