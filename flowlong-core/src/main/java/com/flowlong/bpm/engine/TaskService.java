@@ -27,13 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * 任务业务类，包括以下服务：
- * 1、创建任务
- * 2、添加、删除参与者
- * 3、完成任务
- * 4、撤回任务
- * 5、回退任务
- * 6、提取任务
+ * 任务业务类接口
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -89,9 +83,9 @@ public interface TaskService {
      * @param assigneeTaskActor 任务办理人
      * @return
      */
-   default boolean transfer(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
-       return this.assignee(taskId, TaskType.transfer, taskActor, assigneeTaskActor);
-   }
+    default boolean transferTask(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
+        return this.assigneeTask(taskId, TaskType.transfer, taskActor, assigneeTaskActor);
+    }
 
     /**
      * 根据 任务ID 委派任务、代理人办理完任务该任务重新归还给原处理人
@@ -101,11 +95,29 @@ public interface TaskService {
      * @param assigneeTaskActor 任务办理人
      * @return
      */
-    default boolean delegate(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
-        return this.assignee(taskId, TaskType.delegate, taskActor, assigneeTaskActor);
+    default boolean delegateTask(Long taskId, TaskActor taskActor, TaskActor assigneeTaskActor) {
+        return this.assigneeTask(taskId, TaskType.delegate, taskActor, assigneeTaskActor);
     }
 
-    boolean assignee(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor);
+    /**
+     * 根据 任务ID 分配任务给指定办理人、重置任务类型
+     *
+     * @param taskId            任务ID
+     * @param taskType          任务类型
+     * @param taskActor         任务参与者
+     * @param assigneeTaskActor 指定办理人
+     * @return
+     */
+    boolean assigneeTask(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor);
+
+    /**
+     * 拿回任务、在当前办理人尚未处理文件前，允许上一节点提交人员执行拿回
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务创建者
+     * @return
+     */
+    Optional<Task> reclaimTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 唤醒历史任务

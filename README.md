@@ -25,9 +25,8 @@ FlowLong🐉飞龙工作流
 | 转办   | A转给其B审批，B审批后，进入下一节点                                                     | ✅    |
 | 委派   | A转给其B审批，B审批后，转给A，A审批后进入下一节点                                             | ✅    |
 | 跳转   | 可以将当前流程实例跳转到任意办理节点                                                      | ✅    |
-| 拿回   | 在当前办理人尚未处理文件前，允许上一节点提交人员执行拿回                                            | 🔘   |
-| 撤销   | 流程发起者可以对流程进行撤销处理                                                        | 🔘   |
-| 催办   | 可以给当前办理人员发送催办通知消息                                                       | 🔘   |
+| 拿回   | 在当前办理人尚未处理文件前，允许上一节点提交人员执行拿回                                            | ✅    |
+| 撤销   | 流程发起者可以对流程进行撤销处理                                                        | ✅    |
 | 加签   | 允许当前办理人根据需要自行增加当前办理节点的办理人员                                              | 🔘   |
 | 减签   | 在当前办理人操作之前减少办理人                                                         | 🔘   |
 | 认领   | 公共任务认领                                                                  | 🔘   |
@@ -44,12 +43,11 @@ FlowLong🐉飞龙工作流
 
 # 使用文档
 
-- 设计器
+- 流程设计采用 [scui](https://gitee.com/lolicode/scui) 工作流模块
 
 <img src="https://foruda.gitee.com/images/1683680723972384655/f957e75d_12260.png" alt="flowlong" width="500px" height="262px">
 
 # 其它说明
 
-- 基于 [MybatisPlus](https://baomidou.com) 为 ORM 层实现
+- 基于 [MybatisPlus](https://baomidou.com) 为 `ORM` 层实现
 - 后端设计参考了 [snakerflow](https://gitee.com/yuqs/snakerflow) 开源工作流实体划分
-- 前端流程设计参考了 [scui](https://gitee.com/lolicode/scui) 工作流模块

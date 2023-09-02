@@ -196,7 +196,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public boolean assignee(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor) {
+    public boolean assigneeTask(Long taskId, TaskType taskType, TaskActor taskActor, TaskActor assigneeTaskActor) {
         // 转办权限验证
         List<TaskActor> taskActors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId)
                 .eq(TaskActor::getActorId, taskActor.getActorId()));
@@ -216,6 +216,23 @@ public class TaskServiceImpl implements TaskService {
         // 分配任务给办理人
         assignTask(taskId, assigneeTaskActor);
         return true;
+    }
+
+    /**
+     * 拿回任务、根据历史任务ID撤回下一个节点的任务、恢复历史任务
+     */
+    @Override
+    public Optional<Task> reclaimTask(Long taskId, FlowCreator flowCreator) {
+        return this.undoHisTask(taskId, flowCreator, hisTask -> {
+            List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, hisTask.getInstanceId()));
+            if (ObjectUtils.isNotEmpty(taskList)) {
+                List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+                // 删除当前任务
+                taskMapper.deleteBatchIds(taskIds);
+                // 删除当前任务处理人
+                taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
+            }
+        });
     }
 
     /**
