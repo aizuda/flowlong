@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import lombok.Getter;
 import lombok.Setter;
@@ -123,8 +124,17 @@ public class Task extends FlowEntity {
     }
 
     public void setTaskType(Integer taskType) {
-        Assert.notNull(TaskType.get(taskType), "插入的任务类型异常 [taskType=" + taskType + "]");
+        Assert.notNull(TaskType.get(taskType), "illegal type [taskType=" + taskType + "]");
         this.taskType = taskType;
+    }
+
+    public void setPerformType(PerformType performType) {
+        this.performType = performType.getValue();
+    }
+
+    public void setPerformType(Integer performType) {
+        Assert.notNull(PerformType.get(performType), "illegal type [performType=" + taskType + "]");
+        this.performType = performType;
     }
 
     public void setVariable(Map<String, Object> args) {

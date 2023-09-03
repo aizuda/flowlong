@@ -523,7 +523,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
-        task.setPerformType(performType.getValue());
+        task.setPerformType(performType);
         if (performType == PerformType.orSign) {
             /**
              * 或签一条任务多个参与者
@@ -629,79 +629,40 @@ public class TaskServiceImpl implements TaskService {
      * 向指定的任务ID添加参与者
      *
      * @param taskId     任务ID
-     * @param taskType   参与类型 {@link TaskType}
      * @param taskActors 参与者列表
      */
     @Override
-    public boolean addTaskActor(Long taskId, TaskType taskType, List<TaskActor> taskActors) {
+    public boolean addTaskActor(Long taskId, PerformType performType, List<TaskActor> taskActors) {
         Task task = taskMapper.getCheckById(taskId);
-        if (!task.major() || ObjectUtils.isEmpty(taskActors)) {
-            return false;
-        }
-        if (taskType == null) {
-            taskType = TaskType.get(task.getPerformType());
-        }
-        if (taskType == TaskType.major) {
-            /**
-             * 普通任务
-             */
-            taskActors.forEach(t -> this.assignTask(task.getInstanceId(), task.getId(), t));
-        } else if (taskType == TaskType.countersign) {
-            /**
-             * 会签任务
-             */
-            for (TaskActor taskActor : taskActors) {
-                Task newTask = task.cloneTask(taskActor);
-                taskMapper.insert(newTask);
-                this.assignTask(task.getInstanceId(), newTask.getId(), taskActor);
+        List<TaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
+        Map<String, TaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(TaskActor::getActorId, t -> t));
+        for (TaskActor taskActor : taskActors) {
+            // 不存在的参与者
+            if (null == taskActorMap.get(taskActor.getActorId())) {
+                this.assignTask(task.getInstanceId(), taskId, taskActor);
             }
         }
-        return true;
+        // 更新任务参与类型
+        Task temp = new Task();
+        temp.setId(taskId);
+        temp.setPerformType(performType);
+        return taskMapper.updateById(temp) > 0;
+    }
+
+    private List<TaskActor> getTaskActorsByTaskId(Long taskId) {
+        List<TaskActor> taskActorList = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        Assert.isTrue(ObjectUtils.isEmpty(taskActorList), "not found task actor");
+        return taskActorList;
     }
 
     @Override
-    public boolean removeTaskActor(Long taskId, List<String> actors) {
-        Task task = taskMapper.getCheckById(taskId);
-        if (ObjectUtils.isEmpty(actors)) {
-            return false;
-        }
-        if (task.major()) {
-            Map<String, Object> taskData = task.variableMap();
-            String actorStr = (String) taskData.get(Task.KEY_ACTOR);
-            if (ObjectUtils.isNotEmpty(actorStr)) {
-                String[] actorArray = actorStr.split(",");
-                StringBuilder newActor = new StringBuilder(actorStr.length());
-                boolean isMatch;
-                for (String actor : actorArray) {
-                    isMatch = false;
-                    if (ObjectUtils.isEmpty(actor)) {
-                        continue;
-                    }
-                    for (String removeActor : actors) {
-                        if (actor.equals(removeActor)) {
-                            isMatch = true;
-                            break;
-                        }
-                    }
-                    if (isMatch) {
-                        continue;
-                    }
-                    newActor.append(actor).append(",");
-                }
-                if (newActor.length() > 0) {
-                    newActor.deleteCharAt(newActor.length() - 1);
-                }
-                // 删除参与者表，任务关联关系
-                taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId).in(TaskActor::getActorId, actors));
-                // 更新任务参数 JSON 信息
-                Task temp = new Task();
-                temp.setId(taskId);
-                taskData.put(Task.KEY_ACTOR, newActor.toString());
-                temp.setVariable(taskData);
-                return taskMapper.updateById(temp) > 0;
-            }
-        }
-        return false;
+    public boolean removeTaskActor(Long taskId, List<String> actorIds) {
+        List<TaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
+        Assert.isTrue(Objects.equals(actorIds.size(), taskActorList.size()), "cannot all be deleted");
+
+        // 删除参与者表，任务关联关系
+        taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId).in(TaskActor::getActorId, actorIds));
+        return true;
     }
 
     /**

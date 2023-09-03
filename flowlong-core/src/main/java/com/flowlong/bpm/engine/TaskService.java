@@ -16,6 +16,7 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.entity.TaskActor;
@@ -213,26 +214,26 @@ public interface TaskService {
     /**
      * 向指定的任务ID添加参与者【加签】
      *
-     * @param taskId     任务ID
-     * @param taskType   参与类型 {@link TaskType}
-     * @param taskActors 参与者列表
+     * @param taskId      任务ID
+     * @param performType 参与类型 {@link PerformType}
+     * @param taskActors  参与者列表
      */
-    boolean addTaskActor(Long taskId, TaskType taskType, List<TaskActor> taskActors);
+    boolean addTaskActor(Long taskId, PerformType performType, List<TaskActor> taskActors);
 
-    default boolean addTaskActor(Long taskId, TaskType taskType, TaskActor taskActor) {
-        return this.addTaskActor(taskId, taskType, Arrays.asList(taskActor));
+    default boolean addTaskActor(Long taskId, PerformType performType, TaskActor taskActor) {
+        return this.addTaskActor(taskId, performType, Arrays.asList(taskActor));
     }
 
     /**
      * 对指定的任务ID删除参与者【减签】
      *
-     * @param taskId 任务ID
-     * @param actors 参与者
+     * @param taskId   任务ID
+     * @param actorIds 参与者ID列表
      */
-    boolean removeTaskActor(Long taskId, List<String> actors);
+    boolean removeTaskActor(Long taskId, List<String> actorIds);
 
-    default boolean removeTaskActor(Long taskId, String actor) {
-        return removeTaskActor(taskId, Arrays.asList(actor));
+    default boolean removeTaskActor(Long taskId, String actorId) {
+        return removeTaskActor(taskId, Arrays.asList(actorId));
     }
 
     /**
