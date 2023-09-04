@@ -81,10 +81,12 @@ public interface ProcessService {
      * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @return 流程定义ID
      */
-    Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat);
+    default Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat) {
+        return StreamUtils.readBytes(input, t -> this.deploy(t, flowCreator, repeat));
+    }
 
     /**
-     * 根据流程定义jsonString，部署流程定义
+     * 根据 流程定义jsonString 部署流程定义
      *
      * @param jsonString  流程定义json字符串
      * @param flowCreator 流程任务部署者
@@ -99,7 +101,17 @@ public interface ProcessService {
      * @param id    流程定义id
      * @param input 流程定义输入流
      */
-    void redeploy(Long id, InputStream input);
+    default boolean redeploy(Long id, InputStream input) {
+        return StreamUtils.readBytes(input, t -> this.redeploy(id, t));
+    }
+
+    /**
+     * 根据 流程定义jsonString 重新部署流程定义
+     *
+     * @param id         流程定义id
+     * @param jsonString 流程定义json字符串
+     */
+    boolean redeploy(Long id, String jsonString);
 
     /**
      * 卸载指定的定义流程，更新为未启用状态
@@ -109,15 +121,10 @@ public interface ProcessService {
     boolean undeploy(Long id);
 
     /**
-     * 谨慎使用！！！不可恢复
-     * 级联删除指定流程定义的所有数据：
-     * 1.wf_process
-     * 2.wf_order,wf_hist_order
-     * 3.wf_task,wf_hist_task
-     * 4.wf_task_actor,wf_hist_task_actor
-     * 5.wf_cc_order
+     * 谨慎使用！！！不可恢复，
+     * 级联删除指定流程定义的所有数据
      *
-     * @param id
+     * @param id 流程定义ID
      */
     void cascadeRemove(Long id);
 }

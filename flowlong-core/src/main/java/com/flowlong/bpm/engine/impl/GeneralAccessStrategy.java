@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.impl;
 
 import com.flowlong.bpm.engine.TaskAccessStrategy;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.entity.TaskActor;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class GeneralAccessStrategy implements TaskAccessStrategy {
      */
     @Override
     public boolean isAllowed(String userId, List<TaskActor> actors) {
-        if (null == actors) {
+        if (null == userId || ObjectUtils.isEmpty(actors)) {
             return false;
         }
         // 参与者 ID 默认非组，作为用户ID判断是否允许执行

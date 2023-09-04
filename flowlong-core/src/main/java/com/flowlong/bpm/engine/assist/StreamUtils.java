@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.function.Function;
 
 /**
  * 流数据帮助类
@@ -43,6 +44,15 @@ public class StreamUtils {
             throw new FlowLongException("resource " + name + " does not exist");
         }
         return stream;
+    }
+
+    public static <T> T readBytes(InputStream in, Function<String, T> function) {
+        Assert.notNull(in);
+        try {
+            return function.apply(readBytes(in));
+        } catch (Exception e) {
+            throw new FlowLongException(e.getMessage(), e);
+        }
     }
 
     public static String readBytes(InputStream in) throws IOException {
