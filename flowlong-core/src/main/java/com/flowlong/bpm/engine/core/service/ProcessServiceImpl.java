@@ -56,10 +56,10 @@ public class ProcessServiceImpl implements ProcessService {
      * 更新process的类别
      */
     @Override
-    public void updateType(Long id, String type) {
+    public void updateType(Long id, String processType) {
         Process process = new Process();
         process.setId(id);
-        process.setType(type);
+        process.setProcessType(processType);
         processMapper.updateById(process);
     }
 
@@ -82,9 +82,9 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public Process getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
-        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getName, name)
-                .eq(null != version, Process::getVersion, version)
-                .orderByDesc(Process::getVersion));
+        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getProcessName, name)
+                .eq(null != version, Process::getProcessVersion, version)
+                .orderByDesc(Process::getProcessVersion));
         Assert.isTrue(ObjectUtils.isEmpty(processList), "process [" + name + "] does not exist");
         return processList.get(0);
     }
@@ -106,27 +106,27 @@ public class ProcessServiceImpl implements ProcessService {
              * 查询流程信息获取最后版本号
              */
             List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
-                    .select(Process::getId, Process::getVersion)
-                    .eq(Process::getName, processModel.getName())
-                    .orderByDesc(Process::getVersion));
+                    .select(Process::getId, Process::getProcessVersion)
+                    .eq(Process::getProcessName, processModel.getName())
+                    .orderByDesc(Process::getProcessVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
                 Process process = processList.get(0);
                 if (!repeat) {
                     return process.getId();
                 }
-                version = process.getVersion();
+                version = process.getProcessVersion();
             }
             /**
              * 当前版本 +1 添加一条新的流程记录
              */
             Process process = new Process();
-            process.setVersion(version + 1);
+            process.setProcessVersion(version + 1);
             process.setFlowState(FlowState.active);
-            process.setName(processModel.getName());
+            process.setProcessName(processModel.getName());
             process.setDisplayName(processModel.getName());
             process.setInstanceUrl(processModel.getInstanceUrl());
-            process.setContent(jsonString);
+            process.setModelContent(jsonString);
             process.setCreateId(flowCreator.getCreateId());
             process.setCreateBy(flowCreator.getCreateBy());
             process.setCreateTime(DateUtils.getCurrentDate());
@@ -149,7 +149,7 @@ public class ProcessServiceImpl implements ProcessService {
     public boolean redeploy(Long id, String jsonString) {
         Process process = processMapper.selectById(id);
         Assert.notNull(process);
-        process.setContent(jsonString);
+        process.setModelContent(jsonString);
         return processMapper.updateById(process) > 0;
     }
 

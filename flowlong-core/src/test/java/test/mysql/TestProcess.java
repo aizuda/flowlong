@@ -43,7 +43,7 @@ public class TestProcess extends MysqlTest {
         Process process = processService.getProcessById(processId);
         if (null != process) {
             // 根据流程定义ID和版本号查询
-            Assertions.assertNotNull(processService.getProcessByVersion(process.getName(), process.getVersion()));
+            Assertions.assertNotNull(processService.getProcessByVersion(process.getProcessName(), process.getProcessVersion()));
         }
 
         // 启动指定流程定义ID启动流程实例

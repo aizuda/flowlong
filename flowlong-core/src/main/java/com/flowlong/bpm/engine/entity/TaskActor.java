@@ -61,9 +61,9 @@ public class TaskActor implements Serializable {
      */
     protected String actorName;
     /**
-     * 类型 0，用户 1，角色 2，部门
+     * 参与者类型 0，用户 1，角色 2，部门
      */
-    protected Integer type;
+    protected Integer actorType;
 
     public static TaskActor ofUser(String actorId, String actorName) {
         return of(actorId, actorName, 0);
@@ -77,11 +77,11 @@ public class TaskActor implements Serializable {
         return of(actorId, actorName, 2);
     }
 
-    protected static TaskActor of(String actorId, String actorName, Integer type) {
+    protected static TaskActor of(String actorId, String actorName, Integer actorType) {
         TaskActor taskActor = new TaskActor();
         taskActor.setActorId(actorId);
         taskActor.setActorName(actorName);
-        taskActor.setType(type);
+        taskActor.setActorType(actorType);
         return taskActor;
     }
 }

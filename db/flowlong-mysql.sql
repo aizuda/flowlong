@@ -23,7 +23,7 @@ CREATE TABLE `flw_his_instance`  (
                                      `instance_no` varchar(50) COMMENT '流程实例编号',
                                      `business_key` varchar(100) COMMENT '业务KEY',
                                      `variable` text COMMENT '变量json',
-                                     `version` int COMMENT '版本',
+                                     `instance_version` int COMMENT '流程实例版本',
                                      `expire_time` timestamp COMMENT '期望完成时间',
                                      `last_update_by` varchar(50) COMMENT '上次更新人',
                                      `last_update_time` timestamp COMMENT '上次更新时间',
@@ -77,7 +77,7 @@ CREATE TABLE `flw_his_task_actor`  (
                                        `task_id` bigint NOT NULL COMMENT '任务ID',
                                        `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
                                        `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',
-                                       `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
+                                       `actor_type` int NOT NULL COMMENT '参与者类型 0，用户 1，角色 2，部门',
                                        PRIMARY KEY (`id`) USING BTREE,
                                        INDEX `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                        CONSTRAINT `fk_his_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_his_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -98,7 +98,7 @@ CREATE TABLE `flw_instance`  (
                                  `instance_no` varchar(50) COMMENT '流程实例编号',
                                  `business_key` varchar(100) COMMENT '业务KEY',
                                  `variable` text COMMENT '变量json',
-                                 `version` int COMMENT '版本',
+                                 `instance_version` int COMMENT '流程实例版本',
                                  `expire_time` timestamp COMMENT '期望完成时间',
                                  `last_update_by` varchar(50) COMMENT '上次更新人',
                                  `last_update_time` timestamp COMMENT '上次更新时间',
@@ -117,16 +117,16 @@ CREATE TABLE `flw_process`  (
                                 `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
                                 `create_by` varchar(50) NOT NULL COMMENT '创建人',
                                 `create_time` timestamp NOT NULL COMMENT '创建时间',
-                                `name` varchar(100) NOT NULL COMMENT '流程名称',
+                                `process_name` varchar(100) NOT NULL COMMENT '流程名称',
                                 `display_name` varchar(200) COMMENT '流程显示名称',
-                                `icon` varchar(255) DEFAULT NULL COMMENT '图标地址',
-                                `type` varchar(100) COMMENT '流程类型',
-                                `version` int NOT NULL DEFAULT 1 COMMENT '版本，默认 1',
+                                `process_icon` varchar(255) DEFAULT NULL COMMENT '流程图标地址',
+                                `process_type` varchar(100) COMMENT '流程类型',
+                                `process_version` int NOT NULL DEFAULT 1 COMMENT '流程版本，默认 1',
                                 `instance_url` varchar(200) COMMENT '实例地址',
-                                `state` tinyint(1) DEFAULT 1 COMMENT '流程是否可用 0，否 1，是',
-                                `content` text COMMENT '流程模型定义',
+                                `process_state` tinyint(1) DEFAULT 1 COMMENT '流程状态 0，不可用 1，可用',
+                                `model_content` text COMMENT '流程模型定义JSON内容',
                                 PRIMARY KEY (`id`) USING BTREE,
-                                INDEX `idx_process_name`(`name` ASC) USING BTREE
+                                INDEX `idx_process_name`(`process_name` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -170,7 +170,7 @@ CREATE TABLE `flw_task_actor`  (
                                    `task_id` bigint NOT NULL COMMENT '任务ID',
                                    `actor_id` varchar(100) NOT NULL COMMENT '参与者ID',
                                    `actor_name` varchar(100) NOT NULL COMMENT '参与者名称',
-                                   `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
+                                   `actor_type` int NOT NULL COMMENT '参与者类型 0，用户 1，角色 2，部门',
                                    PRIMARY KEY (`id`) USING BTREE,
                                    INDEX `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
                                    CONSTRAINT `fk_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -192,8 +192,8 @@ CREATE TABLE `flw_task_cc`  (
                                 `display_name` varchar(200) NOT NULL COMMENT '任务显示名称',
                                 `actor_id` varchar(300) NOT NULL COMMENT '参与者ID',
                                 `actor_name` varchar(300) NOT NULL COMMENT '参与者名称',
-                                `type` int NOT NULL COMMENT '类型 0，用户 1，角色 2，部门',
-                                `state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，结束 1，活动',
+                                `task_type` int NOT NULL COMMENT '任务类型 0，用户 1，角色 2，部门',
+                                `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，结束 1，活动',
                                 `finish_time` timestamp COMMENT '完成时间',
                                 PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送任务表' ROW_FORMAT = Dynamic;

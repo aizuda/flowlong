@@ -48,46 +48,46 @@ public class Process extends FlowEntity {
     /**
      * 流程定义名称
      */
-    protected String name;
+    protected String processName;
     /**
      * 流程定义显示名称
      */
     protected String displayName;
     /**
-     * 图标地址
+     * 流程图标地址
      */
-    protected String icon;
+    protected String processIcon;
     /**
      * 流程定义类型（预留字段）
      */
-    protected String type;
+    protected String processType;
     /**
-     * 版本
+     * 流程版本
      */
-    protected Integer version;
+    protected Integer processVersion;
     /**
      * 当前流程的实例url（一般为流程第一步的url）
      * 该字段可以直接打开流程申请的表单
      */
     protected String instanceUrl;
     /**
-     * 是否可用的开关
+     * 流程状态 0，不可用 1，可用
      */
-    protected Integer state;
+    protected Integer processState;
     /**
-     * 流程模型定义 JSON
+     * 流程模型定义JSON内容
      */
-    protected String content;
+    protected String modelContent;
 
     public void setFlowState(FlowState flowState) {
-        this.state = flowState.getValue();
+        this.processState = flowState.getValue();
     }
 
     /**
      * 模型解析
      */
     public ProcessModel getProcessModel() {
-        return null == this.content ? null : ProcessModel.parse(this.content);
+        return null == this.modelContent ? null : ProcessModel.parse(this.modelContent);
     }
 
     /**
@@ -158,7 +158,7 @@ public class Process extends FlowEntity {
     public void executeStartModel(FlowLongContext flowLongContext, Execution execution) {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNodeConfig();
-            Assert.notNull(nodeModel, "流程定义[name=" + this.name + ", version=" + this.version + "]没有开始节点");
+            Assert.notNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             // 创建首个审批任务
             nodeModel.createTask(flowLongContext, execution);
         });
@@ -170,8 +170,8 @@ public class Process extends FlowEntity {
      * @param consumer 解析模型消费者
      */
     private void processModelParser(Consumer<ProcessModel> consumer) {
-        if (null != this.content) {
-            consumer.accept(ProcessModel.parse(this.content));
+        if (null != this.modelContent) {
+            consumer.accept(ProcessModel.parse(this.modelContent));
         }
     }
 
@@ -179,8 +179,8 @@ public class Process extends FlowEntity {
      * 流程状态验证
      */
     public Process checkState() {
-        if (Objects.equals(0, this.state)) {
-            throw new FlowLongException("指定的流程定义[id=" + this.id + ",version=" + this.version + "]为非活动状态");
+        if (Objects.equals(0, this.processState)) {
+            throw new FlowLongException("指定的流程定义[id=" + this.id + ",processVersion=" + this.processVersion + "]为非活动状态");
         }
         return this;
     }

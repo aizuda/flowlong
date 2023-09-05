@@ -60,9 +60,9 @@ public class Instance extends FlowEntity {
      */
     protected String variable;
     /**
-     * 版本
+     * 流程实例版本
      */
-    protected Integer version;
+    protected Integer instanceVersion;
     /**
      * 流程实例期望完成时间
      */

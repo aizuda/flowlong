@@ -347,7 +347,7 @@ public class TaskServiceImpl implements TaskService {
                 TaskActor taskActor = new TaskActor();
                 taskActor.setTenantId(t.getTenantId());
                 taskActor.setTaskId(task.getId());
-                taskActor.setType(t.getType());
+                taskActor.setActorType(t.getActorType());
                 taskActor.setActorId(t.getActorId());
                 taskActor.setActorName(t.getActorName());
                 taskActorMapper.insert(taskActor);
@@ -481,8 +481,8 @@ public class TaskServiceImpl implements TaskService {
                 taskCc.setDisplayName(nodeModel.getNodeName());
                 taskCc.setActorId(nodeUser.getId());
                 taskCc.setActorName(nodeUser.getName());
-                taskCc.setType(0);
-                taskCc.setState(1);
+                taskCc.setTaskType(0);
+                taskCc.setTaskState(1);
                 taskCcMapper.insert(taskCc);
             }
         }

@@ -61,13 +61,13 @@ public class TaskCc extends FlowEntity {
      */
     protected String actorName;
     /**
-     * 类型 0，用户 1，角色 2，部门
+     * 任务类型 0，用户 1，角色 2，部门
      */
-    protected Integer type;
+    protected Integer taskType;
     /**
-     * 状态 0，结束 1，活动
+     * 任务状态 0，结束 1，活动
      */
-    protected Integer state;
+    protected Integer taskState;
     /**
      * 完成时间
      */
