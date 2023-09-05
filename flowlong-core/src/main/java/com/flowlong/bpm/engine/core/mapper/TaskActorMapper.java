@@ -15,7 +15,10 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.entity.TaskActor;
+
+import java.util.List;
 
 /**
  * 任务参与者 Mapper
@@ -28,5 +31,32 @@ import com.flowlong.bpm.engine.entity.TaskActor;
  * @since 1.0
  */
 public interface TaskActorMapper extends BaseMapper<TaskActor> {
+
+    /**
+     * 通过任务ID获取参与者列表
+     *
+     * @param taskId 任务ID
+     */
+    default List<TaskActor> selectListByTaskId(Long taskId) {
+        return this.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+    }
+
+    /**
+     * 通过任务ID删除参与者
+     *
+     * @param taskId 任务ID
+     */
+    default boolean deleteByTaskId(Long taskId) {
+        return this.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId)) > 0;
+    }
+
+    /**
+     * 通过任务ID删除参与者
+     *
+     * @param taskIds 任务ID列表
+     */
+    default boolean deleteByTaskIds(List<Long> taskIds) {
+        return this.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds)) > 0;
+    }
 
 }

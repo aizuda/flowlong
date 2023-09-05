@@ -15,10 +15,11 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.Task;
 
-import java.util.Objects;
+import java.util.List;
 
 /**
  * 任务 Mapper
@@ -43,4 +44,15 @@ public interface TaskMapper extends BaseMapper<Task> {
         Assert.notNull(task, "指定的任务[id=" + id + "]不存在");
         return task;
     }
+
+    /**
+     * 根据流程实例ID获取任务列表
+     *
+     * @param instanceId 流程实例ID
+     * @return
+     */
+    default List<Task> selectListByInstanceId(Long instanceId) {
+        return this.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+    }
+
 }

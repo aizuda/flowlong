@@ -110,12 +110,12 @@ public class TaskServiceImpl implements TaskService {
         hisTaskMapper.insert(hisTask);
 
         // 迁移任务参与者
-        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        List<TaskActor> actors = taskActorMapper.selectListByTaskId(taskId);
         if (ObjectUtils.isNotEmpty(actors)) {
             // 将 task 参与者信息迁移到 flw_his_task_actor
             actors.forEach(t -> hisTaskActorMapper.insert(HisTaskActor.of(t)));
             // 移除 flw_task_actor 中 task 参与者信息
-            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+            taskActorMapper.deleteByTaskId(taskId);
         }
 
         // 删除 flw_task 中指定 task 信息
@@ -176,7 +176,7 @@ public class TaskServiceImpl implements TaskService {
             hisTaskMapper.insert(hisTask);
 
             // 2，级联删除任务和对应的任务参与者
-            taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+            taskActorMapper.deleteByTaskId(taskId);
             taskMapper.deleteById(taskId);
 
             // 3，任务监听器通知
@@ -195,7 +195,7 @@ public class TaskServiceImpl implements TaskService {
             throw new FlowLongException("当前执行用户ID [" + taskActor.getActorName() + "] 不允许提取任务 [taskId=" + taskId + "]");
         }
         // 删除任务参与者
-        taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+        taskActorMapper.deleteByTaskId(taskId);
         // 插入当前用户ID作为唯一参与者
         taskActorMapper.insert(taskActor);
         return task;
@@ -239,13 +239,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Optional<Task> reclaimTask(Long taskId, FlowCreator flowCreator) {
         return this.undoHisTask(taskId, flowCreator, hisTask -> {
-            List<Task> taskList = taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, hisTask.getInstanceId()));
+            List<Task> taskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             if (ObjectUtils.isNotEmpty(taskList)) {
                 List<Long> taskIds = taskList.stream().map(t -> t.getId()).collect(Collectors.toList());
                 // 删除当前任务
                 taskMapper.deleteBatchIds(taskIds);
                 // 删除当前任务处理人
-                taskActorMapper.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds));
+                taskActorMapper.deleteByTaskIds(taskIds);
             }
         });
     }
@@ -334,8 +334,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = hisTask.undoTask(flowCreator);
         taskMapper.insert(task);
         // 撤回任务参与者
-        List<HisTaskActor> hisTaskActors = hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery()
-                .eq(HisTaskActor::getTaskId, hisTaskId));
+        List<HisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTaskId);
         if (null != hisTaskActors) {
             hisTaskActors.forEach(t -> {
                 TaskActor taskActor = new TaskActor();
@@ -611,14 +610,9 @@ public class TaskServiceImpl implements TaskService {
             return false;
         }
 
-        // 如果是admin或者auto，直接返回true
-//        if (FlowLongEngine.ADMIN.equalsIgnoreCase(userId)) {
-//            return true;
-//        }
-
         // 任务参与者列表
-        List<TaskActor> actors = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, task.getId()));
-        if (actors == null || actors.isEmpty()) {
+        List<TaskActor> actors = taskActorMapper.selectListByTaskId(task.getId());
+        if (ObjectUtils.isEmpty(actors)) {
             // 未设置参与者，默认返回 true
             return true;
         }
@@ -649,8 +643,8 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.updateById(temp) > 0;
     }
 
-    private List<TaskActor> getTaskActorsByTaskId(Long taskId) {
-        List<TaskActor> taskActorList = taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+    protected List<TaskActor> getTaskActorsByTaskId(Long taskId) {
+        List<TaskActor> taskActorList = taskActorMapper.selectListByTaskId(taskId);
         Assert.isTrue(ObjectUtils.isEmpty(taskActorList), "not found task actor");
         return taskActorList;
     }
@@ -676,7 +670,7 @@ public class TaskServiceImpl implements TaskService {
         List<HisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery().select(HisTask::getId).eq(HisTask::getInstanceId, instanceId));
         if (ObjectUtils.isNotEmpty(hisTaskList)) {
             List<Long> hisTaskIds = hisTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
-            hisTaskActorMapper.delete(Wrappers.<HisTaskActor>lambdaQuery().in(HisTaskActor::getTaskId, hisTaskIds));
+            hisTaskActorMapper.deleteByTaskIds(hisTaskIds);
             hisTaskMapper.delete(Wrappers.<HisTask>lambdaQuery().eq(HisTask::getInstanceId, instanceId));
         }
 
@@ -691,4 +685,5 @@ public class TaskServiceImpl implements TaskService {
         // 删除任务抄送
         // TODO
     }
+
 }
