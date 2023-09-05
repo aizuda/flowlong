@@ -145,8 +145,15 @@ public class TaskServiceImpl implements TaskService {
         this.taskNotify(TaskListener.EVENT_UPDATE, task);
     }
 
+    /**
+     * 查看任务设置为已阅状态
+     *
+     * @param taskId    任务ID
+     * @param taskActor 任务参与者
+     * @return
+     */
     @Override
-    public boolean readTask(Long taskId, TaskActor taskActor) {
+    public boolean viewTask(Long taskId, TaskActor taskActor) {
         if (taskActorMapper.selectCount(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId)
                 .eq(TaskActor::getActorId, taskActor.getActorId())) > 0) {
             /**
@@ -154,7 +161,7 @@ public class TaskServiceImpl implements TaskService {
              */
             Task task = new Task();
             task.setId(taskId);
-            task.setRead(1);
+            task.setViewed(1);
             return taskMapper.updateById(task) > 0;
         }
         return false;

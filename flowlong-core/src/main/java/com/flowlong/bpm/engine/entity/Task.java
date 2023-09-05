@@ -100,7 +100,7 @@ public class Task extends FlowEntity {
     /**
      * 已阅 0，否 1，是
      */
-    protected Integer read;
+    protected Integer viewed;
     /**
      * 完成时间
      */
