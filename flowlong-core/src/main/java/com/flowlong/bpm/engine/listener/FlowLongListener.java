@@ -14,6 +14,8 @@
  */
 package com.flowlong.bpm.engine.listener;
 
+import com.flowlong.bpm.engine.core.enums.EventType;
+
 /**
  * 流程引擎监听接口
  *
@@ -25,15 +27,13 @@ package com.flowlong.bpm.engine.listener;
  * @since 1.0
  */
 public interface FlowLongListener<T> {
-    String EVENT_CREATE = "create";
-    String EVENT_ASSIGNMENT = "assignment";
-    String EVENT_COMPLETE = "complete";
-    String EVENT_TERMINATE = "terminate";
-    String EVENT_UPDATE = "update";
-    String EVENT_DELETE = "delete";
-    String EVENT_REJECT = "reject";
-    String EVENT_TIMEOUT = "timeout";
 
-    void notify(String event, T t);
+    /**
+     * 流程引擎监听通知
+     *
+     * @param event 事件类型
+     * @param t     监听实体
+     */
+    void notify(EventType event, T t);
 
 }

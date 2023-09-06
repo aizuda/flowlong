@@ -22,6 +22,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
 import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
@@ -123,7 +124,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstanceMapper.insert(hisInstance);
 
         // 流程实例监听器通知
-        this.instanceNotify(TaskListener.EVENT_CREATE, hisInstance);
+        this.instanceNotify(EventType.EVENT_CREATE, hisInstance);
     }
 
     /**
@@ -147,10 +148,10 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstance.setEndTime(DateUtils.getCurrentDate());
         instanceMapper.deleteById(instanceId);
         // 流程实例监听器通知
-        this.instanceNotify(TaskListener.EVENT_COMPLETE, hisInstance);
+        this.instanceNotify(EventType.EVENT_COMPLETE, hisInstance);
     }
 
-    protected void instanceNotify(String event, HisInstance hisInstance) {
+    protected void instanceNotify(EventType event, HisInstance hisInstance) {
         if (null != instanceListener) {
             instanceListener.notify(event, hisInstance);
         }
@@ -182,7 +183,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(TaskListener.EVENT_TERMINATE, hisInstance);
+            this.instanceNotify(EventType.EVENT_TERMINATE, hisInstance);
         }
     }
 
