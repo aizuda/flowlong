@@ -126,6 +126,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setProcessName(processModel.getName());
             process.setDisplayName(processModel.getName());
             process.setInstanceUrl(processModel.getInstanceUrl());
+            process.setUseScope(0);
             process.setModelContent(jsonString);
             process.setCreateId(flowCreator.getCreateId());
             process.setCreateBy(flowCreator.getCreateBy());

@@ -71,6 +71,10 @@ public class Process extends FlowEntity {
      */
     protected String instanceUrl;
     /**
+     * 使用范围 0，全员 1，指定人员（业务关联） 2，均不可提交
+     */
+    protected Integer useScope;
+    /**
      * 流程状态 0，不可用 1，可用
      */
     protected Integer processState;
