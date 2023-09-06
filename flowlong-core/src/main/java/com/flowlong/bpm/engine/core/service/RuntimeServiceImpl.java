@@ -31,7 +31,6 @@ import com.flowlong.bpm.engine.entity.Instance;
 import com.flowlong.bpm.engine.entity.Process;
 import com.flowlong.bpm.engine.entity.Task;
 import com.flowlong.bpm.engine.listener.InstanceListener;
-import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,7 +143,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void complete(Long instanceId) {
         HisInstance hisInstance = new HisInstance();
         hisInstance.setId(instanceId);
-        hisInstance.setInstanceState(InstanceState.finish.getValue());
+        hisInstance.setInstanceState(InstanceState.complete);
         hisInstance.setEndTime(DateUtils.getCurrentDate());
         instanceMapper.deleteById(instanceId);
         // 流程实例监听器通知

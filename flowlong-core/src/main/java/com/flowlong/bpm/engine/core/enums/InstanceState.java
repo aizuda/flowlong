@@ -31,9 +31,9 @@ public enum InstanceState {
      */
     active(0),
     /**
-     * 结束
+     * 完成
      */
-    finish(1),
+    complete(1),
     /**
      * 超时
      */

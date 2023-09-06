@@ -46,6 +46,14 @@ public class HisInstance extends Instance {
      */
     protected Date endTime;
 
+    public void setVariable(Integer instanceState) {
+        this.instanceState = instanceState;
+    }
+
+    public void setInstanceState(InstanceState instanceState) {
+        this.instanceState = instanceState.getValue();
+    }
+
     public static HisInstance of(Instance instance, InstanceState instanceState) {
         HisInstance hisInstance = new HisInstance();
         hisInstance.id = instance.getId();
