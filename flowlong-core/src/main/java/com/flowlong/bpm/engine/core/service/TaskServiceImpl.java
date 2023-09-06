@@ -22,6 +22,7 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.enums.TaskType;
@@ -83,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Task complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        return this.executeTask(taskId, flowCreator, args, TaskState.finish, TaskListener.EVENT_COMPLETE);
+        return this.executeTask(taskId, flowCreator, args, TaskState.finish, EventType.EVENT_COMPLETE);
     }
 
     /**
@@ -96,7 +97,7 @@ public class TaskServiceImpl implements TaskService {
      * @param event       执行事件
      * @return
      */
-    protected Task executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, String event) {
+    protected Task executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType event) {
         Task task = taskMapper.getCheckById(taskId);
         task.setVariable(args);
         Assert.isFalse(isAllowed(task, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
@@ -127,7 +128,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-    protected void taskNotify(String event, Task task) {
+    protected void taskNotify(EventType event, Task task) {
         if (null != taskListener) {
             taskListener.notify(event, task);
         }
@@ -142,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskById(Task task) {
         taskMapper.updateById(task);
         // 任务监听器通知
-        this.taskNotify(TaskListener.EVENT_UPDATE, task);
+        this.taskNotify(EventType.EVENT_UPDATE, task);
     }
 
     /**
@@ -187,7 +188,7 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.deleteById(taskId);
 
             // 3，任务监听器通知
-            this.taskNotify(TaskListener.EVENT_TIMEOUT, task);
+            this.taskNotify(EventType.EVENT_TIMEOUT, task);
         }
         return true;
     }
@@ -318,7 +319,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.isTrue(Objects.equals(parentTaskId, 0L), "上一步任务ID为空，无法驳回至上一步处理");
 
         // 执行任务驳回
-        this.executeTask(currentTask.getId(), flowCreator, args, TaskState.reject, TaskListener.EVENT_REJECT);
+        this.executeTask(currentTask.getId(), flowCreator, args, TaskState.reject, EventType.EVENT_REJECT);
 
         // 撤回至上一级任务
         return this.undoHisTask(parentTaskId, flowCreator, null);
@@ -539,7 +540,7 @@ public class TaskServiceImpl implements TaskService {
             tasks.add(task);
 
             // 创建任务监听
-            this.taskNotify(TaskListener.EVENT_CREATE, task);
+            this.taskNotify(EventType.EVENT_CREATE, task);
             return tasks;
         }
 
@@ -558,7 +559,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(task.getInstanceId(), task.getId(), null == nextTaskActor ? taskActors.get(0) : nextTaskActor);
 
             // 创建任务监听
-            this.taskNotify(TaskListener.EVENT_CREATE, task);
+            this.taskNotify(EventType.EVENT_CREATE, task);
             return tasks;
         }
 
@@ -574,7 +575,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(newTask.getInstanceId(), newTask.getId(), t);
 
             // 创建任务监听
-            this.taskNotify(TaskListener.EVENT_CREATE, newTask);
+            this.taskNotify(EventType.EVENT_CREATE, newTask);
         });
         return tasks;
     }
