@@ -84,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Task complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        return this.executeTask(taskId, flowCreator, args, TaskState.finish, EventType.EVENT_COMPLETE);
+        return this.executeTask(taskId, flowCreator, args, TaskState.complete, EventType.complete);
     }
 
     /**
@@ -94,10 +94,10 @@ public class TaskServiceImpl implements TaskService {
      * @param flowCreator 任务创建者
      * @param args        执行参数
      * @param taskState   任务状态
-     * @param event       执行事件
+     * @param eventType   执行事件
      * @return
      */
-    protected Task executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType event) {
+    protected Task executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
         Task task = taskMapper.getCheckById(taskId);
         task.setVariable(args);
         Assert.isFalse(isAllowed(task, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
@@ -123,14 +123,14 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.deleteById(taskId);
 
         // 任务监听器通知
-        this.taskNotify(event, task);
+        this.taskNotify(eventType, task);
         return task;
     }
 
 
-    protected void taskNotify(EventType event, Task task) {
+    protected void taskNotify(EventType eventType, Task task) {
         if (null != taskListener) {
-            taskListener.notify(event, task);
+            taskListener.notify(eventType, task);
         }
     }
 
@@ -143,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskById(Task task) {
         taskMapper.updateById(task);
         // 任务监听器通知
-        this.taskNotify(EventType.EVENT_UPDATE, task);
+        this.taskNotify(EventType.update, task);
     }
 
     /**
@@ -188,7 +188,7 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.deleteById(taskId);
 
             // 3，任务监听器通知
-            this.taskNotify(EventType.EVENT_TIMEOUT, task);
+            this.taskNotify(EventType.timeout, task);
         }
         return true;
     }
@@ -319,7 +319,7 @@ public class TaskServiceImpl implements TaskService {
         Assert.isTrue(Objects.equals(parentTaskId, 0L), "上一步任务ID为空，无法驳回至上一步处理");
 
         // 执行任务驳回
-        this.executeTask(currentTask.getId(), flowCreator, args, TaskState.reject, EventType.EVENT_REJECT);
+        this.executeTask(currentTask.getId(), flowCreator, args, TaskState.reject, EventType.reject);
 
         // 撤回至上一级任务
         return this.undoHisTask(parentTaskId, flowCreator, null);
@@ -540,7 +540,7 @@ public class TaskServiceImpl implements TaskService {
             tasks.add(task);
 
             // 创建任务监听
-            this.taskNotify(EventType.EVENT_CREATE, task);
+            this.taskNotify(EventType.create, task);
             return tasks;
         }
 
@@ -559,7 +559,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(task.getInstanceId(), task.getId(), null == nextTaskActor ? taskActors.get(0) : nextTaskActor);
 
             // 创建任务监听
-            this.taskNotify(EventType.EVENT_CREATE, task);
+            this.taskNotify(EventType.create, task);
             return tasks;
         }
 
@@ -575,7 +575,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(newTask.getInstanceId(), newTask.getId(), t);
 
             // 创建任务监听
-            this.taskNotify(EventType.EVENT_CREATE, newTask);
+            this.taskNotify(EventType.create, newTask);
         });
         return tasks;
     }

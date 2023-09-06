@@ -14,33 +14,33 @@ public enum EventType {
     /**
      * 创建
      */
-    EVENT_CREATE,
+    create,
     /**
      * 分配
      */
-    EVENT_ASSIGNMENT,
+    assignment,
     /**
      * 完成
      */
-    EVENT_COMPLETE,
+    complete,
     /**
      * 终止
      */
-    EVENT_TERMINATE,
+    terminate,
     /**
      * 更新
      */
-    EVENT_UPDATE,
+    update,
     /**
      * 删除
      */
-    EVENT_DELETE,
+    delete,
     /**
      * 驳回
      */
-    EVENT_REJECT,
+    reject,
     /**
      * 超时
      */
-    EVENT_TIMEOUT
+    timeout
 }

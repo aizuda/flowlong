@@ -124,7 +124,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstanceMapper.insert(hisInstance);
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.EVENT_CREATE, hisInstance);
+        this.instanceNotify(EventType.create, hisInstance);
     }
 
     /**
@@ -148,12 +148,12 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstance.setEndTime(DateUtils.getCurrentDate());
         instanceMapper.deleteById(instanceId);
         // 流程实例监听器通知
-        this.instanceNotify(EventType.EVENT_COMPLETE, hisInstance);
+        this.instanceNotify(EventType.complete, hisInstance);
     }
 
-    protected void instanceNotify(EventType event, HisInstance hisInstance) {
+    protected void instanceNotify(EventType eventType, HisInstance hisInstance) {
         if (null != instanceListener) {
-            instanceListener.notify(event, hisInstance);
+            instanceListener.notify(eventType, hisInstance);
         }
     }
 
@@ -183,7 +183,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(EventType.EVENT_TERMINATE, hisInstance);
+            this.instanceNotify(EventType.terminate, hisInstance);
         }
     }
 

@@ -31,9 +31,9 @@ public interface FlowLongListener<T> {
     /**
      * 流程引擎监听通知
      *
-     * @param event 事件类型
-     * @param t     监听实体
+     * @param eventType 事件类型
+     * @param t         监听实体
      */
-    void notify(EventType event, T t);
+    void notify(EventType eventType, T t);
 
 }
