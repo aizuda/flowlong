@@ -82,6 +82,10 @@ public class Process extends FlowEntity {
      * 流程模型定义JSON内容
      */
     protected String modelContent;
+    /**
+     * 排序
+     */
+    protected Integer sort;
 
     public void setFlowState(FlowState flowState) {
         this.processState = flowState.getValue();

@@ -44,7 +44,6 @@ import java.util.Objects;
 @ToString
 @TableName("flw_task")
 public class Task extends FlowEntity {
-    public static final String KEY_ACTOR = "S-ACTOR";
     /**
      * 流程实例ID
      */

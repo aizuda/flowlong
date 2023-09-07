@@ -126,6 +126,7 @@ CREATE TABLE `flw_process`  (
                                 `use_scope` tinyint(1) DEFAULT 0 COMMENT '使用范围 0，全员 1，指定人员（业务关联） 2，均不可提交',
                                 `process_state` tinyint(1) DEFAULT 1 COMMENT '流程状态 0，不可用 1，可用',
                                 `model_content` text COMMENT '流程模型定义JSON内容',
+                                `sort` tinyint(1) DEFAULT 0 COMMENT '排序',
                                 PRIMARY KEY (`id`) USING BTREE,
                                 INDEX `idx_process_name`(`process_name` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
