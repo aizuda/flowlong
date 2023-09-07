@@ -18,7 +18,7 @@ import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwTask;
 
 /**
  * 委托代理拦截器
@@ -35,7 +35,7 @@ public class SurrogateInterceptor implements FlowLongInterceptor {
     @Override
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
-        for (Task task : execution.getTasks()) {
+        for (FlwTask flwTask : execution.getFlwTasks()) {
 //            if (task.actorIds() == null) {
 //                continue;
 //            }

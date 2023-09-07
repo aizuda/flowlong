@@ -16,12 +16,13 @@ package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.entity.FlwTask;
 
 import java.util.List;
 
 /**
- * 任务参与者 Mapper
+ * 任务 Mapper
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -30,33 +31,28 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
-public interface TaskActorMapper extends BaseMapper<TaskActor> {
+public interface FlwTaskMapper extends BaseMapper<FlwTask> {
 
     /**
-     * 通过任务ID获取参与者列表
+     * 获取任务并检查ID的合法性
      *
-     * @param taskId 任务ID
+     * @param id 任务ID
+     * @return {@link FlwTask}
      */
-    default List<TaskActor> selectListByTaskId(Long taskId) {
-        return this.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+    default FlwTask getCheckById(Long id) {
+        FlwTask flwTask = selectById(id);
+        Assert.notNull(flwTask, "指定的任务[id=" + id + "]不存在");
+        return flwTask;
     }
 
     /**
-     * 通过任务ID删除参与者
+     * 根据流程实例ID获取任务列表
      *
-     * @param taskId 任务ID
+     * @param instanceId 流程实例ID
+     * @return
      */
-    default boolean deleteByTaskId(Long taskId) {
-        return this.delete(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId)) > 0;
-    }
-
-    /**
-     * 通过任务ID删除参与者
-     *
-     * @param taskIds 任务ID列表
-     */
-    default boolean deleteByTaskIds(List<Long> taskIds) {
-        return this.delete(Wrappers.<TaskActor>lambdaQuery().in(TaskActor::getTaskId, taskIds)) > 0;
+    default List<FlwTask> selectListByInstanceId(Long instanceId) {
+        return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
     }
 
 }

@@ -10,7 +10,12 @@ FlowLong🐉飞龙工作流
 
 > 使用必须遵守国家法律法规，⛔不允许非法项目使用，后果自负❗
 
-[使用登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5)   [官方开发文档](https://flowlong.gitee.io)
+[使用登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5) 
+
+[官方开发文档](https://flowlong.gitee.io)
+
+
+英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
 
 🚩中国特色流程操作概念
 

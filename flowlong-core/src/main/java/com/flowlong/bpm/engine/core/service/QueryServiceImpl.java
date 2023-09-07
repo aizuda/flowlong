@@ -35,16 +35,16 @@ import java.util.Optional;
  */
 @Service
 public class QueryServiceImpl implements QueryService {
-    private InstanceMapper instanceMapper;
-    private HisInstanceMapper hisInstanceMapper;
-    private TaskMapper taskMapper;
-    private TaskActorMapper taskActorMapper;
-    private HisTaskMapper hisTaskMapper;
-    private HisTaskActorMapper hisTaskActorMapper;
+    private FlwInstanceMapper instanceMapper;
+    private FlwHisInstanceMapper hisInstanceMapper;
+    private FlwTaskMapper taskMapper;
+    private FlwTaskActorMapper taskActorMapper;
+    private FlwHisTaskMapper hisTaskMapper;
+    private FlwHisTaskActorMapper hisTaskActorMapper;
 
-    public QueryServiceImpl(InstanceMapper instanceMapper, HisInstanceMapper hisInstanceMapper,
-                            TaskMapper taskMapper, TaskActorMapper taskActorMapper,
-                            HisTaskMapper hisTaskMapper, HisTaskActorMapper hisTaskActorMapper) {
+    public QueryServiceImpl(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                            FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
+                            FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.taskMapper = taskMapper;
@@ -54,75 +54,75 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public Instance getInstance(Long instanceId) {
+    public FlwInstance getInstance(Long instanceId) {
         return instanceMapper.selectById(instanceId);
     }
 
     @Override
-    public Task getTask(Long taskId) {
+    public FlwTask getTask(Long taskId) {
         return taskMapper.selectById(taskId);
     }
 
     @Override
-    public HisInstance getHistInstance(Long instanceId) {
+    public FlwHisInstance getHistInstance(Long instanceId) {
         return hisInstanceMapper.selectById(instanceId);
     }
 
     @Override
-    public HisTask getHistTask(Long taskId) {
+    public FlwHisTask getHistTask(Long taskId) {
         return hisTaskMapper.selectById(taskId);
     }
 
     @Override
-    public Optional<List<HisTask>> getHisTasksByName(Long instanceId, String taskName) {
-        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
-                .eq(HisTask::getInstanceId, instanceId)
-                .eq(HisTask::getTaskName, taskName)
-                .orderByDesc(HisTask::getCreateTime)));
+    public Optional<List<FlwHisTask>> getHisTasksByName(Long instanceId, String taskName) {
+        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
+                .eq(FlwHisTask::getInstanceId, instanceId)
+                .eq(FlwHisTask::getTaskName, taskName)
+                .orderByDesc(FlwHisTask::getCreateTime)));
     }
 
     @Override
-    public List<Task> getTasksByInstanceId(Long instanceId) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
+    public List<FlwTask> getTasksByInstanceId(Long instanceId) {
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
     }
 
     @Override
-    public List<Task> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId).eq(Task::getTaskName, taskName));
+    public List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId).eq(FlwTask::getTaskName, taskName));
     }
 
     @Override
-    public Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId) {
-        return Optional.ofNullable(taskMapper.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId)));
+    public Optional<List<FlwTask>> getActiveTasksByInstanceId(Long instanceId) {
+        return Optional.ofNullable(taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId)));
     }
 
     @Override
-    public Optional<List<TaskActor>> getActiveTaskActorsByInstanceId(Long instanceId) {
-        return Optional.ofNullable(taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getInstanceId, instanceId)));
+    public Optional<List<FlwTaskActor>> getActiveTaskActorsByInstanceId(Long instanceId) {
+        return Optional.ofNullable(taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getInstanceId, instanceId)));
     }
 
     @Override
-    public List<TaskActor> getTaskActorsByTaskId(Long taskId) {
-        return taskActorMapper.selectList(Wrappers.<TaskActor>lambdaQuery().eq(TaskActor::getTaskId, taskId));
+    public List<FlwTaskActor> getTaskActorsByTaskId(Long taskId) {
+        return taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId));
     }
 
     @Override
-    public List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
-        return hisTaskActorMapper.selectList(Wrappers.<HisTaskActor>lambdaQuery().eq(HisTaskActor::getTaskId, taskId));
+    public List<FlwTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
+        return hisTaskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId));
     }
 
     @Override
-    public List<Task> getActiveTasks(Long instanceId, List<String> taskNames) {
-        return taskMapper.selectList(Wrappers.<Task>lambdaQuery()
-                .eq(Task::getInstanceId, instanceId)
-                .in(Task::getTaskName, taskNames));
+    public List<FlwTask> getActiveTasks(Long instanceId, List<String> taskNames) {
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery()
+                .eq(FlwTask::getInstanceId, instanceId)
+                .in(FlwTask::getTaskName, taskNames));
     }
 
     @Override
-    public Optional<List<HisTask>> getHisTasksByInstanceId(Long instanceId) {
-        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<HisTask>lambdaQuery()
-                .eq(HisTask::getInstanceId, instanceId)
-                .orderByDesc(HisTask::getCreateTime)));
+    public Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId) {
+        return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
+                .eq(FlwHisTask::getInstanceId, instanceId)
+                .orderByDesc(FlwHisTask::getCreateTime)));
     }
 
 }

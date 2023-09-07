@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.listener;
 
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwTask;
 
 /**
  * 流程任务监听
@@ -26,6 +26,6 @@ import com.flowlong.bpm.engine.entity.Task;
  * @author hubin
  * @since 1.0
  */
-public interface TaskListener extends FlowLongListener<Task> {
+public interface TaskListener extends FlowLongListener<FlwTask> {
 
 }

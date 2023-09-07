@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.TaskState;
@@ -35,8 +34,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@TableName("flw_his_task")
-public class HisTask extends Task {
+public class FlwHisTask extends FlwTask {
     /**
      * 任务状态 0，活动 1，结束 2，超时 3，终止
      */
@@ -51,22 +49,22 @@ public class HisTask extends Task {
         this.taskState = taskState;
     }
 
-    public static HisTask of(Task task) {
-        HisTask hisTask = new HisTask();
-        hisTask.id = task.getId();
-        hisTask.tenantId = task.getTenantId();
-        hisTask.createId = task.getCreateId();
-        hisTask.createBy = task.getCreateBy();
-        hisTask.createTime = task.getCreateTime();
-        hisTask.instanceId = task.getInstanceId();
-        hisTask.parentTaskId = task.getParentTaskId();
-        hisTask.taskName = task.getTaskName();
-        hisTask.displayName = task.getDisplayName();
-        hisTask.taskType = task.getTaskType();
-        hisTask.performType = task.getPerformType();
-        hisTask.actionUrl = task.getActionUrl();
-        hisTask.variable = task.getVariable();
-        hisTask.expireTime = task.getExpireTime();
+    public static FlwHisTask of(FlwTask flwTask) {
+        FlwHisTask hisTask = new FlwHisTask();
+        hisTask.id = flwTask.getId();
+        hisTask.tenantId = flwTask.getTenantId();
+        hisTask.createId = flwTask.getCreateId();
+        hisTask.createBy = flwTask.getCreateBy();
+        hisTask.createTime = flwTask.getCreateTime();
+        hisTask.instanceId = flwTask.getInstanceId();
+        hisTask.parentTaskId = flwTask.getParentTaskId();
+        hisTask.taskName = flwTask.getTaskName();
+        hisTask.displayName = flwTask.getDisplayName();
+        hisTask.taskType = flwTask.getTaskType();
+        hisTask.performType = flwTask.getPerformType();
+        hisTask.actionUrl = flwTask.getActionUrl();
+        hisTask.variable = flwTask.getVariable();
+        hisTask.expireTime = flwTask.getExpireTime();
         return hisTask;
     }
 
@@ -75,7 +73,7 @@ public class HisTask extends Task {
      *
      * @return 任务对象
      */
-    public Task undoTask(FlowCreator flowCreator) {
+    public FlwTask undoTask(FlowCreator flowCreator) {
         return cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
     }
 

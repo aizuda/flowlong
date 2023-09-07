@@ -19,10 +19,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.PerformType;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -64,8 +61,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      */
     @Override
-    public Optional<Instance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
-        Process process = processService().getProcessById(id);
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwProcess process = processService().getProcessById(id);
         if (null == process) {
             return Optional.empty();
         }
@@ -76,19 +73,19 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<Instance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
-        Process process = processService().getProcessByVersion(name, version);
+    public Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwProcess process = processService().getProcessByVersion(name, version);
         return this.startProcess(process, flowCreator, args);
     }
 
     /**
      * 启动流程实例
      */
-    protected Optional<Instance> startProcess(Process process, FlowCreator flowCreator, Map<String, Object> args) {
+    protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
         Execution execution = this.execute(process, flowCreator, args);
         // 执行启动模型
         process.executeStartModel(flowLongContext, execution);
-        return Optional.ofNullable(execution.getInstance());
+        return Optional.ofNullable(execution.getFlwInstance());
     }
 
 
@@ -100,12 +97,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param args        参数列表
      * @return Execution
      */
-    protected Execution execute(Process process, FlowCreator flowCreator, Map<String, Object> args) {
-        Instance instance = runtimeService().createInstance(process, flowCreator, args);
+    protected Execution execute(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args);
         if (log.isDebugEnabled()) {
-            log.debug("创建流程实例对象:" + instance);
+            log.debug("创建流程实例对象:" + flwInstance);
         }
-        Execution current = new Execution(this, process, instance, args);
+        Execution current = new Execution(this, process, flwInstance, args);
         current.setCreateId(flowCreator.getCreateId());
         current.setCreateBy(flowCreator.getCreateBy());
         return current;
@@ -119,7 +116,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 完成任务，并且构造执行对象
         this.execute(taskId, flowCreator, args, execution -> {
             // 执行节点模型
-            execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getTask().getTaskName());
+            execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
         });
     }
 
@@ -148,30 +145,30 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (args == null) {
             args = new HashMap<>();
         }
-        Task task = taskService().complete(taskId, flowCreator, args);
+        FlwTask flwTask = taskService().complete(taskId, flowCreator, args);
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }
-        Instance instance = queryService().getInstance(task.getInstanceId());
-        Assert.notNull(instance, "指定的流程实例[id=" + task.getInstanceId() + "]已完成或不存在");
-        instance.setLastUpdateBy(flowCreator.getCreateId());
-        instance.setLastUpdateTime(DateUtils.getCurrentDate());
-        runtimeService().updateInstance(instance);
+        FlwInstance flwInstance = queryService().getInstance(flwTask.getInstanceId());
+        Assert.notNull(flwInstance, "指定的流程实例[id=" + flwTask.getInstanceId() + "]已完成或不存在");
+        flwInstance.setLastUpdateBy(flowCreator.getCreateId());
+        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        runtimeService().updateInstance(flwInstance);
 
-        PerformType performType = PerformType.get(task.getPerformType());
+        PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
             /**
              * 会签未全部完成，不继续执行节点模型
              */
-            List<Task> taskList = queryService().getTasksByInstanceIdAndTaskName(instance.getId(), task.getTaskName());
-            if (ObjectUtils.isNotEmpty(taskList)) {
+            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskName(flwInstance.getId(), flwTask.getTaskName());
+            if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return;
             }
         }
 
         // 流程模型
-        Process process = processService().getProcessById(instance.getProcessId());
-        Map<String, Object> instanceMaps = instance.getVariableMap();
+        FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
+        Map<String, Object> instanceMaps = flwInstance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
                 if (args.containsKey(entry.getKey())) {
@@ -180,16 +177,16 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Execution execution = new Execution(this, process, instance, args);
+        Execution execution = new Execution(this, process, flwInstance, args);
         execution.setCreateId(flowCreator.getCreateId());
         execution.setCreateBy(flowCreator.getCreateBy());
-        execution.setTask(task);
+        execution.setFlwTask(flwTask);
 
         /**
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = process.getProcessModel().getNode(task.getTaskName());
+            NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             NodeAssignee nextNodeAssignee = null;
             boolean findTaskActor = false;
@@ -205,7 +202,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
-                execution.setNextTaskActor(TaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));
+                execution.setNextFlwTaskActor(FlwTaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));
                 new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
                 return;
             }

@@ -19,8 +19,8 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 
 import java.util.List;
@@ -43,15 +43,15 @@ public class EndProcessHandler implements FlowLongHandler {
     @Override
     public void handle(FlowLongContext flowLongContext, Execution execution) {
         FlowLongEngine engine = execution.getEngine();
-        Instance instance = execution.getInstance();
-        List<Task> tasks = engine.queryService().getTasksByInstanceId(instance.getId());
-        for (Task task : tasks) {
-            Assert.illegalArgument(task.major(), "存在未完成的主办任务");
-            engine.taskService().complete(task.getId(), FlowCreator.ADMIN);
+        FlwInstance flwInstance = execution.getFlwInstance();
+        List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
+        for (FlwTask flwTask : flwTasks) {
+            Assert.illegalArgument(flwTask.major(), "存在未完成的主办任务");
+            engine.taskService().complete(flwTask.getId(), FlowCreator.ADMIN);
         }
         /**
          * 结束当前流程实例
          */
-        engine.runtimeService().complete(instance.getId());
+        engine.runtimeService().complete(flwInstance.getId());
     }
 }

@@ -15,14 +15,10 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.entity.Task;
-
-import java.util.List;
+import com.flowlong.bpm.engine.entity.FlwInstance;
 
 /**
- * 任务 Mapper
+ * 流程实例 Mapper
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -31,28 +27,6 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
-public interface TaskMapper extends BaseMapper<Task> {
-
-    /**
-     * 获取任务并检查ID的合法性
-     *
-     * @param id 任务ID
-     * @return {@link Task}
-     */
-    default Task getCheckById(Long id) {
-        Task task = selectById(id);
-        Assert.notNull(task, "指定的任务[id=" + id + "]不存在");
-        return task;
-    }
-
-    /**
-     * 根据流程实例ID获取任务列表
-     *
-     * @param instanceId 流程实例ID
-     * @return
-     */
-    default List<Task> selectListByInstanceId(Long instanceId) {
-        return this.selectList(Wrappers.<Task>lambdaQuery().eq(Task::getInstanceId, instanceId));
-    }
+public interface FlwInstanceMapper extends BaseMapper<FlwInstance> {
 
 }

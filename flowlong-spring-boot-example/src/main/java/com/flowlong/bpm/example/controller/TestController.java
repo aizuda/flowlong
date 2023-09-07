@@ -2,7 +2,7 @@ package com.flowlong.bpm.example.controller;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.FlwInstance;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +35,7 @@ public class TestController {
      * http://localhost:8000/process/instance-start
      */
     @GetMapping("/instance-start")
-    public Instance instanceStart() {
+    public FlwInstance instanceStart() {
         Map<String, Object> args = new HashMap<>();
         args.put("task1.assignee", "1");
         return flowLongEngine.startInstanceByName("simple", null, testCreator, args).get();

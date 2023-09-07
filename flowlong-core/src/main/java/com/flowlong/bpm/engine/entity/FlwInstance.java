@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,8 +36,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-@TableName("flw_instance")
-public class Instance extends FlowEntity {
+public class FlwInstance extends FlowEntity {
     /**
      * 流程定义ID
      */

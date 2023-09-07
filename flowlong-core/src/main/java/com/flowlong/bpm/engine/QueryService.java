@@ -37,7 +37,7 @@ public interface QueryService {
      * @param instanceId 流程实例ID
      * @return Instance 流程实例对象
      */
-    Instance getInstance(Long instanceId);
+    FlwInstance getInstance(Long instanceId);
 
     /**
      * 根据流程实例ID获取历史流程实例对象
@@ -45,7 +45,7 @@ public interface QueryService {
      * @param instanceId 历史流程实例ID
      * @return HistoryInstance 历史流程实例对象
      */
-    HisInstance getHistInstance(Long instanceId);
+    FlwHisInstance getHistInstance(Long instanceId);
 
     /**
      * 根据任务ID获取任务对象
@@ -53,7 +53,7 @@ public interface QueryService {
      * @param taskId 任务ID
      * @return Task 任务对象
      */
-    Task getTask(Long taskId);
+    FlwTask getTask(Long taskId);
 
     /**
      * 根据任务ID获取历史任务对象
@@ -61,7 +61,7 @@ public interface QueryService {
      * @param taskId 历史任务ID
      * @return HistoryTask 历史任务对象
      */
-    HisTask getHistTask(Long taskId);
+    FlwHisTask getHistTask(Long taskId);
 
     /**
      * 根据任务名称查询历史任务对象列表
@@ -70,7 +70,7 @@ public interface QueryService {
      * @param taskName   任务名称(亦是节点名称)
      * @return 历史任务节点列表
      */
-    Optional<List<HisTask>> getHisTasksByName(Long instanceId, String taskName);
+    Optional<List<FlwHisTask>> getHisTasksByName(Long instanceId, String taskName);
 
     /**
      * 通过流程实例ID获取任务列表
@@ -78,17 +78,9 @@ public interface QueryService {
      * @param instanceId 流程实例ID
      * @return 任务对象列表
      */
-    List<Task> getTasksByInstanceId(Long instanceId);
+    List<FlwTask> getTasksByInstanceId(Long instanceId);
 
-    List<Task> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
-
-    /**
-     * 根据 流程实例ID 获取当前活动任务列表
-     *
-     * @param instanceId 流程实例ID
-     * @return 当前活动任务列表
-     */
-    Optional<List<Task>> getActiveTasksByInstanceId(Long instanceId);
+    List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
 
     /**
      * 根据 流程实例ID 获取当前活动任务列表
@@ -96,7 +88,15 @@ public interface QueryService {
      * @param instanceId 流程实例ID
      * @return 当前活动任务列表
      */
-    Optional<List<TaskActor>> getActiveTaskActorsByInstanceId(Long instanceId);
+    Optional<List<FlwTask>> getActiveTasksByInstanceId(Long instanceId);
+
+    /**
+     * 根据 流程实例ID 获取当前活动任务列表
+     *
+     * @param instanceId 流程实例ID
+     * @return 当前活动任务列表
+     */
+    Optional<List<FlwTaskActor>> getActiveTaskActorsByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取活动任务参与者数组
@@ -104,7 +104,7 @@ public interface QueryService {
      * @param taskId 任务ID
      * @return String[] 参与者ID数组
      */
-    List<TaskActor> getTaskActorsByTaskId(Long taskId);
+    List<FlwTaskActor> getTaskActorsByTaskId(Long taskId);
 
     /**
      * 根据任务ID获取历史任务参与者数组
@@ -112,7 +112,7 @@ public interface QueryService {
      * @param taskId 历史任务ID
      * @return String[] 历史参与者ID数组
      */
-    List<HisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
+    List<FlwTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
 
     /**
      * 根据实例ID和任务节点名称获取当前节点激活的任务
@@ -121,7 +121,7 @@ public interface QueryService {
      * @param taskNames  任务节点名称
      * @return 子任务列表
      */
-    List<Task> getActiveTasks(Long instanceId, List<String> taskNames);
+    List<FlwTask> getActiveTasks(Long instanceId, List<String> taskNames);
 
     /**
      * 根据实例ID获取实例所有历史任务，时间倒序
@@ -129,5 +129,5 @@ public interface QueryService {
      * @param instanceId 实例ID
      * @return 历史任务列表
      */
-    Optional<List<HisTask>> getHisTasksByInstanceId(Long instanceId);
+    Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId);
 }

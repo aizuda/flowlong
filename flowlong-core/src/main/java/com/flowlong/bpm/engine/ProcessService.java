@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.FlwProcess;
 
 import java.io.InputStream;
 
@@ -46,18 +46,18 @@ public interface ProcessService {
      * @param id 流程定义id
      * @return Process 流程定义对象
      */
-    Process getProcessById(Long id);
+    FlwProcess getProcessById(Long id);
 
     /**
      * 根据流程名称或版本号查找流程定义对象
      *
      * @param name    流程定义名称
      * @param version 版本号
-     * @return {@link Process}
+     * @return {@link FlwProcess}
      */
-    Process getProcessByVersion(String name, Integer version);
+    FlwProcess getProcessByVersion(String name, Integer version);
 
-    default Process getProcessByName(String name) {
+    default FlwProcess getProcessByName(String name) {
         return getProcessByVersion(name, null);
     }
 

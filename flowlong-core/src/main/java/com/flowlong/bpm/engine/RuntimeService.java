@@ -15,8 +15,8 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public interface RuntimeService {
      * @param args        参数列表
      * @return 活动流程实例对象
      */
-    Instance createInstance(Process process, FlowCreator flowCreator, Map<String, Object> args);
+    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args);
 
     /**
      * 向指定实例id添加全局变量数据
@@ -60,9 +60,9 @@ public interface RuntimeService {
     /**
      * 保存流程实例
      *
-     * @param instance 流程实例对象
+     * @param flwInstance 流程实例对象
      */
-    void saveInstance(Instance instance);
+    void saveInstance(FlwInstance flwInstance);
 
     /**
      * 流程实例强制终止
@@ -84,9 +84,9 @@ public interface RuntimeService {
     /**
      * 更新流程实例
      *
-     * @param instance 流程实例对象
+     * @param flwInstance 流程实例对象
      */
-    void updateInstance(Instance instance);
+    void updateInstance(FlwInstance flwInstance);
 
     /**
      * 级联删除指定流程实例的所有数据

@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.flowlong.bpm.engine.entity.TaskCc;
+import com.flowlong.bpm.engine.entity.FlwTaskCc;
 
 /**
  * 抄送任务 Mapper
@@ -27,6 +27,6 @@ import com.flowlong.bpm.engine.entity.TaskCc;
  * @author hubin
  * @since 1.0
  */
-public interface TaskCcMapper extends BaseMapper<TaskCc> {
+public interface FlwTaskCcMapper extends BaseMapper<FlwTaskCc> {
 
 }

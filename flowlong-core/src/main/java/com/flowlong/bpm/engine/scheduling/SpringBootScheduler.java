@@ -4,7 +4,7 @@ import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwTask;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
@@ -52,24 +52,24 @@ public class SpringBootScheduler implements SchedulingConfigurer {
         try {
             jobLock.lock();
             TaskService taskService = context.getTaskService();
-            List<Task> taskList = taskService.getTimeoutOrRemindTasks();
-            if (ObjectUtils.isNotEmpty(taskList)) {
+            List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
+            if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 Date currentDate = DateUtils.getCurrentDate();
-                for (Task task : taskList) {
-                    if (null != task.getRemindTime() && DateUtils.after(task.getRemindTime(), currentDate)) {
+                for (FlwTask flwTask : flwTaskList) {
+                    if (null != flwTask.getRemindTime() && DateUtils.after(flwTask.getRemindTime(), currentDate)) {
                         /**
                          * 任务提醒
                          */
                         try {
-                            if (task.getRemindRepeat() > 0) {
+                            if (flwTask.getRemindRepeat() > 0) {
                                 // 1，更新提醒次数减去 1 次
-                                Task temp = new Task();
-                                temp.setId(task.getId());
-                                temp.setRemindRepeat(task.getRemindRepeat() - 1);
+                                FlwTask temp = new FlwTask();
+                                temp.setId(flwTask.getId());
+                                temp.setRemindRepeat(flwTask.getRemindRepeat() - 1);
                                 taskService.updateTaskById(temp);
 
                                 // 2，调用提醒接口
-                                taskReminder.remind(context, task.getInstanceId(), task.getId());
+                                taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -78,7 +78,7 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                         /**
                          * 任务超时
                          */
-                        taskService.taskTimeout(task.getId());
+                        taskService.taskTimeout(flwTask.getId());
                     }
                 }
             }

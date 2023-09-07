@@ -16,7 +16,7 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.TaskService;
-import com.flowlong.bpm.engine.entity.HisTask;
+import com.flowlong.bpm.engine.entity.FlwHisTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,8 +50,8 @@ public class TestPurchase extends MysqlTest {
 
             // 撤回任务（领导审批）
             QueryService queryService = flowLongEngine.queryService();
-            List<HisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
-            HisTask hisTask = hisTasks.get(0);
+            List<FlwHisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
+            FlwHisTask hisTask = hisTasks.get(0);
             TaskService taskService = flowLongEngine.taskService();
             taskService.withdrawTask(hisTask.getId(), testCreator);
 

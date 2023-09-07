@@ -16,8 +16,8 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwTask;
 
 import java.util.Map;
 import java.util.Optional;
@@ -85,11 +85,11 @@ public interface FlowLongEngine {
      * @param id          流程定义ID
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
-     * @return {@link Instance} 流程实例
+     * @return {@link FlwInstance} 流程实例
      */
-    Optional<Instance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<Instance> startInstanceById(Long id, FlowCreator flowCreator) {
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator) {
         return this.startInstanceById(id, flowCreator, null);
     }
 
@@ -100,11 +100,11 @@ public interface FlowLongEngine {
      * @param version     版本号
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
-     * @return {@link Instance} 流程实例
+     * @return {@link FlwInstance} 流程实例
      */
-    Optional<Instance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<Instance> startInstanceByName(String name, Integer version, FlowCreator flowCreator) {
+    default Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator) {
         return this.startInstanceByName(name, version, flowCreator, null);
     }
 
@@ -114,7 +114,7 @@ public interface FlowLongEngine {
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
      * @param args        参数列表
-     * @return {@link Task} 任务列表
+     * @return {@link FlwTask} 任务列表
      */
     void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
 

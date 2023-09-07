@@ -22,8 +22,8 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.FlowState;
-import com.flowlong.bpm.engine.core.mapper.ProcessMapper;
-import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.core.mapper.FlwProcessMapper;
+import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
@@ -44,10 +44,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class ProcessServiceImpl implements ProcessService {
-    private ProcessMapper processMapper;
+    private FlwProcessMapper processMapper;
     private RuntimeService runtimeService;
 
-    public ProcessServiceImpl(RuntimeService runtimeService, ProcessMapper processMapper) {
+    public ProcessServiceImpl(RuntimeService runtimeService, FlwProcessMapper processMapper) {
         this.processMapper = processMapper;
         this.runtimeService = runtimeService;
     }
@@ -57,7 +57,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public void updateType(Long id, String processType) {
-        Process process = new Process();
+        FlwProcess process = new FlwProcess();
         process.setId(id);
         process.setProcessType(processType);
         processMapper.updateById(process);
@@ -68,7 +68,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 先通过cache获取，如果返回空，就从数据库读取并put
      */
     @Override
-    public Process getProcessById(Long id) {
+    public FlwProcess getProcessById(Long id) {
         return processMapper.selectById(id);
     }
 
@@ -80,11 +80,11 @@ public class ProcessServiceImpl implements ProcessService {
      * @return {@link Process}
      */
     @Override
-    public Process getProcessByVersion(String name, Integer version) {
+    public FlwProcess getProcessByVersion(String name, Integer version) {
         Assert.notEmpty(name);
-        List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery().eq(Process::getProcessName, name)
-                .eq(null != version, Process::getProcessVersion, version)
-                .orderByDesc(Process::getProcessVersion));
+        List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessName, name)
+                .eq(null != version, FlwProcess::getProcessVersion, version)
+                .orderByDesc(FlwProcess::getProcessVersion));
         Assert.isTrue(ObjectUtils.isEmpty(processList), "process [" + name + "] does not exist");
         return processList.get(0);
     }
@@ -105,13 +105,13 @@ public class ProcessServiceImpl implements ProcessService {
             /**
              * 查询流程信息获取最后版本号
              */
-            List<Process> processList = processMapper.selectList(Wrappers.<Process>lambdaQuery()
-                    .select(Process::getId, Process::getProcessVersion)
-                    .eq(Process::getProcessName, processModel.getName())
-                    .orderByDesc(Process::getProcessVersion));
+            List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
+                    .select(FlwProcess::getId, FlwProcess::getProcessVersion)
+                    .eq(FlwProcess::getProcessName, processModel.getName())
+                    .orderByDesc(FlwProcess::getProcessVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
-                Process process = processList.get(0);
+                FlwProcess process = processList.get(0);
                 if (!repeat) {
                     return process.getId();
                 }
@@ -120,7 +120,7 @@ public class ProcessServiceImpl implements ProcessService {
             /**
              * 当前版本 +1 添加一条新的流程记录
              */
-            Process process = new Process();
+            FlwProcess process = new FlwProcess();
             process.setProcessVersion(version + 1);
             process.setFlowState(FlowState.active);
             process.setProcessName(processModel.getName());
@@ -148,7 +148,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public boolean redeploy(Long id, String jsonString) {
-        Process process = processMapper.selectById(id);
+        FlwProcess process = processMapper.selectById(id);
         Assert.notNull(process);
         process.setModelContent(jsonString);
         return processMapper.updateById(process) > 0;
@@ -162,7 +162,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public boolean undeploy(Long id) {
-        Process process = new Process();
+        FlwProcess process = new FlwProcess();
         process.setId(id);
         process.setFlowState(FlowState.inactive);
         return processMapper.updateById(process) > 0;

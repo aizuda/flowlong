@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine;
 
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 
 import java.util.List;
 
@@ -36,9 +36,9 @@ public interface TaskAccessStrategy {
     /**
      * 根据创建人ID、参与者集合判断是否允许访问所属任务
      *
-     * @param userId 用户ID
-     * @param actors 参与者列表 传递至该接口的实现类中的参与者都是为非空
+     * @param userId     用户ID
+     * @param taskActors 参与者列表 传递至该接口的实现类中的参与者都是为非空
      * @return boolean 是否允许访问
      */
-    boolean isAllowed(String userId, List<TaskActor> actors);
+    boolean isAllowed(String userId, List<FlwTaskActor> taskActors);
 }

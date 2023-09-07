@@ -17,7 +17,7 @@ package com.flowlong.bpm.engine.handler.impl;
 import com.flowlong.bpm.engine.FlowLongInterceptor;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -56,8 +56,8 @@ public class CreateTaskHandler implements FlowLongHandler {
      */
     @Override
     public void handle(FlowLongContext flowLongContext, Execution execution) {
-        List<Task> tasks = execution.getEngine().taskService().createTask(nodeModel, execution);
-        execution.addTasks(tasks);
+        List<FlwTask> flwTasks = execution.getEngine().taskService().createTask(nodeModel, execution);
+        execution.addTasks(flwTasks);
         /**
          * 从服务上下文中查找任务拦截器列表，依次对task集合进行拦截处理
          */

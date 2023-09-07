@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.FlowLongContext;
@@ -42,8 +41,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@TableName("flw_task")
-public class Task extends FlowEntity {
+public class FlwTask extends FlowEntity {
     /**
      * 流程实例ID
      */
@@ -140,31 +138,31 @@ public class Task extends FlowEntity {
         this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
     }
 
-    public Task cloneTask(TaskActor taskActor) {
-        if (null != taskActor) {
-            this.createId = taskActor.getActorId();
-            this.createBy = taskActor.getActorName();
+    public FlwTask cloneTask(FlwHisTaskActor flwHisTaskActor) {
+        if (null != flwHisTaskActor) {
+            this.createId = flwHisTaskActor.getActorId();
+            this.createBy = flwHisTaskActor.getActorName();
         }
         return cloneTask(createId, createBy);
     }
 
-    public Task cloneTask(String createId, String createBy) {
-        Task newTask = new Task();
-        newTask.setTenantId(tenantId);
-        newTask.setInstanceId(instanceId);
-        newTask.setParentTaskId(parentTaskId);
-        newTask.setTaskName(taskName);
-        newTask.setDisplayName(displayName);
-        newTask.setTaskType(taskType);
-        newTask.setPerformType(performType);
-        newTask.setActionUrl(actionUrl);
-        newTask.setVariable(variable);
-        newTask.setExpireTime(expireTime);
-        newTask.setRemindTime(remindTime);
-        newTask.setRemindRepeat(remindRepeat);
-        newTask.setCreateId(createId);
-        newTask.setCreateBy(createBy);
-        newTask.setCreateTime(DateUtils.getCurrentDate());
-        return newTask;
+    public FlwTask cloneTask(String createId, String createBy) {
+        FlwTask newFlwTask = new FlwTask();
+        newFlwTask.setTenantId(tenantId);
+        newFlwTask.setInstanceId(instanceId);
+        newFlwTask.setParentTaskId(parentTaskId);
+        newFlwTask.setTaskName(taskName);
+        newFlwTask.setDisplayName(displayName);
+        newFlwTask.setTaskType(taskType);
+        newFlwTask.setPerformType(performType);
+        newFlwTask.setActionUrl(actionUrl);
+        newFlwTask.setVariable(variable);
+        newFlwTask.setExpireTime(expireTime);
+        newFlwTask.setRemindTime(remindTime);
+        newFlwTask.setRemindRepeat(remindRepeat);
+        newFlwTask.setCreateId(createId);
+        newFlwTask.setCreateBy(createBy);
+        newFlwTask.setCreateTime(DateUtils.getCurrentDate());
+        return newFlwTask;
     }
 }

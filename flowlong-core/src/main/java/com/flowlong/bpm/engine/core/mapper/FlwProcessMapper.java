@@ -15,10 +15,10 @@
 package com.flowlong.bpm.engine.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.flowlong.bpm.engine.entity.Instance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
 
 /**
- * 流程实例 Mapper
+ * 流程定义 Mapper
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -27,6 +27,6 @@ import com.flowlong.bpm.engine.entity.Instance;
  * @author hubin
  * @since 1.0
  */
-public interface InstanceMapper extends BaseMapper<Instance> {
+public interface FlwProcessMapper extends BaseMapper<FlwProcess> {
 
 }

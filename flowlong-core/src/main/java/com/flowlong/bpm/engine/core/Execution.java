@@ -15,12 +15,8 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -50,19 +46,19 @@ public class Execution implements Serializable {
     /**
      * 流程定义对象
      */
-    private Process process;
+    private FlwProcess process;
     /**
      * 流程实例对象
      */
-    private Instance instance;
+    private FlwInstance flwInstance;
     /**
      * 父流程实例
      */
-    private Instance parentInstance;
+    private FlwInstance parentFlwInstance;
     /**
      * 下一个审批参与者
      */
-    private TaskActor nextTaskActor;
+    private FlwTaskActor nextFlwTaskActor;
     /**
      * 父流程实例节点名称
      */
@@ -86,11 +82,11 @@ public class Execution implements Serializable {
     /**
      * 当前执行任务
      */
-    private Task task;
+    private FlwTask flwTask;
     /**
      * 返回的任务列表
      */
-    private List<Task> tasks = new ArrayList<>();
+    private List<FlwTask> flwTasks = new ArrayList<>();
     /**
      * 是否已合并
      * 针对join节点的处理
@@ -104,14 +100,14 @@ public class Execution implements Serializable {
      * @param process
      * @param parentNodeName
      */
-    Execution(Execution execution, Process process, String parentNodeName) {
+    Execution(Execution execution, FlwProcess process, String parentNodeName) {
         if (execution == null || process == null || parentNodeName == null) {
             throw new FlowLongException("构造Execution对象失败，请检查execution、process、parentNodeName是否为空");
         }
         this.engine = execution.getEngine();
         this.process = process;
         this.args = execution.getArgs();
-        this.parentInstance = execution.getInstance();
+        this.parentFlwInstance = execution.getFlwInstance();
         this.parentNodeName = parentNodeName;
         this.createId = execution.getCreateId();
         this.createBy = execution.getCreateBy();
@@ -121,16 +117,16 @@ public class Execution implements Serializable {
      * 构造函数，接收流程定义、流程实例对象、执行参数
      *
      * @param process
-     * @param instance
+     * @param flwInstance
      * @param args
      */
-    public Execution(FlowLongEngine engine, Process process, Instance instance, Map<String, Object> args) {
-        if (process == null || instance == null) {
+    public Execution(FlowLongEngine engine, FlwProcess process, FlwInstance flwInstance, Map<String, Object> args) {
+        if (process == null || flwInstance == null) {
             throw new FlowLongException("构造Execution对象失败，请检查process、order是否为空");
         }
         this.engine = engine;
         this.process = process;
-        this.instance = instance;
+        this.flwInstance = flwInstance;
         this.args = args;
     }
 
@@ -142,26 +138,26 @@ public class Execution implements Serializable {
      * @param parentNodeName
      * @return
      */
-    public Execution createSubExecution(Execution execution, Process process, String parentNodeName) {
+    public Execution createSubExecution(Execution execution, FlwProcess process, String parentNodeName) {
         return new Execution(execution, process, parentNodeName);
     }
 
     /**
      * 添加任务集合
      *
-     * @param tasks
+     * @param flwTasks
      */
-    public void addTasks(List<Task> tasks) {
-        this.tasks.addAll(tasks);
+    public void addTasks(List<FlwTask> flwTasks) {
+        this.flwTasks.addAll(flwTasks);
     }
 
     /**
      * 添加任务
      *
-     * @param task
+     * @param flwTask
      */
-    public void addTask(Task task) {
-        this.tasks.add(task);
+    public void addTask(FlwTask flwTask) {
+        this.flwTasks.add(flwTask);
     }
 
     /**

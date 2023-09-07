@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,8 +34,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-@TableName("flw_his_instance")
-public class HisInstance extends Instance {
+public class FlwHisInstance extends FlwInstance {
     /**
      * 状态 0，结束 1，活动
      */
@@ -54,18 +52,18 @@ public class HisInstance extends Instance {
         this.instanceState = instanceState.getValue();
     }
 
-    public static HisInstance of(Instance instance, InstanceState instanceState) {
-        HisInstance hisInstance = new HisInstance();
-        hisInstance.id = instance.getId();
+    public static FlwHisInstance of(FlwInstance flwInstance, InstanceState instanceState) {
+        FlwHisInstance hisInstance = new FlwHisInstance();
+        hisInstance.id = flwInstance.getId();
         hisInstance.instanceState = instanceState.getValue();
-        hisInstance.processId = instance.getProcessId();
-        hisInstance.createTime = instance.getCreateTime();
-        hisInstance.expireTime = instance.getExpireTime();
-        hisInstance.createId = instance.getCreateId();
-        hisInstance.createBy = instance.getCreateBy();
-        hisInstance.priority = instance.getPriority();
-        hisInstance.instanceNo = instance.getInstanceNo();
-        hisInstance.variable = instance.getVariable();
+        hisInstance.processId = flwInstance.getProcessId();
+        hisInstance.createTime = flwInstance.getCreateTime();
+        hisInstance.expireTime = flwInstance.getExpireTime();
+        hisInstance.createId = flwInstance.getCreateId();
+        hisInstance.createBy = flwInstance.getCreateBy();
+        hisInstance.priority = flwInstance.getPriority();
+        hisInstance.instanceNo = flwInstance.getInstanceNo();
+        hisInstance.variable = flwInstance.getVariable();
         return hisInstance;
     }
 }

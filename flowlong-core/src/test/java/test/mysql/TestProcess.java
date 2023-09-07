@@ -15,7 +15,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
-import com.flowlong.bpm.engine.entity.Process;
+import com.flowlong.bpm.engine.entity.FlwProcess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class TestProcess extends MysqlTest {
         ProcessService processService = flowLongEngine.processService();
 
         // 根据流程定义ID查询
-        Process process = processService.getProcessById(processId);
+        FlwProcess process = processService.getProcessById(processId);
         if (null != process) {
             // 根据流程定义ID和版本号查询
             Assertions.assertNotNull(processService.getProcessByVersion(process.getProcessName(), process.getProcessVersion()));

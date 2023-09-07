@@ -16,8 +16,9 @@ package test.mysql;
 
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.entity.Task;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.FlwTask;
+import com.flowlong.bpm.engine.entity.FlwHisTaskActor;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -47,21 +48,21 @@ public class MysqlTest extends TestFlowLong {
         this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), testCreator));
     }
 
-    public void executeActiveTasks(Long instanceId, Consumer<Task> taskConsumer) {
+    public void executeActiveTasks(Long instanceId, Consumer<FlwTask> taskConsumer) {
         this.flowLongEngine.queryService().getActiveTasksByInstanceId(instanceId)
                 .ifPresent(tasks -> tasks.forEach(t -> taskConsumer.accept(t)));
     }
 
     public void executeTask(Long instanceId, FlowCreator flowCreator) {
         QueryService queryService = this.flowLongEngine.queryService();
-        List<Task> taskList = queryService.getTasksByInstanceId(instanceId);
-        for (Task task : taskList) {
-            List<TaskActor> taskActors = queryService.getTaskActorsByTaskId(task.getId());
+        List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instanceId);
+        for (FlwTask flwTask : flwTaskList) {
+            List<FlwTaskActor> taskActors = queryService.getTaskActorsByTaskId(flwTask.getId());
             if (null != taskActors && taskActors.stream()
                     // 找到当前对应审批的任务执行
                     .anyMatch(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId()))) {
                 // 执行审批
-                this.flowLongEngine.executeTask(task.getId(), flowCreator);
+                this.flowLongEngine.executeTask(flwTask.getId(), flowCreator);
             }
         }
     }

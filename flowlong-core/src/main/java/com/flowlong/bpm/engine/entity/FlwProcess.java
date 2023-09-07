@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
@@ -43,8 +42,7 @@ import java.util.function.Consumer;
 @Getter
 @Setter
 @ToString
-@TableName("flw_process")
-public class Process extends FlowEntity {
+public class FlwProcess extends FlowEntity {
     /**
      * 流程定义名称
      */
@@ -186,7 +184,7 @@ public class Process extends FlowEntity {
     /**
      * 流程状态验证
      */
-    public Process checkState() {
+    public FlwProcess checkState() {
         if (Objects.equals(0, this.processState)) {
             throw new FlowLongException("指定的流程定义[id=" + this.id + ",processVersion=" + this.processVersion + "]为非活动状态");
         }

@@ -14,7 +14,7 @@
  */
 package com.flowlong.bpm.engine.listener;
 
-import com.flowlong.bpm.engine.entity.HisInstance;
+import com.flowlong.bpm.engine.entity.FlwHisInstance;
 
 /**
  * 流程实例监听
@@ -26,6 +26,6 @@ import com.flowlong.bpm.engine.entity.HisInstance;
  * @author hubin
  * @since 1.0
  */
-public interface InstanceListener extends FlowLongListener<HisInstance> {
+public interface InstanceListener extends FlowLongListener<FlwHisInstance> {
 
 }

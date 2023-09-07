@@ -16,7 +16,7 @@ package com.flowlong.bpm.engine.impl;
 
 import com.flowlong.bpm.engine.TaskAccessStrategy;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
-import com.flowlong.bpm.engine.entity.TaskActor;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 
 import java.util.List;
 import java.util.Objects;
@@ -38,11 +38,11 @@ public class GeneralAccessStrategy implements TaskAccessStrategy {
      * 如果创建人ID所属的组只要有一项存在于参与者集合中，则表示可访问
      */
     @Override
-    public boolean isAllowed(String userId, List<TaskActor> actors) {
-        if (null == userId || ObjectUtils.isEmpty(actors)) {
+    public boolean isAllowed(String userId, List<FlwTaskActor> taskActors) {
+        if (null == userId || ObjectUtils.isEmpty(taskActors)) {
             return false;
         }
         // 参与者 ID 默认非组，作为用户ID判断是否允许执行
-        return actors.stream().anyMatch(t -> Objects.equals(t.getActorId(), userId));
+        return taskActors.stream().anyMatch(t -> Objects.equals(t.getActorId(), userId));
     }
 }

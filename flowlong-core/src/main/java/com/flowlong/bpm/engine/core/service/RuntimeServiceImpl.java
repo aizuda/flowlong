@@ -24,12 +24,12 @@ import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
-import com.flowlong.bpm.engine.core.mapper.HisInstanceMapper;
-import com.flowlong.bpm.engine.core.mapper.InstanceMapper;
-import com.flowlong.bpm.engine.entity.HisInstance;
-import com.flowlong.bpm.engine.entity.Instance;
-import com.flowlong.bpm.engine.entity.Process;
-import com.flowlong.bpm.engine.entity.Task;
+import com.flowlong.bpm.engine.core.mapper.FlwHisInstanceMapper;
+import com.flowlong.bpm.engine.core.mapper.FlwInstanceMapper;
+import com.flowlong.bpm.engine.entity.FlwHisInstance;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +53,13 @@ public class RuntimeServiceImpl implements RuntimeService {
     private InstanceListener instanceListener;
     private QueryService queryService;
     private TaskService taskService;
-    private InstanceMapper instanceMapper;
-    private HisInstanceMapper hisInstanceMapper;
+    private FlwInstanceMapper instanceMapper;
+    private FlwHisInstanceMapper hisInstanceMapper;
 
 
     public RuntimeServiceImpl(@Autowired(required = false) InstanceListener instanceListener,
-                              QueryService queryService, TaskService taskService, InstanceMapper instanceMapper,
-                              HisInstanceMapper hisInstanceMapper) {
+                              QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
+                              FlwHisInstanceMapper hisInstanceMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
@@ -71,14 +71,14 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public Instance createInstance(Process process, FlowCreator flowCreator, Map<String, Object> args) {
-        Instance instance = new Instance();
-        instance.setCreateTime(DateUtils.getCurrentDate());
-        instance.setLastUpdateTime(instance.getCreateTime());
-        instance.setCreateId(flowCreator.getCreateId());
-        instance.setCreateBy(flowCreator.getCreateBy());
-        instance.setLastUpdateBy(instance.getCreateBy());
-        instance.setProcessId(process.getId());
+    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwInstance flwInstance = new FlwInstance();
+        flwInstance.setCreateTime(DateUtils.getCurrentDate());
+        flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
+        flwInstance.setCreateId(flowCreator.getCreateId());
+        flwInstance.setCreateBy(flowCreator.getCreateBy());
+        flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
+        flwInstance.setProcessId(process.getId());
         ProcessModel model = process.getProcessModel();
         if (model != null && args != null) {
 //            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
@@ -86,9 +86,9 @@ public class RuntimeServiceImpl implements RuntimeService {
 //            }
         }
 
-        instance.setVariable(args);
-        this.saveInstance(instance);
-        return instance;
+        flwInstance.setVariable(args);
+        this.saveInstance(flwInstance);
+        return flwInstance;
     }
 
     /**
@@ -99,10 +99,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void addVariable(Long instanceId, Map<String, Object> args) {
-        Instance instance = instanceMapper.selectById(instanceId);
-        Map<String, Object> data = instance.getVariableMap();
+        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        Map<String, Object> data = flwInstance.getVariableMap();
         data.putAll(args);
-        Instance temp = new Instance();
+        FlwInstance temp = new FlwInstance();
         temp.setId(instanceId);
         temp.setVariable(data);
         instanceMapper.updateById(temp);
@@ -111,29 +111,29 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 流程实例数据会保存至活动实例表、历史实例表
      *
-     * @param instance 流程实例对象
+     * @param flwInstance 流程实例对象
      */
     @Override
-    public void saveInstance(Instance instance) {
+    public void saveInstance(FlwInstance flwInstance) {
         // 保存实例
-        instanceMapper.insert(instance);
+        instanceMapper.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
-        HisInstance hisInstance = HisInstance.of(instance, InstanceState.active);
-        hisInstanceMapper.insert(hisInstance);
+        FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.active);
+        hisInstanceMapper.insert(flwHisInstance);
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.create, hisInstance);
+        this.instanceNotify(EventType.create, flwHisInstance);
     }
 
     /**
      * 更新活动实例
      */
     @Override
-    public void updateInstance(Instance instance) {
-        Assert.illegalArgument(null == instance || null == instance.getId(),
+    public void updateInstance(FlwInstance flwInstance) {
+        Assert.illegalArgument(null == flwInstance || null == flwInstance.getId(),
                 "instance id cannot be empty");
-        instanceMapper.updateById(instance);
+        instanceMapper.updateById(flwInstance);
     }
 
     /**
@@ -141,18 +141,18 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void complete(Long instanceId) {
-        HisInstance hisInstance = new HisInstance();
-        hisInstance.setId(instanceId);
-        hisInstance.setInstanceState(InstanceState.complete);
-        hisInstance.setEndTime(DateUtils.getCurrentDate());
+        FlwHisInstance flwHisInstance = new FlwHisInstance();
+        flwHisInstance.setId(instanceId);
+        flwHisInstance.setInstanceState(InstanceState.complete);
+        flwHisInstance.setEndTime(DateUtils.getCurrentDate());
         instanceMapper.deleteById(instanceId);
         // 流程实例监听器通知
-        this.instanceNotify(EventType.complete, hisInstance);
+        this.instanceNotify(EventType.complete, flwHisInstance);
     }
 
-    protected void instanceNotify(EventType eventType, HisInstance hisInstance) {
+    protected void instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
         if (null != instanceListener) {
-            instanceListener.notify(eventType, hisInstance);
+            instanceListener.notify(eventType, flwHisInstance);
         }
     }
 
@@ -164,25 +164,25 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(Long instanceId, FlowCreator flowCreator) {
-        Instance instance = instanceMapper.selectById(instanceId);
-        if (null != instance) {
+        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        if (null != flwInstance) {
             // 实例相关任务强制完成
             queryService.getActiveTasksByInstanceId(instanceId).ifPresent(tasks -> {
-                for (Task task : tasks) {
-                    taskService.complete(task.getId(), flowCreator);
+                for (FlwTask flwTask : tasks) {
+                    taskService.complete(flwTask.getId(), flowCreator);
                 }
             });
 
             // 更新历史实例设置状态为终止
-            HisInstance hisInstance = HisInstance.of(instance, InstanceState.termination);
-            hisInstance.setEndTime(DateUtils.getCurrentDate());
-            hisInstanceMapper.updateById(hisInstance);
+            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.termination);
+            flwHisInstance.setEndTime(DateUtils.getCurrentDate());
+            hisInstanceMapper.updateById(flwHisInstance);
 
             // 删除实例
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(EventType.terminate, hisInstance);
+            this.instanceNotify(EventType.terminate, flwHisInstance);
         }
     }
 
@@ -193,10 +193,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void cascadeRemoveByProcessId(Long processId) {
-        List<HisInstance> hisInstances = hisInstanceMapper.selectList(Wrappers.<HisInstance>lambdaQuery()
-                .eq(HisInstance::getProcessId, processId));
-        if (ObjectUtils.isNotEmpty(hisInstances)) {
-            hisInstances.forEach(t -> {
+        List<FlwHisInstance> flwHisInstances = hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+                .eq(FlwHisInstance::getProcessId, processId));
+        if (ObjectUtils.isNotEmpty(flwHisInstances)) {
+            flwHisInstances.forEach(t -> {
                 // 删除活动任务相关信息
                 taskService.cascadeRemoveByInstanceId(t.getId());
                 // 删除抄送任务
@@ -208,10 +208,10 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
 
         // 删除历史实例
-        hisInstanceMapper.delete(Wrappers.<HisInstance>lambdaQuery().eq(HisInstance::getProcessId, processId));
+        hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery().eq(FlwHisInstance::getProcessId, processId));
 
         // 删除实例
-        instanceMapper.delete(Wrappers.<Instance>lambdaQuery().eq(Instance::getProcessId, processId));
+        instanceMapper.delete(Wrappers.<FlwInstance>lambdaQuery().eq(FlwInstance::getProcessId, processId));
     }
 
 }

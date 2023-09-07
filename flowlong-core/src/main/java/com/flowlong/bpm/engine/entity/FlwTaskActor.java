@@ -14,7 +14,6 @@
  */
 package com.flowlong.bpm.engine.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -34,8 +33,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @ToString
-@TableName("flw_task_actor")
-public class TaskActor implements Serializable {
+public class FlwTaskActor implements Serializable {
     /**
      * 主键ID
      */
@@ -65,20 +63,20 @@ public class TaskActor implements Serializable {
      */
     protected Integer actorType;
 
-    public static TaskActor ofUser(String actorId, String actorName) {
+    public static FlwTaskActor ofUser(String actorId, String actorName) {
         return of(actorId, actorName, 0);
     }
 
-    public static TaskActor ofRole(String actorId, String actorName) {
+    public static FlwTaskActor ofRole(String actorId, String actorName) {
         return of(actorId, actorName, 1);
     }
 
-    public static TaskActor ofDepartment(String actorId, String actorName) {
+    public static FlwTaskActor ofDepartment(String actorId, String actorName) {
         return of(actorId, actorName, 2);
     }
 
-    protected static TaskActor of(String actorId, String actorName, Integer actorType) {
-        TaskActor taskActor = new TaskActor();
+    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType) {
+        FlwTaskActor taskActor = new FlwTaskActor();
         taskActor.setActorId(actorId);
         taskActor.setActorName(actorName);
         taskActor.setActorType(actorType);
