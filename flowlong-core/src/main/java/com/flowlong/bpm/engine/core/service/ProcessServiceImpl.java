@@ -150,6 +150,10 @@ public class ProcessServiceImpl implements ProcessService {
     public boolean redeploy(Long id, String jsonString) {
         FlwProcess process = processMapper.selectById(id);
         Assert.notNull(process);
+        ProcessModel processModel = ProcessModel.parse(jsonString);
+        process.setProcessName(processModel.getName());
+        process.setDisplayName(processModel.getName());
+        process.setInstanceUrl(processModel.getInstanceUrl());
         process.setModelContent(jsonString);
         return processMapper.updateById(process) > 0;
     }
