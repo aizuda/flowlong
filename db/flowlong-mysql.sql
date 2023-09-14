@@ -64,7 +64,7 @@ CREATE TABLE `flw_his_task`  (
                                  INDEX `idx_his_task_instance_id`(`instance_id` ASC) USING BTREE,
                                  INDEX `idx_his_task_parent_task_id`(`parent_task_id` ASC) USING BTREE,
                                  CONSTRAINT `fk_his_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_his_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '历史任务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for flw_his_task_actor
