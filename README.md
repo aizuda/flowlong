@@ -14,6 +14,8 @@ FlowLong🐉飞龙工作流
 
 [官方开发文档](https://flowlong.gitee.io)
 
+[设计器演示地址](https://flowlong.gitee.io/flowlong-designer)
+
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
 
