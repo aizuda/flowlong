@@ -10,11 +10,13 @@ FlowLong🐉飞龙工作流
 
 > 使用必须遵守国家法律法规，⛔不允许非法项目使用，后果自负❗
 
-[使用登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5) 
+[使用源码登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5) 
 
-[官方开发文档](https://flowlong.gitee.io)
+[打开官方开发文档](https://flowlong.gitee.io)
 
-[设计器演示地址](https://flowlong.gitee.io/flowlong-designer)
+[点击设计器在线演示](https://flowlong.gitee.io/flowlong-designer)
+
+[点击设计器源码下载](https://gitee.com/flowlong/flowlong-designer)
 
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
@@ -51,6 +53,8 @@ FlowLong🐉飞龙工作流
 # 使用文档
 
 - 流程设计采用 [scui](https://gitee.com/lolicode/scui) 工作流模块
+
+- 设计器源码 https://gitee.com/flowlong/flowlong-designer
 
 <img src="https://foruda.gitee.com/images/1683680723972384655/f957e75d_12260.png" alt="flowlong" width="500px" height="262px">
 
