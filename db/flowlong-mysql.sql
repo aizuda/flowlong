@@ -32,7 +32,7 @@ CREATE TABLE `flw_his_instance`  (
                                      PRIMARY KEY (`id`) USING BTREE,
                                      INDEX `idx_his_instance_process_id`(`process_id` ASC) USING BTREE,
                                      CONSTRAINT `fk_his_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '历史流程实例表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for flw_his_task
