@@ -76,7 +76,7 @@ public class FlwInstance extends FlowEntity {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {
-        Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
+        Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
     }
@@ -86,6 +86,6 @@ public class FlwInstance extends FlowEntity {
     }
 
     public void setVariable(Map<String, Object> args) {
-        this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
+        this.variable = FlowLongContext.toJson(args);
     }
 }

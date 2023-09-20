@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.handler.impl;
+package com.flowlong.bpm.spring;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,7 +31,7 @@ import com.flowlong.bpm.engine.handler.FlowJsonHandler;
  * @author hubin
  * @since 1.0
  */
-public class JacksonHandlerFlow implements FlowJsonHandler {
+public class FlowJacksonHandler implements FlowJsonHandler {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {

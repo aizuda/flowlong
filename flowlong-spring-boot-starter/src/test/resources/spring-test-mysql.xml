@@ -5,7 +5,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.flowlong.bpm.engine.core.service"/>
+    <context:component-scan base-package="com.flowlong.bpm.mybatisplus.service"/>
     <context:component-scan base-package="test.mysql.config"/>
     <context:property-placeholder location="jdbc.properties"/>
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
@@ -15,6 +15,6 @@
         <property name="password" value="${jdbc.password}"></property>
     </bean>
     <!-- 表达式引擎配置 -->
-    <bean class="com.flowlong.bpm.engine.core.SpelExpression"/>
+    <bean class="com.flowlong.bpm.spring.SpelExpression"/>
 
 </beans>

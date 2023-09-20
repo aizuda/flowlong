@@ -1,4 +1,4 @@
-description "Spring Boot 启动模块"
+description "flowLong mybatis-plus spring-boot starter"
 
 dependencies {
     api project(":flowlong-core")
@@ -10,5 +10,9 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testCompileOnly("org.springframework.boot:spring-boot-starter-test")
+    testCompileOnly("org.springframework.boot:spring-boot-starter-json")
+    testCompileOnly("org.springframework:spring-jdbc")
+    testCompileOnly("com.baomidou:mybatis-plus-extension")
+    testCompileOnly("mysql:mysql-connector-java")
     testCompileOnly("junit:junit")
 }

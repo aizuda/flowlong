@@ -1,6 +1,6 @@
 package test;
 
-import com.flowlong.bpm.engine.core.SpelExpression;
+import com.flowlong.bpm.spring.SpelExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TestSpelExpression {
-
 
     @Test
     public void test() {

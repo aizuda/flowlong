@@ -12,13 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.core.mapper;
+package com.flowlong.bpm.mybatisplus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.flowlong.bpm.engine.entity.FlwHisInstance;
+import com.flowlong.bpm.engine.entity.FlwInstance;
 
 /**
- * 历史流程实例 Mapper
+ * 流程实例 Mapper
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -27,6 +27,6 @@ import com.flowlong.bpm.engine.entity.FlwHisInstance;
  * @author hubin
  * @since 1.0
  */
-public interface FlwHisInstanceMapper extends BaseMapper<FlwHisInstance> {
+public interface FlwInstanceMapper extends BaseMapper<FlwInstance> {
 
 }

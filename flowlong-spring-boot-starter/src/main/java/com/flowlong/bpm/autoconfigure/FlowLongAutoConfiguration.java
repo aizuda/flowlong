@@ -18,8 +18,9 @@ import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.scheduling.JobLock;
 import com.flowlong.bpm.engine.scheduling.LocalLock;
-import com.flowlong.bpm.engine.scheduling.SpringBootScheduler;
 import com.flowlong.bpm.engine.scheduling.TaskReminder;
+import com.flowlong.bpm.spring.FlowJacksonHandler;
+import com.flowlong.bpm.spring.SpringBootScheduler;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,8 +40,8 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.0
  */
 @Configuration
-@MapperScan("com.flowlong.bpm.engine.core.mapper")
-@ComponentScan(basePackages = {"com.flowlong.bpm.engine.core.service"})
+@MapperScan("com.flowlong.bpm.mybatisplus.mapper")
+@ComponentScan(basePackages = {"com.flowlong.bpm.mybatisplus.service"})
 @EnableConfigurationProperties(FlowLongProperties.class)
 public class FlowLongAutoConfiguration {
 
@@ -48,6 +49,9 @@ public class FlowLongAutoConfiguration {
     @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService,
                                            RuntimeService runtimeService, TaskService taskService) {
+        // 静态注入 Jackson 解析 JSON 处理器
+        FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
+        // 注入 FlowLong 上下文
         FlowLongContext flc = new FlowLongContext();
         flc.setProcessService(processService);
         flc.setQueryService(queryService);

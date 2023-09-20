@@ -12,15 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.core.mapper;
+package com.flowlong.bpm.mybatisplus.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.entity.FlwHisTask;
 import com.flowlong.bpm.engine.entity.FlwTask;
 
+import java.util.List;
+
 /**
- * 历史任务 Mapper
+ * 任务 Mapper
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -29,17 +31,28 @@ import com.flowlong.bpm.engine.entity.FlwTask;
  * @author hubin
  * @since 1.0
  */
-public interface FlwHisTaskMapper extends BaseMapper<FlwHisTask> {
+public interface FlwTaskMapper extends BaseMapper<FlwTask> {
 
     /**
-     * 获取历史任务并检查ID的合法性
+     * 获取任务并检查ID的合法性
      *
      * @param id 任务ID
      * @return {@link FlwTask}
      */
-    default FlwHisTask getCheckById(Long id) {
-        FlwHisTask hisTask = selectById(id);
-        Assert.notNull(hisTask, "指定的任务[id=" + id + "]不存在");
-        return hisTask;
+    default FlwTask getCheckById(Long id) {
+        FlwTask flwTask = selectById(id);
+        Assert.notNull(flwTask, "指定的任务[id=" + id + "]不存在");
+        return flwTask;
     }
+
+    /**
+     * 根据流程实例ID获取任务列表
+     *
+     * @param instanceId 流程实例ID
+     * @return
+     */
+    default List<FlwTask> selectListByInstanceId(Long instanceId) {
+        return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
+    }
+
 }

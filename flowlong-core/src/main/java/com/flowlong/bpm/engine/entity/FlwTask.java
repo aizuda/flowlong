@@ -108,7 +108,7 @@ public class FlwTask extends FlowEntity {
     }
 
     public Map<String, Object> variableMap() {
-        Map<String, Object> map = FlowLongContext.JSON_HANDLER.fromJson(this.variable, Map.class);
+        Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
         return null == map ? Collections.emptyMap() : map;
     }
 
@@ -135,7 +135,7 @@ public class FlwTask extends FlowEntity {
     }
 
     public void setVariable(Map<String, Object> args) {
-        this.variable = FlowLongContext.JSON_HANDLER.toJson(args);
+        this.variable = FlowLongContext.toJson(args);
     }
 
     public FlwTask cloneTask(FlwHisTaskActor flwHisTaskActor) {

@@ -71,7 +71,7 @@ public class ProcessModel {
     }
 
     private static ProcessModel parseProcessModel(String content) {
-        ProcessModel processModel = FlowLongContext.JSON_HANDLER.fromJson(content, ProcessModel.class);
+        ProcessModel processModel = FlowLongContext.fromJson(content, ProcessModel.class);
         Assert.isNull(processModel, "process model json parser error");
         processModel.buildParentNode(processModel.getNodeConfig());
         return processModel;

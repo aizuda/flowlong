@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.core.service;
+package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
@@ -24,14 +24,14 @@ import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
-import com.flowlong.bpm.engine.core.mapper.FlwHisInstanceMapper;
-import com.flowlong.bpm.engine.core.mapper.FlwInstanceMapper;
 import com.flowlong.bpm.engine.entity.FlwHisInstance;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
+import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

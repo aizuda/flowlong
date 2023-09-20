@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.engine.core.service;
+package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
-import com.flowlong.bpm.engine.core.mapper.*;
 import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.mybatisplus.mapper.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

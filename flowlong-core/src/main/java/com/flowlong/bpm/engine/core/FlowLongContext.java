@@ -15,11 +15,11 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.*;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.cache.FlowCache;
 import com.flowlong.bpm.engine.cache.FlowSimpleCache;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowJsonHandler;
-import com.flowlong.bpm.engine.handler.impl.JacksonHandlerFlow;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -53,13 +53,26 @@ public class FlowLongContext {
      * 流程 JSON 处理器，默认 jackson 实现
      * 使用其它json框架可在初始化时赋值该静态属性
      */
-    public static FlowJsonHandler JSON_HANDLER = new JacksonHandlerFlow();
+    @Setter
+    private static FlowJsonHandler flowJsonHandler;
 
     /**
      * 流程缓存处理类，默认 ConcurrentHashMap 实现
      * 使用其它缓存框架可在初始化时赋值该静态属性
      */
     public static FlowCache FLOW_CACHE = new FlowSimpleCache();
+
+    public static <T> T fromJson(String jsonString, Class<T> clazz) {
+        return getFlowJsonHandler().fromJson(jsonString, clazz);
+    }
+    public static String toJson(Object object) {
+        return getFlowJsonHandler().toJson(object);
+    }
+
+    private static FlowJsonHandler getFlowJsonHandler() {
+        Assert.isNull(flowJsonHandler, "Please implement the FlowJsonHandler interface class");
+        return flowJsonHandler;
+    }
 
     /**
      * 默认初始化流程引擎上下文

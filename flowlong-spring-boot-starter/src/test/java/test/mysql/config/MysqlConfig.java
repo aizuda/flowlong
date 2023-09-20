@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
+import com.flowlong.bpm.spring.FlowJacksonHandler;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.annotation.MapperScan;
@@ -35,7 +36,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("com.flowlong.bpm.engine.core.mapper")
+@MapperScan("com.flowlong.bpm.mybatisplus.mapper")
 public class MysqlConfig {
 
 
@@ -70,6 +71,8 @@ public class MysqlConfig {
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
         flc.setExpression(expression);
+        // 静态注入 Jackson 解析 JSON 处理器
+        FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         return flc.build();
     }
 }
