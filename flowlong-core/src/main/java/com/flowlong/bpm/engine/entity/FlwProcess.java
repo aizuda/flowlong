@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.cache.FlowCache;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
@@ -93,7 +94,17 @@ public class FlwProcess extends FlowEntity {
      * 模型解析
      */
     public ProcessModel getProcessModel() {
-        return null == this.modelContent ? null : ProcessModel.parse(this.modelContent);
+        if (null == this.modelContent) {
+            return null;
+        }
+        String key = this.processName + this.processVersion;
+        FlowCache flowCache = FlowLongContext.FLOW_CACHE;
+        ProcessModel processModel = flowCache.get(key);
+        if (null == processModel) {
+            processModel = ProcessModel.parse(this.modelContent, this.id);
+            flowCache.put(key, processModel);
+        }
+        return processModel;
     }
 
     /**
@@ -177,7 +188,7 @@ public class FlwProcess extends FlowEntity {
      */
     private void processModelParser(Consumer<ProcessModel> consumer) {
         if (null != this.modelContent) {
-            consumer.accept(ProcessModel.parse(this.modelContent));
+            consumer.accept(this.getProcessModel());
         }
     }
 

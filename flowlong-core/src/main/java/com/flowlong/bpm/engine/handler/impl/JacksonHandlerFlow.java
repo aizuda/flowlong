@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.handler.JsonHandler;
+import com.flowlong.bpm.engine.handler.FlowJsonHandler;
 
 /**
  * Jackson JSON 解析处理器接口
@@ -31,7 +31,7 @@ import com.flowlong.bpm.engine.handler.JsonHandler;
  * @author hubin
  * @since 1.0
  */
-public class JacksonHandler implements JsonHandler {
+public class JacksonHandlerFlow implements FlowJsonHandler {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     static {

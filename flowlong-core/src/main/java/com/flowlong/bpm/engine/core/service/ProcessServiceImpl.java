@@ -101,7 +101,7 @@ public class ProcessServiceImpl implements ProcessService {
     public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
         Assert.notNull(jsonString);
         try {
-            ProcessModel processModel = ProcessModel.parse(jsonString);
+            ProcessModel processModel = ProcessModel.parse(jsonString, null);
             /**
              * 查询流程信息获取最后版本号
              */
@@ -150,7 +150,7 @@ public class ProcessServiceImpl implements ProcessService {
     public boolean redeploy(Long id, String jsonString) {
         FlwProcess process = processMapper.selectById(id);
         Assert.notNull(process);
-        ProcessModel processModel = ProcessModel.parse(jsonString);
+        ProcessModel processModel = ProcessModel.parse(jsonString, id);
         process.setProcessName(processModel.getName());
         process.setDisplayName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());

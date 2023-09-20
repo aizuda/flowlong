@@ -15,7 +15,7 @@
 package com.flowlong.bpm.engine.handler;
 
 /**
- * JSON 解析处理器接口
+ * 流程 JSON 解析处理器接口
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
@@ -24,7 +24,7 @@ package com.flowlong.bpm.engine.handler;
  * @author hubin
  * @since 1.0
  */
-public interface JsonHandler {
+public interface FlowJsonHandler {
 
     /**
      * 对象转换为 JSON 字符串
