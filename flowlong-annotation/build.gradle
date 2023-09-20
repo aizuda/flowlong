@@ -1,7 +1,0 @@
-description "注解模块"
-
-dependencies {
-    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
-
-}
-
