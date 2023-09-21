@@ -2,5 +2,6 @@
 rootProject.name = 'flowlong'
 
 include 'flowlong-core'
+include 'flowlong-solon-plugin'
 include 'flowlong-spring-boot-starter'
 include 'flowlong-spring-boot-example'
