@@ -1,0 +1,55 @@
+{
+  "id": 1,
+  "name": "报销审批（按顺序依次审批）",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "抄送主管",
+      "type": 2,
+      "userSelectFlag": true,
+      "nodeUserList": [
+        {
+          "id": "test005",
+          "name": "老咩"
+        }
+      ],
+      "childNode": {
+        "nodeName": "领导审批",
+        "type": 1,
+        "setType": 1,
+        "nodeUserList": [
+          {
+            "id": "test001",
+            "name": "何敏"
+          },
+          {
+            "id": "test003",
+            "name": "聂秋"
+          }
+        ],
+        "nodeRoleList": [],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "examineMode": 1,
+        "directorMode": 0,
+        "childNode": {
+          "nodeName": "抄送人力资源",
+          "type": 2,
+          "userSelectFlag": true,
+          "nodeUserList": [
+            {
+              "id": "test002",
+              "name": "何秀英"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

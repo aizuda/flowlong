@@ -1,0 +1,11 @@
+description "flowLong mybatis-plus solon example"
+
+dependencies {
+    implementation project(":flowlong-solon-plugin")
+
+    compileOnly("org.noear:solon-api:${solonVersion}")
+    compileOnly("org.noear:solon.scheduling.simple:${solonVersion}")
+    compileOnly("mysql:mysql-connector-java")
+
+    testCompileOnly("org.noear:solon-test:${solonVersion}")
+}

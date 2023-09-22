@@ -1,0 +1,27 @@
+server:
+  port: 8000
+
+solon:
+  app:
+    name: example
+
+
+# FlowLong Config
+flowlong:
+  remind:
+    cron: "*/5 * * * * ?"
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://地址:3306/flowlong?characterEncoding=utf8&useSSL=false
+    username: root
+    password: 密码
+
+# Mybatis-Plus Config
+mybais.flowlong:
+  mappers:
+    - "com.flowlong.bpm.solon.mybatisplus.mapper.*"
+
+# Logger Config
+logging:
+  level:
+    mybatis.mate: debug
