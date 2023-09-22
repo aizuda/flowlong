@@ -1,7 +1,7 @@
 description "flowLong mybatis-plus solon plugin"
 
 dependencies {
-    api project(":flowlong-core")
+    api project(":flowlong-mybatis-plus")
 
     compileOnly("org.noear:solon-lib:${solonVersion}")
     compileOnly("org.noear:solon.scheduling:${solonVersion}")

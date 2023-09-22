@@ -12,9 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.autoconfigure;
+package com.flowlong.bpm.spring.autoconfigure;
 
 import com.flowlong.bpm.engine.scheduling.RemindParam;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * 配置属性
@@ -26,17 +30,14 @@ import com.flowlong.bpm.engine.scheduling.RemindParam;
  * @author hubin
  * @since 1.0
  */
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "flowlong")
 public class FlowLongProperties {
     /**
      * 提醒时间
      */
+    @NestedConfigurationProperty
     private RemindParam remind;
 
-    public RemindParam getRemind() {
-        return remind;
-    }
-
-    public void setRemind(RemindParam remind) {
-        this.remind = remind;
-    }
 }

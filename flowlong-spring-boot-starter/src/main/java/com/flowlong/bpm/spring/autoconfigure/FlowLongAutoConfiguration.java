@@ -12,10 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.autoconfigure;
+package com.flowlong.bpm.spring.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.scheduling.JobLock;
@@ -26,36 +27,37 @@ import com.flowlong.bpm.mybatisplus.service.ProcessServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.QueryServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.RuntimeServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.TaskServiceImpl;
-import com.flowlong.bpm.solon.adaptive.SolonFlowJsonHandler;
-import com.flowlong.bpm.solon.adaptive.SolonScheduler;
-import org.noear.solon.annotation.Bean;
-import org.noear.solon.annotation.Condition;
-import org.noear.solon.annotation.Configuration;
-import org.noear.solon.annotation.Inject;
-import org.noear.solon.scheduling.ScheduledAnno;
-import org.noear.solon.scheduling.scheduled.manager.IJobManager;
+import com.flowlong.bpm.spring.adaptive.FlowJacksonHandler;
+import com.flowlong.bpm.spring.adaptive.SpelExpression;
+import com.flowlong.bpm.spring.adaptive.SpringBootScheduler;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * 配置处理类
+ * spring boot starter 启动自动配置处理类
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
- * @author noear
  * @since 1.0
  */
 @Configuration
+@MapperScan("com.flowlong.bpm.mybatisplus.mapper")
+@ComponentScan(basePackages = {"com.flowlong.bpm.mybatisplus.service"})
+@EnableConfigurationProperties(FlowLongProperties.class)
 public class FlowLongAutoConfiguration {
-    @Bean
-    public FlowLongProperties properties(@Inject("${flowlong}") FlowLongProperties properties){
-        return properties;
-    }
 
     @Bean
-    @Condition(onMissingBean = TaskService.class)
-    public TaskService taskService(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener,
+    @ConditionalOnMissingBean
+    public TaskService taskService(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
                                    FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwTaskMapper taskMapper,
                                    FlwTaskCcMapper taskCcMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                                    FlwHisTaskActorMapper hisTaskActorMapper) {
@@ -64,7 +66,7 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @Condition(onMissingBean = QueryService.class)
+    @ConditionalOnMissingBean
     public QueryService queryService(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
                                      FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
                                      FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
@@ -72,67 +74,71 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @Condition(onMissingBean = RuntimeService.class)
-    public RuntimeService runtimeService(InstanceListener instanceListener,
+    @ConditionalOnMissingBean
+    public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener,
                                          QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
                                          FlwHisInstanceMapper hisInstanceMapper) {
         return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper);
     }
 
     @Bean
-    @Condition(onMissingBean = ProcessService.class)
+    @ConditionalOnMissingBean
     public ProcessService processService(RuntimeService runtimeService, FlwProcessMapper processMapper) {
         return new ProcessServiceImpl(runtimeService, processMapper);
     }
 
     @Bean
-    @Condition(onMissingBean = FlowLongContext.class)
-    public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService,
-                                           RuntimeService runtimeService, TaskService taskService) {
+    @ConditionalOnMissingBean
+    public JobLock jobLock() {
+        return new LocalLock();
+    }
+
+    @Bean
+    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    @ConditionalOnMissingBean
+    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
+                                                   TaskReminder taskReminder, JobLock jobLock) {
+        SpringBootScheduler scheduler = new SpringBootScheduler();
+        scheduler.setContext(flowLongContext);
+        scheduler.setRemindParam(properties.getRemind());
+        scheduler.setTaskReminder(taskReminder);
+        scheduler.setJobLock(jobLock);
+        return scheduler;
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Expression expression() {
+        return new SpelExpression();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public GeneralAccessStrategy taskAccessStrategy() {
+        return new GeneralAccessStrategy();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
+                                           TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy) {
         // 静态注入 Jackson 解析 JSON 处理器
-        FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
+        FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         // 注入 FlowLong 上下文
         FlowLongContext flc = new FlowLongContext();
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
+        flc.setExpression(expression);
+        flc.setTaskAccessStrategy(taskAccessStrategy);
         return flc;
     }
 
     @Bean
-    @Condition(onMissingBean = FlowLongEngine.class)
+    @ConditionalOnMissingBean
     public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
         return flowLongContext.build();
     }
 
-    @Bean
-    @Condition(onMissingBean = JobLock.class)
-    public JobLock jobLock() {
-        return new LocalLock();
-    }
-
-    @Bean
-    public void scheduler(FlowLongContext flowLongContext,
-                                    FlowLongProperties properties,
-                                    TaskReminder taskReminder,
-                                    JobLock jobLock,
-                                    IJobManager jobManager) {
-        if (flowLongContext == null || taskReminder == null) {
-            return;
-        }
-
-        SolonScheduler scheduler = new SolonScheduler();
-        scheduler.setContext(flowLongContext);
-        scheduler.setRemindParam(properties.getRemind());
-        scheduler.setTaskReminder(taskReminder);
-        scheduler.setJobLock(jobLock);
-
-        //注册 job（不再需要返回了）
-        jobManager.jobAdd("flowlong",
-                new ScheduledAnno().cron(scheduler.getRemindParam().getCron()), ctx -> {
-                    scheduler.remind();
-                });
-
-    }
 }

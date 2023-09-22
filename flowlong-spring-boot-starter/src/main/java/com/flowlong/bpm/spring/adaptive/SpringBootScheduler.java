@@ -1,18 +1,4 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.flowlong.bpm.solon.adaptive;
+package com.flowlong.bpm.spring.adaptive;
 
 import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.DateUtils;
@@ -24,24 +10,27 @@ import com.flowlong.bpm.engine.scheduling.RemindParam;
 import com.flowlong.bpm.engine.scheduling.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.Date;
 import java.util.List;
 
+
 /**
- * Solon 定时任务实现流程提醒处理类适配（其实没适配，哈哈）
+ * Spring Boot 内置定时任务实现流程提醒处理类
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
- * @author noear
+ * @author hubin
  * @since 1.0
  */
-@Setter
 @Getter
-public class SolonScheduler {
-
+@Setter
+public class SpringBootScheduler implements SchedulingConfigurer {
     /**
      * 流程引擎上下文
      */
@@ -101,6 +90,11 @@ public class SolonScheduler {
         }
     }
 
+    @Override
+    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+        taskRegistrar.addTriggerTask(() -> remind(), triggerContext ->
+                new CronTrigger(remindParam.getCron()).nextExecutionTime(triggerContext));
+    }
 
     public void setRemindParam(RemindParam remindParam) {
         if (null == remindParam) {

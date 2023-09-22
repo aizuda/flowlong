@@ -12,31 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.autoconfigure;
-
-import com.flowlong.bpm.engine.scheduling.RemindParam;
-
 /**
- * 配置属性
- *
- * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
- * </p>
- *
- * @author hubin
- * @since 1.0
+ * FlowLong Spring Boot Stater
  */
-public class FlowLongProperties {
-    /**
-     * 提醒时间
-     */
-    private RemindParam remind;
-
-    public RemindParam getRemind() {
-        return remind;
-    }
-
-    public void setRemind(RemindParam remind) {
-        this.remind = remind;
-    }
-}
+package com.flowlong.bpm.spring.autoconfigure;

@@ -1,12 +1,12 @@
 {
     "groups": [
         {
-            "sourceType": "com.flowlong.bpm.autoconfigure.FlowLongProperties",
+            "sourceType": "com.flowlong.bpm.spring.autoconfigure.FlowLongProperties",
             "name": "flowlong",
-            "type": "com.flowlong.bpm.autoconfigure.FlowLongProperties"
+            "type": "com.flowlong.bpm.spring.autoconfigure.FlowLongProperties"
         },
         {
-            "sourceType": "com.flowlong.bpm.autoconfigure.FlowLongProperties",
+            "sourceType": "com.flowlong.bpm.spring.autoconfigure.FlowLongProperties",
             "name": "flowlong.remind",
             "sourceMethod": "getRemind()",
             "type": "com.flowlong.bpm.engine.scheduling.RemindParam"

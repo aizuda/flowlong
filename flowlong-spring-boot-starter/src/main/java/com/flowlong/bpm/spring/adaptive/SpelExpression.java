@@ -12,34 +12,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.adaptive;
+package com.flowlong.bpm.spring.adaptive;
 
 import com.flowlong.bpm.engine.Expression;
-import com.googlecode.aviator.AviatorEvaluator;
-import org.noear.solon.annotation.Component;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
- * Solon 表达式解析器适配
+ * Spring el表达式解析器
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
- * @author noear
+ * @author ximu
  * @since 1.0
  */
-@Component
-public class SolonExpression implements Expression {
+public class SpelExpression implements Expression {
+    private final ExpressionParser parser;
+
+    public SpelExpression() {
+        parser = new SpelExpressionParser();
+    }
 
     @Override
     public <T> T eval(Class<T> T, String expr, Map<String, Object> args) {
-        if (expr.startsWith("#{")) {
-            expr = expr.substring(2, expr.length() - 2);
-        } else if (expr.startsWith("#")) {
-            expr = expr.substring(1, expr.length() - 2);
+        EvaluationContext context = new StandardEvaluationContext();
+        for (Entry<String, Object> entry : args.entrySet()) {
+            context.setVariable(entry.getKey(), entry.getValue());
         }
-        return (T) AviatorEvaluator.execute(expr, args);
+        return parser.parseExpression(expr).getValue(context, T);
     }
+
 }

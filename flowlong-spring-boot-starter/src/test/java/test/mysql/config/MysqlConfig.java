@@ -18,10 +18,8 @@ import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
-import com.flowlong.bpm.engine.*;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
-import com.flowlong.bpm.spring.FlowJacksonHandler;
+import com.flowlong.bpm.spring.autoconfigure.FlowLongAutoConfiguration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.annotation.MapperScan;
@@ -37,13 +35,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @MapperScan("com.flowlong.bpm.mybatisplus.mapper")
-public class MysqlConfig {
-
-
-    @Bean
-    public GeneralAccessStrategy accessStrategy() {
-        return new GeneralAccessStrategy();
-    }
+public class MysqlConfig extends FlowLongAutoConfiguration {
 
     @Bean("mybatisSqlSession")
     public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
@@ -60,19 +52,5 @@ public class MysqlConfig {
         sqlSessionFactory.setPlugins(mybatisPlusInterceptor);
         sqlSessionFactory.setConfiguration(configuration);
         return sqlSessionFactory.getObject();
-    }
-
-    @Bean
-    public FlowLongEngine flowLongEngine(ProcessService processService, QueryService queryService,
-                                         RuntimeService runtimeService, TaskService taskService, Expression expression) {
-        FlowLongContext flc = new FlowLongContext();
-        flc.setProcessService(processService);
-        flc.setQueryService(queryService);
-        flc.setRuntimeService(runtimeService);
-        flc.setTaskService(taskService);
-        flc.setExpression(expression);
-        // 静态注入 Jackson 解析 JSON 处理器
-        FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
-        return flc.build();
     }
 }
