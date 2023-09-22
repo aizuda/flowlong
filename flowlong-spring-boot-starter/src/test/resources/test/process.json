@@ -53,7 +53,10 @@
             "nodeName": "直接主管审批",
             "type": 1,
             "setType": 2,
-            "nodeUserList": [],
+            "nodeUserList": [{
+              "id": "zg0001",
+              "name": "张三"
+            }],
             "nodeRoleList": [],
             "examineLevel": 1,
             "directorLevel": 1,

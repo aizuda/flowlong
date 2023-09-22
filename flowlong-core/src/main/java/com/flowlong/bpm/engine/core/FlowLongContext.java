@@ -45,7 +45,9 @@ public class FlowLongContext {
     private RuntimeService runtimeService;
     private TaskService taskService;
     private Expression expression;
-
+    /**
+     * 流程引擎拦截器
+     */
     private List<FlowLongInterceptor> interceptors;
     private TaskAccessStrategy taskAccessStrategy;
 
@@ -65,6 +67,7 @@ public class FlowLongContext {
     public static <T> T fromJson(String jsonString, Class<T> clazz) {
         return getFlowJsonHandler().fromJson(jsonString, clazz);
     }
+
     public static String toJson(Object object) {
         return getFlowJsonHandler().toJson(object);
     }
