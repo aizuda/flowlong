@@ -3,8 +3,10 @@ description "flowLong mybatis-plus solon plugin"
 dependencies {
     api project(":flowlong-core")
 
+    compileOnly("org.noear:solon-lib:${solonVersion}")
+    compileOnly("org.noear:solon.scheduling:${solonVersion}")
     compileOnly("org.noear:mybatis-plus-extension-solon-plugin:${solonVersion}")
-    compileOnly("org.noear:solon-api:${solonVersion}")
+    compileOnly("com.googlecode.aviator:aviator:3.0.1")
 
     testCompileOnly("org.noear:solon-test:${solonVersion}")
     testCompileOnly("mysql:mysql-connector-java")

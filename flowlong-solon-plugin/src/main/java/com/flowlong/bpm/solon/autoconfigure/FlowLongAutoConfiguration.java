@@ -7,25 +7,31 @@ import com.flowlong.bpm.engine.scheduling.JobLock;
 import com.flowlong.bpm.engine.scheduling.LocalLock;
 import com.flowlong.bpm.engine.scheduling.TaskReminder;
 import com.flowlong.bpm.solon.adaptive.SolonFlowJsonHandler;
+import com.flowlong.bpm.solon.adaptive.SolonScheduler;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
+import org.noear.solon.annotation.Inject;
+import org.noear.solon.scheduling.ScheduledAnno;
+import org.noear.solon.scheduling.scheduled.manager.IJobManager;
 
 /**
- * spring boot starter 启动自动配置处理类
+ * 配置处理类
  *
  * <p>
  * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
+ * @author noear
  * @since 1.0
  */
 @Configuration
-//@MapperScan("com.flowlong.bpm.mybatisplus.mapper")
-//@ComponentScan(basePackages = {"com.flowlong.bpm.mybatisplus.service"})
-//@EnableConfigurationProperties(FlowLongProperties.class)
 public class FlowLongAutoConfiguration {
+    @Bean
+    public FlowLongProperties properties(@Inject("${flowlong}") FlowLongProperties properties){
+        return properties;
+    }
 
     @Bean
     @Condition(onMissingBean = FlowLongContext.class)
@@ -54,19 +60,27 @@ public class FlowLongAutoConfiguration {
         return new LocalLock();
     }
 
-//    @Bean
-//    @Condition(onMissingBean = SpringBootScheduler.class)
-//    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
-//                                                   TaskReminder taskReminder, JobLock jobLock) {
-//        if(flowLongContext == null || taskReminder == null){
-//            return null;
-//        }
-//
-//        SpringBootScheduler scheduler = new SpringBootScheduler();
-//        scheduler.setContext(flowLongContext);
-//        scheduler.setRemindParam(properties.getRemind());
-//        scheduler.setTaskReminder(taskReminder);
-//        scheduler.setJobLock(jobLock);
-//        return scheduler;
-//    }
+    @Bean
+    public void scheduler(FlowLongContext flowLongContext,
+                                    FlowLongProperties properties,
+                                    TaskReminder taskReminder,
+                                    JobLock jobLock,
+                                    IJobManager jobManager) {
+        if (flowLongContext == null || taskReminder == null) {
+            return;
+        }
+
+        SolonScheduler scheduler = new SolonScheduler();
+        scheduler.setContext(flowLongContext);
+        scheduler.setRemindParam(properties.getRemind());
+        scheduler.setTaskReminder(taskReminder);
+        scheduler.setJobLock(jobLock);
+
+        //注册 job（不再需要返回了）
+        jobManager.jobAdd("flowlong",
+                new ScheduledAnno().cron(scheduler.getRemindParam().getCron()), ctx -> {
+                    scheduler.remind();
+                });
+
+    }
 }
