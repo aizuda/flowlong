@@ -3,5 +3,5 @@ description "flowLong mybatis-plus solon plugin"
 dependencies {
     api project(":flowlong-core")
 
-    compileOnly("com.baomidou:mybatis-plus-extension")
+    compileOnly("com.baomidou:mybatis-plus-core")
 }
