@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.service;
+package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
@@ -27,8 +27,6 @@ import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwProcessMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.noear.solon.annotation.Component;
-import org.noear.solon.annotation.Inject;
 
 import java.util.List;
 
@@ -43,13 +41,14 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
-@Component
 public class ProcessServiceImpl implements ProcessService {
-    @Inject
     private FlwProcessMapper processMapper;
-    @Inject
     private RuntimeService runtimeService;
 
+    public ProcessServiceImpl(RuntimeService runtimeService, FlwProcessMapper processMapper) {
+        this.processMapper = processMapper;
+        this.runtimeService = runtimeService;
+    }
 
     /**
      * 更新process的类别

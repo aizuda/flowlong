@@ -12,14 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.solon.service;
+package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.mybatisplus.mapper.*;
-import org.noear.solon.annotation.Component;
-import org.noear.solon.annotation.Inject;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,22 +32,24 @@ import java.util.Optional;
  * @author hubin
  * @since 1.0
  */
-@Component
 public class QueryServiceImpl implements QueryService {
-    @Inject
     private FlwInstanceMapper instanceMapper;
-    @Inject
     private FlwHisInstanceMapper hisInstanceMapper;
-    @Inject
     private FlwTaskMapper taskMapper;
-    @Inject
     private FlwTaskActorMapper taskActorMapper;
-    @Inject
     private FlwHisTaskMapper hisTaskMapper;
-    @Inject
     private FlwHisTaskActorMapper hisTaskActorMapper;
 
-
+    public QueryServiceImpl(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                            FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
+                            FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
+        this.instanceMapper = instanceMapper;
+        this.hisInstanceMapper = hisInstanceMapper;
+        this.taskMapper = taskMapper;
+        this.taskActorMapper = taskActorMapper;
+        this.hisTaskMapper = hisTaskMapper;
+        this.hisTaskActorMapper = hisTaskActorMapper;
+    }
 
     @Override
     public FlwInstance getInstance(Long instanceId) {
