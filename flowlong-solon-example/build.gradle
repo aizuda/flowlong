@@ -3,9 +3,19 @@ description "flowLong mybatis-plus solon example"
 dependencies {
     implementation project(":flowlong-solon-plugin")
 
-    compileOnly("org.noear:solon-api:${solonVersion}")
-    compileOnly("org.noear:solon.scheduling.simple:${solonVersion}")
-    compileOnly("mysql:mysql-connector-java")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("org.noear:solon-api:${solonVersion}")
+    implementation("org.noear:solon.scheduling.simple:${solonVersion}")
+    implementation("org.noear:solon.logging.simple:${solonVersion}")
+    implementation("org.noear:mybatis-plus-extension-solon-plugin:${solonVersion}")
+    implementation("mysql:mysql-connector-java")
+    implementation('com.zaxxer:HikariCP:4.0.3')
 
     testCompileOnly("org.noear:solon-test:${solonVersion}")
+}
+
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << "-parameters"
 }

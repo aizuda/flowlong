@@ -5,6 +5,11 @@ solon:
   app:
     name: example
 
+# Logger Config
+solon.logging.logger:
+  "mybatis.mate":
+    level: DEBUG
+
 
 # FlowLong Config
 flowlong:
@@ -12,16 +17,11 @@ flowlong:
     cron: "*/5 * * * * ?"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://地址:3306/flowlong?characterEncoding=utf8&useSSL=false
+    jdbcUrl: jdbc:mysql://localhost:3306/flowlong?characterEncoding=utf8&useSSL=false
     username: root
-    password: 密码
+    password: 123456
 
 # Mybatis-Plus Config
-mybais.flowlong:
+mybatis.flowlong:
   mappers:
-    - "com.flowlong.bpm.solon.mybatisplus.mapper.*"
-
-# Logger Config
-logging:
-  level:
-    mybatis.mate: debug
+    - "com.flowlong.bpm.mybatisplus.mapper.*"

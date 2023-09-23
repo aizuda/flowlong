@@ -30,6 +30,8 @@ allprojects {
     version "0.0.1"
 }
 
+
+
 // 子模块配置
 subprojects {
     apply plugin: 'java-library'

@@ -5,6 +5,7 @@ import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Get;
+import org.noear.solon.annotation.Inject;
 import org.noear.solon.annotation.Mapping;
 
 import java.util.HashMap;
@@ -13,7 +14,8 @@ import java.util.Map;
 @Controller
 @Mapping("/process")
 public class TestController {
-    protected FlowLongEngine flowLongEngine;
+    @Inject
+    FlowLongEngine flowLongEngine;
 
     protected static FlowCreator testCreator = FlowCreator.of("test001", "测试001");
 

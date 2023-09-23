@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.flowlong.bpm.mybatisplus.service;
+package com.flowlong.bpm.solon.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.QueryService;
@@ -32,6 +32,8 @@ import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
+import org.noear.solon.annotation.Component;
+import org.noear.solon.annotation.Inject;
 
 import java.util.List;
 import java.util.Map;
@@ -46,22 +48,18 @@ import java.util.Map;
  * @author hubin
  * @since 1.0
  */
+@Component
 public class RuntimeServiceImpl implements RuntimeService {
+    @Inject(required = false)
     private InstanceListener instanceListener;
+    @Inject
     private QueryService queryService;
+    @Inject
     private TaskService taskService;
+    @Inject
     private FlwInstanceMapper instanceMapper;
+    @Inject
     private FlwHisInstanceMapper hisInstanceMapper;
-
-    public RuntimeServiceImpl(InstanceListener instanceListener,
-                              QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
-                              FlwHisInstanceMapper hisInstanceMapper) {
-        this.instanceListener = instanceListener;
-        this.queryService = queryService;
-        this.taskService = taskService;
-        this.instanceMapper = instanceMapper;
-        this.hisInstanceMapper = hisInstanceMapper;
-    }
 
     /**
      * 创建活动实例
