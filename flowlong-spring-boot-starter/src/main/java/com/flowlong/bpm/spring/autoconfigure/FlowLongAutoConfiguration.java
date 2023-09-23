@@ -114,7 +114,7 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public GeneralAccessStrategy taskAccessStrategy() {
+    public TaskAccessStrategy taskAccessStrategy() {
         return new GeneralAccessStrategy();
     }
 
