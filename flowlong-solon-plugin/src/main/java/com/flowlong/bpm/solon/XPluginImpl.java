@@ -41,14 +41,14 @@ public class XPluginImpl implements Plugin {
         context.beanScan(XPluginImpl.class);
         context.lifecycle(() -> {
             //顺序不能改
-            buildService(context, QueryServiceImpl.class);
-            buildService(context, TaskServiceImpl.class);
-            buildService(context, RuntimeServiceImpl.class);
-            buildService(context, ProcessServiceImpl.class);
+            buildServiceBean(context, QueryServiceImpl.class);
+            buildServiceBean(context, TaskServiceImpl.class);
+            buildServiceBean(context, RuntimeServiceImpl.class);
+            buildServiceBean(context, ProcessServiceImpl.class);
         });
     }
 
-    private void buildService(AppContext context, Class<?> clz) throws Exception {
+    private void buildServiceBean(AppContext context, Class<?> clz) throws Exception {
         Constructor c = clz.getDeclaredConstructors()[0];
         Object[] args = new Object[c.getParameterCount()];
 
