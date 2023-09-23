@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -51,7 +50,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @MapperScan("com.flowlong.bpm.mybatisplus.mapper")
-@ComponentScan(basePackages = {"com.flowlong.bpm.mybatisplus.service"})
 @EnableConfigurationProperties(FlowLongProperties.class)
 public class FlowLongAutoConfiguration {
 
