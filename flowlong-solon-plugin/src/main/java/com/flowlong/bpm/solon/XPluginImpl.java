@@ -16,7 +16,6 @@ package com.flowlong.bpm.solon;
 
 import org.noear.solon.core.AppContext;
 import org.noear.solon.core.Plugin;
-import org.noear.solon.core.event.AppPluginLoadEndEvent;
 
 /**
  * solon 自动装配是用编码模式的（配置 XPluginImpl 后，由它以编码处理装配）
