@@ -14,14 +14,10 @@
  */
 package com.flowlong.bpm.solon;
 
-import com.flowlong.bpm.mybatisplus.service.ProcessServiceImpl;
-import com.flowlong.bpm.mybatisplus.service.QueryServiceImpl;
-import com.flowlong.bpm.mybatisplus.service.RuntimeServiceImpl;
-import com.flowlong.bpm.mybatisplus.service.TaskServiceImpl;
+import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import org.noear.solon.core.AppContext;
 import org.noear.solon.core.Plugin;
 
-import java.lang.reflect.Constructor;
 
 /**
  * solon 自动装配是用编码模式的（配置 XPluginImpl 后，由它以编码处理装配）
@@ -39,28 +35,11 @@ public class XPluginImpl implements Plugin {
     public void start(AppContext context) throws Throwable {
         // 扫描整个插件下所有 Bean
         context.beanScan(XPluginImpl.class);
-        context.lifecycle(() -> {
-            //顺序不能改
-            buildServiceBean(context, QueryServiceImpl.class);
-            buildServiceBean(context, TaskServiceImpl.class);
-            buildServiceBean(context, RuntimeServiceImpl.class);
-            buildServiceBean(context, ProcessServiceImpl.class);
+
+        context.onEvent(MybatisConfiguration.class, e -> {
+            if ("flowlong".equals(e.getEnvironment().getId())) {
+                e.addMappers("com.flowlong.bpm.mybatisplus.mapper");
+            }
         });
-    }
-
-    private void buildServiceBean(AppContext context, Class<?> clz) throws Exception {
-        Constructor c = clz.getDeclaredConstructors()[0];
-        Object[] args = new Object[c.getParameterCount()];
-
-        for (int i = 0; i < args.length; i++) {
-            args[i] = context.getBean(c.getParameterTypes()[i]);
-        }
-
-        Object obj = c.newInstance(args);
-        context.wrapAndPut(clz, obj);
-
-        for (Class<?> clz1 : clz.getInterfaces()) {
-            context.wrapAndPut(clz1, obj);
-        }
     }
 }

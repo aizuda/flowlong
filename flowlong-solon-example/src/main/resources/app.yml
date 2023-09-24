@@ -9,6 +9,8 @@ solon:
 solon.logging.logger:
   "mybatis.mate":
     level: DEBUG
+  "com.zaxxer":
+    level: WARN
 
 
 # FlowLong Config
@@ -20,8 +22,3 @@ flowlong:
     jdbcUrl: jdbc:mysql://localhost:3306/flowlong?characterEncoding=utf8&useSSL=false
     username: root
     password: 123456
-
-# Mybatis-Plus Config
-mybatis.flowlong:
-  mappers:
-    - "com.flowlong.bpm.mybatisplus.mapper.*"
