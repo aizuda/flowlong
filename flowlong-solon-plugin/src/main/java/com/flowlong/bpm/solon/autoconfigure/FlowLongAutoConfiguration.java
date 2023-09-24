@@ -16,16 +16,22 @@ package com.flowlong.bpm.solon.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.listener.InstanceListener;
+import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.scheduling.JobLock;
 import com.flowlong.bpm.engine.scheduling.LocalLock;
 import com.flowlong.bpm.engine.scheduling.TaskReminder;
+import com.flowlong.bpm.mybatisplus.mapper.*;
+import com.flowlong.bpm.mybatisplus.service.ProcessServiceImpl;
+import com.flowlong.bpm.mybatisplus.service.QueryServiceImpl;
+import com.flowlong.bpm.mybatisplus.service.RuntimeServiceImpl;
+import com.flowlong.bpm.mybatisplus.service.TaskServiceImpl;
 import com.flowlong.bpm.solon.adaptive.SolonFlowJsonHandler;
 import com.flowlong.bpm.solon.adaptive.SolonScheduler;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Inject;
-import org.noear.solon.core.AppContext;
 import org.noear.solon.scheduling.ScheduledAnno;
 import org.noear.solon.scheduling.scheduled.manager.IJobManager;
 
@@ -42,20 +48,44 @@ import org.noear.solon.scheduling.scheduled.manager.IJobManager;
  */
 @Configuration
 public class FlowLongAutoConfiguration {
-    @Inject
-    AppContext context;
+    @Bean
+    @Condition(onMissingBean = TaskService.class)
+    public TaskService taskService(@Inject(required = false) TaskAccessStrategy taskAccessStrategy, @Inject(required = false) TaskListener taskListener,
+                                   FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwTaskMapper taskMapper,
+                                   FlwTaskCcMapper taskCcMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
+                                   FlwHisTaskActorMapper hisTaskActorMapper) {
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, processMapper, instanceMapper, taskMapper,
+                taskCcMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+    }
 
     @Bean
-    public FlowLongProperties properties(@Inject("${flowlong}") FlowLongProperties properties) {
-        return properties;
+    @Condition(onMissingBean = QueryService.class)
+    public QueryService queryService(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                                     FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
+                                     FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
+        return new QueryServiceImpl(instanceMapper, hisInstanceMapper, taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+    }
+
+    @Bean
+    @Condition(onMissingBean = RuntimeService.class)
+    public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener,
+                                         QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
+                                         FlwHisInstanceMapper hisInstanceMapper) {
+        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper);
+    }
+
+    @Bean
+    @Condition(onMissingBean = ProcessService.class)
+    public ProcessService processService(RuntimeService runtimeService, FlwProcessMapper processMapper) {
+        return new ProcessServiceImpl(runtimeService, processMapper);
     }
 
     @Bean
     @Condition(onMissingBean = FlowLongContext.class)
-    public FlowLongContext flowLongContext(@Inject ProcessService processService,
-                                           @Inject QueryService queryService,
-                                           @Inject RuntimeService runtimeService,
-                                           @Inject TaskService taskService) {
+    public FlowLongContext flowLongContext(ProcessService processService,
+                                           QueryService queryService,
+                                           RuntimeService runtimeService,
+                                           TaskService taskService) {
 
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
@@ -70,7 +100,7 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @Condition(onMissingBean = FlowLongEngine.class)
-    public FlowLongEngine flowLongEngine(@Inject FlowLongContext flowLongContext) {
+    public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
         return flowLongContext.build();
     }
 
@@ -81,12 +111,12 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    public void scheduler(@Inject FlowLongContext flowLongContext,
-                          @Inject FlowLongProperties properties,
-                          TaskReminder taskReminder,
+    public void scheduler(FlowLongContext flowLongContext,
+                          FlowLongProperties properties,
+                          @Inject(required = false) TaskReminder taskReminder,
                           JobLock jobLock,
                           IJobManager jobManager) {
-        if (flowLongContext == null || taskReminder == null) {
+        if (taskReminder == null) {
             return;
         }
 

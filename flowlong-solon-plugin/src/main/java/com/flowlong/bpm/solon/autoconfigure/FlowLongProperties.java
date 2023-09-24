@@ -15,6 +15,8 @@
 package com.flowlong.bpm.solon.autoconfigure;
 
 import com.flowlong.bpm.engine.scheduling.RemindParam;
+import org.noear.solon.annotation.Configuration;
+import org.noear.solon.annotation.Inject;
 
 /**
  * 配置属性
@@ -26,6 +28,8 @@ import com.flowlong.bpm.engine.scheduling.RemindParam;
  * @author hubin
  * @since 1.0
  */
+@Inject("${flowlong}")
+@Configuration
 public class FlowLongProperties {
     /**
      * 提醒时间

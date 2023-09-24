@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 @Configuration
 public class AppConfig {
-    @Bean(name = "flowlong", typed = true)
+    @Bean(name = "flowlong")
     public DataSource ds(@Inject("${flowlong.datasource}") HikariDataSource ds) {
         return ds;
     }
