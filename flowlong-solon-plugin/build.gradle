@@ -7,6 +7,8 @@ dependencies {
     implementation("org.noear:solon.scheduling:${solonVersion}")
     implementation("com.googlecode.aviator:aviator:3.0.1")
 
+    compileOnly("com.baomidou:mybatis-plus-core")
+
     testCompileOnly("org.noear:solon-test:${solonVersion}")
     testCompileOnly("mysql:mysql-connector-java")
 }
