@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * 测试或签流程
+ * 测试按顺序依次审批流程
  *
  * @author 青苗
  */

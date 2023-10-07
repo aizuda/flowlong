@@ -58,7 +58,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程定义ID，创建人ID，参数列表启动流程实例
+     * 根据流程定义ID，创建人，参数列表启动流程实例
      */
     @Override
     public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
@@ -109,7 +109,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID，创建人ID，参数列表执行任务
+     * 根据任务ID，创建人，参数列表执行任务
      */
     @Override
     public void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
@@ -123,6 +123,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     /**
      * 执行任务并跳转到指定节点
      */
+    @Override
     public void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行当前任务
         this.execute(taskId, flowCreator, args, execution -> {
@@ -139,7 +140,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID，创建人ID，参数列表完成任务，并且构造执行对象
+     * 根据任务ID，创建人，参数列表完成任务，并且构造执行对象
      */
     protected void execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Consumer<Execution> executeNextStep) {
         if (args == null) {

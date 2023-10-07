@@ -338,16 +338,16 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = hisTask.undoTask(flowCreator);
         taskMapper.insert(flwTask);
         // 撤回任务参与者
-        List<FlwTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTaskId);
+        List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTaskId);
         if (null != hisTaskActors) {
             hisTaskActors.forEach(t -> {
-                FlwHisTaskActor flwHisTaskActor = new FlwHisTaskActor();
-                flwHisTaskActor.setTenantId(t.getTenantId());
-                flwHisTaskActor.setTaskId(flwTask.getId());
-                flwHisTaskActor.setActorType(t.getActorType());
-                flwHisTaskActor.setActorId(t.getActorId());
-                flwHisTaskActor.setActorName(t.getActorName());
-                taskActorMapper.insert(flwHisTaskActor);
+                FlwTaskActor flwTaskActor = new FlwTaskActor();
+                flwTaskActor.setTenantId(t.getTenantId());
+                flwTaskActor.setTaskId(flwTask.getId());
+                flwTaskActor.setActorType(t.getActorType());
+                flwTaskActor.setActorId(t.getActorId());
+                flwTaskActor.setActorName(t.getActorName());
+                taskActorMapper.insert(flwTaskActor);
             });
         }
         return Optional.ofNullable(flwTask);
@@ -419,7 +419,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public List<FlwTask> createTask(NodeModel nodeModel, Execution execution) {
-        // 执行任务
+        // 构建任务
         FlwTask flwTask = this.createTaskBase(nodeModel, execution);
 
         // 模型中获取参与者信息
@@ -441,7 +441,7 @@ public class TaskServiceImpl implements TaskService {
             this.saveTaskCc(nodeModel, execution);
             NodeModel nextNode = nodeModel.getChildNode();
             if (null != nextNode) {
-                // 继续执行普通任务
+                // 继续创建普通任务
                 this.createTask(nextNode, execution);
             }
         } else if (3 == nodeType) {
