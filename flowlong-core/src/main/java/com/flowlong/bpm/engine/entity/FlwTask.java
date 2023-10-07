@@ -130,7 +130,7 @@ public class FlwTask extends FlowEntity {
     }
 
     public void setPerformType(Integer performType) {
-        Assert.notNull(PerformType.get(performType), "illegal type [performType=" + taskType + "]");
+        Assert.notNull(PerformType.get(performType), "illegal type [performType=" + performType + "]");
         this.performType = performType;
     }
 

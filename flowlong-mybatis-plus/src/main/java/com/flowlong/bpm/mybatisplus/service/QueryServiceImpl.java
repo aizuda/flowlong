@@ -105,8 +105,8 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<FlwTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
-        return hisTaskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId));
+    public List<FlwHisTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
+        return hisTaskActorMapper.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery().eq(FlwHisTaskActor::getTaskId, taskId));
     }
 
     @Override

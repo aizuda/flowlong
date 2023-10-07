@@ -112,7 +112,7 @@ public interface QueryService {
      * @param taskId 历史任务ID
      * @return String[] 历史参与者ID数组
      */
-    List<FlwTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
+    List<FlwHisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
 
     /**
      * 根据实例ID和任务节点名称获取当前节点激活的任务

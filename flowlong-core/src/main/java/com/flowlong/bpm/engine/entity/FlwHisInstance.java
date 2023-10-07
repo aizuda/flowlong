@@ -14,6 +14,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
@@ -50,6 +51,11 @@ public class FlwHisInstance extends FlwInstance {
 
     public void setInstanceState(InstanceState instanceState) {
         this.instanceState = instanceState.getValue();
+    }
+
+    public void setInstanceState(Integer instanceState) {
+        Assert.notNull(InstanceState.get(instanceState), "插入的实例状态异常 [instanceState=" + instanceState + "]");
+        this.instanceState = instanceState;
     }
 
     public static FlwHisInstance of(FlwInstance flwInstance, InstanceState instanceState) {
