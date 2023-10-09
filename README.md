@@ -52,8 +52,6 @@ FlowLong🐉飞龙工作流
 
 # 使用文档
 
-- 流程设计采用 [scui](https://gitee.com/lolicode/scui) 工作流模块
-
 - 设计器源码 https://gitee.com/flowlong/flowlong-designer
 
 <img src="https://foruda.gitee.com/images/1683680723972384655/f957e75d_12260.png" alt="flowlong" width="500px" height="262px">
