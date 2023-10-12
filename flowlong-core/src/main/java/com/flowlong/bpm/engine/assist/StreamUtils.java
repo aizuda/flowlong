@@ -47,7 +47,7 @@ public class StreamUtils {
     }
 
     public static <T> T readBytes(InputStream in, Function<String, T> function) {
-        Assert.notNull(in);
+        Assert.isNull(in);
         try {
             return function.apply(readBytes(in));
         } catch (Exception e) {

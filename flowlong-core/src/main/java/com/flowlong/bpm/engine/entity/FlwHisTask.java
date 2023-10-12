@@ -45,7 +45,7 @@ public class FlwHisTask extends FlwTask {
     }
 
     public void setTaskState(Integer taskState) {
-        Assert.notNull(TaskState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
+        Assert.isNull(TaskState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
         this.taskState = taskState;
     }
 
