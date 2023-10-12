@@ -145,9 +145,9 @@ public class NodeModel implements ModelInstance {
         }
 
         /**
-         * 执行创建抄送任务
+         * 执行创建抄送、审批任务
          */
-        if (Objects.equals(2, this.type)) {
+        if (Objects.equals(2, this.type) || Objects.equals(1, this.type)) {
             this.createTask(flowLongContext, execution);
         }
     }
@@ -171,15 +171,30 @@ public class NodeModel implements ModelInstance {
             return this;
         }
         if (null != conditionNodes) {
-            for (ConditionNode conditionNode : conditionNodes) {
-                NodeModel conditionChildNode = conditionNode.getChildNode();
-                if (null != conditionChildNode) {
-                    return conditionChildNode.getNode(nodeName);
-                }
+            NodeModel fromConditionNode = getFromConditionNodes(nodeName);
+            if(fromConditionNode != null){
+                return fromConditionNode;
             }
         }
+        // 条件节点中没有找到 那么去它的同级子节点中继续查找
         if (null != childNode) {
             return childNode.getNode(nodeName);
+        }
+        return null;
+    }
+
+    /**
+     * 从条件节点中获取节点
+     *
+     * @param nodeName 节点名称
+     * @return {@link NodeModel}
+     */
+    private NodeModel getFromConditionNodes(String nodeName){
+        for (ConditionNode conditionNode : conditionNodes) {
+            NodeModel conditionChildNode = conditionNode.getChildNode();
+            if (null != conditionChildNode) {
+                return conditionChildNode.getNode(nodeName);
+            }
         }
         return null;
     }

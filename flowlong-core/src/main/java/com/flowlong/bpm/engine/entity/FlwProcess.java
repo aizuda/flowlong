@@ -124,12 +124,12 @@ public class FlwProcess extends FlowEntity {
                 executeNode.execute(flowLongContext, execution);
 
                 /**
-                 * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点
+                 * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
                  * 执行结束流程处理器
                  */
                 if (null == executeNode.getChildNode() && null == executeNode.getConditionNodes()) {
                     NodeModel nextNode = this.findNextNode(executeNode);
-                    if (null == nextNode || Objects.equals(executeNode.getNodeName(), nextNode.getNodeName())) {
+                    if (null == nextNode && executeNode.getType() != 1) {
                         new EndProcessHandler().handle(flowLongContext, execution);
                     }
                 }
@@ -149,7 +149,8 @@ public class FlwProcess extends FlowEntity {
             return null;
         }
 
-        if (parentNode.isConditionNode()) {
+        //如果当前节点不是条件分支的子节点、而是条件审批的子节点
+        if (parentNode.isConditionNode() && !parentNode.getChildNode().getNodeName().equals(nodeModel.getNodeName())) {
             // 条件执行节点，返回子节点
             return parentNode.getChildNode();
         }

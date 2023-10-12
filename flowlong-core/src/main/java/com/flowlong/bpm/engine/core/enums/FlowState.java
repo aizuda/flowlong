@@ -1,7 +1,7 @@
 package com.flowlong.bpm.engine.core.enums;
 
 /**
- * 实例状态
+ * 流程状态
  */
 public enum FlowState {
     /**
