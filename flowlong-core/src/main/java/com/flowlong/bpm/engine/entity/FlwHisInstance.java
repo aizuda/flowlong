@@ -54,7 +54,7 @@ public class FlwHisInstance extends FlwInstance {
     }
 
     public void setInstanceState(Integer instanceState) {
-        Assert.notNull(InstanceState.get(instanceState), "插入的实例状态异常 [instanceState=" + instanceState + "]");
+        Assert.isNull(InstanceState.get(instanceState), "插入的实例状态异常 [instanceState=" + instanceState + "]");
         this.instanceState = instanceState;
     }
 

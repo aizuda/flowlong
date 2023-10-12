@@ -403,11 +403,11 @@ public class TaskServiceImpl implements TaskService {
     public NodeModel getTaskModel(Long taskId) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         FlwInstance flwInstance = instanceMapper.selectById(flwTask.getInstanceId());
-        Assert.notNull(flwInstance);
+        Assert.isNull(flwInstance);
         FlwProcess process = processMapper.selectById(flwInstance.getProcessId());
         ProcessModel model = process.getProcessModel();
         NodeModel nodeModel = model.getNode(flwTask.getTaskName());
-        Assert.notNull(nodeModel, "任务ID无法找到节点模型.");
+        Assert.isNull(nodeModel, "任务ID无法找到节点模型.");
         return nodeModel;
     }
 

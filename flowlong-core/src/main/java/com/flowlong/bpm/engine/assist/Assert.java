@@ -82,7 +82,7 @@ public abstract class Assert {
      * @param message 异常打印信息
      */
     public static void notNull(Object object, String message) {
-        illegalArgument(null == object, message);
+        illegalArgument(null != object, message);
     }
 
     /**

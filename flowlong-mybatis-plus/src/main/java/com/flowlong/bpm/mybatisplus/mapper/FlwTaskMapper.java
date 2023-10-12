@@ -41,7 +41,7 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
      */
     default FlwTask getCheckById(Long id) {
         FlwTask flwTask = selectById(id);
-        Assert.notNull(flwTask, "指定的任务[id=" + id + "]不存在");
+        Assert.isNull(flwTask, "指定的任务[id=" + id + "]不存在");
         return flwTask;
     }
 
