@@ -97,7 +97,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
-        Assert.notNull(jsonString);
+        Assert.isNull(jsonString);
         try {
             ProcessModel processModel = ProcessModel.parse(jsonString, null);
             /**
@@ -147,7 +147,7 @@ public class ProcessServiceImpl implements ProcessService {
     @Override
     public boolean redeploy(Long id, String jsonString) {
         FlwProcess process = processMapper.selectById(id);
-        Assert.notNull(process);
+        Assert.isNull(process);
         ProcessModel processModel = ProcessModel.parse(jsonString, id);
         process.setProcessName(processModel.getName());
         process.setDisplayName(processModel.getName());

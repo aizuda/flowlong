@@ -109,7 +109,7 @@ public class FlwProcess extends FlowEntity {
     public void executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.notNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
+            Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
             NodeModel executeNode = nodeModel.getChildNode();
             if (null == executeNode) {
                 // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
@@ -167,7 +167,7 @@ public class FlwProcess extends FlowEntity {
     public void executeStartModel(FlowLongContext flowLongContext, Execution execution) {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNodeConfig();
-            Assert.notNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
+            Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             // 创建首个审批任务
             nodeModel.createTask(flowLongContext, execution);
         });

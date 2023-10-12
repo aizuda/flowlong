@@ -128,11 +128,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 执行当前任务
         this.execute(taskId, flowCreator, args, execution -> {
             ProcessModel processModel = execution.getProcess().getProcessModel();
-            Assert.notNull(processModel, "当前任务未找到流程定义模型");
+            Assert.isNull(processModel, "当前任务未找到流程定义模型");
 
             // 查找模型节点
             NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.notNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
+            Assert.isNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
 
             // 创建当前节点任务
             nodeModel.createTask(flowLongContext, execution);
@@ -151,7 +151,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }
         FlwInstance flwInstance = queryService().getInstance(flwTask.getInstanceId());
-        Assert.notNull(flwInstance, "指定的流程实例[id=" + flwTask.getInstanceId() + "]已完成或不存在");
+        Assert.isNull(flwInstance, "指定的流程实例[id=" + flwTask.getInstanceId() + "]已完成或不存在");
         flwInstance.setLastUpdateBy(flowCreator.getCreateId());
         flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(flwInstance);
