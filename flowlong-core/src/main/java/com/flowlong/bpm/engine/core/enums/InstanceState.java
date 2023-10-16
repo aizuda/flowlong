@@ -31,13 +31,13 @@ public enum InstanceState {
      */
     active(0),
     /**
-     * 完成
+     * 完成/结束
      */
     complete(1),
     /**
      * 超时
      */
-    timeout(1),
+    timeout(2),
     /**
      * 终止
      */

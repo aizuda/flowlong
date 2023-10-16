@@ -233,7 +233,7 @@ public class TaskServiceImpl implements TaskService {
         taskActorMapper.deleteBatchIds(taskActors.stream().map(t -> t.getId()).collect(Collectors.toList()));
 
         // 分配任务给办理人
-        assignTask(taskId, taskActors.get(0).getInstanceId(), assigneeTaskActor);
+        assignTask(taskActors.get(0).getInstanceId(), taskId, assigneeTaskActor);
         return true;
     }
 
@@ -343,6 +343,7 @@ public class TaskServiceImpl implements TaskService {
             hisTaskActors.forEach(t -> {
                 FlwTaskActor flwTaskActor = new FlwTaskActor();
                 flwTaskActor.setTenantId(t.getTenantId());
+                flwTaskActor.setInstanceId(t.getInstanceId());
                 flwTaskActor.setTaskId(flwTask.getId());
                 flwTaskActor.setActorType(t.getActorType());
                 flwTaskActor.setActorId(t.getActorId());
@@ -468,7 +469,6 @@ public class TaskServiceImpl implements TaskService {
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             for (NodeAssignee nodeUser : nodeUserList) {
                 FlwTaskCc flwTaskCc = new FlwTaskCc();
-                flwTaskCc.setParentTaskId(execution.getFlwTask().getId());
                 flwTaskCc.setCreateId(execution.getCreateId());
                 flwTaskCc.setCreateBy(execution.getCreateBy());
                 flwTaskCc.setCreateTime(DateUtils.getCurrentDate());

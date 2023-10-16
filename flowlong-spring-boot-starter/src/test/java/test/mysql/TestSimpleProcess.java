@@ -23,58 +23,67 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 测试简单流程
  *
- * @author xdg
+ * @author ming
  */
 @Slf4j
-public class TestPurchase extends MysqlTest {
+class TestSimpleProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/purchase.json", testCreator);
+        processId = this.deployByResource("test/simpleProcess.json", testCreator);
     }
 
     @Test
-    public void test() {
+    void test() {
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+        Map<String, Object> args = new HashMap<>();
+        args.put("day", 8);
+        args.put("age", 18);
+        args.put("assignee", testUser1);
+
+        // 启动指定流程定义ID启动流程实例
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 发起
             this.executeActiveTasks(instance.getId(), testCreator);
 
+            // 测试会签审批人001【审批】
+            this.executeTask(instance.getId(), testCreator);
+
+            // 延迟下一会签任务完成时间
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
-            // 领导审批
-            this.executeActiveTasks(instance.getId(), testCreator);
+            // 测试会签审批人003【审批】
+            this.executeTask(instance.getId(), test3Creator);
 
-            // 撤回任务（领导审批）
+            //撤回任务(条件路由子审批) 回到测试会签审批人003【审批】任务
             QueryService queryService = flowLongEngine.queryService();
             List<FlwHisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
             FlwHisTask hisTask = hisTasks.get(0);
             TaskService taskService = flowLongEngine.taskService();
             taskService.withdrawTask(hisTask.getId(), testCreator);
 
-            // 驳回任务（领导审批驳回，任务至发起人）
-            this.executeActiveTasks(instance.getId(), t ->
-                    taskService.rejectTask(t, testCreator, new HashMap<String, Object>() {{
-                        put("reason", "不符合要求");
-                    }})
-            );
+            // 测试会签审批人003【审批】
+            this.executeTask(instance.getId(), test3Creator);
 
-            // 执行当前任务并跳到【经理确认】节点
-            this.executeActiveTasks(instance.getId(), t ->
-                    flowLongEngine.executeAndJumpTask(t.getId(), "经理确认", testCreator)
-            );
+            // 年龄审批【审批】
+            this.executeTask(instance.getId(), testCreator);
 
-            // 经理确认，流程结束
-            this.executeActiveTasks(instance.getId(), testCreator);
+            // 条件内部审核【审批】
+            this.executeTask(instance.getId(), testCreator);
+
+            // 条件路由子审批【审批】 抄送 结束
+            this.executeTask(instance.getId(), testCreator);
+
         });
     }
 }

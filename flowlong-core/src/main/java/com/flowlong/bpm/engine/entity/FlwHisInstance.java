@@ -37,7 +37,7 @@ import java.util.Date;
 @ToString
 public class FlwHisInstance extends FlwInstance {
     /**
-     * 状态 0，结束 1，活动
+     * 状态 0，活动 1，结束
      */
     protected Integer instanceState;
     /**
