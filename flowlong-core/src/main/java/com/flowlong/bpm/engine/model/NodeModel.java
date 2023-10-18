@@ -193,7 +193,10 @@ public class NodeModel implements ModelInstance {
         for (ConditionNode conditionNode : conditionNodes) {
             NodeModel conditionChildNode = conditionNode.getChildNode();
             if (null != conditionChildNode) {
-                return conditionChildNode.getNode(nodeName);
+                NodeModel nodeModel = conditionChildNode.getNode(nodeName);
+                if (null != nodeModel) {
+                    return nodeModel;
+                }
             }
         }
         return null;
