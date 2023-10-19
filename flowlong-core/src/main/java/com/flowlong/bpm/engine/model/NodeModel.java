@@ -15,10 +15,7 @@ import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 爱组搭 http://aizuda.com
@@ -122,7 +119,7 @@ public class NodeModel implements ModelInstance {
             Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
-            conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+            Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                     .filter(t -> {
                         // 执行条件分支
                         final String expr = t.getExpr();
@@ -136,12 +133,12 @@ public class NodeModel implements ModelInstance {
                             }
                         }
                         return result;
-                    }).findFirst().ifPresent(conditionNode -> {
-                        /**
-                         * 执行创建条件任务
-                         */
-                        this.createTask(conditionNode.getChildNode(), flowLongContext, execution);
-                    });
+                    }).findFirst();
+            Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
+            /**
+             * 执行创建条件任务
+             */
+            this.createTask(conditionNodeOptional.get().getChildNode(), flowLongContext, execution);
         }
 
         /**
@@ -172,7 +169,7 @@ public class NodeModel implements ModelInstance {
         }
         if (null != conditionNodes) {
             NodeModel fromConditionNode = getFromConditionNodes(nodeName);
-            if(fromConditionNode != null){
+            if (fromConditionNode != null) {
                 return fromConditionNode;
             }
         }
@@ -189,7 +186,7 @@ public class NodeModel implements ModelInstance {
      * @param nodeName 节点名称
      * @return {@link NodeModel}
      */
-    private NodeModel getFromConditionNodes(String nodeName){
+    private NodeModel getFromConditionNodes(String nodeName) {
         for (ConditionNode conditionNode : conditionNodes) {
             NodeModel conditionChildNode = conditionNode.getChildNode();
             if (null != conditionChildNode) {
