@@ -16,6 +16,8 @@ package com.flowlong.bpm.solon.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
+import com.flowlong.bpm.engine.impl.GeneralTaskActorProvider;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.scheduling.JobLock;
@@ -26,6 +28,7 @@ import com.flowlong.bpm.mybatisplus.service.ProcessServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.QueryServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.RuntimeServiceImpl;
 import com.flowlong.bpm.mybatisplus.service.TaskServiceImpl;
+import com.flowlong.bpm.solon.adaptive.SolonExpression;
 import com.flowlong.bpm.solon.adaptive.SolonFlowJsonHandler;
 import com.flowlong.bpm.solon.adaptive.SolonScheduler;
 import org.noear.solon.annotation.Bean;
@@ -48,6 +51,7 @@ import org.noear.solon.scheduling.scheduled.manager.IJobManager;
  */
 @Configuration
 public class FlowLongAutoConfiguration {
+
     @Bean
     @Condition(onMissingBean = TaskService.class)
     public TaskService taskService(@Inject(required = false) TaskAccessStrategy taskAccessStrategy, @Inject(required = false) TaskListener taskListener,
@@ -81,11 +85,33 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
+    @Condition(onMissingBean = Expression.class)
+    public Expression expression() {
+        return new SolonExpression();
+    }
+
+    @Bean
+    @Condition(onMissingBean = TaskAccessStrategy.class)
+    public TaskAccessStrategy taskAccessStrategy() {
+        return new GeneralAccessStrategy();
+    }
+
+
+    @Bean
+    @Condition(onMissingBean = TaskActorProvider.class)
+    public TaskActorProvider taskActorProvider() {
+        return new GeneralTaskActorProvider();
+    }
+
+    @Bean
     @Condition(onMissingBean = FlowLongContext.class)
     public FlowLongContext flowLongContext(ProcessService processService,
                                            QueryService queryService,
                                            RuntimeService runtimeService,
-                                           TaskService taskService) {
+                                           TaskService taskService,
+                                           Expression expression,
+                                           TaskAccessStrategy taskAccessStrategy,
+                                           TaskActorProvider taskActorProvider) {
 
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
@@ -95,6 +121,9 @@ public class FlowLongAutoConfiguration {
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
+        flc.setExpression(expression);
+        flc.setTaskAccessStrategy(taskAccessStrategy);
+        flc.setTaskActorProvider(taskActorProvider);
         return flc;
     }
 

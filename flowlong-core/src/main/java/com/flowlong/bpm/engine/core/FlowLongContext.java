@@ -20,7 +20,6 @@ import com.flowlong.bpm.engine.cache.FlowCache;
 import com.flowlong.bpm.engine.cache.FlowSimpleCache;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.FlowJsonHandler;
-import com.flowlong.bpm.engine.impl.GeneralTaskActorProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -102,10 +101,6 @@ public class FlowLongContext {
         }
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine be found:" + configEngine.getClass());
-        }
-        // 设置普遍的任务参与者提供处理类
-        if (taskActorProvider == null) {
-            taskActorProvider = new GeneralTaskActorProvider();
         }
         return configEngine.configure(this);
     }
