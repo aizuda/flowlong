@@ -516,6 +516,7 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTask> flwTasks = new ArrayList<>();
         if (performType == PerformType.unknown) {
             // 发起、其它
+            flwTask.setVariable(execution.getArgs());
             taskMapper.insert(flwTask);
             if (ObjectUtils.isNotEmpty(taskActors)) {
                 // 发起人保存参与者
