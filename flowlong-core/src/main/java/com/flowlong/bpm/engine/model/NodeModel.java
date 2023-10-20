@@ -45,6 +45,14 @@ public class NodeModel implements ModelInstance {
     private Integer type;
     /**
      * 审核人类型
+     * <p>
+     * 1，指定成员
+     * 2，主管
+     * 3，角色
+     * 4，发起人自选
+     * 5，发起人自己
+     * 7，连续多级主管
+     * </p>
      */
     private Integer setType;
     /**
@@ -65,6 +73,10 @@ public class NodeModel implements ModelInstance {
     private Integer directorLevel;
     /**
      * 发起人自选类型
+     * <p>
+     * 1，自选一个人
+     * 2，自选多个人
+     * </p>
      */
     private Integer selectMode;
     /**
@@ -90,6 +102,10 @@ public class NodeModel implements ModelInstance {
     private Integer examineMode;
     /**
      * 连续主管审批方式
+     * <p>
+     * 1，直到最上级主管
+     * 2，自定义审批终点
+     * </p>
      */
     private Integer directorMode;
     /**
