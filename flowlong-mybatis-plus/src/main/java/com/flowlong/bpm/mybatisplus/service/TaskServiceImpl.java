@@ -424,7 +424,7 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = this.createTaskBase(nodeModel, execution);
 
         // 模型中获取参与者信息
-        List<FlwTaskActor> taskActors = this.getTaskActors(nodeModel, execution);
+        List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
         List<FlwTask> flwTasks = new LinkedList<>();
 
         // 处理流程任务
@@ -574,25 +574,6 @@ public class TaskServiceImpl implements TaskService {
             this.taskNotify(EventType.create, newFlwTask);
         });
         return flwTasks;
-    }
-
-    /**
-     * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
-     *
-     * @param nodeModel 节点模型
-     * @param execution 执行对象
-     * @return 参与者数组
-     */
-    private List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
-        List<FlwTaskActor> flwHisTaskActors = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-            // 指定用户审批
-            nodeModel.getNodeUserList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.ofUser(t.getId(), t.getName())));
-        } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
-            // 指定角色审批
-            nodeModel.getNodeRoleList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.ofRole(t.getId(), t.getName())));
-        }
-        return ObjectUtils.isEmpty(flwHisTaskActors) ? null : flwHisTaskActors;
     }
 
     /**

@@ -15,6 +15,7 @@
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
+import com.flowlong.bpm.engine.TaskActorProvider;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
@@ -170,5 +171,9 @@ public class Execution implements Serializable {
             this.args = new HashMap<>();
         }
         return this.args;
+    }
+
+    public TaskActorProvider getTaskActorProvider() {
+        return engine.getContext().getTaskActorProvider();
     }
 }
