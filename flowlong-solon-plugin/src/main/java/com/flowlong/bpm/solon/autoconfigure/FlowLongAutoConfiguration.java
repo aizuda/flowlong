@@ -16,6 +16,7 @@ package com.flowlong.bpm.solon.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
 import com.flowlong.bpm.engine.impl.GeneralTaskActorProvider;
 import com.flowlong.bpm.engine.listener.InstanceListener;
@@ -104,6 +105,12 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
+    @Condition(onMissingBean = FlowLongEngine.class)
+    public FlowLongEngine flowLongEngine() {
+        return new FlowLongEngineImpl();
+    }
+
+    @Bean
     @Condition(onMissingBean = FlowLongContext.class)
     public FlowLongContext flowLongContext(ProcessService processService,
                                            QueryService queryService,
@@ -111,7 +118,8 @@ public class FlowLongAutoConfiguration {
                                            TaskService taskService,
                                            Expression expression,
                                            TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider) {
+                                           TaskActorProvider taskActorProvider,
+                                           FlowLongEngine flowLongEngine) {
 
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
@@ -124,13 +132,7 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
-        return flc;
-    }
-
-    @Bean
-    @Condition(onMissingBean = FlowLongEngine.class)
-    public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
-        return flowLongContext.build();
+        return flc.build(flowLongEngine);
     }
 
     @Bean

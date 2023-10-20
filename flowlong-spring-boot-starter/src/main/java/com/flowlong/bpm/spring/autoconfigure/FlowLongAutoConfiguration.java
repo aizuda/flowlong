@@ -16,6 +16,7 @@ package com.flowlong.bpm.spring.autoconfigure;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.FlowLongEngineImpl;
 import com.flowlong.bpm.engine.impl.GeneralAccessStrategy;
 import com.flowlong.bpm.engine.impl.GeneralTaskActorProvider;
 import com.flowlong.bpm.engine.listener.InstanceListener;
@@ -126,9 +127,15 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public FlowLongEngine flowLongEngine() {
+        return new FlowLongEngineImpl();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider) {
+                                           TaskActorProvider taskActorProvider, FlowLongEngine configEngine) {
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         // 注入 FlowLong 上下文
@@ -140,13 +147,7 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
-        return flc;
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public FlowLongEngine flowLongEngine(FlowLongContext flowLongContext) {
-        return flowLongContext.build();
+        return flc.build(configEngine);
     }
 
 }

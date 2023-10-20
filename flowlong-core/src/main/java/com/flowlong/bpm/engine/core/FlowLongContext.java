@@ -88,18 +88,21 @@ public class FlowLongContext {
      * @return {@link FlowLongEngine}
      * @throws FlowLongException
      */
-    public FlowLongEngine build() throws FlowLongException {
+    public FlowLongContext build(FlowLongEngine configEngine) throws FlowLongException {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
         /**
          * 由服务上下文返回流程引擎
          */
-        FlowLongEngine configEngine = new FlowLongEngineImpl();
+        if (configEngine == null) {
+            throw new FlowLongException("Unable to discover implementation class for LongEngine");
+        }
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine be found:" + configEngine.getClass());
         }
-        return configEngine.configure(this);
+        configEngine.configure(this);
+        return this;
     }
 
 }
