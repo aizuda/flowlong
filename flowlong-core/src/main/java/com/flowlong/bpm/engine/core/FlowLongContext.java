@@ -96,9 +96,6 @@ public class FlowLongContext {
          * 由服务上下文返回流程引擎
          */
         FlowLongEngine configEngine = new FlowLongEngineImpl();
-        if (configEngine == null) {
-            throw new FlowLongException("配置无法发现LongEngine的实现类");
-        }
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine be found:" + configEngine.getClass());
         }
