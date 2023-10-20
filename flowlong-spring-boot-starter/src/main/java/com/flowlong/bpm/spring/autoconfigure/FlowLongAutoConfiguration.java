@@ -135,7 +135,7 @@ public class FlowLongAutoConfiguration {
     @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider, FlowLongEngine configEngine) {
+                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine) {
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         // 注入 FlowLong 上下文
@@ -147,7 +147,7 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
-        return flc.build(configEngine);
+        return flc.build(flowLongEngine);
     }
 
 }
