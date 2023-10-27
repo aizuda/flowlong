@@ -103,8 +103,8 @@ public class NodeModel implements ModelInstance {
     /**
      * 连续主管审批方式
      * <p>
-     * 1，直到最上级主管
-     * 2，自定义审批终点
+     * 0，直到最上级主管
+     * 1，自定义审批终点
      * </p>
      */
     private Integer directorMode;
