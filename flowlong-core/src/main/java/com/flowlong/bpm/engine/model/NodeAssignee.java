@@ -5,6 +5,7 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,4 +29,10 @@ public class NodeAssignee {
      */
     private String name;
 
+    public static NodeAssignee of(FlwTaskActor flwTaskActor) {
+        NodeAssignee nodeAssignee = new NodeAssignee();
+        nodeAssignee.setId(flwTaskActor.getActorId());
+        nodeAssignee.setName(flwTaskActor.getActorName());
+        return nodeAssignee;
+    }
 }
