@@ -96,7 +96,7 @@ public class FlwProcess extends FlowEntity {
         if (null == this.modelContent) {
             return null;
         }
-        return ProcessModel.parse(this.modelContent, this.id);
+        return ProcessModel.parse(this.modelContent, this.id, false);
     }
 
     /**

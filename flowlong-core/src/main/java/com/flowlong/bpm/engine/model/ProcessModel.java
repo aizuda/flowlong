@@ -52,14 +52,15 @@ public class ProcessModel {
      *
      * @param content   流程定义内容
      * @param processId 流程定义ID
+     * @param redeploy  重新部署
      */
-    public static ProcessModel parse(String content, Long processId) {
+    public static ProcessModel parse(String content, Long processId, boolean redeploy) {
         // 缓存解析逻辑
         if (null != processId) {
             final String cacheKey = "flwProcessModel#" + processId;
             FlowCache flowCache = FlowLongContext.FLOW_CACHE;
             ProcessModel processModel = flowCache.get(cacheKey);
-            if (null == processModel) {
+            if (null == processModel || redeploy) {
                 processModel = parseProcessModel(content);
                 flowCache.put(cacheKey, processModel);
             }
