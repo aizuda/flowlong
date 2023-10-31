@@ -60,3 +60,4 @@ FlowLong🐉飞龙工作流
 
 - 基于 [MybatisPlus](https://baomidou.com) 为 `ORM` 层实现
 - 后端设计参考了 [snakerflow](https://gitee.com/yuqs/snakerflow) 开源工作流实体划分
+- 参考了包括 flowable camunda 等主流工作流的设计思想
