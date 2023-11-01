@@ -10,6 +10,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -88,7 +89,7 @@ public class ProcessServiceImpl implements ProcessService {
     public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
         Assert.isNull(jsonString);
         try {
-            ProcessModel processModel = ProcessModel.parse(jsonString, null, false);
+            ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, null, false);
             /**
              * 查询流程信息获取最后版本号
              */
@@ -137,7 +138,7 @@ public class ProcessServiceImpl implements ProcessService {
     public boolean redeploy(Long id, String jsonString) {
         FlwProcess process = processMapper.selectById(id);
         Assert.isNull(process);
-        ProcessModel processModel = ProcessModel.parse(jsonString, id, true);
+        ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, id, true);
         process.setProcessName(processModel.getName());
         process.setDisplayName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());

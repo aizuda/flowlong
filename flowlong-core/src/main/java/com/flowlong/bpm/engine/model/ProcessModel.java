@@ -5,9 +5,6 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.cache.FlowCache;
-import com.flowlong.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -48,42 +45,11 @@ public class ProcessModel {
     }
 
     /**
-     * 流程文件字节码解析为流程模型
-     *
-     * @param content   流程定义内容
-     * @param processId 流程定义ID
-     * @param redeploy  重新部署
-     */
-    public static ProcessModel parse(String content, Long processId, boolean redeploy) {
-        // 缓存解析逻辑
-        if (null != processId) {
-            final String cacheKey = "flwProcessModel#" + processId;
-            FlowCache flowCache = FlowLongContext.FLOW_CACHE;
-            ProcessModel processModel = flowCache.get(cacheKey);
-            if (null == processModel || redeploy) {
-                processModel = parseProcessModel(content);
-                flowCache.put(cacheKey, processModel);
-            }
-            return processModel;
-        }
-
-        // 未缓存解析逻辑
-        return parseProcessModel(content);
-    }
-
-    private static ProcessModel parseProcessModel(String content) {
-        ProcessModel processModel = FlowLongContext.fromJson(content, ProcessModel.class);
-        Assert.isNull(processModel, "process model json parser error");
-        processModel.buildParentNode(processModel.getNodeConfig());
-        return processModel;
-    }
-
-    /**
      * 构建父节点
      *
      * @param rootNode 根节点
      */
-    protected void buildParentNode(NodeModel rootNode) {
+    public void buildParentNode(NodeModel rootNode) {
         List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
         if (null != conditionNodes) {
             for (ConditionNode conditionNode : conditionNodes) {
