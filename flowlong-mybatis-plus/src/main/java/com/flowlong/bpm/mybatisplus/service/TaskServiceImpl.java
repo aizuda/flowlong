@@ -503,6 +503,7 @@ public class TaskServiceImpl implements TaskService {
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {
         List<FlwTask> flwTasks = new ArrayList<>();
+        flwTask.setPerformType(performType);
         if (performType == PerformType.unknown) {
             // 发起、其它
             flwTask.setVariable(execution.getArgs());
@@ -516,7 +517,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
-        flwTask.setPerformType(performType);
         if (performType == PerformType.orSign) {
             /**
              * 或签一条任务多个参与者
