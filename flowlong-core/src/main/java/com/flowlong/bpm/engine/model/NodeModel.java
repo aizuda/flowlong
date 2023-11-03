@@ -97,6 +97,7 @@ public class NodeModel implements ModelInstance {
      * 1，按顺序依次审批
      * 2，会签 (可同时审批，每个人必须审批通过)
      * 3，或签 (有一人审批通过即可)
+     * 4，票签 (总权重大于 50% 表示通过)
      * </p>
      */
     private Integer examineMode;
