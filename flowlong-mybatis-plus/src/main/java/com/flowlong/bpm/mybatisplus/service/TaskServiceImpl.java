@@ -567,7 +567,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 根据 taskId、createBy 判断创建人createBy是否允许执行任务
+     * 根据 taskId、createId 判断创建人是否允许执行任务
      *
      * @param flwTask 任务对象
      * @param userId  用户ID
@@ -576,7 +576,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean isAllowed(FlwTask flwTask, String userId) {
         // 未指定创建人情况，默认为不验证执行权限
-        if (null == flwTask.getCreateBy()) {
+        if (null == flwTask.getCreateId()) {
             return true;
         }
 
