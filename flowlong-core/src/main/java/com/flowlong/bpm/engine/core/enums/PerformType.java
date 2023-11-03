@@ -35,7 +35,11 @@ public enum PerformType {
     /**
      * 抄送
      */
-    copy(4);
+    copy(4),
+    /**
+     * 票签（ 总权重大于 50% 表示通过 ）
+     */
+    voteSign(5);
 
     private final int value;
 

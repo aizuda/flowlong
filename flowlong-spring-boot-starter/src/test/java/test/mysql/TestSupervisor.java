@@ -65,7 +65,6 @@ public class TestSupervisor extends MysqlTest {
             /// 四级部门审核
             this.executeActiveTasks(instance.getId(), user4);
 
-            // 四级部门审核之后没有创建三级部门审核的任务
             // 三级部门审核
             this.executeActiveTasks(instance.getId(), user3);
 

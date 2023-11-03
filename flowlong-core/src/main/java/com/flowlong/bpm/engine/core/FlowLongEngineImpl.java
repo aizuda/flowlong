@@ -154,6 +154,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return;
             }
+        } else if (performType == PerformType.voteSign) {
+            /**
+             * 票签（ 总权重大于 50% 表示通过 ）
+             */
+            // TODO
         }
 
         // 流程模型

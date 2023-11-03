@@ -28,6 +28,10 @@ public class NodeAssignee {
      * 名称
      */
     private String name;
+    /**
+     * 权重（ 用于票签，多个参与者合计权重 100% ）
+     */
+    private Integer weight;
 
     public static NodeAssignee of(FlwTaskActor flwTaskActor) {
         NodeAssignee nodeAssignee = new NodeAssignee();
