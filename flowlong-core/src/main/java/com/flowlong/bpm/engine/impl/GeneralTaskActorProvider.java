@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.impl;
@@ -28,10 +28,10 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         List<FlwTaskActor> flwHisTaskActors = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
             // 指定用户审批
-            nodeModel.getNodeUserList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.ofUser(t.getId(), t.getName())));
+            nodeModel.getNodeUserList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.of(t, 0)));
         } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
             // 指定角色审批
-            nodeModel.getNodeRoleList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.ofRole(t.getId(), t.getName())));
+            nodeModel.getNodeRoleList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.of(t, 1)));
         }
         return ObjectUtils.isEmpty(flwHisTaskActors) ? null : flwHisTaskActors;
     }

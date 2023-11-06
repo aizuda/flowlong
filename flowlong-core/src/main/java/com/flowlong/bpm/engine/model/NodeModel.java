@@ -110,6 +110,10 @@ public class NodeModel implements ModelInstance {
      */
     private Integer directorMode;
     /**
+     * 通过权重（ 所有分配任务权重之和大于该值即通过，默认 50 ）
+     */
+    private Integer passWeight;
+    /**
      * 条件节点列表
      */
     private List<ConditionNode> conditionNodes;
@@ -222,4 +226,5 @@ public class NodeModel implements ModelInstance {
     public boolean isConditionNode() {
         return 3 == type || 4 == type;
     }
+
 }

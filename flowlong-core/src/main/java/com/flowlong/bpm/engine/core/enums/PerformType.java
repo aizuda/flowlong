@@ -33,7 +33,7 @@ public enum PerformType {
      */
     orSign(3),
     /**
-     * 票签（ 总权重大于 50% 表示通过 ）
+     * 票签 (总权重大于节点 passWeight 属性)
      */
     voteSign(4),
     /**

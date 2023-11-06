@@ -550,7 +550,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         /**
-         * 会签每个参与者生成一条任务
+         * 会签（票签）每个参与者生成一条任务
          */
         taskActors.forEach(t -> {
             FlwTask newFlwTask = flwTask.cloneTask(null);

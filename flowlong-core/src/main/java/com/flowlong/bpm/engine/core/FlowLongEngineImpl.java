@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.core;
@@ -8,7 +8,10 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.PerformType;
-import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.entity.FlwTask;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -154,15 +157,32 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return;
             }
-        } else if (performType == PerformType.voteSign) {
-            /**
-             * 票签（ 总权重大于 50% 表示通过 ）
-             */
-            // TODO
         }
 
-        // 流程模型
+        /**
+         * 流程模型
+         */
         FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
+
+        /**
+         * 票签（ 总权重大于 50% 表示通过 ）
+         */
+        if (performType == PerformType.voteSign) {
+            List<FlwTaskActor> flwTaskActors = queryService().getTaskActorsByTaskId(flwTask.getId());
+            if (ObjectUtils.isNotEmpty(flwTaskActors)) {
+                NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
+                int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
+                int votedWeight = 100 - flwTaskActors.stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
+                if (votedWeight < passWeight) {
+                    // 投票权重小于节点权重继续投票
+                    return;
+                }
+            }
+        }
+
+        /**
+         * 追加实例参数
+         */
         Map<String, Object> instanceMaps = flwInstance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {

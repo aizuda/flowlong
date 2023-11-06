@@ -1,8 +1,9 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -51,24 +52,34 @@ public class FlwTaskActor implements Serializable {
      * 参与者类型 0，用户 1，角色 2，部门
      */
     protected Integer actorType;
+    /**
+     * 票签权重
+     */
+    private Integer weight;
 
     public static FlwTaskActor ofUser(String actorId, String actorName) {
-        return of(actorId, actorName, 0);
+        return of(actorId, actorName, 0, null);
     }
 
     public static FlwTaskActor ofRole(String actorId, String actorName) {
-        return of(actorId, actorName, 1);
+        return of(actorId, actorName, 1, null);
     }
 
     public static FlwTaskActor ofDepartment(String actorId, String actorName) {
-        return of(actorId, actorName, 2);
+        return of(actorId, actorName, 2, null);
     }
 
-    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType) {
+    public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType) {
+        return of(nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
+    }
+
+    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType, Integer weight) {
         FlwTaskActor taskActor = new FlwTaskActor();
         taskActor.setActorId(actorId);
         taskActor.setActorName(actorName);
         taskActor.setActorType(actorType);
+        taskActor.setWeight(weight);
         return taskActor;
     }
+
 }
