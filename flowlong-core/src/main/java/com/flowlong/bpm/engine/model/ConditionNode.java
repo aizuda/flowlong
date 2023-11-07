@@ -1,24 +1,22 @@
 /*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.model;
 
-import com.flowlong.bpm.engine.assist.ObjectUtils;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
  * JSON BPM 条件节点
  *
- * @author 青苗
- * @since 2023-03-17
+ * <p>
+ * 尊重知识产权，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
  */
 @Getter
 @Setter
@@ -36,27 +34,15 @@ public class ConditionNode {
      */
     private Integer priorityLevel;
     /**
-     * 条件关系 0，且 1，或
-     */
-    private Integer conditionMode;
-    /**
      * 节点条件表达式列表
+     * <p>
+     * 外层 List 为条件组或关系、内层 List 为具体条件且关系
+     * </p>
      */
-    private List<NodeExpression> conditionList;
+    private List<List<NodeExpression>> conditionList;
     /**
      * 子节点
      */
     private NodeModel childNode;
-
-    /**
-     * 字符串 SpEL 表达式条件
-     */
-    public String getExpr() {
-        if (ObjectUtils.isNotEmpty(this.conditionList)) {
-            return conditionList.stream().map(t -> "#" + t.getField() + t.getOperator() + t.getValue())
-                    .collect(Collectors.joining(0 == conditionMode ? " && " : " || "));
-        }
-        return null;
-    }
 
 }

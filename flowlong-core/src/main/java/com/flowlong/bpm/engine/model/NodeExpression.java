@@ -1,7 +1,5 @@
 /*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.model;
 
@@ -9,12 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
  * JSON BPM 节点表达式条件
  *
- * @author 青苗
- * @since 2023-03-17
+ * <p>
+ * 尊重知识产权，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
  */
 @Getter
 @Setter

@@ -1,7 +1,5 @@
 /*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.model;
 
@@ -18,12 +16,14 @@ import lombok.Setter;
 import java.util.*;
 
 /**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
  * JSON BPM 节点
  *
- * @author 青苗
- * @since 2023-03-17
+ * <p>
+ * 尊重知识产权，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
  */
 @Getter
 @Setter
@@ -141,20 +141,7 @@ public class NodeModel implements ModelInstance {
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
             Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
-                    .filter(t -> {
-                        // 执行条件分支
-                        final String expr = t.getExpr();
-                        boolean result = true;
-                        if (null != expr) {
-                            try {
-                                result = expression.eval(Boolean.class, expr, args);
-                            } catch (Throwable e) {
-                                result = false;
-                                e.printStackTrace();
-                            }
-                        }
-                        return result;
-                    }).findFirst();
+                    .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
             Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
             /**
              * 执行创建条件任务

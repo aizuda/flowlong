@@ -1,12 +1,14 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.solon.adaptive;
 
 import com.flowlong.bpm.engine.Expression;
+import com.flowlong.bpm.engine.model.NodeExpression;
 import com.googlecode.aviator.AviatorEvaluator;
 import org.noear.solon.annotation.Component;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,12 +25,14 @@ import java.util.Map;
 public class SolonExpression implements Expression {
 
     @Override
-    public <T> T eval(Class<T> T, String expr, Map<String, Object> args) {
-        if (expr.startsWith("#{")) {
-            expr = expr.substring(2, expr.length() - 2);
-        } else if (expr.startsWith("#")) {
-            expr = expr.substring(1, expr.length() - 2);
-        }
-        return (T) AviatorEvaluator.execute(expr, args);
+    public boolean eval(List<List<NodeExpression>> conditionList, Map<String, Object> args) {
+        return this.eval(conditionList, expr -> {
+            if (expr.startsWith("#{")) {
+                expr = expr.substring(2, expr.length() - 2);
+            } else if (expr.startsWith("#")) {
+                expr = expr.substring(1, expr.length() - 2);
+            }
+            return (Boolean) AviatorEvaluator.execute(expr, args);
+        });
     }
 }
