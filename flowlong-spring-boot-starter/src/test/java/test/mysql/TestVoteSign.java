@@ -33,10 +33,10 @@ public class TestVoteSign extends MysqlTest {
             this.executeActiveTasks(instance.getId(), testCreator);
 
             // test1 领导审批同意
-            this.executeActiveTasks(instance.getId(), FlowCreator.of(testUser1, "青苗"));
+            this.executeTask(instance.getId(), FlowCreator.of(testUser1, "青苗"));
 
             // test3 领导审批同意
-            this.executeActiveTasks(instance.getId(), FlowCreator.of(testUser3, "聂秋秋"));
+            this.executeTask(instance.getId(), FlowCreator.of(testUser3, "聂秋秋"));
 
             // test2 不在执行达到票签值
             // 抄送人力资源，流程自动结束

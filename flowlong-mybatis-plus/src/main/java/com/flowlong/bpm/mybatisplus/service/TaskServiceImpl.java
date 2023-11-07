@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.service;
@@ -87,36 +87,69 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setVariable(args);
         Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
 
-        // 迁移 task 信息到 flw_his_task
-        FlwHisTask hisTask = FlwHisTask.of(flwTask);
-        hisTask.setFinishTime(DateUtils.getCurrentDate());
-        hisTask.setTaskState(taskState);
-        hisTask.setCreateId(flowCreator.getCreateId());
-        hisTask.setCreateBy(flowCreator.getCreateBy());
-        hisTaskMapper.insert(hisTask);
-
-        // 迁移任务参与者
-        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(taskId);
-        if (ObjectUtils.isNotEmpty(taskActors)) {
-            // 将 task 参与者信息迁移到 flw_his_task_actor
-            taskActors.forEach(t -> hisTaskActorMapper.insert(FlwHisTaskActor.of(t)));
-            // 移除 flw_task_actor 中 task 参与者信息
-            taskActorMapper.deleteByTaskId(taskId);
-        }
-
-        // 删除 flw_task 中指定 task 信息
-        taskMapper.deleteById(taskId);
+        // 迁移任务至历史表
+        this.moveToHisTask(flwTask, taskState, flowCreator);
 
         // 任务监听器通知
         this.taskNotify(eventType, flwTask);
         return flwTask;
     }
 
+    /**
+     * 迁移任务至历史表
+     *
+     * @param flwTask     执行任务
+     * @param taskState   任务状态
+     * @param flowCreator 任务创建者
+     * @return
+     */
+    protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
+        // 迁移 task 信息到 flw_his_task
+        FlwHisTask hisTask = FlwHisTask.of(flwTask);
+        hisTask.setFinishTime(DateUtils.getCurrentDate());
+        hisTask.setTaskState(taskState);
+        hisTask.setCreateId(flowCreator.getCreateId());
+        hisTask.setCreateBy(flowCreator.getCreateBy());
+        Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
+
+        // 迁移任务参与者
+        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(flwTask.getId());
+        if (ObjectUtils.isNotEmpty(taskActors)) {
+            // 将 task 参与者信息迁移到 flw_his_task_actor
+            taskActors.forEach(t -> Assert.isFalse(hisTaskActorMapper.insert(FlwHisTaskActor.of(t)) > 0,
+                    "Migration to FlwHisTaskActor table failed"));
+            // 移除 flw_task_actor 中 task 参与者信息
+            Assert.isFalse(taskActorMapper.deleteByTaskId(flwTask.getId()), "Delete FlwTaskActor table failed");
+        }
+
+        // 删除 flw_task 中指定 task 信息
+        return taskMapper.deleteById(flwTask.getId()) > 0;
+    }
 
     protected void taskNotify(EventType eventType, FlwTask flwTask) {
         if (null != taskListener) {
             taskListener.notify(eventType, flwTask);
         }
+    }
+
+    /**
+     * 完成指定实例ID活动任务
+     *
+     * @param instanceId 实例ID
+     * @return
+     */
+    @Override
+    public boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator) {
+        List<FlwTask> flwTasks = taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
+        if (ObjectUtils.isNotEmpty(flwTasks)) {
+            for (FlwTask flwTask : flwTasks) {
+                // 迁移任务至历史表，设置任务状态为终止
+                if (!this.moveToHisTask(flwTask, TaskState.termination, flowCreator)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -134,7 +167,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 查看任务设置为已阅状态
      *
-     * @param taskId          任务ID
+     * @param taskId    任务ID
      * @param taskActor 任务参与者
      * @return
      */

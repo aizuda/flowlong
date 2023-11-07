@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
@@ -42,6 +42,14 @@ public interface TaskService {
     default FlwTask complete(Long taskId, FlowCreator flowCreator) {
         return this.complete(taskId, flowCreator, null);
     }
+
+    /**
+     * 完成指定实例ID活动任务
+     *
+     * @param instanceId 实例ID
+     * @return
+     */
+    boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 更新任务对象

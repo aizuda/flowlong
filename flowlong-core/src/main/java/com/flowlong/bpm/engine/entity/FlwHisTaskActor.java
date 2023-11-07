@@ -30,6 +30,7 @@ public class FlwHisTaskActor extends FlwTaskActor {
         hisTaskActor.actorType = taskActor.getActorType();
         hisTaskActor.actorId = taskActor.getActorId();
         hisTaskActor.actorName = taskActor.getActorName();
+        hisTaskActor.weight = taskActor.getWeight();
         return hisTaskActor;
     }
 }

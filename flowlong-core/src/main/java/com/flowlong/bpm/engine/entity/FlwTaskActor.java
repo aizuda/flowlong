@@ -55,7 +55,7 @@ public class FlwTaskActor implements Serializable {
     /**
      * 票签权重
      */
-    private Integer weight;
+    protected Integer weight;
 
     public static FlwTaskActor ofUser(String actorId, String actorName) {
         return of(actorId, actorName, 0, null);

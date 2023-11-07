@@ -1,6 +1,6 @@
 {
   "id": 1,
-  "name": "报销审批（或签）",
+  "name": "人事审批（票签）",
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,

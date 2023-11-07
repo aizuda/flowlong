@@ -168,14 +168,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 票签（ 总权重大于 50% 表示通过 ）
          */
         if (performType == PerformType.voteSign) {
-            List<FlwTaskActor> flwTaskActors = queryService().getTaskActorsByTaskId(flwTask.getId());
-            if (ObjectUtils.isNotEmpty(flwTaskActors)) {
+            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
+            if (flwTaskActorsOptional.isPresent()) {
                 NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
-                int votedWeight = 100 - flwTaskActors.stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
+                int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
                     // 投票权重小于节点权重继续投票
                     return;
+                } else {
+                    // 投票完成关闭投票状态，进入下一个节点
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
+                            "Failed to close voting status");
                 }
             }
         }
