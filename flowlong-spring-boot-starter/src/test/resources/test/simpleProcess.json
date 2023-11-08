@@ -15,12 +15,14 @@
           "priorityLevel": 1,
           "conditionMode": 1,
           "conditionList": [
-            {
-              "label": "请假天数",
-              "field": "day",
-              "operator": ">=",
-              "value": "7"
-            }
+            [
+              {
+                "label": "请假天数",
+                "field": "day",
+                "operator": ">",
+                "value": "7"
+              }
+            ]
           ],
           "childNode": {
             "nodeName": "7天领导审批",
@@ -55,12 +57,14 @@
                   "priorityLevel": 1,
                   "conditionMode": 1,
                   "conditionList": [
-                    {
-                      "label": "年龄",
-                      "field": "age",
-                      "operator": "==",
-                      "value": "18"
-                    }
+                    [
+                      {
+                        "label": "年龄",
+                        "field": "age",
+                        "operator": "==",
+                        "value": "18"
+                      }
+                    ]
                   ],
                   "childNode": {
                     "nodeName": "年龄审批",
