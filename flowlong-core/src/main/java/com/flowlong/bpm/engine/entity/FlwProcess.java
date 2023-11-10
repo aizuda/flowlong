@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
@@ -139,9 +139,12 @@ public class FlwProcess extends FlowEntity {
         }
 
         //如果当前节点不是条件分支的子节点、而是条件审批的子节点
-        if (parentNode.isConditionNode() && !parentNode.getChildNode().getNodeName().equals(nodeModel.getNodeName())) {
-            // 条件执行节点，返回子节点
-            return parentNode.getChildNode();
+        if (parentNode.isConditionNode()) {
+            NodeModel childNode = parentNode.getChildNode();
+            if (null != childNode && !Objects.equals(childNode.getNodeName(), nodeModel.getNodeName())) {
+                // 条件执行节点，返回子节点
+                return childNode;
+            }
         }
 
         // 往上继续找下一个执行节点
