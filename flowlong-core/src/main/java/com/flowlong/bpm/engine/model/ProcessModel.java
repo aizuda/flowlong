@@ -26,6 +26,10 @@ public class ProcessModel {
      */
     private String name;
     /**
+     * 流程 key
+     */
+    private String key;
+    /**
      * 实例地址
      */
     private String instanceUrl;

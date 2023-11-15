@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
@@ -124,7 +124,9 @@ public class FlwTask extends FlowEntity {
     }
 
     public void setVariable(Map<String, Object> args) {
-        this.variable = FlowLongContext.toJson(args);
+        if (null != args && args.size() > 0) {
+            this.variable = FlowLongContext.toJson(args);
+        }
     }
 
     public FlwTask cloneTask(FlwHisTaskActor flwHisTaskActor) {

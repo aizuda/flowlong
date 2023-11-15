@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "process",
   "name": "请假审批",
   "nodeConfig": {
     "nodeName": "发起人",
@@ -15,12 +15,14 @@
           "priorityLevel": 1,
           "conditionMode": 1,
           "conditionList": [
-            {
-              "label": "请假天数",
-              "field": "day",
-              "operator": ">",
-              "value": "7"
-            }
+            [
+              {
+                "label": "请假天数",
+                "field": "day",
+                "operator": ">",
+                "value": "7"
+              }
+            ]
           ],
           "childNode": {
             "nodeName": "领导审批",
@@ -53,7 +55,10 @@
             "nodeName": "直接主管审批",
             "type": 1,
             "setType": 2,
-            "nodeUserList": [],
+            "nodeUserList": [{
+              "id": "zg0001",
+              "name": "张三"
+            }],
             "nodeRoleList": [],
             "examineLevel": 1,
             "directorLevel": 1,

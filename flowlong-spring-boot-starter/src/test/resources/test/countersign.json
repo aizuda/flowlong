@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "countersign",
   "name": "请假审批（会签）",
   "nodeConfig": {
     "nodeName": "发起人",

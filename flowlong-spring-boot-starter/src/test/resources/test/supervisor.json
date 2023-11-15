@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "supervisor",
   "name": "连续主管审批顺签",
   "nodeConfig": {
     "nodeName": "发起人",

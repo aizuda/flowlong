@@ -33,13 +33,13 @@ import java.util.function.Consumer;
 @ToString
 public class FlwProcess extends FlowEntity {
     /**
+     * 流程定义 key 唯一标识
+     */
+    protected String processKey;
+    /**
      * 流程定义名称
      */
     protected String processName;
-    /**
-     * 流程定义显示名称
-     */
-    protected String displayName;
     /**
      * 流程图标地址
      */

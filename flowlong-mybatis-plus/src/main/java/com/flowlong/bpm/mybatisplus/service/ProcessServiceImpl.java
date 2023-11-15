@@ -112,7 +112,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setProcessVersion(version + 1);
             process.setFlowState(FlowState.active);
             process.setProcessName(processModel.getName());
-            process.setDisplayName(processModel.getName());
+            process.setProcessKey(processModel.getKey());
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setUseScope(0);
             process.setModelContent(jsonString);
@@ -139,8 +139,8 @@ public class ProcessServiceImpl implements ProcessService {
         FlwProcess process = processMapper.selectById(id);
         Assert.isNull(process);
         ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, id, true);
+        process.setProcessKey(processModel.getKey());
         process.setProcessName(processModel.getName());
-        process.setDisplayName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());
         process.setModelContent(jsonString);
         return processMapper.updateById(process) > 0;

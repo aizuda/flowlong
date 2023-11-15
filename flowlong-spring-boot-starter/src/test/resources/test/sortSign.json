@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "sortSign",
   "name": "报销审批（按顺序依次审批）",
   "nodeConfig": {
     "nodeName": "发起人",

@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "simpleProcess",
   "name": "简单流程（测试）",
   "nodeConfig": {
     "nodeName": "发起人",

@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "purchase",
   "name": "采购审批",
   "nodeConfig": {
     "nodeName": "发起人",

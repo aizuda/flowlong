@@ -1,5 +1,5 @@
 {
-  "id": 1,
+  "key": "orSign",
   "name": "报销审批（或签）",
   "nodeConfig": {
     "nodeName": "发起人",
