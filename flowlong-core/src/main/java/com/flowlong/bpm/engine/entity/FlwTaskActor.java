@@ -1,19 +1,9 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +14,7 @@ import java.io.Serializable;
  * 任务参与者实体类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
+ * 尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -62,24 +52,34 @@ public class FlwTaskActor implements Serializable {
      * 参与者类型 0，用户 1，角色 2，部门
      */
     protected Integer actorType;
+    /**
+     * 票签权重
+     */
+    protected Integer weight;
 
     public static FlwTaskActor ofUser(String actorId, String actorName) {
-        return of(actorId, actorName, 0);
+        return of(actorId, actorName, 0, null);
     }
 
     public static FlwTaskActor ofRole(String actorId, String actorName) {
-        return of(actorId, actorName, 1);
+        return of(actorId, actorName, 1, null);
     }
 
     public static FlwTaskActor ofDepartment(String actorId, String actorName) {
-        return of(actorId, actorName, 2);
+        return of(actorId, actorName, 2, null);
     }
 
-    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType) {
+    public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType) {
+        return of(nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
+    }
+
+    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType, Integer weight) {
         FlwTaskActor taskActor = new FlwTaskActor();
         taskActor.setActorId(actorId);
         taskActor.setActorName(actorName);
         taskActor.setActorType(actorType);
+        taskActor.setWeight(weight);
         return taskActor;
     }
+
 }

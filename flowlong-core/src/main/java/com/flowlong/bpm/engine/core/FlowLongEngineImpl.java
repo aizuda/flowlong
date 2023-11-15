@@ -1,16 +1,5 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.core;
 
@@ -19,7 +8,10 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.PerformType;
-import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.entity.FlwTask;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -33,7 +25,7 @@ import java.util.function.Consumer;
  * 基本的流程引擎实现类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
+ * 尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -167,8 +159,34 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
         }
 
-        // 流程模型
+        /**
+         * 流程模型
+         */
         FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
+
+        /**
+         * 票签（ 总权重大于 50% 表示通过 ）
+         */
+        if (performType == PerformType.voteSign) {
+            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
+            if (flwTaskActorsOptional.isPresent()) {
+                NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
+                int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
+                int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
+                if (votedWeight < passWeight) {
+                    // 投票权重小于节点权重继续投票
+                    return;
+                } else {
+                    // 投票完成关闭投票状态，进入下一个节点
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
+                            "Failed to close voting status");
+                }
+            }
+        }
+
+        /**
+         * 追加实例参数
+         */
         Map<String, Object> instanceMaps = flwInstance.getVariableMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
@@ -188,19 +206,42 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          */
         if (performType == PerformType.sort) {
             NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
-            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
-            NodeAssignee nextNodeAssignee = null;
             boolean findTaskActor = false;
-            for (NodeAssignee nodeAssignee : nodeUserList) {
-                if (findTaskActor) {
-                    // 找到下一个执行人
-                    nextNodeAssignee = nodeAssignee;
-                    break;
+            NodeAssignee nextNodeAssignee = null;
+            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+            if (ObjectUtils.isEmpty(nodeUserList)) {
+                /**
+                 * 模型未设置处理人，那么需要获取自定义参与者
+                 */
+                List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
+                if (ObjectUtils.isNotEmpty(taskActors)) {
+                    for (FlwTaskActor taskActor : taskActors) {
+                        if (findTaskActor) {
+                            // 找到下一个执行人
+                            nextNodeAssignee = NodeAssignee.of(taskActor);
+                            break;
+                        }
+                        if (Objects.equals(taskActor.getActorId(), flowCreator.getCreateId())) {
+                            findTaskActor = true;
+                        }
+                    }
                 }
-                if (Objects.equals(nodeAssignee.getId(), flowCreator.getCreateId())) {
-                    findTaskActor = true;
+            } else {
+                /**
+                 * 模型中去找下一个执行者
+                 */
+                for (NodeAssignee nodeAssignee : nodeUserList) {
+                    if (findTaskActor) {
+                        // 找到下一个执行人
+                        nextNodeAssignee = nodeAssignee;
+                        break;
+                    }
+                    if (Objects.equals(nodeAssignee.getId(), flowCreator.getCreateId())) {
+                        findTaskActor = true;
+                    }
                 }
             }
+
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
                 execution.setNextFlwTaskActor(FlwTaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));

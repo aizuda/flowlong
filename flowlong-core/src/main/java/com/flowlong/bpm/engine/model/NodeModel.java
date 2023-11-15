@@ -1,7 +1,5 @@
 /*
- * 爱组搭 http://aizuda.com 低代码组件化开发平台
- * ------------------------------------------
- * 受知识产权保护，请勿删除版权申明
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.model;
 
@@ -18,12 +16,14 @@ import lombok.Setter;
 import java.util.*;
 
 /**
- * 爱组搭 http://aizuda.com
- * ----------------------------------------
  * JSON BPM 节点
  *
- * @author 青苗
- * @since 2023-03-17
+ * <p>
+ * 尊重知识产权，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
  */
 @Getter
 @Setter
@@ -97,17 +97,22 @@ public class NodeModel implements ModelInstance {
      * 1，按顺序依次审批
      * 2，会签 (可同时审批，每个人必须审批通过)
      * 3，或签 (有一人审批通过即可)
+     * 4，票签 (总权重大于 50% 表示通过)
      * </p>
      */
     private Integer examineMode;
     /**
      * 连续主管审批方式
      * <p>
-     * 1，直到最上级主管
-     * 2，自定义审批终点
+     * 0，直到最上级主管
+     * 1，自定义审批终点
      * </p>
      */
     private Integer directorMode;
+    /**
+     * 通过权重（ 所有分配任务权重之和大于该值即通过，默认 50 ）
+     */
+    private Integer passWeight;
     /**
      * 条件节点列表
      */
@@ -136,20 +141,7 @@ public class NodeModel implements ModelInstance {
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
             Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
-                    .filter(t -> {
-                        // 执行条件分支
-                        final String expr = t.getExpr();
-                        boolean result = true;
-                        if (null != expr) {
-                            try {
-                                result = expression.eval(Boolean.class, expr, args);
-                            } catch (Throwable e) {
-                                result = false;
-                                e.printStackTrace();
-                            }
-                        }
-                        return result;
-                    }).findFirst();
+                    .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
             Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
             /**
              * 执行创建条件任务
@@ -221,4 +213,5 @@ public class NodeModel implements ModelInstance {
     public boolean isConditionNode() {
         return 3 == type || 4 == type;
     }
+
 }

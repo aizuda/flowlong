@@ -1,16 +1,5 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
 
@@ -33,7 +22,7 @@ import java.util.function.Consumer;
  * 流程定义实体类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
+ * 尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -96,7 +85,7 @@ public class FlwProcess extends FlowEntity {
         if (null == this.modelContent) {
             return null;
         }
-        return ProcessModel.parse(this.modelContent, this.id);
+        return FlowLongContext.parseProcessModel(this.modelContent, this.id, false);
     }
 
     /**
@@ -150,9 +139,12 @@ public class FlwProcess extends FlowEntity {
         }
 
         //如果当前节点不是条件分支的子节点、而是条件审批的子节点
-        if (parentNode.isConditionNode() && !parentNode.getChildNode().getNodeName().equals(nodeModel.getNodeName())) {
-            // 条件执行节点，返回子节点
-            return parentNode.getChildNode();
+        if (parentNode.isConditionNode()) {
+            NodeModel childNode = parentNode.getChildNode();
+            if (null != childNode && !Objects.equals(childNode.getNodeName(), nodeModel.getNodeName())) {
+                // 条件执行节点，返回子节点
+                return childNode;
+            }
         }
 
         // 往上继续找下一个执行节点

@@ -1,16 +1,5 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.service;
 
@@ -42,7 +31,7 @@ import java.util.stream.Collectors;
  * 任务执行业务类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
+ * 尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -98,36 +87,69 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setVariable(args);
         Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
 
-        // 迁移 task 信息到 flw_his_task
-        FlwHisTask hisTask = FlwHisTask.of(flwTask);
-        hisTask.setFinishTime(DateUtils.getCurrentDate());
-        hisTask.setTaskState(taskState);
-        hisTask.setCreateId(flowCreator.getCreateId());
-        hisTask.setCreateBy(flowCreator.getCreateBy());
-        hisTaskMapper.insert(hisTask);
-
-        // 迁移任务参与者
-        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(taskId);
-        if (ObjectUtils.isNotEmpty(taskActors)) {
-            // 将 task 参与者信息迁移到 flw_his_task_actor
-            taskActors.forEach(t -> hisTaskActorMapper.insert(FlwHisTaskActor.of(t)));
-            // 移除 flw_task_actor 中 task 参与者信息
-            taskActorMapper.deleteByTaskId(taskId);
-        }
-
-        // 删除 flw_task 中指定 task 信息
-        taskMapper.deleteById(taskId);
+        // 迁移任务至历史表
+        this.moveToHisTask(flwTask, taskState, flowCreator);
 
         // 任务监听器通知
         this.taskNotify(eventType, flwTask);
         return flwTask;
     }
 
+    /**
+     * 迁移任务至历史表
+     *
+     * @param flwTask     执行任务
+     * @param taskState   任务状态
+     * @param flowCreator 任务创建者
+     * @return
+     */
+    protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
+        // 迁移 task 信息到 flw_his_task
+        FlwHisTask hisTask = FlwHisTask.of(flwTask);
+        hisTask.setFinishTime(DateUtils.getCurrentDate());
+        hisTask.setTaskState(taskState);
+        hisTask.setCreateId(flowCreator.getCreateId());
+        hisTask.setCreateBy(flowCreator.getCreateBy());
+        Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
+
+        // 迁移任务参与者
+        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(flwTask.getId());
+        if (ObjectUtils.isNotEmpty(taskActors)) {
+            // 将 task 参与者信息迁移到 flw_his_task_actor
+            taskActors.forEach(t -> Assert.isFalse(hisTaskActorMapper.insert(FlwHisTaskActor.of(t)) > 0,
+                    "Migration to FlwHisTaskActor table failed"));
+            // 移除 flw_task_actor 中 task 参与者信息
+            Assert.isFalse(taskActorMapper.deleteByTaskId(flwTask.getId()), "Delete FlwTaskActor table failed");
+        }
+
+        // 删除 flw_task 中指定 task 信息
+        return taskMapper.deleteById(flwTask.getId()) > 0;
+    }
 
     protected void taskNotify(EventType eventType, FlwTask flwTask) {
         if (null != taskListener) {
             taskListener.notify(eventType, flwTask);
         }
+    }
+
+    /**
+     * 完成指定实例ID活动任务
+     *
+     * @param instanceId 实例ID
+     * @return
+     */
+    @Override
+    public boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator) {
+        List<FlwTask> flwTasks = taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
+        if (ObjectUtils.isNotEmpty(flwTasks)) {
+            for (FlwTask flwTask : flwTasks) {
+                // 迁移任务至历史表，设置任务状态为终止
+                if (!this.moveToHisTask(flwTask, TaskState.termination, flowCreator)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -145,7 +167,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 查看任务设置为已阅状态
      *
-     * @param taskId          任务ID
+     * @param taskId    任务ID
      * @param taskActor 任务参与者
      * @return
      */
@@ -514,6 +536,7 @@ public class TaskServiceImpl implements TaskService {
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {
         List<FlwTask> flwTasks = new ArrayList<>();
+        flwTask.setPerformType(performType);
         if (performType == PerformType.unknown) {
             // 发起、其它
             flwTask.setVariable(execution.getArgs());
@@ -527,7 +550,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
-        flwTask.setPerformType(performType);
         if (performType == PerformType.orSign) {
             /**
              * 或签一条任务多个参与者
@@ -561,7 +583,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         /**
-         * 会签每个参与者生成一条任务
+         * 会签（票签）每个参与者生成一条任务
          */
         taskActors.forEach(t -> {
             FlwTask newFlwTask = flwTask.cloneTask(null);
@@ -578,7 +600,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 根据 taskId、createBy 判断创建人createBy是否允许执行任务
+     * 根据 taskId、createId 判断创建人是否允许执行任务
      *
      * @param flwTask 任务对象
      * @param userId  用户ID
@@ -587,7 +609,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean isAllowed(FlwTask flwTask, String userId) {
         // 未指定创建人情况，默认为不验证执行权限
-        if (null == flwTask.getCreateBy()) {
+        if (null == flwTask.getCreateId()) {
             return true;
         }
 

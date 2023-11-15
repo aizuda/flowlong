@@ -1,16 +1,5 @@
-/* Copyright 2023-2025 jobob@qq.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+/* 
+ * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.service;
 
@@ -21,6 +10,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -34,7 +24,7 @@ import java.util.List;
  * 流程定义业务类
  *
  * <p>
- * 尊重知识产权，CV 请保留版权，爱组搭 http://aizuda.com 出品，不允许非法使用，后果自负
+ * 尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -99,7 +89,7 @@ public class ProcessServiceImpl implements ProcessService {
     public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
         Assert.isNull(jsonString);
         try {
-            ProcessModel processModel = ProcessModel.parse(jsonString, null);
+            ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, null, false);
             /**
              * 查询流程信息获取最后版本号
              */
@@ -148,7 +138,7 @@ public class ProcessServiceImpl implements ProcessService {
     public boolean redeploy(Long id, String jsonString) {
         FlwProcess process = processMapper.selectById(id);
         Assert.isNull(process);
-        ProcessModel processModel = ProcessModel.parse(jsonString, id);
+        ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, id, true);
         process.setProcessName(processModel.getName());
         process.setDisplayName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());
