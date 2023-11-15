@@ -1,6 +1,6 @@
 {
   "id": 1,
-  "name": "请假审批（会签）",
+  "name": "简单流程（测试）",
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,

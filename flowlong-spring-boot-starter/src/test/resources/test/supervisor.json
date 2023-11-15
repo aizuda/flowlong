@@ -1,6 +1,6 @@
 {
   "id": 1,
-  "name": "请假审批",
+  "name": "连续主管审批顺签",
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,

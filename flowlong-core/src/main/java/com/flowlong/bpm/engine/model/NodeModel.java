@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * JSON BPM 节点
@@ -132,7 +133,7 @@ public class NodeModel implements ModelInstance {
 
     @Override
     public void execute(FlowLongContext flowLongContext, Execution execution) {
-        if (ObjectUtils.isNotEmpty(this.conditionNodes)) {
+        if (ObjectUtils.isNotEmpty(conditionNodes)) {
             /**
              * 执行条件分支
              */
@@ -142,7 +143,11 @@ public class NodeModel implements ModelInstance {
             Assert.isNull(expression, "Interface Expression not implemented");
             Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                     .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
-            Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
+            if (!conditionNodeOptional.isPresent()) {
+                // 未发现满足条件分支，使用无条件分支
+                conditionNodeOptional = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
+                Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
+            }
             /**
              * 执行创建条件任务
              */
