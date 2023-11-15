@@ -10,8 +10,9 @@ dependencies {
     implementation("org.noear:mybatis-plus-extension-solon-plugin:${solonVersion}")
     implementation("mysql:mysql-connector-java")
     implementation('com.zaxxer:HikariCP:4.0.3')
+    implementation("com.googlecode.aviator:aviator:3.0.1")
 
-    testCompileOnly("org.noear:solon-test:${solonVersion}")
+    testImplementation("org.noear:solon-test:${solonVersion}")
 }
 
 
