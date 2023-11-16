@@ -95,7 +95,7 @@ public class ProcessServiceImpl implements ProcessService {
              */
             List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
                     .select(FlwProcess::getId, FlwProcess::getProcessVersion)
-                    .eq(FlwProcess::getProcessName, processModel.getName())
+                    .eq(FlwProcess::getProcessKey, processModel.getKey())
                     .orderByDesc(FlwProcess::getProcessVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
@@ -111,8 +111,8 @@ public class ProcessServiceImpl implements ProcessService {
             FlwProcess process = new FlwProcess();
             process.setProcessVersion(version + 1);
             process.setFlowState(FlowState.active);
-            process.setProcessName(processModel.getName());
             process.setProcessKey(processModel.getKey());
+            process.setProcessName(processModel.getName());
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setUseScope(0);
             process.setModelContent(jsonString);
