@@ -119,4 +119,13 @@ subprojects {
             }
         }
     }
+
+    // 编译任务忽略案例模块
+    afterEvaluate { project ->
+        if (project.name == 'flowlong-solon-example' || project.name == 'flowlong-spring-boot-example') {
+            project.tasks.all {
+                it.enabled = false
+            }
+        }
+    }
 }
