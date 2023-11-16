@@ -9,6 +9,30 @@ CREATE DATABASE IF NOT EXISTS `flowlong` charset utf8mb4 collate utf8mb4_unicode
 USE `flowlong`;
 
 -- ----------------------------
+-- Table structure for flw_process
+-- ----------------------------
+DROP TABLE IF EXISTS `flw_process`;
+CREATE TABLE `flw_process`  (
+                                `id` bigint NOT NULL COMMENT '主键ID',
+                                `tenant_id` varchar(50) COMMENT '租户ID',
+                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
+                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
+                                `create_time` timestamp NOT NULL COMMENT '创建时间',
+                                `process_key` varchar(100) NOT NULL COMMENT '流程定义 key 唯一标识',
+                                `process_name` varchar(100) NOT NULL COMMENT '流程定义名称',
+                                `process_icon` varchar(255) DEFAULT NULL COMMENT '流程图标地址',
+                                `process_type` varchar(100) COMMENT '流程类型',
+                                `process_version` int NOT NULL DEFAULT 1 COMMENT '流程版本，默认 1',
+                                `instance_url` varchar(200) COMMENT '实例地址',
+                                `use_scope` tinyint(1) NOT NULL DEFAULT 0 COMMENT '使用范围 0，全员 1，指定人员（业务关联） 2，均不可提交',
+                                `process_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '流程状态 0，不可用 1，可用',
+                                `model_content` text COMMENT '流程模型定义JSON内容',
+                                `sort` tinyint(1) DEFAULT 0 COMMENT '排序',
+                                PRIMARY KEY (`id`) USING BTREE,
+                                INDEX `idx_process_name`(`process_name` ASC) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for flw_his_instance
 -- ----------------------------
 DROP TABLE IF EXISTS `flw_his_instance`;
@@ -107,30 +131,6 @@ CREATE TABLE `flw_instance`  (
                                  INDEX `idx_instance_process_id`(`process_id` ASC) USING BTREE,
                                  CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for flw_process
--- ----------------------------
-DROP TABLE IF EXISTS `flw_process`;
-CREATE TABLE `flw_process`  (
-                                `id` bigint NOT NULL COMMENT '主键ID',
-                                `tenant_id` varchar(50) COMMENT '租户ID',
-                                `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
-                                `create_by` varchar(50) NOT NULL COMMENT '创建人',
-                                `create_time` timestamp NOT NULL COMMENT '创建时间',
-                                `process_key` varchar(100) NOT NULL COMMENT '流程定义 key 唯一标识',
-                                `process_name` varchar(100) NOT NULL COMMENT '流程定义名称',
-                                `process_icon` varchar(255) DEFAULT NULL COMMENT '流程图标地址',
-                                `process_type` varchar(100) COMMENT '流程类型',
-                                `process_version` int NOT NULL DEFAULT 1 COMMENT '流程版本，默认 1',
-                                `instance_url` varchar(200) COMMENT '实例地址',
-                                `use_scope` tinyint(1) DEFAULT 0 COMMENT '使用范围 0，全员 1，指定人员（业务关联） 2，均不可提交',
-                                `process_state` tinyint(1) DEFAULT 1 COMMENT '流程状态 0，不可用 1，可用',
-                                `model_content` text COMMENT '流程模型定义JSON内容',
-                                `sort` tinyint(1) DEFAULT 0 COMMENT '排序',
-                                PRIMARY KEY (`id`) USING BTREE,
-                                INDEX `idx_process_name`(`process_name` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程定义表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for flw_task
