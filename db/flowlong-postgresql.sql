@@ -4,14 +4,14 @@
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_his_task_actor";
 CREATE TABLE "public"."flw_his_task_actor" (
-                                               "id" int8 NOT NULL,
-                                               "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                               "instance_id" int8 NOT NULL,
-                                               "task_id" int8 NOT NULL,
-                                               "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                               "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                               "actor_type" int4 NOT NULL,
-                                               "weight" int4
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "instance_id" int8 NOT NULL,
+    "task_id" int8 NOT NULL,
+    "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_type" int4 NOT NULL,
+    "weight" int4
 )
 ;
 COMMENT ON COLUMN "public"."flw_his_task_actor"."id" IS '主键 ID';
@@ -29,27 +29,27 @@ COMMENT ON TABLE "public"."flw_his_task_actor" IS '历史任务参与者表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_his_task";
 CREATE TABLE "public"."flw_his_task" (
-                                         "id" int8 NOT NULL,
-                                         "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                         "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "create_time" timestamp(6) NOT NULL,
-                                         "instance_id" int8 NOT NULL,
-                                         "parent_task_id" int8,
-                                         "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "task_type" int2 NOT NULL,
-                                         "perform_type" int2,
-                                         "action_url" varchar(200) COLLATE "pg_catalog"."default",
-                                         "variable" text COLLATE "pg_catalog"."default",
-                                         "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
-                                         "assignor" varchar(100) COLLATE "pg_catalog"."default",
-                                         "expire_time" timestamp(6),
-                                         "remind_time" timestamp(6),
-                                         "remind_repeat" int2 NOT NULL,
-                                         "viewed" int2 NOT NULL DEFAULT 0,
-                                         "finish_time" timestamp(6),
-                                         "task_state" int2 NOT NULL DEFAULT 0
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "instance_id" int8 NOT NULL,
+    "parent_task_id" int8,
+    "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
+    "task_type" int2 NOT NULL,
+    "perform_type" int2,
+    "action_url" varchar(200) COLLATE "pg_catalog"."default",
+    "variable" text COLLATE "pg_catalog"."default",
+    "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
+    "assignor" varchar(100) COLLATE "pg_catalog"."default",
+    "expire_time" timestamp(6),
+    "remind_time" timestamp(6),
+    "remind_repeat" int2 NOT NULL,
+    "viewed" int2 NOT NULL DEFAULT 0,
+    "finish_time" timestamp(6),
+    "task_state" int2 NOT NULL DEFAULT 0
 )
 ;
 COMMENT ON COLUMN "public"."flw_his_task"."id" IS '主键ID';
@@ -80,14 +80,14 @@ COMMENT ON TABLE "public"."flw_his_task" IS '历史任务表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_task_actor";
 CREATE TABLE "public"."flw_task_actor" (
-                                           "id" int8 NOT NULL,
-                                           "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                           "instance_id" int8 NOT NULL,
-                                           "task_id" int8 NOT NULL,
-                                           "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                           "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                           "actor_type" int4 NOT NULL,
-                                           "weight" int4
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "instance_id" int8 NOT NULL,
+    "task_id" int8 NOT NULL,
+    "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_type" int4 NOT NULL,
+    "weight" int4
 )
 ;
 COMMENT ON COLUMN "public"."flw_task_actor"."id" IS '主键 ID';
@@ -105,26 +105,26 @@ COMMENT ON TABLE "public"."flw_task_actor" IS '任务参与者表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_task";
 CREATE TABLE "public"."flw_task" (
-                                     "id" int8 NOT NULL,
-                                     "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                     "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "create_time" timestamp(6) NOT NULL,
-                                     "instance_id" int8 NOT NULL,
-                                     "parent_task_id" int8,
-                                     "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
-                                     "task_type" int2 NOT NULL,
-                                     "perform_type" int2,
-                                     "action_url" varchar(200) COLLATE "pg_catalog"."default",
-                                     "variable" text COLLATE "pg_catalog"."default",
-                                     "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
-                                     "assignor" varchar(100) COLLATE "pg_catalog"."default",
-                                     "expire_time" timestamp(6),
-                                     "remind_time" timestamp(6),
-                                     "remind_repeat" int2 NOT NULL DEFAULT 0,
-                                     "viewed" int2 NOT NULL DEFAULT 0,
-                                     "finish_time" timestamp(6)
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "instance_id" int8 NOT NULL,
+    "parent_task_id" int8,
+    "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
+    "task_type" int2 NOT NULL,
+    "perform_type" int2,
+    "action_url" varchar(200) COLLATE "pg_catalog"."default",
+    "variable" text COLLATE "pg_catalog"."default",
+    "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
+    "assignor" varchar(100) COLLATE "pg_catalog"."default",
+    "expire_time" timestamp(6),
+    "remind_time" timestamp(6),
+    "remind_repeat" int2 NOT NULL DEFAULT 0,
+    "viewed" int2 NOT NULL DEFAULT 0,
+    "finish_time" timestamp(6)
 )
 ;
 COMMENT ON COLUMN "public"."flw_task"."id" IS '主键ID';
@@ -154,20 +154,20 @@ COMMENT ON TABLE "public"."flw_task" IS '任务表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_task_cc";
 CREATE TABLE "public"."flw_task_cc" (
-                                        "id" int8 NOT NULL,
-                                        "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                        "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "create_time" timestamp(6) NOT NULL,
-                                        "instance_id" int8 NOT NULL,
-                                        "parent_task_id" int8,
-                                        "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "actor_id" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "actor_name" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "task_type" int4 NOT NULL,
-                                        "task_state" int2 NOT NULL,
-                                        "finish_time" timestamp(6)
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "instance_id" int8 NOT NULL,
+    "parent_task_id" int8,
+    "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_id" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
+    "actor_name" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
+    "task_type" int4 NOT NULL,
+    "task_state" int2 NOT NULL,
+    "finish_time" timestamp(6)
 )
 ;
 COMMENT ON COLUMN "public"."flw_task_cc"."id" IS '主键ID';
@@ -191,22 +191,22 @@ COMMENT ON TABLE "public"."flw_task_cc" IS '抄送任务表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_his_instance";
 CREATE TABLE "public"."flw_his_instance" (
-                                             "id" int8 NOT NULL,
-                                             "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                             "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                             "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                             "create_time" timestamp(6) NOT NULL,
-                                             "process_id" int8 NOT NULL,
-                                             "priority" int2,
-                                             "instance_no" varchar(50) COLLATE "pg_catalog"."default",
-                                             "business_key" varchar(100) COLLATE "pg_catalog"."default",
-                                             "variable" text COLLATE "pg_catalog"."default",
-                                             "instance_version" int4,
-                                             "expire_time" timestamp(6),
-                                             "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
-                                             "last_update_time" timestamp(6),
-                                             "instance_state" int2 NOT NULL DEFAULT 0,
-                                             "end_time" timestamp(6)
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "process_id" int8 NOT NULL,
+    "priority" int2,
+    "instance_no" varchar(50) COLLATE "pg_catalog"."default",
+    "business_key" varchar(100) COLLATE "pg_catalog"."default",
+    "variable" text COLLATE "pg_catalog"."default",
+    "instance_version" int4,
+    "expire_time" timestamp(6),
+    "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
+    "last_update_time" timestamp(6),
+    "instance_state" int2 NOT NULL DEFAULT 0,
+    "end_time" timestamp(6)
 )
 ;
 COMMENT ON COLUMN "public"."flw_his_instance"."id" IS '主键ID';
@@ -232,20 +232,20 @@ COMMENT ON TABLE "public"."flw_his_instance" IS '历史流程实例表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_instance";
 CREATE TABLE "public"."flw_instance" (
-                                         "id" int8 NOT NULL,
-                                         "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                         "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                         "create_time" timestamp(6) NOT NULL,
-                                         "process_id" int8 NOT NULL,
-                                         "priority" int2,
-                                         "instance_no" varchar(50) COLLATE "pg_catalog"."default",
-                                         "business_key" varchar(100) COLLATE "pg_catalog"."default",
-                                         "variable" text COLLATE "pg_catalog"."default",
-                                         "instance_version" int4,
-                                         "expire_time" timestamp(6),
-                                         "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
-                                         "last_update_time" timestamp(6)
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "process_id" int8 NOT NULL,
+    "priority" int2,
+    "instance_no" varchar(50) COLLATE "pg_catalog"."default",
+    "business_key" varchar(100) COLLATE "pg_catalog"."default",
+    "variable" text COLLATE "pg_catalog"."default",
+    "instance_version" int4,
+    "expire_time" timestamp(6),
+    "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
+    "last_update_time" timestamp(6)
 )
 ;
 COMMENT ON COLUMN "public"."flw_instance"."id" IS '主键ID';
@@ -269,22 +269,22 @@ COMMENT ON TABLE "public"."flw_instance" IS '流程实例表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_process";
 CREATE TABLE "public"."flw_process" (
-                                        "id" int8 NOT NULL,
-                                        "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                        "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "create_time" timestamp(6) NOT NULL,
-                                        "process_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "process_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-                                        "process_icon" varchar(255) COLLATE "pg_catalog"."default",
-                                        "process_type" varchar(100) COLLATE "pg_catalog"."default",
-                                        "process_version" int4 NOT NULL,
-                                        "instance_url" varchar(200) COLLATE "pg_catalog"."default",
-                                        "remark" varchar(255) COLLATE "pg_catalog"."default",
-                                        "use_scope" int2 NOT NULL DEFAULT 0,
-                                        "process_state" int2 NOT NULL DEFAULT 1,
-                                        "model_content" text COLLATE "pg_catalog"."default",
-                                        "sort" int2
+    "id" int8 NOT NULL,
+    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
+    "create_time" timestamp(6) NOT NULL,
+    "process_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "process_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "process_icon" varchar(255) COLLATE "pg_catalog"."default",
+    "process_type" varchar(100) COLLATE "pg_catalog"."default",
+    "process_version" int4 NOT NULL DEFAULT 1,
+    "instance_url" varchar(200) COLLATE "pg_catalog"."default",
+    "remark" varchar(255) COLLATE "pg_catalog"."default",
+    "use_scope" int2 NOT NULL DEFAULT 0,
+    "process_state" int2 NOT NULL DEFAULT 1,
+    "model_content" text COLLATE "pg_catalog"."default",
+    "sort" int2
 )
 ;
 COMMENT ON COLUMN "public"."flw_process"."id" IS '主键ID';
