@@ -13,8 +13,8 @@ import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * JSON BPM 节点
@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  */
 @Getter
 @Setter
-public class NodeModel implements ModelInstance {
+public class NodeModel implements ModelInstance, Serializable {
     /**
      * 节点名称
      */

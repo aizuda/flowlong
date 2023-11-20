@@ -7,6 +7,8 @@ import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+
 /**
  * JSON BPM 分配到任务的人
  *
@@ -19,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class NodeAssignee {
+public class NodeAssignee implements Serializable {
     /**
      * 主键ID
      */

@@ -6,6 +6,7 @@ package com.flowlong.bpm.engine.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class ConditionNode {
+public class ConditionNode implements Serializable {
     /**
      * 节点名称
      */
