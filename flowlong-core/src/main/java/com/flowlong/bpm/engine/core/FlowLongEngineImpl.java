@@ -119,7 +119,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     public void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行当前任务
         this.execute(taskId, flowCreator, args, execution -> {
-            ProcessModel processModel = execution.getProcess().getProcessModel();
+            ProcessModel processModel = execution.getProcess().model();
             Assert.isNull(processModel, "当前任务未找到流程定义模型");
 
             // 查找模型节点
@@ -170,7 +170,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.voteSign) {
             Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
             if (flwTaskActorsOptional.isPresent()) {
-                NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
+                NodeModel nodeModel = process.model().getNode(flwTask.getTaskName());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
@@ -205,7 +205,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = process.getProcessModel().getNode(flwTask.getTaskName());
+            NodeModel nodeModel = process.model().getNode(flwTask.getTaskName());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();

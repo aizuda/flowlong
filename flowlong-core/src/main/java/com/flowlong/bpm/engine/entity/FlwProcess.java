@@ -85,7 +85,7 @@ public class FlwProcess extends FlowEntity {
     /**
      * 模型解析
      */
-    public ProcessModel getProcessModel() {
+    public ProcessModel model() {
         if (null == this.modelContent) {
             return null;
         }
@@ -177,7 +177,7 @@ public class FlwProcess extends FlowEntity {
      */
     private void processModelParser(Consumer<ProcessModel> consumer) {
         if (null != this.modelContent) {
-            consumer.accept(this.getProcessModel());
+            consumer.accept(this.model());
         }
     }
 

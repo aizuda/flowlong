@@ -64,7 +64,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setCreateBy(flowCreator.getCreateBy());
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setProcessId(process.getId());
-        ProcessModel model = process.getProcessModel();
+        ProcessModel model = process.model();
         if (model != null && args != null) {
 //            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
 //                instance.setExpireTime(new Date(model.getExpireTime()));
