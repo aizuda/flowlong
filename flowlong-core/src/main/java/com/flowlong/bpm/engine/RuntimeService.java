@@ -1,9 +1,10 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 
@@ -40,11 +41,12 @@ public interface RuntimeService {
     void addVariable(Long instanceId, Map<String, Object> args);
 
     /**
-     * 流程实例正常完成
+     * 流程实例正常完成（审批通过）
      *
-     * @param instanceId 流程实例ID
+     * @param instanceId    流程实例ID
+     * @param instanceState 流程实例最终状态
      */
-    void complete(Long instanceId);
+    void complete(Long instanceId, InstanceState instanceState);
 
     /**
      * 保存流程实例
@@ -61,6 +63,21 @@ public interface RuntimeService {
     default void terminate(Long instanceId) {
         this.terminate(instanceId, FlowCreator.ADMIN);
     }
+
+    /**
+     * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
+     *
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
+     */
+    void revoke(Long instanceId, FlowCreator flowCreator);
+
+    /**
+     * 流程实例超时（设定审批时间超时，自动结束）
+     *
+     * @param instanceId  流程实例ID
+     */
+    void timeout(Long instanceId);
 
     /**
      * 流程实例强制终止

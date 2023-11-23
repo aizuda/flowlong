@@ -147,7 +147,7 @@ CREATE TABLE `flw_his_instance`  (
     `expire_time` timestamp NULL DEFAULT NULL COMMENT '期望完成时间',
     `last_update_by` varchar(50) COMMENT '上次更新人',
     `last_update_time` timestamp NULL DEFAULT NULL COMMENT '上次更新时间',
-    `instance_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，活动 1，结束',
+    `instance_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0，审批中 1，审批通过 2，审批拒绝 3，撤销审批 4，超时结束 5，强制终止',
     `end_time` timestamp NULL DEFAULT NULL COMMENT '结束时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_his_instance_process_id`(`process_id` ASC) USING BTREE,

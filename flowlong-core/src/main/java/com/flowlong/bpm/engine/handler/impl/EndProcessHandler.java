@@ -8,6 +8,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.handler.FlowLongHandler;
@@ -41,6 +42,6 @@ public class EndProcessHandler implements FlowLongHandler {
         /**
          * 结束当前流程实例
          */
-        engine.runtimeService().complete(flwInstance.getId());
+        engine.runtimeService().complete(flwInstance.getId(), InstanceState.complete);
     }
 }

@@ -223,7 +223,7 @@ COMMENT ON COLUMN "public"."flw_his_instance"."instance_version" IS '流程实�
 COMMENT ON COLUMN "public"."flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_time" IS '上次更新时间';
-COMMENT ON COLUMN "public"."flw_his_instance"."instance_state" IS '状态 0，活动 1，结束';
+COMMENT ON COLUMN "public"."flw_his_instance"."instance_state" IS '状态 0，审批中 1，审批通过 2，审批拒绝 3，撤销审批 4，超时结束 5，强制终止';
 COMMENT ON COLUMN "public"."flw_his_instance"."end_time" IS '结束时间';
 COMMENT ON TABLE "public"."flw_his_instance" IS '历史流程实例表';
 

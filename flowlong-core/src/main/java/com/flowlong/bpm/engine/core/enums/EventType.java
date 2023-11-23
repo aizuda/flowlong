@@ -24,6 +24,10 @@ public enum EventType {
      */
     complete,
     /**
+     * 撤销
+     */
+    revoke,
+    /**
      * 终止
      */
     terminate,

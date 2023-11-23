@@ -16,21 +16,29 @@ import java.util.Arrays;
  */
 public enum InstanceState {
     /**
-     * 活动
+     * 审批中
      */
     active(0),
     /**
-     * 完成/结束
+     * 审批通过
      */
     complete(1),
     /**
-     * 超时
+     * 审批拒绝
      */
-    timeout(2),
+    reject(2),
     /**
-     * 终止
+     * 撤销审批
      */
-    termination(3);
+    revoke(3),
+    /**
+     * 超时结束
+     */
+    timeout(4),
+    /**
+     * 强制终止
+     */
+    termination(5);
 
     private final int value;
 

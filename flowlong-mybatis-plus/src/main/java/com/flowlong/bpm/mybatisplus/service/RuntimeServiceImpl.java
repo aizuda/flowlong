@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.service;
@@ -93,6 +93,32 @@ public class RuntimeServiceImpl implements RuntimeService {
         instanceMapper.updateById(temp);
     }
 
+
+    /**
+     * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
+     */
+    @Override
+    public void complete(Long instanceId, InstanceState instanceState) {
+        if (instanceState == InstanceState.complete
+                || instanceState == InstanceState.reject
+                || instanceState == InstanceState.reject) {
+            FlwHisInstance flwHisInstance = new FlwHisInstance();
+            flwHisInstance.setId(instanceId);
+            flwHisInstance.setInstanceState(instanceState);
+            flwHisInstance.setEndTime(DateUtils.getCurrentDate());
+            instanceMapper.deleteById(instanceId);
+            hisInstanceMapper.updateById(flwHisInstance);
+            // 流程实例监听器通知
+            this.instanceNotify(EventType.complete, flwHisInstance);
+        }
+    }
+
+    protected void instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
+        if (null != instanceListener) {
+            instanceListener.notify(eventType, flwHisInstance);
+        }
+    }
+
     /**
      * 流程实例数据会保存至活动实例表、历史实例表
      *
@@ -111,45 +137,37 @@ public class RuntimeServiceImpl implements RuntimeService {
         this.instanceNotify(EventType.create, flwHisInstance);
     }
 
-    /**
-     * 更新活动实例
-     */
     @Override
-    public void updateInstance(FlwInstance flwInstance) {
-        Assert.illegalArgument(null == flwInstance || null == flwInstance.getId(),
-                "instance id cannot be empty");
-        instanceMapper.updateById(flwInstance);
+    public void revoke(Long instanceId, FlowCreator flowCreator) {
+        this.forceComplete(instanceId, flowCreator, InstanceState.revoke, EventType.revoke);
     }
 
-    /**
-     * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
-     */
     @Override
-    public void complete(Long instanceId) {
-        FlwHisInstance flwHisInstance = new FlwHisInstance();
-        flwHisInstance.setId(instanceId);
-        flwHisInstance.setInstanceState(InstanceState.complete);
-        flwHisInstance.setEndTime(DateUtils.getCurrentDate());
-        instanceMapper.deleteById(instanceId);
-        hisInstanceMapper.updateById(flwHisInstance);
-        // 流程实例监听器通知
-        this.instanceNotify(EventType.complete, flwHisInstance);
-    }
-
-    protected void instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
-        if (null != instanceListener) {
-            instanceListener.notify(eventType, flwHisInstance);
-        }
+    public void timeout(Long instanceId) {
+        this.forceComplete(instanceId, FlowCreator.ADMIN, InstanceState.timeout, EventType.timeout);
     }
 
     /**
-     * 强制中止活动实例,并强制完成活动任务
+     * 强制终止活动实例,并强制完成活动任务
      *
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
     @Override
     public void terminate(Long instanceId, FlowCreator flowCreator) {
+        this.forceComplete(instanceId, flowCreator, InstanceState.complete, EventType.complete);
+    }
+
+    /**
+     * 强制完成流程实例
+     *
+     * @param instanceId    流程实例ID
+     * @param flowCreator   处理人员
+     * @param instanceState 流程实例最终状态
+     * @param eventType     监听事件类型
+     */
+    protected void forceComplete(Long instanceId, FlowCreator flowCreator,
+                                 InstanceState instanceState, EventType eventType) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
         if (null != flwInstance) {
             // 实例相关任务强制完成
@@ -160,7 +178,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             });
 
             // 更新历史实例设置状态为终止
-            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.termination);
+            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
             flwHisInstance.setEndTime(DateUtils.getCurrentDate());
             hisInstanceMapper.updateById(flwHisInstance);
 
@@ -168,8 +186,18 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(EventType.terminate, flwHisInstance);
+            this.instanceNotify(eventType, flwHisInstance);
         }
+    }
+
+    /**
+     * 更新活动实例
+     */
+    @Override
+    public void updateInstance(FlwInstance flwInstance) {
+        Assert.illegalArgument(null == flwInstance || null == flwInstance.getId(),
+                "instance id cannot be empty");
+        instanceMapper.updateById(flwInstance);
     }
 
     /**
