@@ -42,6 +42,6 @@ public class EndProcessHandler implements FlowLongHandler {
         /**
          * 结束当前流程实例
          */
-        engine.runtimeService().complete(flwInstance.getId(), InstanceState.complete);
+        engine.runtimeService().complete(flwInstance.getId());
     }
 }

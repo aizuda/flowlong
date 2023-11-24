@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.core.enums;
@@ -51,4 +51,13 @@ public enum TaskState {
         return Arrays.stream(TaskState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
 
+    public static TaskState of(InstanceState instanceState) {
+        if (instanceState == InstanceState.reject) {
+            return reject;
+        }
+        if (instanceState == InstanceState.timeout) {
+            return timeout;
+        }
+        return complete;
+    }
 }

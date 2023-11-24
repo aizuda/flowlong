@@ -5,7 +5,9 @@ package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.PerformType;
+import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.FlwHisTaskActor;
 import com.flowlong.bpm.engine.entity.FlwTask;
@@ -31,17 +33,34 @@ public interface TaskService {
 
     /**
      * 根据任务ID，创建人ID完成任务
+     * <p>
+     * 该方法仅仅结束活动任务，并不能驱动流程继续执行
+     * </p>
      *
      * @param taskId      任务ID
      * @param flowCreator 任务完成者
      * @param args        任务参数
      * @return Task 任务对象
      */
-    FlwTask complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
+    default FlwTask complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+        return this.executeTask(taskId, flowCreator, args, TaskState.complete, EventType.complete);
+    }
 
     default FlwTask complete(Long taskId, FlowCreator flowCreator) {
         return this.complete(taskId, flowCreator, null);
     }
+
+    /**
+     * 根据任务ID，创建人ID完成任务
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务完成者
+     * @param args        任务参数
+     * @param taskState   任务状态
+     * @param eventType   任务执行事件类型
+     * @return Task 任务对象
+     */
+    FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType);
 
     /**
      * 完成指定实例ID活动任务
@@ -140,7 +159,7 @@ public interface TaskService {
     FlwTask resume(Long taskId, FlwHisTaskActor flwHisTaskActor);
 
     /**
-     * 根据任务ID、创建人撤回任务
+     * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）
      *
      * @param taskId      待撤回历史任务ID
      * @param flowCreator 任务创建者

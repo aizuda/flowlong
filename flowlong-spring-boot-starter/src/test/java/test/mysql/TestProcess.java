@@ -24,8 +24,23 @@ public class TestProcess extends MysqlTest {
         processId = this.deployByResource("test/process.json", testCreator);
     }
 
+    /**
+     * 审批通过
+     */
     @Test
-    public void test() {
+    public void testComplete() {
+        this.testProcess(false);
+    }
+
+    /**
+     * 审批拒绝
+     */
+    @Test
+    public void testReject() {
+        this.testProcess(true);
+    }
+
+    public void testProcess(boolean reject) {
         ProcessService processService = flowLongEngine.processService();
 
         // 根据流程定义ID查询
@@ -44,8 +59,13 @@ public class TestProcess extends MysqlTest {
             // 发起，执行条件路由
             this.executeActiveTasks(instance.getId(), testCreator);
 
-            // 领导审批，流程结束
-            this.executeActiveTasks(instance.getId(), testCreator);
+            if (reject) {
+                // 领导审批【拒绝强制终止，和驳回拒绝不一样】，流程结束
+                flowLongEngine.runtimeService().reject(instance.getId(), testCreator);
+            } else {
+                // 领导审批【通过】，流程结束
+                this.executeActiveTasks(instance.getId(), testCreator);
+            }
         });
 
         // 卸载指定的定义流程

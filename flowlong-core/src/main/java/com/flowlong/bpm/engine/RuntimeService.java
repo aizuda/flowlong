@@ -44,9 +44,8 @@ public interface RuntimeService {
      * 流程实例正常完成（审批通过）
      *
      * @param instanceId    流程实例ID
-     * @param instanceState 流程实例最终状态
      */
-    void complete(Long instanceId, InstanceState instanceState);
+    void complete(Long instanceId);
 
     /**
      * 保存流程实例
@@ -56,13 +55,12 @@ public interface RuntimeService {
     void saveInstance(FlwInstance flwInstance);
 
     /**
-     * 流程实例强制终止
+     * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）
      *
-     * @param instanceId 流程实例ID
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
      */
-    default void terminate(Long instanceId) {
-        this.terminate(instanceId, FlowCreator.ADMIN);
-    }
+    void reject(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
@@ -86,6 +84,15 @@ public interface RuntimeService {
      * @param flowCreator 处理人员
      */
     void terminate(Long instanceId, FlowCreator flowCreator);
+
+    /**
+     * 流程实例强制终止
+     *
+     * @param instanceId 流程实例ID
+     */
+    default void terminate(Long instanceId) {
+        this.terminate(instanceId, FlowCreator.ADMIN);
+    }
 
     /**
      * 更新流程实例

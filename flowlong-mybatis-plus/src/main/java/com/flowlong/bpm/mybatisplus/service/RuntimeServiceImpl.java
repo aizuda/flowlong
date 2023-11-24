@@ -13,6 +13,7 @@ import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
+import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.entity.FlwHisInstance;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
@@ -98,19 +99,15 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public void complete(Long instanceId, InstanceState instanceState) {
-        if (instanceState == InstanceState.complete
-                || instanceState == InstanceState.reject
-                || instanceState == InstanceState.reject) {
-            FlwHisInstance flwHisInstance = new FlwHisInstance();
-            flwHisInstance.setId(instanceId);
-            flwHisInstance.setInstanceState(instanceState);
-            flwHisInstance.setEndTime(DateUtils.getCurrentDate());
-            instanceMapper.deleteById(instanceId);
-            hisInstanceMapper.updateById(flwHisInstance);
-            // 流程实例监听器通知
-            this.instanceNotify(EventType.complete, flwHisInstance);
-        }
+    public void complete(Long instanceId) {
+        FlwHisInstance flwHisInstance = new FlwHisInstance();
+        flwHisInstance.setId(instanceId);
+        flwHisInstance.setInstanceState(InstanceState.complete);
+        flwHisInstance.setEndTime(DateUtils.getCurrentDate());
+        instanceMapper.deleteById(instanceId);
+        hisInstanceMapper.updateById(flwHisInstance);
+        // 流程实例监听器通知
+        this.instanceNotify(EventType.complete, flwHisInstance);
     }
 
     protected void instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
@@ -135,6 +132,11 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 流程实例监听器通知
         this.instanceNotify(EventType.create, flwHisInstance);
+    }
+
+    @Override
+    public void reject(Long instanceId, FlowCreator flowCreator) {
+        this.forceComplete(instanceId, flowCreator, InstanceState.reject, EventType.reject);
     }
 
     @Override
@@ -173,7 +175,8 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 实例相关任务强制完成
             queryService.getActiveTasksByInstanceId(instanceId).ifPresent(tasks -> {
                 for (FlwTask flwTask : tasks) {
-                    taskService.complete(flwTask.getId(), flowCreator);
+                    taskService.executeTask(flwTask.getId(), flowCreator, null,
+                            TaskState.of(instanceState), eventType);
                 }
             });
 

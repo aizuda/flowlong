@@ -64,15 +64,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 完成指定任务
-     * 该方法仅仅结束活动任务，并不能驱动流程继续执行
-     */
-    @Override
-    public FlwTask complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        return this.executeTask(taskId, flowCreator, args, TaskState.complete, EventType.complete);
-    }
-
-    /**
      * 执行任务
      *
      * @param taskId      任务ID
@@ -82,7 +73,8 @@ public class TaskServiceImpl implements TaskService {
      * @param eventType   执行事件
      * @return
      */
-    protected FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
+    @Override
+    public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         flwTask.setVariable(args);
         Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
