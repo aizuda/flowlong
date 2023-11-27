@@ -9,10 +9,9 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-    testCompileOnly("org.springframework.boot:spring-boot-starter-test")
-    testCompileOnly("org.springframework.boot:spring-boot-starter-json")
-    testCompileOnly("org.springframework:spring-jdbc")
-    testCompileOnly("com.baomidou:mybatis-plus-extension")
-    testCompileOnly("mysql:mysql-connector-java")
-    testCompileOnly("junit:junit")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-json")
+    testImplementation("org.springframework:spring-jdbc")
+    testImplementation("com.baomidou:mybatis-plus-extension")
+    testImplementation("mysql:mysql-connector-java")
 }
