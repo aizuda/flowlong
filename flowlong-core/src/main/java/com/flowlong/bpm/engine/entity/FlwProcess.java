@@ -9,6 +9,7 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
+import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -106,7 +107,7 @@ public class FlwProcess extends FlowEntity {
             NodeModel executeNode = nodeModel.getChildNode();
             if (null == executeNode) {
                 // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
-                executeNode = this.findNextNode(nodeModel);
+                executeNode = ModelHelper.findNextNode(nodeModel);
             }
 
             /**
@@ -121,7 +122,7 @@ public class FlwProcess extends FlowEntity {
                  * 执行结束流程处理器
                  */
                 if (null == executeNode.getChildNode() && null == executeNode.getConditionNodes()) {
-                    NodeModel nextNode = this.findNextNode(executeNode);
+                    NodeModel nextNode = ModelHelper.findNextNode(executeNode);
                     if (null == nextNode && executeNode.getType() != 1) {
                         new EndProcessHandler().handle(flowLongContext, execution);
                     }
@@ -133,26 +134,6 @@ public class FlwProcess extends FlowEntity {
                 new EndProcessHandler().handle(flowLongContext, execution);
             }
         });
-    }
-
-    private NodeModel findNextNode(NodeModel nodeModel) {
-        NodeModel parentNode = nodeModel.getParentNode();
-        if (null == parentNode || Objects.equals(0, parentNode.getType())) {
-            // 递归至发起节点，流程结束
-            return null;
-        }
-
-        //如果当前节点不是条件分支的子节点、而是条件审批的子节点
-        if (parentNode.isConditionNode()) {
-            NodeModel childNode = parentNode.getChildNode();
-            if (null != childNode && !Objects.equals(childNode.getNodeName(), nodeModel.getNodeName())) {
-                // 条件执行节点，返回子节点
-                return childNode;
-            }
-        }
-
-        // 往上继续找下一个执行节点
-        return this.findNextNode(parentNode);
     }
 
     /**

@@ -84,7 +84,18 @@
                     "term": 0,
                     "termMode": 1,
                     "examineMode": 1,
-                    "directorMode": 0
+                    "directorMode": 0,
+                    "childNode": {
+                      "nodeName": "抄送人",
+                      "type": 2,
+                      "userSelectFlag": true,
+                      "nodeUserList": [
+                        {
+                          "id": "test002",
+                          "name": "何秀英002"
+                        }
+                      ]
+                    }
                   }
                 },
                 {

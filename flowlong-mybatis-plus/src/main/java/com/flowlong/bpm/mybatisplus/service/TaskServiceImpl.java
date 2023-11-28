@@ -18,6 +18,7 @@ import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.listener.TaskListener;
+import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -454,8 +455,20 @@ public class TaskServiceImpl implements TaskService {
              * 2，抄送任务
              */
             this.saveTaskCc(nodeModel, execution);
-            // 执行节点模型
-            execution.getProcess().executeNodeModel(execution.getEngine().getContext(), execution, flwTask.getTaskName());
+
+            /**
+             * 可能存在子节点
+             */
+            NodeModel nextNode = nodeModel.getChildNode();
+            if (null == nextNode) {
+                // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
+                nextNode = ModelHelper.findNextNode(nodeModel);
+            }
+
+            // 执行可能存在的主线业务逻辑
+            if (null != nextNode) {
+                this.createTask(nextNode, execution);
+            }
         } else if (3 == nodeType) {
             /**
              * 3，条件审批
