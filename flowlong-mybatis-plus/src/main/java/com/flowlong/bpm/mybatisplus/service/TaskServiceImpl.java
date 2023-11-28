@@ -454,11 +454,8 @@ public class TaskServiceImpl implements TaskService {
              * 2，抄送任务
              */
             this.saveTaskCc(nodeModel, execution);
-            NodeModel nextNode = nodeModel.getChildNode();
-            if (null != nextNode) {
-                // 继续创建普通任务
-                this.createTask(nextNode, execution);
-            }
+            // 执行节点模型
+            execution.getProcess().executeNodeModel(execution.getEngine().getContext(), execution, flwTask.getTaskName());
         } else if (3 == nodeType) {
             /**
              * 3，条件审批
