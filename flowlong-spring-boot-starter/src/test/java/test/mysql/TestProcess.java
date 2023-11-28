@@ -29,7 +29,7 @@ public class TestProcess extends MysqlTest {
      */
     @Test
     public void testComplete() {
-        this.testProcess(false);
+        this.testProcess(false, 8);
     }
 
     /**
@@ -37,10 +37,15 @@ public class TestProcess extends MysqlTest {
      */
     @Test
     public void testReject() {
-        this.testProcess(true);
+        this.testProcess(true, 8);
     }
 
-    public void testProcess(boolean reject) {
+    @Test
+    public void testDay() {
+        this.testProcess(false, 3);
+    }
+
+    public void testProcess(boolean reject, int day) {
         ProcessService processService = flowLongEngine.processService();
 
         // 根据流程定义ID查询
@@ -52,7 +57,7 @@ public class TestProcess extends MysqlTest {
 
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
-        args.put("day", 8);
+        args.put("day", day);
         args.put("assignee", testUser1);
         flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 

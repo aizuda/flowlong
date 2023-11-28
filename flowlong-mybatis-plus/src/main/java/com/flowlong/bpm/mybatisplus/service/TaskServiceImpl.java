@@ -459,16 +459,7 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 可能存在子节点
              */
-            NodeModel nextNode = nodeModel.getChildNode();
-            if (null == nextNode) {
-                // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
-                nextNode = ModelHelper.findNextNode(nodeModel);
-            }
-
-            // 执行可能存在的主线业务逻辑
-            if (null != nextNode) {
-                this.createTask(nextNode, execution);
-            }
+            nodeModel.nextNode().ifPresent(nextNode -> this.createTask(nextNode, execution));
         } else if (3 == nodeType) {
             /**
              * 3，条件审批

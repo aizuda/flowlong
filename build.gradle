@@ -97,9 +97,9 @@ subprojects {
         useJUnitPlatform()
     }
 
-    // 编译环境 JDK1.8
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    // 编译环境 JDK11
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     publishing {
         publications {

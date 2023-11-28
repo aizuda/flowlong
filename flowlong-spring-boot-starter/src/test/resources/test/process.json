@@ -50,25 +50,7 @@
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
-          "conditionList": [],
-          "childNode": {
-            "nodeName": "直接主管审批",
-            "type": 1,
-            "setType": 2,
-            "nodeUserList": [{
-              "id": "zg0001",
-              "name": "张三"
-            }],
-            "nodeRoleList": [],
-            "examineLevel": 1,
-            "directorLevel": 1,
-            "selectMode": 1,
-            "termAuto": false,
-            "term": 0,
-            "termMode": 1,
-            "examineMode": 1,
-            "directorMode": 0
-          }
+          "conditionList": []
         }
       ],
       "childNode": {

@@ -151,7 +151,16 @@ public class NodeModel implements ModelInstance, Serializable {
             /**
              * 执行创建条件任务
              */
-            this.createTask(conditionNodeOptional.get().getChildNode(), flowLongContext, execution);
+            conditionNodeOptional.ifPresent(conditionNode -> {
+                NodeModel childNode = conditionNode.getChildNode();
+                if (null == childNode) {
+                    // 当前条件节点无执行节点，进入当前执行条件节点的下一个节点
+                    childNode = this.getChildNode();
+                }
+                if (null != childNode) {
+                    this.createTask(childNode, flowLongContext, execution);
+                }
+            });
         }
 
         /**
@@ -210,6 +219,18 @@ public class NodeModel implements ModelInstance, Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * 下一个执行节点
+     */
+    public Optional<NodeModel> nextNode() {
+        NodeModel nextNode = this.getChildNode();
+        if (null == nextNode) {
+            // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
+            nextNode = ModelHelper.findNextNode(this);
+        }
+        return Optional.ofNullable(nextNode);
     }
 
     /**

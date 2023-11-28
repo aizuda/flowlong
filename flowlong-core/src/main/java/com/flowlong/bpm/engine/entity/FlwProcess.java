@@ -9,7 +9,6 @@ import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
-import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -104,35 +103,22 @@ public class FlwProcess extends FlowEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            NodeModel executeNode = nodeModel.getChildNode();
-            if (null == executeNode) {
-                // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
-                executeNode = ModelHelper.findNextNode(nodeModel);
-            }
-
-            /**
-             * 执行节点任务
-             */
-            if (null != executeNode) {
+            nodeModel.nextNode().ifPresentOrElse(executeNode -> {
                 // 执行流程节点
                 executeNode.execute(flowLongContext, execution);
-
                 /**
                  * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
                  * 执行结束流程处理器
                  */
                 if (null == executeNode.getChildNode() && null == executeNode.getConditionNodes()) {
-                    NodeModel nextNode = ModelHelper.findNextNode(executeNode);
-                    if (null == nextNode && executeNode.getType() != 1) {
+                    if (!executeNode.nextNode().isPresent() && executeNode.getType() != 1) {
                         new EndProcessHandler().handle(flowLongContext, execution);
                     }
                 }
-            } else {
                 /**
                  * 无执行节点流程结束
                  */
-                new EndProcessHandler().handle(flowLongContext, execution);
-            }
+            }, () -> new EndProcessHandler().handle(flowLongContext, execution));
         });
     }
 
