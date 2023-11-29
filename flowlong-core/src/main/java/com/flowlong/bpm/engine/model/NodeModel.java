@@ -158,7 +158,7 @@ public class NodeModel implements ModelInstance, Serializable {
                     childNode = this.getChildNode();
                 }
                 if (null != childNode) {
-                    this.createTask(childNode, flowLongContext, execution);
+                    childNode.execute(flowLongContext, execution);
                 }
             });
         }
