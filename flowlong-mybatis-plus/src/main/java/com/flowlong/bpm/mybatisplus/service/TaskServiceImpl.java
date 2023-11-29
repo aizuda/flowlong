@@ -459,7 +459,7 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 可能存在子节点
              */
-            nodeModel.nextNode().ifPresent(nextNode -> this.createTask(nextNode, execution));
+            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         } else if (3 == nodeType) {
             /**
              * 3，条件审批
