@@ -1,0 +1,133 @@
+{
+  "key": "condNestCondition",
+  "name": "条件分支嵌套",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "条件路由1",
+      "type": 4,
+      "conditionNodes": [
+        {
+          "nodeName": "长期",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "conditionList": [
+            [
+              {
+                "label": "请假天数",
+                "field": "day",
+                "operator": ">",
+                "value": "7"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "条件路由2",
+            "type": 4,
+            "conditionNodes": [
+              {
+                "nodeName": "条件1",
+                "type": 3,
+                "priorityLevel": 1,
+                "conditionMode": 1,
+                "conditionList": [
+                  [
+                    {
+                      "label": "请假天数",
+                      "field": "day",
+                      "operator": ">",
+                      "value": "10"
+                    }
+                  ]
+                ],
+                "childNode": {
+                  "nodeName": "人事审批",
+                  "type": 1,
+                  "setType": 1,
+                  "nodeUserList": [
+                    {
+                      "id": "test001",
+                      "name": "魏磊"
+                    }
+                  ],
+                  "nodeRoleList": [],
+                  "examineLevel": 1,
+                  "directorLevel": 1,
+                  "selectMode": 1,
+                  "termAuto": false,
+                  "term": 0,
+                  "termMode": 1,
+                  "examineMode": 1,
+                  "directorMode": 0
+                }
+              },
+              {
+                "nodeName": "条件2",
+                "type": 3,
+                "priorityLevel": 2,
+                "conditionMode": 1,
+                "conditionList": []
+              }
+            ],
+            "childNode": {
+              "nodeName": "领导审批",
+              "type": 1,
+              "setType": 1,
+              "nodeUserList": [
+                {
+                  "id": "test003",
+                  "name": "何敏"
+                }
+              ],
+              "nodeRoleList": [],
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "term": 0,
+              "termMode": 1,
+              "examineMode": 1,
+              "directorMode": 0
+            }
+          }
+        },
+        {
+          "nodeName": "短期",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1,
+          "conditionList": [],
+          "childNode": {
+            "nodeName": "直接主管审批",
+            "type": 1,
+            "setType": 2,
+            "nodeUserList": [],
+            "nodeRoleList": [],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "directorMode": 0
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "抄送人",
+        "type": 2,
+        "userSelectFlag": true,
+        "nodeUserList": [
+          {
+            "id": "test002",
+            "name": "何秀英"
+          }
+        ]
+      }
+    }
+  }
+}

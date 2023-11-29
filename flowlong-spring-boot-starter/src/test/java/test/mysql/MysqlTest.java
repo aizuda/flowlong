@@ -13,6 +13,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import test.TestFlowLong;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -33,7 +34,11 @@ public class MysqlTest extends TestFlowLong {
      * @param testCreator 任务创建者
      */
     public void executeActiveTasks(Long instanceId, FlowCreator testCreator) {
-        this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), testCreator));
+        this.executeActiveTasks(instanceId, testCreator, null);
+    }
+
+    public void executeActiveTasks(Long instanceId, FlowCreator testCreator, Map<String, Object> args) {
+        this.executeActiveTasks(instanceId, t -> this.flowLongEngine.executeTask(t.getId(), testCreator, args));
     }
 
     public void executeActiveTasks(Long instanceId, Consumer<FlwTask> taskConsumer) {
