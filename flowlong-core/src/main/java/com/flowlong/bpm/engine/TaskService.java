@@ -87,13 +87,6 @@ public interface TaskService {
     boolean viewTask(Long taskId, FlwTaskActor taskActor);
 
     /**
-     * 任务设置超时
-     *
-     * @param taskId 任务ID
-     */
-    boolean taskTimeout(Long taskId);
-
-    /**
      * 根据 任务ID 认领任务，删除其它任务参与者
      *
      * @param taskId          任务ID

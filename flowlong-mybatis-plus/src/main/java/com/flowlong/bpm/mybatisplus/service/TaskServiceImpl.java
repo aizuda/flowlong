@@ -18,7 +18,6 @@ import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.listener.TaskListener;
-import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -177,31 +176,6 @@ public class TaskServiceImpl implements TaskService {
             return taskMapper.updateById(flwTask) > 0;
         }
         return false;
-    }
-
-    /**
-     * 任务设置超时
-     *
-     * @param taskId 任务ID
-     */
-    @Override
-    public boolean taskTimeout(Long taskId) {
-        FlwTask flwTask = taskMapper.selectById(taskId);
-        if (null != flwTask) {
-            // 1，保存任务状态为超时，设置完成时间
-            FlwHisTask hisTask = FlwHisTask.of(flwTask);
-            hisTask.setFinishTime(DateUtils.getCurrentDate());
-            hisTask.setTaskState(TaskState.timeout);
-            hisTaskMapper.insert(hisTask);
-
-            // 2，级联删除任务和对应的任务参与者
-            taskActorMapper.deleteByTaskId(taskId);
-            taskMapper.deleteById(taskId);
-
-            // 3，任务监听器通知
-            this.taskNotify(EventType.timeout, flwTask);
-        }
-        return true;
     }
 
     /**

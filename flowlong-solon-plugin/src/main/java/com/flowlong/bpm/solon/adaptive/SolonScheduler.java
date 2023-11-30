@@ -81,7 +81,7 @@ public class SolonScheduler {
                         /**
                          * 任务超时
                          */
-                        taskService.taskTimeout(flwTask.getId());
+                        context.getRuntimeService().timeout(flwTask.getInstanceId());
                     }
                 }
             }
