@@ -56,13 +56,16 @@ public class TestProcess extends MysqlTest {
         }
 
         // 启动指定流程定义ID启动流程实例
-        Map<String, Object> args = new HashMap<>();
-        args.put("day", day);
-        args.put("assignee", testUser1);
-        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
             // 发起，执行条件路由
             this.executeActiveTasks(instance.getId(), testCreator);
+
+            // 人事审批
+            Map<String, Object> args = new HashMap<>();
+            args.put("day", day);
+            args.put("assignee", testUser1);
+            this.executeActiveTasks(instance.getId(), testCreator, args);
 
             if (reject) {
                 // 领导审批【拒绝强制终止，和驳回拒绝不一样】，流程结束
