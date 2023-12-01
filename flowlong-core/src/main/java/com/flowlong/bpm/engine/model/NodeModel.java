@@ -10,6 +10,7 @@ import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
+import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -168,6 +169,16 @@ public class NodeModel implements ModelInstance, Serializable {
          */
         if (Objects.equals(2, this.type) || Objects.equals(1, this.type)) {
             this.createTask(flowLongContext, execution);
+        }
+
+        /**
+         * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
+         * 执行结束流程处理器
+         */
+        if (null == this.getChildNode() && null == this.getConditionNodes()) {
+            if (!this.nextNode().isPresent() && this.getType() != 1) {
+                new EndProcessHandler().handle(flowLongContext, execution);
+            }
         }
     }
 
