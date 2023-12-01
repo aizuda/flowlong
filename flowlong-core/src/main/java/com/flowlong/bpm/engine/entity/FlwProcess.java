@@ -16,6 +16,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -103,9 +104,10 @@ public class FlwProcess extends FlowEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            NodeModel executeNode = nodeModel.nextNode().get();
-            if (null != executeNode) {
+            Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
+            if (executeNodeOptional.isPresent()) {
                 // 执行流程节点
+                NodeModel executeNode = executeNodeOptional.get();
                 executeNode.execute(flowLongContext, execution);
                 /**
                  * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
