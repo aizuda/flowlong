@@ -103,7 +103,8 @@ public class FlwProcess extends FlowEntity {
         this.processModelParser(processModel -> {
             NodeModel nodeModel = processModel.getNode(nodeName);
             Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            nodeModel.nextNode().ifPresentOrElse(executeNode -> {
+            NodeModel executeNode = nodeModel.nextNode().get();
+            if (null != executeNode) {
                 // 执行流程节点
                 executeNode.execute(flowLongContext, execution);
                 /**
@@ -115,10 +116,12 @@ public class FlwProcess extends FlowEntity {
                         new EndProcessHandler().handle(flowLongContext, execution);
                     }
                 }
+            } else {
                 /**
                  * 无执行节点流程结束
                  */
-            }, () -> new EndProcessHandler().handle(flowLongContext, execution));
+                new EndProcessHandler().handle(flowLongContext, execution);
+            }
         });
     }
 
