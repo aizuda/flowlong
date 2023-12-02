@@ -124,7 +124,7 @@ public class FlwTask extends FlowEntity {
     }
 
     public void setVariable(Map<String, Object> args) {
-        if (null != args && args.size() > 0) {
+        if (null != args && !args.isEmpty()) {
             this.variable = FlowLongContext.toJson(args);
         }
     }

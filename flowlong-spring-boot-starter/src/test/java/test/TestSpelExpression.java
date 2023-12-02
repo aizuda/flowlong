@@ -5,7 +5,7 @@ import com.flowlong.bpm.spring.adaptive.SpelExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +21,6 @@ public class TestSpelExpression {
         nodeExpression.setField("day");
         nodeExpression.setOperator(">");
         nodeExpression.setValue("7");
-        Assertions.assertTrue(expression.eval(Arrays.asList(Arrays.asList(nodeExpression)), args));
+        Assertions.assertTrue(expression.eval(Collections.singletonList(Collections.singletonList(nodeExpression)), args));
     }
 }

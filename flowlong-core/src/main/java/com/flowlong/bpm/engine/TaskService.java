@@ -14,10 +14,7 @@ import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.model.NodeModel;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 任务业务类接口
@@ -126,7 +123,7 @@ public interface TaskService {
      * @param taskType          任务类型
      * @param taskActor         任务参与者
      * @param assigneeTaskActor 指定办理人
-     * @return
+     * @return true 成功 false 失败
      */
     boolean assigneeTask(Long taskId, TaskType taskType, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor);
 
@@ -203,7 +200,7 @@ public interface TaskService {
     List<FlwTask> createNewTask(Long taskId, TaskType taskType, List<FlwTaskActor> taskActors);
 
     default List<FlwTask> createNewTask(Long taskId, TaskType taskType, FlwTaskActor taskActor) {
-        return this.createNewTask(taskId, taskType, Arrays.asList(taskActor));
+        return this.createNewTask(taskId, taskType, Collections.singletonList(taskActor));
     }
 
     /**
@@ -231,7 +228,7 @@ public interface TaskService {
     boolean addTaskActor(Long taskId, PerformType performType, List<FlwHisTaskActor> flwHisTaskActors);
 
     default boolean addTaskActor(Long taskId, PerformType performType, FlwHisTaskActor flwHisTaskActor) {
-        return this.addTaskActor(taskId, performType, Arrays.asList(flwHisTaskActor));
+        return this.addTaskActor(taskId, performType, Collections.singletonList(flwHisTaskActor));
     }
 
     /**
@@ -239,11 +236,12 @@ public interface TaskService {
      *
      * @param taskId   任务ID
      * @param actorIds 参与者ID列表
+     * @return true 成功 false 失败
      */
     boolean removeTaskActor(Long taskId, List<String> actorIds);
 
     default boolean removeTaskActor(Long taskId, String actorId) {
-        return removeTaskActor(taskId, Arrays.asList(actorId));
+        return removeTaskActor(taskId, Collections.singletonList(actorId));
     }
 
     /**

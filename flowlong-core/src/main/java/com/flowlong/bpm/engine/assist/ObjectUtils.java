@@ -30,7 +30,7 @@ public class ObjectUtils {
         }
         if (obj instanceof String) {
             String str = (String) obj;
-            return null == str || str.length() == 0;
+            return null == str || str.isEmpty();
         } else if (obj instanceof Collection) {
             return ((Collection<?>) obj).isEmpty();
         } else if (obj instanceof Map) {

@@ -35,7 +35,7 @@ public class DateUtils {
      * 日期判断
      */
     public static boolean after(Date arg0, Date arg1) {
-        return (null == arg0 || null == arg1) ? false : arg0.after(arg1);
+        return null != arg0 && null != arg1 && arg0.after(arg1);
     }
 
     /**

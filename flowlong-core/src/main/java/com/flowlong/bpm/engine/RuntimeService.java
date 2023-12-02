@@ -4,7 +4,6 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.core.FlowCreator;
-import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 
@@ -44,6 +43,7 @@ public interface RuntimeService {
      * 流程实例正常完成（审批通过）
      *
      * @param instanceId    流程实例ID
+     * @return true 成功 false 失败
      */
     boolean complete(Long instanceId);
 

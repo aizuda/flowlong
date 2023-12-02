@@ -3,13 +3,10 @@
  */
 package test.mysql;
 
-import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashMap;
 
 /**
  * 测试票签流程

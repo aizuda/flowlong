@@ -99,7 +99,7 @@ public abstract class Assert {
      * @param message
      */
     public static void notEmpty(String str, String message) {
-        illegalArgument(str == null || str.length() == 0, message);
+        illegalArgument(str == null || str.isEmpty(), message);
     }
 
     /**

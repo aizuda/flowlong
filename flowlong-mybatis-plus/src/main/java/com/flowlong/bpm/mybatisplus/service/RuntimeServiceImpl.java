@@ -19,7 +19,6 @@ import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.listener.InstanceListener;
-import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
 
@@ -65,13 +64,6 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setCreateBy(flowCreator.getCreateBy());
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setProcessId(process.getId());
-        ProcessModel model = process.model();
-        if (model != null && args != null) {
-//            if (ObjectUtils.isNotEmpty(model.getExpireTime())) {
-//                instance.setExpireTime(new Date(model.getExpireTime()));
-//            }
-        }
-
         flwInstance.setVariable(args);
         this.saveInstance(flwInstance);
         return flwInstance;
