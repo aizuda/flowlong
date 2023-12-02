@@ -6,8 +6,11 @@ package com.flowlong.bpm.engine.core;
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.handler.CreateTaskHandler;
 import com.flowlong.bpm.engine.handler.FlowJsonHandler;
+import com.flowlong.bpm.engine.handler.impl.DefaultCreateTaskHandler;
 import com.flowlong.bpm.engine.impl.DefaultProcessModelParser;
+import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,6 +37,10 @@ public class FlowLongContext {
     private RuntimeService runtimeService;
     private TaskService taskService;
     private Expression expression;
+    /**
+     * 流程任务创建处理器
+     */
+    private CreateTaskHandler createTaskHandler;
     /**
      * 流程引擎拦截器
      */
@@ -67,6 +74,7 @@ public class FlowLongContext {
         PROCESS_MODEL_PARSER = processModelParser;
     }
 
+
     /**
      * 流程 JSON 处理器，默认 jackson 实现
      * 使用其它json框架可在初始化时赋值该静态属性
@@ -88,10 +96,30 @@ public class FlowLongContext {
     }
 
     /**
+     * 获取创建流程任务处理器实现类
+     *
+     * @return {@link CreateTaskHandler}
+     */
+    public CreateTaskHandler getCreateTaskHandler() {
+        return null != createTaskHandler ? createTaskHandler : DefaultCreateTaskHandler.getInstance();
+    }
+
+    /**
+     * 创建流程任务
+     *
+     * @param execution 执行对象
+     * @param nodeModel 节点模型
+     * @return true 执行成功  false 执行失败
+     */
+    public boolean createTask(Execution execution, NodeModel nodeModel) {
+        return this.getCreateTaskHandler().handle(this, execution, nodeModel);
+    }
+
+    /**
      * 默认初始化流程引擎上下文
      *
      * @return {@link FlowLongEngine}
-     * @throws FlowLongException
+     * @throws {@link FlowLongException}
      */
     public FlowLongContext build(FlowLongEngine configEngine) throws FlowLongException {
         if (log.isInfoEnabled()) {

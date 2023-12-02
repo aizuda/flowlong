@@ -8,7 +8,6 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
-import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -113,7 +112,7 @@ public class FlwProcess extends FlowEntity {
                 /**
                  * 无执行节点流程结束
                  */
-                new EndProcessHandler().handle(flowLongContext, execution);
+                execution.endInstance();
             }
         });
     }
@@ -129,7 +128,7 @@ public class FlwProcess extends FlowEntity {
             NodeModel nodeModel = processModel.getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             // 创建首个审批任务
-            nodeModel.createTask(flowLongContext, execution);
+            flowLongContext.createTask(execution, nodeModel);
         });
     }
 

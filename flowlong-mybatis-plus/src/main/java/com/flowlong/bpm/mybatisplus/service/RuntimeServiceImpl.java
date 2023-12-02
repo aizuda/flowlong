@@ -99,7 +99,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public void complete(Long instanceId) {
+    public boolean complete(Long instanceId) {
         FlwHisInstance flwHisInstance = new FlwHisInstance();
         flwHisInstance.setId(instanceId);
         flwHisInstance.setInstanceState(InstanceState.complete);
@@ -108,12 +108,11 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstanceMapper.updateById(flwHisInstance);
         // 流程实例监听器通知
         this.instanceNotify(EventType.complete, flwHisInstance);
+        return true;
     }
 
-    protected void instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
-        if (null != instanceListener) {
-            instanceListener.notify(eventType, flwHisInstance);
-        }
+    protected boolean instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
+        return null == instanceListener ? false : instanceListener.notify(eventType, flwHisInstance);
     }
 
     /**

@@ -12,7 +12,6 @@ import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
-import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
@@ -127,7 +126,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             Assert.isNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
 
             // 创建当前节点任务
-            nodeModel.createTask(flowLongContext, execution);
+            flowLongContext.createTask(execution, nodeModel);
         });
     }
 
@@ -245,7 +244,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
                 execution.setNextFlwTaskActor(FlwTaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));
-                new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
+                flowLongContext.createTask(execution, nodeModel);
                 return;
             }
         }

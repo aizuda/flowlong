@@ -23,6 +23,6 @@ public interface FlowLongListener<T> {
      * @param eventType 事件类型
      * @param t         监听实体
      */
-    void notify(EventType eventType, T t);
+    boolean notify(EventType eventType, T t);
 
 }

@@ -45,7 +45,7 @@ public interface RuntimeService {
      *
      * @param instanceId    流程实例ID
      */
-    void complete(Long instanceId);
+    boolean complete(Long instanceId);
 
     /**
      * 保存流程实例

@@ -9,8 +9,6 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.handler.impl.CreateTaskHandler;
-import com.flowlong.bpm.engine.handler.impl.EndProcessHandler;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -168,7 +166,7 @@ public class NodeModel implements ModelInstance, Serializable {
          * 执行创建抄送、审批任务
          */
         if (Objects.equals(2, this.type) || Objects.equals(1, this.type)) {
-            this.createTask(flowLongContext, execution);
+            flowLongContext.createTask(execution, this);
         }
 
         /**
@@ -177,17 +175,9 @@ public class NodeModel implements ModelInstance, Serializable {
          */
         if (null == this.getChildNode() && null == this.getConditionNodes()) {
             if (!this.nextNode().isPresent() && this.getType() != 1) {
-                new EndProcessHandler().handle(flowLongContext, execution);
+                execution.endInstance();
             }
         }
-    }
-
-    public void createTask(FlowLongContext flowLongContext, Execution execution) {
-        this.createTask(this, flowLongContext, execution);
-    }
-
-    protected void createTask(NodeModel nodeModel, FlowLongContext flowLongContext, Execution execution) {
-        new CreateTaskHandler(nodeModel).handle(flowLongContext, execution);
     }
 
     /**

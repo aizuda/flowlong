@@ -1,11 +1,15 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.TaskActorProvider;
-import com.flowlong.bpm.engine.entity.*;
+import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.entity.FlwTask;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
@@ -130,6 +134,23 @@ public class Execution implements Serializable {
      */
     public Execution createSubExecution(Execution execution, FlwProcess process, String parentNodeName) {
         return new Execution(execution, process, parentNodeName);
+    }
+
+    /**
+     * 执行结束当前流程实例
+     *
+     * @return true 执行成功  false 执行失败
+     */
+    public boolean endInstance() {
+        List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
+        for (FlwTask flwTask : flwTasks) {
+            Assert.illegalArgument(flwTask.major(), "存在未完成的主办任务");
+            engine.taskService().complete(flwTask.getId(), FlowCreator.ADMIN);
+        }
+        /**
+         * 结束当前流程实例
+         */
+        return engine.runtimeService().complete(flwInstance.getId());
     }
 
     /**
