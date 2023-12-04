@@ -23,6 +23,10 @@ import java.io.Serializable;
 @Setter
 public class NodeAssignee implements Serializable {
     /**
+     * 租户ID
+     */
+    private String tenantId;
+    /**
      * 主键ID
      */
     private String id;
@@ -37,6 +41,7 @@ public class NodeAssignee implements Serializable {
 
     public static NodeAssignee of(FlwTaskActor flwTaskActor) {
         NodeAssignee nodeAssignee = new NodeAssignee();
+        nodeAssignee.setTenantId(flwTaskActor.getTenantId());
         nodeAssignee.setId(flwTaskActor.getActorId());
         nodeAssignee.setName(flwTaskActor.getActorName());
         return nodeAssignee;

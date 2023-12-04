@@ -4,6 +4,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.ProcessService;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ public class TestProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/process.json", testCreator);
+        processId = this.deployByResource("test/process.json", getFlowCreator());
     }
 
     /**
@@ -56,23 +57,24 @@ public class TestProcess extends MysqlTest {
         }
 
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+        FlowCreator flowCreator = this.getFlowCreator();
+        flowLongEngine.startInstanceById(processId, flowCreator).ifPresent(instance -> {
 
             // 发起，执行条件路由
-            this.executeActiveTasks(instance.getId(), testCreator);
+            this.executeActiveTasks(instance.getId(), flowCreator);
 
             // 人事审批
             Map<String, Object> args = new HashMap<>();
             args.put("day", day);
             args.put("assignee", testUser1);
-            this.executeActiveTasks(instance.getId(), testCreator, args);
+            this.executeActiveTasks(instance.getId(), flowCreator, args);
 
             if (reject) {
                 // 领导审批【拒绝强制终止，和驳回拒绝不一样】，流程结束
-                flowLongEngine.runtimeService().reject(instance.getId(), testCreator);
+                flowLongEngine.runtimeService().reject(instance.getId(), flowCreator);
             } else {
                 // 领导审批【通过】，流程结束
-                this.executeActiveTasks(instance.getId(), testCreator);
+                this.executeActiveTasks(instance.getId(), flowCreator);
             }
         });
 
@@ -92,4 +94,7 @@ public class TestProcess extends MysqlTest {
         processService.cascadeRemove(processId);
     }
 
+    public FlowCreator getFlowCreator() {
+        return testCreator;
+    }
 }

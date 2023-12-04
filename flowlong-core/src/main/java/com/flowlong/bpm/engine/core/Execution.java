@@ -66,13 +66,9 @@ public class Execution implements Serializable {
      */
     private Map<String, Object> args;
     /**
-     * 创建人ID
-     */
-    private String createId;
-    /**
      * 创建人
      */
-    private String createBy;
+    private FlowCreator flowCreator;
     /**
      * 当前执行任务
      */
@@ -103,8 +99,7 @@ public class Execution implements Serializable {
         this.args = execution.getArgs();
         this.parentFlwInstance = execution.getFlwInstance();
         this.parentNodeName = parentNodeName;
-        this.createId = execution.getCreateId();
-        this.createBy = execution.getCreateBy();
+        this.flowCreator = execution.getFlowCreator();
     }
 
     /**

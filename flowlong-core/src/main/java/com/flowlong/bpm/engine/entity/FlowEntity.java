@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,4 +44,9 @@ public class FlowEntity implements Serializable {
      */
     protected Date createTime;
 
+    public void setFlowCreator(FlowCreator flowCreator) {
+        this.tenantId = flowCreator.getTenantId();
+        this.createId = flowCreator.getCreateId();
+        this.createBy = flowCreator.getCreateBy();
+    }
 }

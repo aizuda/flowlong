@@ -11,6 +11,7 @@
       "setType": 1,
       "nodeUserList": [
         {
+          "tenantId": "1000",
           "id": "test001",
           "name": "魏磊"
         }
@@ -49,6 +50,7 @@
               "setType": 1,
               "nodeUserList": [
                 {
+                  "tenantId": "1000",
                   "id": "test001",
                   "name": "何敏"
                 }
@@ -78,6 +80,7 @@
           "userSelectFlag": true,
           "nodeUserList": [
             {
+              "tenantId": "1000",
               "id": "test002",
               "name": "何秀英"
             }

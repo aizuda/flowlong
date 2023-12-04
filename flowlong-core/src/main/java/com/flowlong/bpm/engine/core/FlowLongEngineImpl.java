@@ -94,8 +94,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             log.debug("创建流程实例对象:" + flwInstance);
         }
         Execution current = new Execution(this, process, flwInstance, args);
-        current.setCreateId(flowCreator.getCreateId());
-        current.setCreateBy(flowCreator.getCreateBy());
+        current.setFlowCreator(flowCreator);
         return current;
     }
 
@@ -196,8 +195,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
         }
         Execution execution = new Execution(this, process, flwInstance, args);
-        execution.setCreateId(flowCreator.getCreateId());
-        execution.setCreateBy(flowCreator.getCreateBy());
+        execution.setFlowCreator(flowCreator);
         execution.setFlwTask(flwTask);
 
         /**
@@ -243,7 +241,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
-                execution.setNextFlwTaskActor(FlwTaskActor.ofUser(nextNodeAssignee.getId(), nextNodeAssignee.getName()));
+                execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
                 flowLongContext.createTask(execution, nodeModel);
                 return;
             }

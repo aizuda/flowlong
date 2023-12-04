@@ -100,8 +100,7 @@ public class TaskServiceImpl implements TaskService {
         FlwHisTask hisTask = FlwHisTask.of(flwTask);
         hisTask.setFinishTime(DateUtils.getCurrentDate());
         hisTask.setTaskState(taskState);
-        hisTask.setCreateId(flowCreator.getCreateId());
-        hisTask.setCreateBy(flowCreator.getCreateBy());
+        hisTask.setFlowCreator(flowCreator);
         Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
 
         // 迁移任务参与者
@@ -458,8 +457,7 @@ public class TaskServiceImpl implements TaskService {
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             for (NodeAssignee nodeUser : nodeUserList) {
                 FlwTaskCc flwTaskCc = new FlwTaskCc();
-                flwTaskCc.setCreateId(execution.getCreateId());
-                flwTaskCc.setCreateBy(execution.getCreateBy());
+                flwTaskCc.setFlowCreator(execution.getFlowCreator());
                 flwTaskCc.setCreateTime(DateUtils.getCurrentDate());
                 flwTaskCc.setInstanceId(execution.getFlwInstance().getId());
                 flwTaskCc.setParentTaskId(parentTaskId);
@@ -483,8 +481,7 @@ public class TaskServiceImpl implements TaskService {
      */
     private FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
         FlwTask flwTask = new FlwTask();
-        flwTask.setCreateId(execution.getCreateId());
-        flwTask.setCreateBy(execution.getCreateBy());
+        flwTask.setFlowCreator(execution.getFlowCreator());
         flwTask.setCreateTime(DateUtils.getCurrentDate());
         flwTask.setInstanceId(execution.getFlwInstance().getId());
         flwTask.setTaskName(nodeModel.getNodeName());

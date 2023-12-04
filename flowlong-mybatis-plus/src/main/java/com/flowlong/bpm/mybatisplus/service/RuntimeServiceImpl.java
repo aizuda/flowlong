@@ -60,8 +60,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setCreateTime(DateUtils.getCurrentDate());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
-        flwInstance.setCreateId(flowCreator.getCreateId());
-        flwInstance.setCreateBy(flowCreator.getCreateBy());
+        flwInstance.setFlowCreator(flowCreator);
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setProcessId(process.getId());
         flwInstance.setVariable(args);

@@ -45,6 +45,10 @@ public class FlowCreator implements Serializable {
     }
 
     public static FlowCreator of(String createId, String createBy) {
-        return new FlowCreator(createId, createBy);
+        return of(null, createId, createBy);
+    }
+
+    public static FlowCreator of(String tenantId, String createId, String createBy) {
+        return new FlowCreator(createId, createBy).tenantId(tenantId);
     }
 }

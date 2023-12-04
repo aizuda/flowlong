@@ -50,6 +50,7 @@ public class FlwHisInstance extends FlwInstance {
     public static FlwHisInstance of(FlwInstance flwInstance, InstanceState instanceState) {
         FlwHisInstance hisInstance = new FlwHisInstance();
         hisInstance.id = flwInstance.getId();
+        hisInstance.tenantId = flwInstance.getTenantId();
         hisInstance.instanceState = instanceState.getValue();
         hisInstance.processId = flwInstance.getProcessId();
         hisInstance.createTime = flwInstance.getCreateTime();

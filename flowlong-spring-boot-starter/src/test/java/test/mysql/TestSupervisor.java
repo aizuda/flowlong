@@ -36,16 +36,16 @@ public class TestSupervisor extends MysqlTest {
                          * 审核人类型 1，指定成员 7，连续多级主管
                          */
                         List<FlwTaskActor> flwTaskActors = new ArrayList<>();
-                        flwTaskActors.add(FlwTaskActor.ofUser(user4.getCreateId(), user4.getCreateBy()));
-                        flwTaskActors.add(FlwTaskActor.ofUser(user3.getCreateId(), user3.getCreateBy()));
-                        flwTaskActors.add(FlwTaskActor.ofUser(user2.getCreateId(), user2.getCreateBy()));
-                        flwTaskActors.add(FlwTaskActor.ofUser(user1.getCreateId(), user1.getCreateBy()));
+                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user4));
+                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user3));
+                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user2));
+                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user1));
                         return flwTaskActors;
                     }
                     if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofUser(t.getId(), t.getName())).collect(Collectors.toList());
+                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
                     } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
-                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofRole(t.getId(), t.getName())).collect(Collectors.toList());
+                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
                     }
                     return Collections.emptyList();
                 }

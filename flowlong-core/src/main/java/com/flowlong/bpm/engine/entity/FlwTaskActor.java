@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,24 +58,33 @@ public class FlwTaskActor implements Serializable {
      */
     protected Integer weight;
 
-    public static FlwTaskActor ofUser(String actorId, String actorName) {
-        return of(actorId, actorName, 0, null);
+    public static FlwTaskActor ofFlowCreator(FlowCreator flowCreator) {
+        return ofUser(flowCreator.getTenantId(), flowCreator.getCreateId(), flowCreator.getCreateBy());
     }
 
-    public static FlwTaskActor ofRole(String actorId, String actorName) {
-        return of(actorId, actorName, 1, null);
+    public static FlwTaskActor ofNodeAssignee(NodeAssignee nodeAssignee) {
+        return ofUser(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName());
     }
 
-    public static FlwTaskActor ofDepartment(String actorId, String actorName) {
-        return of(actorId, actorName, 2, null);
+    public static FlwTaskActor ofUser(String tenantId, String actorId, String actorName) {
+        return of(tenantId, actorId, actorName, 0, null);
+    }
+
+    public static FlwTaskActor ofRole(String tenantId, String actorId, String actorName) {
+        return of(tenantId, actorId, actorName, 1, null);
+    }
+
+    public static FlwTaskActor ofDepartment(String tenantId, String actorId, String actorName) {
+        return of(tenantId, actorId, actorName, 2, null);
     }
 
     public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType) {
-        return of(nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
+        return of(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
     }
 
-    protected static FlwTaskActor of(String actorId, String actorName, Integer actorType, Integer weight) {
+    protected static FlwTaskActor of(String tenantId, String actorId, String actorName, Integer actorType, Integer weight) {
         FlwTaskActor taskActor = new FlwTaskActor();
+        taskActor.setTenantId(tenantId);
         taskActor.setActorId(actorId);
         taskActor.setActorName(actorName);
         taskActor.setActorType(actorType);

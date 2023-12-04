@@ -116,8 +116,7 @@ public class ProcessServiceImpl implements ProcessService {
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setUseScope(0);
             process.setModelContent(jsonString);
-            process.setCreateId(flowCreator.getCreateId());
-            process.setCreateBy(flowCreator.getCreateBy());
+            process.setFlowCreator(flowCreator);
             process.setCreateTime(DateUtils.getCurrentDate());
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
