@@ -1,9 +1,11 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.listener;
 
 import com.flowlong.bpm.engine.core.enums.EventType;
+
+import java.util.function.Supplier;
 
 /**
  * 流程引擎监听接口
@@ -21,8 +23,8 @@ public interface FlowLongListener<T> {
      * 流程引擎监听通知
      *
      * @param eventType 事件类型
-     * @param t         监听实体
+     * @param supplier  监听实体提供者
      */
-    boolean notify(EventType eventType, T t);
+    boolean notify(EventType eventType, Supplier<T> supplier);
 
 }

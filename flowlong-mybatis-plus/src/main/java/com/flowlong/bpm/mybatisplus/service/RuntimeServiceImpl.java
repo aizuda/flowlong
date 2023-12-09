@@ -24,6 +24,7 @@ import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * 流程实例运行业务类
@@ -98,12 +99,12 @@ public class RuntimeServiceImpl implements RuntimeService {
         instanceMapper.deleteById(instanceId);
         hisInstanceMapper.updateById(flwHisInstance);
         // 流程实例监听器通知
-        this.instanceNotify(EventType.complete, flwHisInstance);
+        this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId));
         return true;
     }
 
-    protected boolean instanceNotify(EventType eventType, FlwHisInstance flwHisInstance) {
-        return null == instanceListener ? false : instanceListener.notify(eventType, flwHisInstance);
+    protected boolean instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier) {
+        return null == instanceListener ? false : instanceListener.notify(eventType, supplier);
     }
 
     /**
@@ -121,7 +122,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstanceMapper.insert(flwHisInstance);
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.create, flwHisInstance);
+        this.instanceNotify(EventType.create, () -> flwHisInstance);
     }
 
     @Override
@@ -179,7 +180,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(eventType, flwHisInstance);
+            this.instanceNotify(eventType, () -> flwHisInstance);
         }
     }
 

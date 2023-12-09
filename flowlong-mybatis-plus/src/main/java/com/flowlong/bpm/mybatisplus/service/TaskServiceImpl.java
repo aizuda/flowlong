@@ -25,6 +25,7 @@ import com.flowlong.bpm.mybatisplus.mapper.*;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
         this.moveToHisTask(flwTask, taskState, flowCreator);
 
         // 任务监听器通知
-        this.taskNotify(eventType, flwTask);
+        this.taskNotify(eventType, () -> flwTask);
         return flwTask;
     }
 
@@ -117,9 +118,9 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.deleteById(flwTask.getId()) > 0;
     }
 
-    protected void taskNotify(EventType eventType, FlwTask flwTask) {
+    protected void taskNotify(EventType eventType, Supplier<FlwTask> supplier) {
         if (null != taskListener) {
-            taskListener.notify(eventType, flwTask);
+            taskListener.notify(eventType, supplier);
         }
     }
 
@@ -152,7 +153,7 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskById(FlwTask flwTask) {
         taskMapper.updateById(flwTask);
         // 任务监听器通知
-        this.taskNotify(EventType.update, flwTask);
+        this.taskNotify(EventType.update, () -> flwTask);
     }
 
     /**
@@ -523,7 +524,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(flwTask);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, flwTask);
+            this.taskNotify(EventType.create, () -> flwTask);
             return flwTasks;
         }
 
@@ -542,7 +543,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, flwTask);
+            this.taskNotify(EventType.create, () -> flwTask);
             return flwTasks;
         }
 
@@ -558,7 +559,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), t);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, newFlwTask);
+            this.taskNotify(EventType.create, () -> newFlwTask);
         });
         return flwTasks;
     }

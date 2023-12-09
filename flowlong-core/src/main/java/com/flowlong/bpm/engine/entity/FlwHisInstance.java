@@ -4,6 +4,7 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,15 +52,20 @@ public class FlwHisInstance extends FlwInstance {
         FlwHisInstance hisInstance = new FlwHisInstance();
         hisInstance.id = flwInstance.getId();
         hisInstance.tenantId = flwInstance.getTenantId();
-        hisInstance.instanceState = instanceState.getValue();
-        hisInstance.processId = flwInstance.getProcessId();
-        hisInstance.createTime = flwInstance.getCreateTime();
-        hisInstance.expireTime = flwInstance.getExpireTime();
         hisInstance.createId = flwInstance.getCreateId();
         hisInstance.createBy = flwInstance.getCreateBy();
+        hisInstance.createTime = flwInstance.getCreateTime();
+        hisInstance.processId = flwInstance.getProcessId();
         hisInstance.priority = flwInstance.getPriority();
         hisInstance.instanceNo = flwInstance.getInstanceNo();
+        hisInstance.businessKey = flwInstance.getBusinessKey();
         hisInstance.variable = flwInstance.getVariable();
+        hisInstance.instanceVersion = flwInstance.getInstanceVersion();
+        hisInstance.expireTime = flwInstance.getExpireTime();
+        hisInstance.lastUpdateBy = flwInstance.getLastUpdateBy();
+        hisInstance.lastUpdateTime = flwInstance.getLastUpdateTime();
+        hisInstance.instanceState = instanceState.getValue();
+        hisInstance.endTime = DateUtils.getCurrentDate();
         return hisInstance;
     }
 }
