@@ -39,7 +39,7 @@ public class TestController {
         Map<String, Object> args = new HashMap<>();
         args.put("day", 8);
         args.put("assignee", "test001");
-        return flowLongEngine.startInstanceByName("请假审批", null, testCreator, args).get();
+        return flowLongEngine.startInstanceByProcessKey("process", null, testCreator, args).get();
     }
 
 }

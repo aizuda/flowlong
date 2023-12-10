@@ -105,16 +105,20 @@ public class Execution implements Serializable {
     /**
      * 构造函数，接收流程定义、流程实例对象、执行参数
      *
-     * @param process
-     * @param flwInstance
-     * @param args
+     * @param engine      {@link FlowLongEngine}
+     * @param process     {@link FlwProcess}
+     * @param flowCreator {@link FlowCreator}
+     * @param flwInstance {@link FlwInstance}
+     * @param args        执行参数
      */
-    public Execution(FlowLongEngine engine, FlwProcess process, FlwInstance flwInstance, Map<String, Object> args) {
+    public Execution(FlowLongEngine engine, FlwProcess process, FlowCreator flowCreator,
+                     FlwInstance flwInstance, Map<String, Object> args) {
         if (process == null || flwInstance == null) {
             throw new FlowLongException("构造Execution对象失败，请检查process、order是否为空");
         }
         this.engine = engine;
         this.process = process;
+        this.flowCreator = flowCreator;
         this.flwInstance = flwInstance;
         this.args = args;
     }

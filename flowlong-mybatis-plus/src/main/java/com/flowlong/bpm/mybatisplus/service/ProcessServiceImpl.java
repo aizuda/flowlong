@@ -1,8 +1,9 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.service;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.RuntimeService;
@@ -63,17 +64,17 @@ public class ProcessServiceImpl implements ProcessService {
     /**
      * 根据流程名称或版本号查找流程定义对象
      *
-     * @param name    流程定义名称
-     * @param version 版本号
+     * @param processKey 流程定义key
+     * @param version    版本号
      * @return {@link Process}
      */
     @Override
-    public FlwProcess getProcessByVersion(String name, Integer version) {
-        Assert.notEmpty(name);
-        List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessName, name)
+    public FlwProcess getProcessByVersion(String processKey, Integer version) {
+        Assert.notEmpty(processKey);
+        List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, processKey)
                 .eq(null != version, FlwProcess::getProcessVersion, version)
                 .orderByDesc(FlwProcess::getProcessVersion));
-        Assert.isTrue(ObjectUtils.isEmpty(processList), "process [" + name + "] does not exist");
+        Assert.isTrue(ObjectUtils.isEmpty(processList), "process key [" + processKey + "] does not exist");
         return processList.get(0);
     }
 
@@ -96,7 +97,7 @@ public class ProcessServiceImpl implements ProcessService {
             List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
                     .select(FlwProcess::getId, FlwProcess::getProcessVersion)
                     .eq(FlwProcess::getProcessKey, processModel.getKey())
-                    .eq(null != flowCreator.getTenantId(), FlwProcess::getTenantId, flowCreator.getTenantId())
+                    .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
                     .orderByDesc(FlwProcess::getProcessVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {

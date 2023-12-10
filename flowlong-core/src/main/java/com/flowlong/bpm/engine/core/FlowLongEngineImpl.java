@@ -61,11 +61,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据流程名称、版本号、创建人、参数列表启动流程实例
+     * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
-        FlwProcess process = processService().getProcessByVersion(name, version);
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwProcess process = processService().getProcessByVersion(processKey, version);
         return this.startProcess(process, flowCreator, args);
     }
 
@@ -93,9 +93,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("创建流程实例对象:" + flwInstance);
         }
-        Execution current = new Execution(this, process, flwInstance, args);
-        current.setFlowCreator(flowCreator);
-        return current;
+        return new Execution(this, process, flowCreator, flwInstance, args);
     }
 
     /**
@@ -194,8 +192,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Execution execution = new Execution(this, process, flwInstance, args);
-        execution.setFlowCreator(flowCreator);
+        Execution execution = new Execution(this, process, flowCreator, flwInstance, args);
         execution.setFlwTask(flwTask);
 
         /**

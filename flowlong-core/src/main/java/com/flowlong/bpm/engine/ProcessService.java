@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
@@ -40,14 +40,14 @@ public interface ProcessService {
     /**
      * 根据流程名称或版本号查找流程定义对象
      *
-     * @param name    流程定义名称
-     * @param version 版本号
+     * @param processKey 流程定义key
+     * @param version    版本号
      * @return {@link FlwProcess}
      */
-    FlwProcess getProcessByVersion(String name, Integer version);
+    FlwProcess getProcessByVersion(String processKey, Integer version);
 
-    default FlwProcess getProcessByName(String name) {
-        return getProcessByVersion(name, null);
+    default FlwProcess getProcessByKey(String processKey) {
+        return getProcessByVersion(processKey, null);
     }
 
     /**

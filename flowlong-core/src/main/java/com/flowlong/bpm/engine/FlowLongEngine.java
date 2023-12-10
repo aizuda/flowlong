@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
@@ -85,16 +85,16 @@ public interface FlowLongEngine {
     /**
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
-     * @param name        流程定义名称
+     * @param processKey  流程定义key
      * @param version     版本号
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<FlwInstance> startInstanceByName(String name, Integer version, FlowCreator flowCreator) {
-        return this.startInstanceByName(name, version, flowCreator, null);
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null);
     }
 
     /**
