@@ -96,6 +96,7 @@ public class ProcessServiceImpl implements ProcessService {
             List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
                     .select(FlwProcess::getId, FlwProcess::getProcessVersion)
                     .eq(FlwProcess::getProcessKey, processModel.getKey())
+                    .eq(null != flowCreator.getTenantId(), FlwProcess::getTenantId, flowCreator.getTenantId())
                     .orderByDesc(FlwProcess::getProcessVersion));
             Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
