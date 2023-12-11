@@ -300,13 +300,13 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
-        Long parentTaskId = currentFlwTask.getParentTaskId();
-        Assert.isTrue(Objects.equals(parentTaskId, 0L), "上一步任务ID为空，无法驳回至上一步处理");
+        Assert.isTrue(currentFlwTask.startNode(), "上一步任务ID为空，无法驳回至上一步处理");
 
         // 执行任务驳回
         this.executeTask(currentFlwTask.getId(), flowCreator, args, TaskState.reject, EventType.reject);
 
         // 撤回至上一级任务
+        Long parentTaskId = currentFlwTask.getParentTaskId();
         return this.undoHisTask(parentTaskId, flowCreator, null);
     }
 
@@ -324,21 +324,26 @@ public class TaskServiceImpl implements TaskService {
             hisTaskConsumer.accept(hisTask);
         }
         // 撤回历史任务
-        FlwTask flwTask = hisTask.undoTask(flowCreator);
+        FlwTask flwTask = hisTask.undoTask();
         taskMapper.insert(flwTask);
-        // 撤回任务参与者
-        List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTaskId);
-        if (null != hisTaskActors) {
-            hisTaskActors.forEach(t -> {
-                FlwTaskActor flwTaskActor = new FlwTaskActor();
-                flwTaskActor.setTenantId(t.getTenantId());
-                flwTaskActor.setInstanceId(t.getInstanceId());
-                flwTaskActor.setTaskId(flwTask.getId());
-                flwTaskActor.setActorType(t.getActorType());
-                flwTaskActor.setActorId(t.getActorId());
-                flwTaskActor.setActorName(t.getActorName());
-                taskActorMapper.insert(flwTaskActor);
-            });
+        if (flwTask.startNode()) {
+            // 如果直接撤回到发起人，构建发起人关联信息
+            taskActorMapper.insert(FlwTaskActor.ofFlwTask(flwTask));
+        } else {
+            // 撤回任务参与者
+            List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTaskId);
+            if (null != hisTaskActors) {
+                hisTaskActors.forEach(t -> {
+                    FlwTaskActor flwTaskActor = new FlwTaskActor();
+                    flwTaskActor.setTenantId(t.getTenantId());
+                    flwTaskActor.setInstanceId(t.getInstanceId());
+                    flwTaskActor.setTaskId(flwTask.getId());
+                    flwTaskActor.setActorType(t.getActorType());
+                    flwTaskActor.setActorId(t.getActorId());
+                    flwTaskActor.setActorName(t.getActorName());
+                    taskActorMapper.insert(flwTaskActor);
+                });
+            }
         }
         return Optional.ofNullable(flwTask);
     }

@@ -1,10 +1,9 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
 
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,17 +52,25 @@ public class FlwHisTask extends FlwTask {
         hisTask.performType = flwTask.getPerformType();
         hisTask.actionUrl = flwTask.getActionUrl();
         hisTask.variable = flwTask.getVariable();
+        hisTask.assignorId = flwTask.getAssignorId();
+        hisTask.assignor = flwTask.getAssignor();
         hisTask.expireTime = flwTask.getExpireTime();
+        hisTask.remindTime = flwTask.getRemindTime();
+        hisTask.remindRepeat = flwTask.getRemindRepeat();
+        hisTask.viewed = flwTask.getViewed();
         return hisTask;
     }
 
     /**
      * 根据历史任务产生撤回的任务对象
+     * <p>
+     * 创建人信息保留
+     * </p>
      *
      * @return 任务对象
      */
-    public FlwTask undoTask(FlowCreator flowCreator) {
-        return cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
+    public FlwTask undoTask() {
+        return cloneTask(this.createId, this.createBy);
     }
 
 }

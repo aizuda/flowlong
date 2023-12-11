@@ -129,6 +129,15 @@ public class FlwTask extends FlowEntity {
         }
     }
 
+    /**
+     * 开始节点判断
+     *
+     * @return true 是 false 非
+     */
+    public boolean startNode() {
+        return Objects.equals(0L, this.parentTaskId);
+    }
+
     public FlwTask cloneTask(FlwHisTaskActor flwHisTaskActor) {
         if (null != flwHisTaskActor) {
             this.createId = flwHisTaskActor.getActorId();
@@ -148,9 +157,12 @@ public class FlwTask extends FlowEntity {
         newFlwTask.setPerformType(performType);
         newFlwTask.setActionUrl(actionUrl);
         newFlwTask.setVariable(variable);
+        newFlwTask.setAssignorId(assignorId);
+        newFlwTask.setAssignor(assignor);
         newFlwTask.setExpireTime(expireTime);
         newFlwTask.setRemindTime(remindTime);
         newFlwTask.setRemindRepeat(remindRepeat);
+        newFlwTask.setViewed(viewed);
         newFlwTask.setCreateId(createId);
         newFlwTask.setCreateBy(createBy);
         newFlwTask.setCreateTime(DateUtils.getCurrentDate());
