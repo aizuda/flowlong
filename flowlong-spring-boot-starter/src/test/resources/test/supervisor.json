@@ -4,7 +4,10 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeRoleList": [{
+      "id": "360000197302144442",
+      "name": "何敏"
+    }],
     "childNode": {
       "nodeName": "条件路由",
       "type": 4,

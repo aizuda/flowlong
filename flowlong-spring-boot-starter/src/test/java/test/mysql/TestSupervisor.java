@@ -1,8 +1,11 @@
 package test.mysql;
 
+import com.flowlong.bpm.engine.TaskActorProvider;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
+import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
+import com.flowlong.bpm.engine.model.NodeModel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,24 +33,39 @@ public class TestSupervisor extends MysqlTest {
          * 自定义参与者提供测试
          */
         this.flowLongEngine.getContext().setTaskActorProvider(
-                (nodeModel, execution) -> {
-                    if (nodeModel.getType() == 1 && nodeModel.getSetType() == 7) {
-                        /**
-                         * 审核人类型 1，指定成员 7，连续多级主管
-                         */
-                        List<FlwTaskActor> flwTaskActors = new ArrayList<>();
-                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user4));
-                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user3));
-                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user2));
-                        flwTaskActors.add(FlwTaskActor.ofFlowCreator(user1));
-                        return flwTaskActors;
+                new TaskActorProvider() {
+
+                    @Override
+                    public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
+                        if(nodeModel.getType() == 0) {
+                            // 发起人审批，经过 isAllowed 验证合法，直接返回当前执行人
+                            return Collections.singletonList(FlwTaskActor.ofFlowCreator(execution.getFlowCreator()));
+                        }
+                        if (nodeModel.getType() == 1 && nodeModel.getSetType() == 7) {
+                            /**
+                             * 审核人类型 1，指定成员 7，连续多级主管
+                             */
+                            List<FlwTaskActor> flwTaskActors = new ArrayList<>();
+                            flwTaskActors.add(FlwTaskActor.ofFlowCreator(user4));
+                            flwTaskActors.add(FlwTaskActor.ofFlowCreator(user3));
+                            flwTaskActors.add(FlwTaskActor.ofFlowCreator(user2));
+                            flwTaskActors.add(FlwTaskActor.ofFlowCreator(user1));
+                            return flwTaskActors;
+                        }
+                        if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
+                            return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
+                        } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
+                            return nodeModel.getNodeRoleList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName()))
+                                    .collect(Collectors.toList());
+                        }
+                        return Collections.emptyList();
                     }
-                    if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
-                    } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
-                        return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
+
+                    @Override
+                    public boolean isAllowed(NodeModel nodeModel, FlowCreator flowCreator) {
+                        // 执行判断合法性
+                        return true;
                     }
-                    return Collections.emptyList();
                 }
         );
     }

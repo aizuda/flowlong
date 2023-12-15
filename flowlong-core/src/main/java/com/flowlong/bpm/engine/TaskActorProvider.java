@@ -4,6 +4,7 @@
 package com.flowlong.bpm.engine;
 
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
@@ -43,11 +44,11 @@ public interface TaskActorProvider {
      */
     default boolean isAllowed(NodeModel nodeModel, FlowCreator flowCreator) {
         List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
-        if (null != nodeUserList) {
+        if (ObjectUtils.isNotEmpty(nodeUserList)) {
             return nodeUserList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
         }
         // 角色判断必须要求子类实现
-        Assert.isTrue(null != nodeModel.getNodeRoleList(), "Please implement the interface TaskActorProvider method isAllow");
+        Assert.isTrue(ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList()), "Please implement the interface TaskActorProvider method isAllow");
         return true;
     }
 }
