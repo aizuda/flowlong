@@ -71,29 +71,21 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     /**
      * 启动流程实例
+     *
+     * @param process     流程定义对象
+     * @param flowCreator 流程创建者
+     * @param args        执行参数
+     * @return
      */
     protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
-        Execution execution = this.execute(process, flowCreator, args);
         // 执行启动模型
-        process.executeStartModel(flowLongContext, execution);
-        return Optional.ofNullable(execution.getFlwInstance());
-    }
-
-
-    /**
-     * 创建流程实例，并返回执行对象
-     *
-     * @param process     流程定义
-     * @param flowCreator 流程实例任务创建者
-     * @param args        参数列表
-     * @return Execution
-     */
-    protected Execution execute(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
-        FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args);
-        if (log.isDebugEnabled()) {
-            log.debug("创建流程实例对象:" + flwInstance);
-        }
-        return new Execution(this, process, flowCreator, flwInstance, args);
+        return process.executeStartModel(flowLongContext, flowCreator, () -> {
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args);
+            if (log.isDebugEnabled()) {
+                log.debug("创建流程实例对象:" + flwInstance);
+            }
+            return new Execution(this, process, flowCreator, flwInstance, args);
+        });
     }
 
     /**

@@ -1,13 +1,17 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
 
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
+import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 任务参与者提供处理接口
@@ -30,4 +34,20 @@ public interface TaskActorProvider {
      */
     List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution);
 
+    /**
+     * 流程创建者是否允许操作执行当前节点
+     *
+     * @param nodeModel   当前执行节点
+     * @param flowCreator 流程创建者
+     * @return true 允许 false 不被允许
+     */
+    default boolean isAllowed(NodeModel nodeModel, FlowCreator flowCreator) {
+        List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+        if (null != nodeUserList) {
+            return nodeUserList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
+        }
+        // 角色判断必须要求子类实现
+        Assert.isTrue(null != nodeModel.getNodeRoleList(), "Please implement the interface TaskActorProvider method isAllow");
+        return true;
+    }
 }

@@ -5,6 +5,7 @@ package com.flowlong.bpm.engine.entity;
 
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.exception.FlowLongException;
@@ -17,6 +18,7 @@ import lombok.ToString;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * 流程定义实体类
@@ -120,16 +122,24 @@ public class FlwProcess extends FlowEntity {
     /**
      * 执行开始模型
      *
-     * @param flowLongContext 流程引擎上下文
-     * @param execution       流程执行对象
+     * @param flowLongContext   流程引擎上下文
+     * @param flowCreator       流程实例任务创建者
+     * @param executionSupplier 流程执行对象提供者
      */
-    public void executeStartModel(FlowLongContext flowLongContext, Execution execution) {
-        this.processModelParser(processModel -> {
-            NodeModel nodeModel = processModel.getNodeConfig();
+    public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, Supplier<Execution> executionSupplier) {
+        FlwInstance flwInstance = null;
+        if (null != this.modelContent) {
+            NodeModel nodeModel = this.model().getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
+            Assert.isFalse(flowLongContext.getTaskActorProvider().isAllowed(nodeModel, flowCreator), "No permission to execute");
+            // 回调执行创建实例
+            Execution execution = executionSupplier.get();
             // 创建首个审批任务
             flowLongContext.createTask(execution, nodeModel);
-        });
+            // 当前执行实例
+            flwInstance = execution.getFlwInstance();
+        }
+        return Optional.ofNullable(flwInstance);
     }
 
     /**
