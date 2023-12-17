@@ -17,7 +17,6 @@ import lombok.ToString;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -101,22 +100,22 @@ public class FlwProcess extends FlowEntity {
      * @param execution       流程执行对象
      * @param nodeName        节点名称
      */
-    public void executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
-        this.processModelParser(processModel -> {
-            NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-            Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
-            if (executeNodeOptional.isPresent()) {
-                // 执行流程节点
-                NodeModel executeNode = executeNodeOptional.get();
-                executeNode.execute(flowLongContext, execution);
-            } else {
-                /**
-                 * 无执行节点流程结束
-                 */
-                execution.endInstance();
-            }
-        });
+    public boolean executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
+        Assert.isNull(this.modelContent, "FlwProcess modelContent cannot be empty");
+        NodeModel nodeModel = this.model().getNode(nodeName);
+        Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
+        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
+        if (executeNodeOptional.isPresent()) {
+            // 执行流程节点
+            NodeModel executeNode = executeNodeOptional.get();
+            executeNode.execute(flowLongContext, execution);
+        } else {
+            /**
+             * 无执行节点流程结束
+             */
+            execution.endInstance();
+        }
+        return true;
     }
 
     /**
@@ -140,17 +139,6 @@ public class FlwProcess extends FlowEntity {
             flwInstance = execution.getFlwInstance();
         }
         return Optional.ofNullable(flwInstance);
-    }
-
-    /**
-     * 流程模型解析
-     *
-     * @param consumer 解析模型消费者
-     */
-    private void processModelParser(Consumer<ProcessModel> consumer) {
-        if (null != this.modelContent) {
-            consumer.accept(this.model());
-        }
     }
 
     /**

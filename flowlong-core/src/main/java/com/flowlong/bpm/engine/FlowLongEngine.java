@@ -6,7 +6,6 @@ package com.flowlong.bpm.engine;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.FlwInstance;
-import com.flowlong.bpm.engine.entity.FlwTask;
 
 import java.util.Map;
 import java.util.Optional;
@@ -103,12 +102,12 @@ public interface FlowLongEngine {
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
      * @param args        参数列表
-     * @return {@link FlwTask} 任务列表
+     * @return true 成功 false 失败
      */
-    void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
+    boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
 
-    default void executeTask(Long taskId, FlowCreator flowCreator) {
-        this.executeTask(taskId, flowCreator, null);
+    default boolean executeTask(Long taskId, FlowCreator flowCreator) {
+        return this.executeTask(taskId, flowCreator, null);
     }
 
 
@@ -123,11 +122,11 @@ public interface FlowLongEngine {
      * @param nodeName    跳转的节点名称
      * @param flowCreator 任务创建者
      * @param args        参数列表
-     * @return List<Task> 任务集合
+     * @return true 成功 false 失败
      */
-    void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
+    boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
 
-    default void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
-        this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
+    default boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+        return this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
     }
 }

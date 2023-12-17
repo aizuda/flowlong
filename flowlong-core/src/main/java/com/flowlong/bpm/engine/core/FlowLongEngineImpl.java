@@ -18,7 +18,7 @@ import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 基本的流程引擎实现类
@@ -92,11 +92,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据任务ID，创建人，参数列表执行任务
      */
     @Override
-    public void executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+    public boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
         // 完成任务，并且构造执行对象
-        this.execute(taskId, flowCreator, args, execution -> {
+        return this.execute(taskId, flowCreator, args, execution -> {
             // 执行节点模型
-            execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
+            return execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
         });
     }
 
@@ -104,9 +104,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 执行任务并跳转到指定节点
      */
     @Override
-    public void executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
+    public boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行当前任务
-        this.execute(taskId, flowCreator, args, execution -> {
+        return this.execute(taskId, flowCreator, args, execution -> {
             ProcessModel processModel = execution.getProcess().model();
             Assert.isNull(processModel, "当前任务未找到流程定义模型");
 
@@ -116,13 +116,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
             // 创建当前节点任务
             flowLongContext.createTask(execution, nodeModel);
+            return true;
         });
     }
 
     /**
      * 根据任务ID，创建人，参数列表完成任务，并且构造执行对象
      */
-    protected void execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Consumer<Execution> executeNextStep) {
+    protected boolean execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Function<Execution, Boolean> executeNextStep) {
         if (args == null) {
             args = new HashMap<>();
         }
@@ -143,7 +144,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
              */
             List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskName(flwInstance.getId(), flwTask.getTaskName());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
-                return;
+                return true;
             }
         }
 
@@ -163,7 +164,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
                     // 投票权重小于节点权重继续投票
-                    return;
+                    return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
                     Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
@@ -232,11 +233,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (null != nextNodeAssignee) {
                 execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
                 flowLongContext.createTask(execution, nodeModel);
-                return;
+                return true;
             }
         }
 
         // 执行回调逻辑
-        executeNextStep.accept(execution);
+        return executeNextStep.apply(execution);
     }
 }
