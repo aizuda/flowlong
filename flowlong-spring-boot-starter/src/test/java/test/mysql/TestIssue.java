@@ -39,11 +39,9 @@ public class TestIssue extends MysqlTest {
     @Test
     public void testRejectTask() {
         Long processId = this.deployByResource("test/process.json", testCreator);
-        // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
-            // test3 发起
-            this.executeActiveTasks(instance.getId(), test3Creator);
+        // 启动指定流程定义ID启动流程实例
+        flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> {
 
             // 测试拒绝任务至 test3
             this.executeActiveTasks(instance.getId(), flwTask -> {

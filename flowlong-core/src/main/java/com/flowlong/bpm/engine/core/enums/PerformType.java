@@ -17,9 +17,13 @@ import java.util.Arrays;
  */
 public enum PerformType {
     /**
-     * 发起、其它
+     * 未知
      */
-    unknown(0),
+    unknown(-1),
+    /**
+     * 发起
+     */
+    start(0),
     /**
      * 按顺序依次审批
      */

@@ -423,9 +423,19 @@ public class TaskServiceImpl implements TaskService {
 
         // 处理流程任务
         Integer nodeType = nodeModel.getType();
-        if (0 == nodeType || 1 == nodeType) {
+        if (0 == nodeType) {
             /**
-             * 0，发起人 1，审批人
+             * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
+             */
+            flwTasks.addAll(this.saveTask(flwTask, PerformType.start, taskActors, execution));
+
+            /**
+             * 执行进入下一个节点
+             */
+            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+        } else if (1 == nodeType) {
+            /**
+             * 1，审批人
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(flwTask, performType, taskActors, execution));
@@ -462,10 +472,19 @@ public class TaskServiceImpl implements TaskService {
             Long parentTaskId = execution.getFlwTask().getId();
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             for (NodeAssignee nodeUser : nodeUserList) {
+                Long instanceId = execution.getFlwInstance().getId();
+                if (taskCcMapper.selectCount(Wrappers.<FlwTaskCc>lambdaQuery()
+                        .eq(FlwTaskCc::getInstanceId, instanceId)
+                        .eq(FlwTaskCc::getActorId, nodeUser.getId())) > 0) {
+                    /**
+                     * 同一个流程实例不重复抄送给同一人
+                     */
+                    continue;
+                }
                 FlwTaskCc flwTaskCc = new FlwTaskCc();
                 flwTaskCc.setFlowCreator(execution.getFlowCreator());
                 flwTaskCc.setCreateTime(DateUtils.getCurrentDate());
-                flwTaskCc.setInstanceId(execution.getFlwInstance().getId());
+                flwTaskCc.setInstanceId(instanceId);
                 flwTaskCc.setParentTaskId(parentTaskId);
                 flwTaskCc.setTaskName(nodeModel.getNodeName());
                 flwTaskCc.setDisplayName(nodeModel.getNodeName());
@@ -507,8 +526,29 @@ public class TaskServiceImpl implements TaskService {
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {
         List<FlwTask> flwTasks = new ArrayList<>();
         flwTask.setPerformType(performType);
+
+        if (performType == PerformType.start) {
+            // 发起任务
+            FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
+            flwHisTask.setFinishTime(DateUtils.getCurrentDate());
+            if (hisTaskMapper.insert(flwHisTask) > 0) {
+                // 设置为执行任务
+                execution.setFlwTask(flwHisTask);
+                if (ObjectUtils.isNotEmpty(taskActors)) {
+                    taskActors.forEach(taskActor -> {
+                        taskActor.setId(null);
+                        taskActor.setInstanceId(flwTask.getInstanceId());
+                        taskActor.setTaskId(flwHisTask.getId());
+                        hisTaskActorMapper.insert(FlwHisTaskActor.of(taskActor));
+                    });
+                }
+            }
+            return flwTasks;
+        }
+
+
         if (performType == PerformType.unknown) {
-            // 发起、其它
+            // 未知任务
             flwTask.setVariable(execution.getArgs());
             taskMapper.insert(flwTask);
             if (ObjectUtils.isNotEmpty(taskActors)) {

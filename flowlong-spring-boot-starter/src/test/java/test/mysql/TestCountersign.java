@@ -33,9 +33,6 @@ public class TestCountersign extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
-            // 发起
-            this.executeActiveTasks(instance.getId(), testCreator);
-
             // 测试会签审批人001【审批】
             this.executeTask(instance.getId(), testCreator);
 

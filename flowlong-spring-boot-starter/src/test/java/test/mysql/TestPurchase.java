@@ -31,15 +31,6 @@ public class TestPurchase extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
-            // 发起
-            this.executeActiveTasks(instance.getId(), testCreator);
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             // 领导审批
             this.executeActiveTasks(instance.getId(), testCreator);
 

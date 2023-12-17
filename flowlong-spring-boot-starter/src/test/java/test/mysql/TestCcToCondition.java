@@ -25,12 +25,9 @@ public class TestCcToCondition extends MysqlTest {
     public void test() {
 
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
-
-            // 发起
-            Map<String, Object> args = new HashMap<>();
-            args.put("day", 8);
-            this.executeActiveTasks(instance.getId(), testCreator, args);
+        Map<String, Object> args = new HashMap<>();
+        args.put("day", 8);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 领导审批，自动抄送，流程结束
             this.executeActiveTasks(instance.getId(), test3Creator);

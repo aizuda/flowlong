@@ -28,13 +28,19 @@ public class FlwHisTask extends FlwTask {
      */
     protected Integer taskState;
 
-    public void setTaskState(TaskState taskState) {
+    public FlwHisTask setTaskState(TaskState taskState) {
         this.taskState = taskState.getValue();
+        return this;
     }
 
-    public void setTaskState(Integer taskState) {
+    public FlwHisTask setTaskState(Integer taskState) {
         Assert.isNull(TaskState.get(taskState), "插入的实例状态异常 [taskState=" + taskState + "]");
         this.taskState = taskState;
+        return this;
+    }
+
+    public static FlwHisTask of(FlwTask flwTask, TaskState taskState) {
+        return of(flwTask).setTaskState(taskState);
     }
 
     public static FlwHisTask of(FlwTask flwTask) {

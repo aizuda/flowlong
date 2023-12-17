@@ -72,13 +72,11 @@ public class TestSupervisor extends MysqlTest {
 
     @Test
     public void test() {
+        // 四级部门发起审批
         Map<String, Object> args = new HashMap<>();
         args.put("day", 4);
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, user4, args).ifPresent(instance -> {
-
-            // 四级部门发起审批
-            this.executeActiveTasks(instance.getId(), user4);
 
             /// 四级部门审核
             this.executeActiveTasks(instance.getId(), user4);

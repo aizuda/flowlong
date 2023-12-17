@@ -28,9 +28,6 @@ public class TestOrSign extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
-            // 发起
-            this.executeActiveTasks(instance.getId(), testCreator);
-
             // test1 驳回任务（领导审批驳回，任务至发起人）
             TaskService taskService = flowLongEngine.taskService();
             this.executeActiveTasks(instance.getId(), t ->

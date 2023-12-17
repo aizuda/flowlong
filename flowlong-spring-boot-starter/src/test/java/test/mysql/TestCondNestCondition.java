@@ -23,14 +23,12 @@ public class TestCondNestCondition extends MysqlTest {
 
     @Test
     public void test() {
+        // 发起，执行连续条件分支嵌套
+        Map<String, Object> args = new HashMap<>();
+        args.put("day", 11);
 
         // 启动指定流程定义ID启动流程实例
-        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
-
-            // 发起，执行连续条件分支嵌套
-            Map<String, Object> args = new HashMap<>();
-            args.put("day", 11);
-            this.executeActiveTasks(instance.getId(), testCreator, args);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 人事审批
             this.executeActiveTasks(instance.getId(), testCreator);
