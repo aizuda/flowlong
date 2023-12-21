@@ -36,6 +36,15 @@ public class TestCountersign extends MysqlTest {
             // 测试会签审批人001【审批】
             this.executeTask(instance.getId(), testCreator);
 
+            // 执行任务跳转任意节点
+            this.executeTask(instance.getId(), test3Creator, flwTask -> this.flowLongEngine.executeJumpTask(flwTask.getId(), "发起人", test3Creator));
+
+            // 执行发起
+            this.executeTask(instance.getId(), testCreator);
+
+            // 测试会签审批人001【审批】
+            this.executeTask(instance.getId(), testCreator);
+
             // 测试会签审批人003【审批】
             this.executeTask(instance.getId(), test3Creator);
 

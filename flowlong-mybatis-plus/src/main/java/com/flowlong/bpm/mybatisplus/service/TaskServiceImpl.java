@@ -25,6 +25,7 @@ import com.flowlong.bpm.mybatisplus.mapper.*;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -76,15 +77,71 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
-        FlwTask flwTask = taskMapper.getCheckById(taskId);
-        flwTask.setVariable(args);
-        Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
+        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args);
 
         // 迁移任务至历史表
         this.moveToHisTask(flwTask, taskState, flowCreator);
 
         // 任务监听器通知
         this.taskNotify(eventType, () -> flwTask);
+        return flwTask;
+    }
+
+    /**
+     * 执行节点跳转任务
+     */
+    @Override
+    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
+        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null);
+
+        // 执行跳转到目标节点
+        Execution execution = executionFunction.apply(flwTask);
+        ProcessModel processModel = execution.getProcess().model();
+        Assert.isNull(processModel, "当前任务未找到流程定义模型");
+
+        // 查找模型节点
+        NodeModel nodeModel;
+        if (null == nodeName) {
+            // 1，找到当前节点的父节点
+            nodeModel = processModel.getNode(flwTask.getTaskName()).getParentNode();
+        } else {
+            // 2，找到指定 nodeName 节点
+            nodeModel = processModel.getNode(nodeName);
+        }
+        Assert.isNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
+
+        // 获取当前执行实例的所有正在执行的任务，强制终止执行并跳到指定节点
+        this.getTasksByInstanceId(flwTask.getInstanceId()).forEach(t -> this.moveToHisTask(t, TaskState.jump, flowCreator));
+
+        if (0 == nodeModel.getType()) {
+            // 发起节点，创建发起任务，分配发起人
+            FlwTask initiationTask = this.createTaskBase(nodeModel, execution);
+            Assert.isFalse(taskMapper.insert(initiationTask) > 0, "Failed to create initiation task");
+            taskActorMapper.insert(FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), initiationTask.getId()));
+        } else {
+            // 其它节点创建
+            this.createTask(nodeModel, execution);
+        }
+
+        // 任务监听器通知
+        this.taskNotify(EventType.jump, () -> flwTask);
+        return true;
+    }
+
+    /**
+     * 获取执行任务并验证合法性
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务创建者
+     * @param args        执行参数
+     * @return
+     */
+    protected FlwTask getAllowedFlwTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwTask flwTask = taskMapper.getCheckById(taskId);
+        if (null != args) {
+            flwTask.setVariable(args);
+        }
+        Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
         return flwTask;
     }
 
@@ -122,6 +179,10 @@ public class TaskServiceImpl implements TaskService {
         if (null != taskListener) {
             taskListener.notify(eventType, supplier);
         }
+    }
+
+    protected List<FlwTask> getTasksByInstanceId(Long instanceId) {
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
     }
 
     /**

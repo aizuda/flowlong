@@ -70,6 +70,13 @@ public class FlwTaskActor implements Serializable {
         return ofUser(flowCreator.getTenantId(), flowCreator.getCreateId(), flowCreator.getCreateBy());
     }
 
+    public static FlwTaskActor ofFlwInstance(FlwInstance flwInstance, Long taskId) {
+        FlwTaskActor flwTaskActor = ofUser(flwInstance.getTenantId(), flwInstance.getCreateId(), flwInstance.getCreateBy());
+        flwTaskActor.setInstanceId(flwInstance.getId());
+        flwTaskActor.setTaskId(taskId);
+        return flwTaskActor;
+    }
+
     public static FlwTaskActor ofNodeAssignee(NodeAssignee nodeAssignee) {
         return ofUser(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName());
     }

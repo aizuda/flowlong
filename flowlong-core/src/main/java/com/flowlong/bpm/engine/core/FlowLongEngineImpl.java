@@ -104,20 +104,29 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 执行任务并跳转到指定节点
      */
     @Override
-    public boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
-        // 执行当前任务
-        return this.execute(taskId, flowCreator, args, execution -> {
-            ProcessModel processModel = execution.getProcess().model();
-            Assert.isNull(processModel, "当前任务未找到流程定义模型");
-
-            // 查找模型节点
-            NodeModel nodeModel = processModel.getNode(nodeName);
-            Assert.isNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
-
-            // 创建当前节点任务
-            flowLongContext.createTask(execution, nodeModel);
-            return true;
+    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+        // 执行任务跳转归档
+        return taskService().executeJumpTask(taskId, nodeName, flowCreator, flwTask -> {
+            FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+            FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
+            return new Execution(this, process, flowCreator, flwInstance, null);
         });
+    }
+
+    /**
+     * 获取流程实例
+     *
+     * @param instanceId 流程实例ID
+     * @param updateBy   更新人
+     * @return {@link FlwInstance}
+     */
+    protected FlwInstance getFlwInstance(Long instanceId, String updateBy) {
+        FlwInstance flwInstance = queryService().getInstance(instanceId);
+        Assert.isNull(flwInstance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
+        flwInstance.setLastUpdateBy(updateBy);
+        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        runtimeService().updateInstance(flwInstance);
+        return flwInstance;
     }
 
     /**
@@ -131,12 +140,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId=" + taskId + "]已完成");
         }
-        FlwInstance flwInstance = queryService().getInstance(flwTask.getInstanceId());
-        Assert.isNull(flwInstance, "指定的流程实例[id=" + flwTask.getInstanceId() + "]已完成或不存在");
-        flwInstance.setLastUpdateBy(flowCreator.getCreateId());
-        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
-        runtimeService().updateInstance(flwInstance);
-
+        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
             /**

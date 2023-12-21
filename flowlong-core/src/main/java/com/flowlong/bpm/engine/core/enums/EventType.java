@@ -46,5 +46,9 @@ public enum EventType {
     /**
      * 超时
      */
-    timeout
+    timeout,
+    /**
+     * 跳转
+     */
+    jump
 }

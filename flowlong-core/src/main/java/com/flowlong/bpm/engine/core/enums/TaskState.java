@@ -35,7 +35,11 @@ public enum TaskState {
     /**
      * 终止
      */
-    termination(4);
+    termination(4),
+    /**
+     * 跳转
+     */
+    jump(5);
 
     private final int value;
 

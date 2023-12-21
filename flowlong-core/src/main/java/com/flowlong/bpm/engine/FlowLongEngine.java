@@ -110,7 +110,6 @@ public interface FlowLongEngine {
         return this.executeTask(taskId, flowCreator, null);
     }
 
-
     /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
      * <p>
@@ -121,12 +120,8 @@ public interface FlowLongEngine {
      * @param taskId      任务ID
      * @param nodeName    跳转的节点名称
      * @param flowCreator 任务创建者
-     * @param args        参数列表
      * @return true 成功 false 失败
      */
-    boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
+    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator);
 
-    default boolean executeAndJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
-        return this.executeAndJumpTask(taskId, nodeName, flowCreator, null);
-    }
 }

@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * 任务业务类接口
@@ -61,6 +62,17 @@ public interface TaskService {
      * @return Task 任务对象
      */
     FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType);
+
+    /**
+     * 执行节点跳转任务
+     *
+     * @param taskId            任务ID
+     * @param flowCreator       任务创建者
+     * @param nodeName          跳转至目标节点名称
+     * @param executionFunction 执行函数
+     * @return 当前 flowCreator 所在的任务
+     */
+    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
 
     /**
      * 完成指定实例ID活动任务

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package test.mysql;
@@ -47,6 +47,10 @@ public class MysqlTest extends TestFlowLong {
     }
 
     public void executeTask(Long instanceId, FlowCreator flowCreator) {
+        executeTask(instanceId, flowCreator, flwTask -> this.flowLongEngine.executeTask(flwTask.getId(), flowCreator));
+    }
+
+    public void executeTask(Long instanceId, FlowCreator flowCreator, Consumer<FlwTask> flwTaskConsumer) {
         QueryService queryService = this.flowLongEngine.queryService();
         List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instanceId);
         for (FlwTask flwTask : flwTaskList) {
@@ -54,8 +58,7 @@ public class MysqlTest extends TestFlowLong {
             if (null != taskActors && taskActors.stream()
                     // 找到当前对应审批的任务执行
                     .anyMatch(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId()))) {
-                // 执行审批
-                this.flowLongEngine.executeTask(flwTask.getId(), flowCreator);
+                flwTaskConsumer.accept(flwTask);
             }
         }
     }
