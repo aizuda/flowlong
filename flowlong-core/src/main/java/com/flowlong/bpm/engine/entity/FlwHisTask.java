@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString
 public class FlwHisTask extends FlwTask {
     /**
-     * 任务状态 0，活动 1，结束 2，超时 3，终止
+     * 任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转
      */
     protected Integer taskState;
 

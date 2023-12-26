@@ -51,7 +51,7 @@ CREATE TABLE `flw_his_task`  (
     `remind_repeat` tinyint(1) NOT NULL DEFAULT 0 COMMENT '提醒次数',
     `viewed` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已阅 0，否 1，是',
     `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
-    `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，活动 1，结束 2，超时 3，终止',
+    `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_his_task_instance_id`(`instance_id` ASC) USING BTREE,
     INDEX `idx_his_task_parent_task_id`(`parent_task_id` ASC) USING BTREE,
