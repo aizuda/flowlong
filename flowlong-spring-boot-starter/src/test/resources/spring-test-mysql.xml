@@ -9,7 +9,7 @@
     <!--
      复制 jdbc-xxx.properties 修改为 jdbc.properties 文件，并修改数据库配置
     -->
-    <context:property-placeholder location="jdbc-mysql.properties"/>
+    <context:property-placeholder location="jdbc.properties"/>
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
         <property name="driverClass" value="com.mysql.cj.jdbc.Driver"></property>
         <property name="url" value="${jdbc.url}"></property>

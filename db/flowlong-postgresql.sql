@@ -72,7 +72,7 @@ COMMENT ON COLUMN "public"."flw_his_task"."remind_time" IS '提醒时间';
 COMMENT ON COLUMN "public"."flw_his_task"."remind_repeat" IS '提醒次数';
 COMMENT ON COLUMN "public"."flw_his_task"."viewed" IS '已阅 0，否 1，是';
 COMMENT ON COLUMN "public"."flw_his_task"."finish_time" IS '任务完成时间';
-COMMENT ON COLUMN "public"."flw_his_task"."task_state" IS '任务状态 0，活动 1，结束 2，超时 3，终止';
+COMMENT ON COLUMN "public"."flw_his_task"."task_state" IS '任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转';
 COMMENT ON TABLE "public"."flw_his_task" IS '历史任务表';
 
 -- ----------------------------
