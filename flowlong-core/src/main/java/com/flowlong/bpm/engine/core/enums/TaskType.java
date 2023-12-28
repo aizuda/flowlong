@@ -31,7 +31,15 @@ public enum TaskType {
     /**
      * 会签
      */
-    countersign(3);
+    countersign(3),
+    /**
+     * 定时器任务
+     */
+    timer(4),
+    /**
+     * 触发器任务
+     */
+    trigger(5);
 
     private final int value;
 
