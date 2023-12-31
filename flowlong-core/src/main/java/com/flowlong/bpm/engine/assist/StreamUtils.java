@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.assist;
@@ -8,7 +8,6 @@ import com.flowlong.bpm.engine.exception.FlowLongException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.function.Function;
 
 /**
@@ -46,18 +45,10 @@ public class StreamUtils {
 
     public static String readBytes(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        transfer(in, out);
-        return new String(out.toByteArray());
-    }
-
-    public static long transfer(InputStream in, OutputStream out)
-            throws IOException {
-        long total = 0;
         byte[] buffer = new byte[4096];
         for (int count; (count = in.read(buffer)) != -1; ) {
             out.write(buffer, 0, count);
-            total += count;
         }
-        return total;
+        return out.toString();
     }
 }

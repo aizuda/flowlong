@@ -21,7 +21,7 @@ public class ModelHelper {
      * 递归查找下一个执行节点
      *
      * @param nodeModel 当前节点
-     * @return
+     * @return 流程节点模型
      */
     public static NodeModel findNextNode(NodeModel nodeModel) {
         NodeModel parentNode = nodeModel.getParentNode();

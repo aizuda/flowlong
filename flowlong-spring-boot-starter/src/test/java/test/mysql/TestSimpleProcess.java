@@ -45,7 +45,7 @@ class TestSimpleProcess extends MysqlTest {
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                // to do noting
             }
 
             // 测试会签审批人003【审批】

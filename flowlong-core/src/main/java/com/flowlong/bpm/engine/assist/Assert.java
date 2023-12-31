@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.assist;
@@ -21,7 +21,7 @@ public abstract class Assert {
     /**
      * 断言表达式为true
      *
-     * @param expression
+     * @param expression 判断条件
      * @param message    异常打印信息
      */
     public static void isTrue(boolean expression, String message) {
@@ -39,7 +39,7 @@ public abstract class Assert {
     /**
      * 断言表达式为true
      *
-     * @param expression
+     * @param expression 判断条件
      */
     public static void isTrue(boolean expression) {
         isTrue(expression, "[Assertion failed] - this expression must be true");
@@ -48,7 +48,7 @@ public abstract class Assert {
     /**
      * 断言给定的object对象为空
      *
-     * @param object
+     * @param object  待检测对象
      * @param message 异常打印信息
      */
     public static void isNull(Object object, String message) {
@@ -58,7 +58,7 @@ public abstract class Assert {
     /**
      * 断言给定的object对象为空
      *
-     * @param object
+     * @param object 待检测对象
      */
     public static void isNull(Object object) {
         isNull(object, "[Assertion failed] - the object argument must be null");
@@ -67,7 +67,7 @@ public abstract class Assert {
     /**
      * 断言给定的object对象为非空
      *
-     * @param object
+     * @param object  待检测对象
      * @param message 异常打印信息
      */
     public static void notNull(Object object, String message) {
@@ -77,7 +77,7 @@ public abstract class Assert {
     /**
      * 断言给定的object对象为非空
      *
-     * @param object
+     * @param object 待检测对象
      */
     public static void notNull(Object object) {
         notNull(object, "[Assertion failed] - this argument is required; it must not be null");
@@ -86,7 +86,7 @@ public abstract class Assert {
     /**
      * 断言给定的字符串为非空
      *
-     * @param str
+     * @param str 待检测字符串
      */
     public static void notEmpty(String str) {
         notEmpty(str, "[Assertion failed] - this argument is required; it must not be null or empty");
@@ -95,8 +95,8 @@ public abstract class Assert {
     /**
      * 断言给定的字符串为非空
      *
-     * @param str
-     * @param message
+     * @param str     待检测字符串
+     * @param message 提升内容
      */
     public static void notEmpty(String str, String message) {
         illegalArgument(str == null || str.isEmpty(), message);

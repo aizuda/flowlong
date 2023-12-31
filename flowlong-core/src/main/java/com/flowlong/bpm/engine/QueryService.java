@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine;
@@ -55,7 +55,7 @@ public interface QueryService {
     /**
      * 根据任务名称查询历史任务对象列表
      *
-     * @param instanceId
+     * @param instanceId 流程实例ID
      * @param taskName   任务名称(亦是节点名称)
      * @return 历史任务节点列表
      */

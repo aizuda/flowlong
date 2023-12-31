@@ -89,6 +89,7 @@ public interface ProcessService {
      *
      * @param id    流程定义id
      * @param input 流程定义输入流
+     * @return true 成功 false 失败
      */
     default boolean redeploy(Long id, InputStream input) {
         return StreamUtils.readBytes(input, t -> this.redeploy(id, t));
@@ -99,6 +100,7 @@ public interface ProcessService {
      *
      * @param id         流程定义id
      * @param jsonString 流程定义json字符串
+     * @return true 成功 false 失败
      */
     boolean redeploy(Long id, String jsonString);
 
@@ -106,6 +108,7 @@ public interface ProcessService {
      * 卸载指定的定义流程，更新为未启用状态
      *
      * @param id 流程定义ID
+     * @return true 成功 false 失败
      */
     boolean undeploy(Long id);
 

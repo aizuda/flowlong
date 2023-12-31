@@ -78,7 +78,7 @@ public interface TaskService {
      * 完成指定实例ID活动任务
      *
      * @param instanceId 实例ID
-     * @return
+     * @return true 成功 false 失败
      */
     boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator);
 
@@ -94,7 +94,7 @@ public interface TaskService {
      *
      * @param taskId    任务ID
      * @param taskActor 任务参与者
-     * @return
+     * @return true 成功 false 失败
      */
     boolean viewTask(Long taskId, FlwTaskActor taskActor);
 
@@ -113,7 +113,7 @@ public interface TaskService {
      * @param taskId            任务ID
      * @param taskActor         任务参与者
      * @param assigneeTaskActor 任务办理人
-     * @return
+     * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
         return this.assigneeTask(taskId, TaskType.transfer, taskActor, assigneeTaskActor);
@@ -125,7 +125,7 @@ public interface TaskService {
      * @param taskId                  任务ID
      * @param flwHisTaskActor         任务参与者
      * @param assigneeFlwHisTaskActor 任务办理人
-     * @return
+     * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlwHisTaskActor flwHisTaskActor, FlwHisTaskActor assigneeFlwHisTaskActor) {
         return this.assigneeTask(taskId, TaskType.delegate, flwHisTaskActor, assigneeFlwHisTaskActor);
@@ -147,7 +147,7 @@ public interface TaskService {
      *
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
-     * @return
+     * @return 拿回任务
      */
     Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator);
 
@@ -229,7 +229,7 @@ public interface TaskService {
      * 根据任务ID获取任务模型
      *
      * @param taskId 任务ID
-     * @return
+     * @return 流程模型
      */
     NodeModel getTaskModel(Long taskId);
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.assist;
@@ -56,7 +56,7 @@ public class DateUtils {
      * 解析日期时间对象
      *
      * @param date 日期类型对象
-     * @return
+     * @return 解析日期
      */
     public static String parseTime(Object date) {
         if (date == null) {

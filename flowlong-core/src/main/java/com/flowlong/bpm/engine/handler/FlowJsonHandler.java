@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.handler;
@@ -19,7 +19,7 @@ public interface FlowJsonHandler {
      * 对象转换为 JSON 字符串
      *
      * @param object 待转换对象
-     * @return
+     * @return JSON 内容
      */
     String toJson(Object object);
 
@@ -28,8 +28,7 @@ public interface FlowJsonHandler {
      *
      * @param jsonString 待转换对象的JSON字符串
      * @param clazz      待转换对象类
-     * @param <T>
-     * @return
+     * @return 转化对象
      */
     <T> T fromJson(String jsonString, Class<T> clazz);
 

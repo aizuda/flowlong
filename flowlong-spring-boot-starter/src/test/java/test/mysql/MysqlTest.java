@@ -43,7 +43,7 @@ public class MysqlTest extends TestFlowLong {
 
     public void executeActiveTasks(Long instanceId, Consumer<FlwTask> taskConsumer) {
         this.flowLongEngine.queryService().getActiveTasksByInstanceId(instanceId)
-                .ifPresent(tasks -> tasks.forEach(t -> taskConsumer.accept(t)));
+                .ifPresent(tasks -> tasks.forEach(taskConsumer));
     }
 
     public void executeTask(Long instanceId, FlowCreator flowCreator) {
