@@ -55,7 +55,7 @@ CREATE TABLE "public"."flw_his_task" (
 COMMENT ON COLUMN "public"."flw_his_task"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_his_task"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_his_task"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_his_task"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_his_task"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_his_task"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_his_task"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "public"."flw_his_task"."parent_task_id" IS '父任务ID';
@@ -130,7 +130,7 @@ CREATE TABLE "public"."flw_task" (
 COMMENT ON COLUMN "public"."flw_task"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_task"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_task"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_task"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_task"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_task"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_task"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "public"."flw_task"."parent_task_id" IS '父任务ID';
@@ -173,7 +173,7 @@ CREATE TABLE "public"."flw_task_cc" (
 COMMENT ON COLUMN "public"."flw_task_cc"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_task_cc"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_task_cc"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_task_cc"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_task_cc"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_task_cc"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "public"."flw_task_cc"."parent_task_id" IS '父任务ID';
@@ -212,7 +212,7 @@ CREATE TABLE "public"."flw_his_instance" (
 COMMENT ON COLUMN "public"."flw_his_instance"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_his_instance"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_his_instance"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_his_instance"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_his_instance"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_his_instance"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_his_instance"."process_id" IS '流程定义ID';
 COMMENT ON COLUMN "public"."flw_his_instance"."priority" IS '优先级';
@@ -251,7 +251,7 @@ CREATE TABLE "public"."flw_instance" (
 COMMENT ON COLUMN "public"."flw_instance"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_instance"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_instance"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_instance"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_instance"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_instance"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_instance"."process_id" IS '流程定义ID';
 COMMENT ON COLUMN "public"."flw_instance"."priority" IS '优先级';
@@ -290,7 +290,7 @@ CREATE TABLE "public"."flw_process" (
 COMMENT ON COLUMN "public"."flw_process"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_process"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_process"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_process"."create_by" IS '创建人';
+COMMENT ON COLUMN "public"."flw_process"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_process"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_process"."process_key" IS '流程定义 key 唯一标识';
 COMMENT ON COLUMN "public"."flw_process"."process_name" IS '流程定义名称';
