@@ -36,7 +36,7 @@ public class FlowEntity implements Serializable {
      */
     protected String createId;
     /**
-     * 创建人
+     * 创建人名称
      */
     protected String createBy;
     /**

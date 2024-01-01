@@ -122,13 +122,13 @@ public interface TaskService {
     /**
      * 根据 任务ID 委派任务、代理人办理完任务该任务重新归还给原处理人
      *
-     * @param taskId                  任务ID
-     * @param flwHisTaskActor         任务参与者
-     * @param assigneeFlwHisTaskActor 任务办理人
+     * @param taskId            任务ID
+     * @param taskActor         任务参与者
+     * @param assigneeTaskActor 任务办理人
      * @return true 成功 false 失败
      */
-    default boolean delegateTask(Long taskId, FlwHisTaskActor flwHisTaskActor, FlwHisTaskActor assigneeFlwHisTaskActor) {
-        return this.assigneeTask(taskId, TaskType.delegate, flwHisTaskActor, assigneeFlwHisTaskActor);
+    default boolean delegateTask(Long taskId, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
+        return this.assigneeTask(taskId, TaskType.delegate, taskActor, assigneeTaskActor);
     }
 
     /**
@@ -236,14 +236,14 @@ public interface TaskService {
     /**
      * 向指定的任务ID添加参与者【加签】
      *
-     * @param taskId           任务ID
-     * @param performType      参与类型 {@link PerformType}
-     * @param flwHisTaskActors 参与者列表
+     * @param taskId        任务ID
+     * @param performType   参与类型 {@link PerformType}
+     * @param flwTaskActors 参与者列表
      */
-    boolean addTaskActor(Long taskId, PerformType performType, List<FlwHisTaskActor> flwHisTaskActors);
+    boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors);
 
-    default boolean addTaskActor(Long taskId, PerformType performType, FlwHisTaskActor flwHisTaskActor) {
-        return this.addTaskActor(taskId, performType, Collections.singletonList(flwHisTaskActor));
+    default boolean addTaskActor(Long taskId, PerformType performType, FlwTaskActor flwTaskActor) {
+        return this.addTaskActor(taskId, performType, Collections.singletonList(flwTaskActor));
     }
 
     /**

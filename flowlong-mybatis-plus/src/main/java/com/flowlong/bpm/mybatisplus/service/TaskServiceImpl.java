@@ -701,18 +701,18 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 向指定的任务ID添加参与者
      *
-     * @param taskId           任务ID
-     * @param flwHisTaskActors 参与者列表
+     * @param taskId        任务ID
+     * @param flwTaskActors 参与者列表
      */
     @Override
-    public boolean addTaskActor(Long taskId, PerformType performType, List<FlwHisTaskActor> flwHisTaskActors) {
+    public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
         Map<String, FlwTaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(FlwTaskActor::getActorId, t -> t));
-        for (FlwTaskActor flwHisTaskActor : flwHisTaskActors) {
+        for (FlwTaskActor flwTaskActor : flwTaskActors) {
             // 不存在的参与者
-            if (null == taskActorMap.get(flwHisTaskActor.getActorId())) {
-                this.assignTask(flwTask.getInstanceId(), taskId, flwHisTaskActor);
+            if (null == taskActorMap.get(flwTaskActor.getActorId())) {
+                this.assignTask(flwTask.getInstanceId(), taskId, flwTaskActor);
             }
         }
         // 更新任务参与类型
