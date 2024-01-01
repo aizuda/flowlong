@@ -243,15 +243,15 @@ public class TaskServiceImpl implements TaskService {
      * 根据 任务ID 认领任务，删除其它任务参与者
      */
     @Override
-    public FlwTask claim(Long taskId, FlwHisTaskActor flwHisTaskActor) {
+    public FlwTask claim(Long taskId, FlwTaskActor flwTaskActor) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
-        if (!isAllowed(flwTask, flwHisTaskActor.getActorId())) {
-            throw new FlowLongException("当前执行用户ID [" + flwHisTaskActor.getActorName() + "] 不允许提取任务 [taskId=" + taskId + "]");
+        if (!isAllowed(flwTask, flwTaskActor.getActorId())) {
+            throw new FlowLongException("当前执行用户ID [" + flwTaskActor.getActorName() + "] 不允许提取任务 [taskId=" + taskId + "]");
         }
         // 删除任务参与者
         taskActorMapper.deleteByTaskId(taskId);
         // 插入当前用户ID作为唯一参与者
-        taskActorMapper.insert(flwHisTaskActor);
+        taskActorMapper.insert(flwTaskActor);
         return flwTask;
     }
 
@@ -308,10 +308,10 @@ public class TaskServiceImpl implements TaskService {
      * 唤醒指定的历史任务
      */
     @Override
-    public FlwTask resume(Long taskId, FlwHisTaskActor flwHisTaskActor) {
+    public FlwTask resume(Long taskId, FlwTaskActor flwTaskActor) {
         FlwHisTask histTask = hisTaskMapper.getCheckById(taskId);
-        Assert.isTrue(ObjectUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), flwHisTaskActor.getActorId()),
-                "当前参与者[" + flwHisTaskActor.getActorId() + "]不允许唤醒历史任务[taskId=" + taskId + "]");
+        Assert.isTrue(ObjectUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), flwTaskActor.getActorId()),
+                "当前参与者[" + flwTaskActor.getActorId() + "]不允许唤醒历史任务[taskId=" + taskId + "]");
 
         // 流程实例结束情况恢复流程实例
         FlwInstance flwInstance = instanceMapper.selectById(histTask.getInstanceId());
@@ -322,7 +322,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.insert(flwTask);
 
         // 分配任务
-        assignTask(flwTask.getInstanceId(), taskId, flwHisTaskActor);
+        assignTask(flwTask.getInstanceId(), taskId, flwTaskActor);
         return flwTask;
     }
 

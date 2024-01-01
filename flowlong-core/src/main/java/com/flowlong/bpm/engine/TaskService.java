@@ -9,7 +9,6 @@ import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.enums.TaskType;
-import com.flowlong.bpm.engine.entity.FlwHisTaskActor;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -101,11 +100,11 @@ public interface TaskService {
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
      *
-     * @param taskId          任务ID
-     * @param flwHisTaskActor 任务参与者
+     * @param taskId       任务ID
+     * @param flwTaskActor 任务参与者
      * @return Task 任务对象
      */
-    FlwTask claim(Long taskId, FlwHisTaskActor flwHisTaskActor);
+    FlwTask claim(Long taskId, FlwTaskActor flwTaskActor);
 
     /**
      * 根据 任务ID 转办任务
@@ -157,11 +156,11 @@ public interface TaskService {
      * 该方法会导致流程状态不可控，请慎用
      * </p>
      *
-     * @param taskId          历史任务ID
-     * @param flwHisTaskActor 任务参与者
+     * @param taskId       历史任务ID
+     * @param flwTaskActor 任务参与者
      * @return {@link FlwTask} 唤醒后的任务对象
      */
-    FlwTask resume(Long taskId, FlwHisTaskActor flwHisTaskActor);
+    FlwTask resume(Long taskId, FlwTaskActor flwTaskActor);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）
