@@ -104,8 +104,10 @@ public class RuntimeServiceImpl implements RuntimeService {
         return true;
     }
 
-    protected boolean instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier) {
-        return null == instanceListener ? false : instanceListener.notify(eventType, supplier);
+    protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier) {
+        if (null != instanceListener) {
+            instanceListener.notify(eventType, supplier);
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ public interface ProcessModelParser {
      * @param content   模型内容 JSON 格式
      * @param processId 流程 ID
      * @param redeploy  重新部署 true 是 false 否
-     * @return
+     * @return 流程模型
      */
     ProcessModel parse(String content, Long processId, boolean redeploy);
 

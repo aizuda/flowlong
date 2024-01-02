@@ -46,7 +46,7 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             if (null != flwTasks) {
                 execution.addTasks(flwTasks);
             }
-            /**
+            /*
              * 从服务上下文中查找任务拦截器列表，依次对 task 集合进行拦截处理
              */
             List<FlowLongInterceptor> interceptors = flowLongContext.getInterceptors();

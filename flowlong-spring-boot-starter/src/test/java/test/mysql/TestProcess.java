@@ -59,7 +59,7 @@ public class TestProcess extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         FlowCreator flowCreator = this.getFlowCreator();
         // 发起，执行条件路由
-        flowLongEngine.startInstanceById(processId, flowCreator).ifPresent(instance -> {
+        flowLongEngine.startInstanceById(processId, flowCreator, "这里是关联业务KEY").ifPresent(instance -> {
 
             // 人事审批
             Map<String, Object> args = new HashMap<>();

@@ -37,7 +37,7 @@ public interface Expression {
      *
      * @param conditionList 条件组列表
      * @param evalFunc      执行表单式函数
-     * @return
+     * @return true 成功 false 失败
      */
     default boolean eval(List<List<NodeExpression>> conditionList, Function<String, Boolean> evalFunc) {
         if (ObjectUtils.isEmpty(conditionList)) {
