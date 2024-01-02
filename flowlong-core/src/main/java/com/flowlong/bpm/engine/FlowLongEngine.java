@@ -75,10 +75,18 @@ public interface FlowLongEngine {
      * @param args        参数列表
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
+        return this.startInstanceById(id, flowCreator, args, null);
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey) {
+        return this.startInstanceById(id, flowCreator, null, businessKey);
+    }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator) {
-        return this.startInstanceById(id, flowCreator, null);
+        return this.startInstanceById(id, flowCreator, null, null);
     }
 
     /**
@@ -90,10 +98,18 @@ public interface FlowLongEngine {
      * @param args        参数列表
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, args, null);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, businessKey);
+    }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator) {
-        return this.startInstanceByProcessKey(processKey, version, flowCreator, null);
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, null);
     }
 
     /**

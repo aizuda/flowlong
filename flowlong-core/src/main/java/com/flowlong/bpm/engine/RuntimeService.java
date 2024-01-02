@@ -27,9 +27,10 @@ public interface RuntimeService {
      * @param process     流程定义对象
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
+     * @param businessKey 业务KEY（用于关联业务逻辑实现预留）
      * @return 活动流程实例对象
      */
-    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args);
+    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
 
     /**
      * 向指定实例id添加全局变量数据
@@ -42,7 +43,7 @@ public interface RuntimeService {
     /**
      * 流程实例正常完成（审批通过）
      *
-     * @param instanceId    流程实例ID
+     * @param instanceId 流程实例ID
      * @return true 成功 false 失败
      */
     boolean complete(Long instanceId);
@@ -73,7 +74,7 @@ public interface RuntimeService {
     /**
      * 流程实例超时（设定审批时间超时，自动结束）
      *
-     * @param instanceId  流程实例ID
+     * @param instanceId 流程实例ID
      */
     void timeout(Long instanceId);
 

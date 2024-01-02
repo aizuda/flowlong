@@ -51,21 +51,21 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人，参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
         FlwProcess process = processService().getProcessById(id);
         if (null == process) {
             return Optional.empty();
         }
-        return this.startProcess(process.checkState(), flowCreator, args);
+        return this.startProcess(process.checkState(), flowCreator, args, businessKey);
     }
 
     /**
      * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
         FlwProcess process = processService().getProcessByVersion(processKey, version);
-        return this.startProcess(process, flowCreator, args);
+        return this.startProcess(process, flowCreator, args, businessKey);
     }
 
     /**
@@ -74,12 +74,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param process     流程定义对象
      * @param flowCreator 流程创建者
      * @param args        执行参数
+     * @param businessKey 业务KEY（用于关联业务逻辑实现预留）
      * @return 流程实例
      */
-    protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
+    protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
         // 执行启动模型
         return process.executeStartModel(flowLongContext, flowCreator, () -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args);
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, businessKey);
             if (log.isDebugEnabled()) {
                 log.debug("创建流程实例对象:" + flwInstance);
             }

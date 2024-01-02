@@ -57,13 +57,14 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args) {
+    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setCreateTime(DateUtils.getCurrentDate());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setFlowCreator(flowCreator);
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setProcessId(process.getId());
+        flwInstance.setBusinessKey(businessKey);
         flwInstance.setVariable(args);
         this.saveInstance(flwInstance);
         return flwInstance;
