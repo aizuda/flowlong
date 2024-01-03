@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
@@ -65,7 +65,9 @@ public class FlwHisInstance extends FlwInstance {
         hisInstance.lastUpdateBy = flwInstance.getLastUpdateBy();
         hisInstance.lastUpdateTime = flwInstance.getLastUpdateTime();
         hisInstance.instanceState = instanceState.getValue();
-        hisInstance.endTime = DateUtils.getCurrentDate();
+        if (InstanceState.active != instanceState) {
+            hisInstance.endTime = DateUtils.getCurrentDate();
+        }
         return hisInstance;
     }
 }
