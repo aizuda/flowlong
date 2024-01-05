@@ -17,7 +17,7 @@ import lombok.ToString;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 /**
  * 流程定义实体类
@@ -108,31 +108,30 @@ public class FlwProcess extends FlowEntity {
         if (executeNodeOptional.isPresent()) {
             // 执行流程节点
             NodeModel executeNode = executeNodeOptional.get();
-            executeNode.execute(flowLongContext, execution);
-        } else {
-            /**
-             * 无执行节点流程结束
-             */
-            execution.endInstance();
+            return executeNode.execute(flowLongContext, execution);
         }
-        return true;
+
+        /*
+         * 无执行节点流程结束
+         */
+        return execution.endInstance();
     }
 
     /**
      * 执行开始模型
      *
-     * @param flowLongContext   流程引擎上下文
-     * @param flowCreator       流程实例任务创建者
-     * @param executionSupplier 流程执行对象提供者
+     * @param flowLongContext 流程引擎上下文
+     * @param flowCreator     流程实例任务创建者
+     * @param function        流程执行对象处理函数
      */
-    public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, Supplier<Execution> executionSupplier) {
+    public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, Function<NodeModel, Execution> function) {
         FlwInstance flwInstance = null;
         if (null != this.modelContent) {
             NodeModel nodeModel = this.model().getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             Assert.isFalse(flowLongContext.getTaskActorProvider().isAllowed(nodeModel, flowCreator), "No permission to execute");
             // 回调执行创建实例
-            Execution execution = executionSupplier.get();
+            Execution execution = function.apply(nodeModel);
             // 创建首个审批任务
             flowLongContext.createTask(execution, nodeModel);
             // 当前执行实例

@@ -47,15 +47,15 @@ public class FlwInstance extends FlowEntity {
      */
     protected String variable;
     /**
-     * 流程实例版本
+     * 当前所在节点
      */
-    protected Integer instanceVersion;
+    protected String currentNode;
     /**
      * 流程实例期望完成时间
      */
     protected Date expireTime;
     /**
-     * 流程实例上一次更新人员ID
+     * 流程实例上一次更新人
      */
     protected String lastUpdateBy;
     /**
@@ -68,10 +68,6 @@ public class FlwInstance extends FlowEntity {
         Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
-    }
-
-    public void setVariable(String variable) {
-        this.variable = variable;
     }
 
     public void setVariable(Map<String, Object> args) {

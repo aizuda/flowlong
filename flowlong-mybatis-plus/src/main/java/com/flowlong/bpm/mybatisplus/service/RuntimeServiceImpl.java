@@ -37,11 +37,11 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 public class RuntimeServiceImpl implements RuntimeService {
-    private InstanceListener instanceListener;
-    private QueryService queryService;
-    private TaskService taskService;
-    private FlwInstanceMapper instanceMapper;
-    private FlwHisInstanceMapper hisInstanceMapper;
+    private final InstanceListener instanceListener;
+    private final QueryService queryService;
+    private final TaskService taskService;
+    private final FlwInstanceMapper instanceMapper;
+    private final FlwHisInstanceMapper hisInstanceMapper;
 
     public RuntimeServiceImpl(InstanceListener instanceListener,
                               QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
@@ -57,12 +57,13 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
+    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, String businessKey) {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setCreateTime(DateUtils.getCurrentDate());
-        flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setFlowCreator(flowCreator);
+        flwInstance.setCurrentNode(currentNode);
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
+        flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
         flwInstance.setBusinessKey(businessKey);
         flwInstance.setVariable(args);
@@ -93,14 +94,22 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public boolean complete(Long instanceId) {
-        FlwHisInstance flwHisInstance = new FlwHisInstance();
-        flwHisInstance.setId(instanceId);
-        flwHisInstance.setInstanceState(InstanceState.complete);
-        flwHisInstance.setEndTime(DateUtils.getCurrentDate());
-        instanceMapper.deleteById(instanceId);
-        hisInstanceMapper.updateById(flwHisInstance);
-        // 流程实例监听器通知
-        this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId));
+        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        if (null != flwInstance) {
+            FlwHisInstance his = new FlwHisInstance();
+            his.setId(instanceId);
+            InstanceState instanceState = InstanceState.complete;
+            his.setInstanceState(instanceState);
+            his.setCurrentNode(instanceState.name());
+            his.setCreateTime(flwInstance.getCreateTime());
+            his.setLastUpdateBy(flwInstance.getLastUpdateBy());
+            his.setLastUpdateTime(flwInstance.getLastUpdateTime());
+            his.calculateDuration();
+            instanceMapper.deleteById(instanceId);
+            hisInstanceMapper.updateById(his);
+            // 流程实例监听器通知
+            this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId));
+        }
         return true;
     }
 
@@ -176,7 +185,6 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 更新历史实例设置状态为终止
             FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
-            flwHisInstance.setEndTime(DateUtils.getCurrentDate());
             hisInstanceMapper.updateById(flwHisInstance);
 
             // 删除实例

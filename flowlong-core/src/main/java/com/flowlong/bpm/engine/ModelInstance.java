@@ -24,5 +24,5 @@ public interface ModelInstance {
      * @param flowLongContext 流程引擎上下文
      * @param execution       执行对象
      */
-    void execute(FlowLongContext flowLongContext, Execution execution);
+    boolean execute(FlowLongContext flowLongContext, Execution execution);
 }

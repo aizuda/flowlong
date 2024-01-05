@@ -22,12 +22,12 @@ import java.util.Optional;
  * @since 1.0
  */
 public class QueryServiceImpl implements QueryService {
-    private FlwInstanceMapper instanceMapper;
-    private FlwHisInstanceMapper hisInstanceMapper;
-    private FlwTaskMapper taskMapper;
-    private FlwTaskActorMapper taskActorMapper;
-    private FlwHisTaskMapper hisTaskMapper;
-    private FlwHisTaskActorMapper hisTaskActorMapper;
+    private final FlwInstanceMapper instanceMapper;
+    private final FlwHisInstanceMapper hisInstanceMapper;
+    private final FlwTaskMapper taskMapper;
+    private final FlwTaskActorMapper taskActorMapper;
+    private final FlwHisTaskMapper hisTaskMapper;
+    private final FlwHisTaskActorMapper hisTaskActorMapper;
 
     public QueryServiceImpl(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
                             FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,

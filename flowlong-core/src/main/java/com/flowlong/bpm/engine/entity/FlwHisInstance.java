@@ -34,6 +34,10 @@ public class FlwHisInstance extends FlwInstance {
      * 结束时间
      */
     protected Date endTime;
+    /**
+     * 处理耗时
+     */
+    protected Long duration;
 
     public void setVariable(Integer instanceState) {
         this.instanceState = instanceState;
@@ -49,25 +53,33 @@ public class FlwHisInstance extends FlwInstance {
     }
 
     public static FlwHisInstance of(FlwInstance flwInstance, InstanceState instanceState) {
-        FlwHisInstance hisInstance = new FlwHisInstance();
-        hisInstance.id = flwInstance.getId();
-        hisInstance.tenantId = flwInstance.getTenantId();
-        hisInstance.createId = flwInstance.getCreateId();
-        hisInstance.createBy = flwInstance.getCreateBy();
-        hisInstance.createTime = flwInstance.getCreateTime();
-        hisInstance.processId = flwInstance.getProcessId();
-        hisInstance.priority = flwInstance.getPriority();
-        hisInstance.instanceNo = flwInstance.getInstanceNo();
-        hisInstance.businessKey = flwInstance.getBusinessKey();
-        hisInstance.variable = flwInstance.getVariable();
-        hisInstance.instanceVersion = flwInstance.getInstanceVersion();
-        hisInstance.expireTime = flwInstance.getExpireTime();
-        hisInstance.lastUpdateBy = flwInstance.getLastUpdateBy();
-        hisInstance.lastUpdateTime = flwInstance.getLastUpdateTime();
-        hisInstance.instanceState = instanceState.getValue();
+        FlwHisInstance his = new FlwHisInstance();
+        his.id = flwInstance.getId();
+        his.tenantId = flwInstance.getTenantId();
+        his.createId = flwInstance.getCreateId();
+        his.createBy = flwInstance.getCreateBy();
+        his.createTime = flwInstance.getCreateTime();
+        his.processId = flwInstance.getProcessId();
+        his.priority = flwInstance.getPriority();
+        his.instanceNo = flwInstance.getInstanceNo();
+        his.businessKey = flwInstance.getBusinessKey();
+        his.variable = flwInstance.getVariable();
+        his.currentNode = flwInstance.getCurrentNode();
+        his.expireTime = flwInstance.getExpireTime();
+        his.lastUpdateBy = flwInstance.getLastUpdateBy();
+        his.lastUpdateTime = flwInstance.getLastUpdateTime();
+        his.instanceState = instanceState.getValue();
         if (InstanceState.active != instanceState) {
-            hisInstance.endTime = DateUtils.getCurrentDate();
+            his.calculateDuration();
         }
-        return hisInstance;
+        return his;
+    }
+
+    /**
+     * 计算流程实例处理耗时
+     */
+    public void calculateDuration() {
+        this.endTime = DateUtils.getCurrentDate();
+        this.duration = DateUtils.calculateDateDifference(this.createTime, this.endTime);
     }
 }

@@ -79,8 +79,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
         // 执行启动模型
-        return process.executeStartModel(flowLongContext, flowCreator, () -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, businessKey);
+        return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel.getNodeName(), businessKey);
             if (log.isDebugEnabled()) {
                 log.debug("创建流程实例对象:" + flwInstance);
             }
@@ -143,7 +143,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
-            /**
+            /*
              * 会签未全部完成，不继续执行节点模型
              */
             List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskName(flwInstance.getId(), flwTask.getTaskName());
@@ -152,12 +152,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
         }
 
-        /**
+        /*
          * 流程模型
          */
         FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
 
-        /**
+        /*
          * 票签（ 总权重大于 50% 表示通过 ）
          */
         if (performType == PerformType.voteSign) {
@@ -177,7 +177,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
         }
 
-        /**
+        /*
          * 追加实例参数
          */
         Map<String, Object> instanceMaps = flwInstance.getVariableMap();
@@ -192,7 +192,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         Execution execution = new Execution(this, process, flowCreator, flwInstance, args);
         execution.setFlwTask(flwTask);
 
-        /**
+        /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
@@ -201,7 +201,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             if (ObjectUtils.isEmpty(nodeUserList)) {
-                /**
+                /*
                  * 模型未设置处理人，那么需要获取自定义参与者
                  */
                 List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
@@ -218,7 +218,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     }
                 }
             } else {
-                /**
+                /*
                  * 模型中去找下一个执行者
                  */
                 for (NodeAssignee nodeAssignee : nodeUserList) {

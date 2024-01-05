@@ -119,13 +119,12 @@ public class FlowLongContext {
      * 默认初始化流程引擎上下文
      *
      * @return {@link FlowLongEngine}
-     * @throws {@link FlowLongException}
      */
     public FlowLongContext build(FlowLongEngine configEngine) throws FlowLongException {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
-        /**
+        /*
          * 由服务上下文返回流程引擎
          */
         if (configEngine == null) {

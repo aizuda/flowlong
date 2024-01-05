@@ -33,8 +33,8 @@ import java.util.List;
  */
 @Slf4j
 public class ProcessServiceImpl implements ProcessService {
-    private FlwProcessMapper processMapper;
-    private RuntimeService runtimeService;
+    private final FlwProcessMapper processMapper;
+    private final RuntimeService runtimeService;
 
     public ProcessServiceImpl(RuntimeService runtimeService, FlwProcessMapper processMapper) {
         this.processMapper = processMapper;
@@ -84,14 +84,14 @@ public class ProcessServiceImpl implements ProcessService {
      * @param jsonString  流程定义json字符串
      * @param flowCreator 流程任务部署者
      * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
-     * @return
+     * @return 流程ID
      */
     @Override
     public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
         Assert.isNull(jsonString);
         try {
             ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, null, false);
-            /**
+            /*
              * 查询流程信息获取最后版本号
              */
             List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
@@ -107,7 +107,7 @@ public class ProcessServiceImpl implements ProcessService {
                 }
                 version = process.getProcessVersion();
             }
-            /**
+            /*
              * 当前版本 +1 添加一条新的流程记录
              */
             FlwProcess process = new FlwProcess();
@@ -133,7 +133,7 @@ public class ProcessServiceImpl implements ProcessService {
      *
      * @param id         流程定义id
      * @param jsonString 流程定义json字符串
-     * @return
+     * @return true 成功 false 失败
      */
     @Override
     public boolean redeploy(Long id, String jsonString) {
@@ -151,7 +151,7 @@ public class ProcessServiceImpl implements ProcessService {
      * 卸载指定的定义流程，更新为未启用状态
      *
      * @param id 流程定义ID
-     * @return
+     * @return true 成功 false 失败
      */
     @Override
     public boolean undeploy(Long id) {

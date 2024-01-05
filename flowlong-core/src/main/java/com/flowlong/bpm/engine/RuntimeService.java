@@ -27,10 +27,11 @@ public interface RuntimeService {
      * @param process     流程定义对象
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
+     * @param currentNode 当前所在节点
      * @param businessKey 业务KEY（用于关联业务逻辑实现预留）
      * @return 活动流程实例对象
      */
-    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
+    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, String businessKey);
 
     /**
      * 向指定实例id添加全局变量数据

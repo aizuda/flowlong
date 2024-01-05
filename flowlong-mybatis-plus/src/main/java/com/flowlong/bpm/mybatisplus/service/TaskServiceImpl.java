@@ -40,29 +40,51 @@ import java.util.stream.Collectors;
  * @since 1.0
  */
 public class TaskServiceImpl implements TaskService {
-    private TaskAccessStrategy taskAccessStrategy;
-    private FlwProcessMapper processMapper;
-    private TaskListener taskListener;
-    private FlwInstanceMapper instanceMapper;
-    private FlwTaskMapper taskMapper;
-    private FlwTaskCcMapper taskCcMapper;
-    private FlwTaskActorMapper taskActorMapper;
-    private FlwHisTaskMapper hisTaskMapper;
-    private FlwHisTaskActorMapper hisTaskActorMapper;
+    private final TaskAccessStrategy taskAccessStrategy;
+    private final FlwProcessMapper processMapper;
+    private final TaskListener taskListener;
+    private final FlwInstanceMapper instanceMapper;
+    private final FlwHisInstanceMapper hisInstanceMapper;
+    private final FlwTaskMapper taskMapper;
+    private final FlwTaskCcMapper taskCcMapper;
+    private final FlwTaskActorMapper taskActorMapper;
+    private final FlwHisTaskMapper hisTaskMapper;
+    private final FlwHisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener,
-                           FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwTaskMapper taskMapper,
+    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlwProcessMapper processMapper,
+                           FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper,
                            FlwTaskCcMapper taskCcMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                            FlwHisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
         this.instanceMapper = instanceMapper;
+        this.hisInstanceMapper = hisInstanceMapper;
         this.taskMapper = taskMapper;
         this.taskCcMapper = taskCcMapper;
         this.taskActorMapper = taskActorMapper;
         this.hisTaskMapper = hisTaskMapper;
         this.hisTaskActorMapper = hisTaskActorMapper;
+    }
+
+    /**
+     * 更新当前执行节点信息
+     *
+     * @param flwTask 当前所在执行任务
+     */
+    protected void updateCurrentNode(FlwTask flwTask) {
+        FlwInstance flwInstance = new FlwInstance();
+        flwInstance.setId(flwTask.getInstanceId());
+        flwInstance.setCurrentNode(flwTask.getTaskName());
+        flwInstance.setLastUpdateBy(flwTask.getCreateBy());
+        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        instanceMapper.updateById(flwInstance);
+        FlwHisInstance flwHisInstance = new FlwHisInstance();
+        flwHisInstance.setId(flwInstance.getId());
+        flwHisInstance.setCurrentNode(flwInstance.getCurrentNode());
+        flwHisInstance.setLastUpdateBy(flwInstance.getLastUpdateBy());
+        flwHisInstance.setLastUpdateTime(flwInstance.getLastUpdateTime());
+        hisInstanceMapper.updateById(flwHisInstance);
     }
 
     /**
@@ -73,7 +95,7 @@ public class TaskServiceImpl implements TaskService {
      * @param args        执行参数
      * @param taskState   任务状态
      * @param eventType   执行事件
-     * @return
+     * @return {@link FlwTask}
      */
     @Override
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
@@ -134,7 +156,7 @@ public class TaskServiceImpl implements TaskService {
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
      * @param args        执行参数
-     * @return
+     * @return 流程任务
      */
     protected FlwTask getAllowedFlwTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
@@ -151,7 +173,7 @@ public class TaskServiceImpl implements TaskService {
      * @param flwTask     执行任务
      * @param taskState   任务状态
      * @param flowCreator 任务创建者
-     * @return
+     * @return true 成功 false 失败
      */
     protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
         // 迁移 task 信息到 flw_his_task
@@ -189,7 +211,7 @@ public class TaskServiceImpl implements TaskService {
      * 完成指定实例ID活动任务
      *
      * @param instanceId 实例ID
-     * @return
+     * @return true 成功 false 失败
      */
     @Override
     public boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator) {
@@ -206,7 +228,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 更新任务对象的finish_Time、createBy、expire_Time、version、variable
+     * 更新任务对象的 finishTime、createBy、expireTime、version、variable
      *
      * @param flwTask 任务对象
      */
@@ -222,13 +244,12 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param taskId    任务ID
      * @param taskActor 任务参与者
-     * @return
      */
     @Override
     public boolean viewTask(Long taskId, FlwTaskActor taskActor) {
         if (taskActorMapper.selectCount(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId)
                 .eq(FlwTaskActor::getActorId, taskActor.getActorId())) > 0) {
-            /**
+            /*
              * 设置任务为已阅状态
              */
             FlwTask flwTask = new FlwTask();
@@ -262,7 +283,7 @@ public class TaskServiceImpl implements TaskService {
      * @param taskType          任务类型
      * @param taskActor         任务参与者
      * @param assigneeTaskActor 指定办理人
-     * @return
+     * @return true 成功 false 失败
      */
     @Override
     public boolean assigneeTask(Long taskId, TaskType taskType, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
@@ -280,7 +301,7 @@ public class TaskServiceImpl implements TaskService {
         taskMapper.updateById(flwTask);
 
         // 删除任务历史参与者
-        taskActorMapper.deleteBatchIds(taskActors.stream().map(t -> t.getId()).collect(Collectors.toList()));
+        taskActorMapper.deleteBatchIds(taskActors.stream().map(FlwTaskActor::getId).collect(Collectors.toList()));
 
         // 分配任务给办理人
         assignTask(taskActors.get(0).getInstanceId(), taskId, assigneeTaskActor);
@@ -295,7 +316,7 @@ public class TaskServiceImpl implements TaskService {
         return this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<FlwTask> flwTaskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
-                List<Long> taskIds = flwTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+                List<Long> taskIds = flwTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
                 // 删除当前任务
                 taskMapper.deleteBatchIds(taskIds);
                 // 删除当前任务处理人
@@ -323,6 +344,9 @@ public class TaskServiceImpl implements TaskService {
 
         // 分配任务
         assignTask(flwTask.getInstanceId(), taskId, flwTaskActor);
+
+        // 更新当前执行节点信息
+        this.updateCurrentNode(flwTask);
         return flwTask;
     }
 
@@ -377,7 +401,6 @@ public class TaskServiceImpl implements TaskService {
      * @param hisTaskId       历史任务ID
      * @param flowCreator     任务创建者
      * @param hisTaskConsumer 历史任务业务处理
-     * @return
      */
     protected Optional<FlwTask> undoHisTask(Long hisTaskId, FlowCreator flowCreator, Consumer<FlwHisTask> hisTaskConsumer) {
         FlwHisTask hisTask = hisTaskMapper.getCheckById(hisTaskId);
@@ -406,7 +429,10 @@ public class TaskServiceImpl implements TaskService {
                 });
             }
         }
-        return Optional.ofNullable(flwTask);
+
+        // 更新当前执行节点信息
+        this.updateCurrentNode(flwTask);
+        return Optional.of(flwTask);
     }
 
     /**
@@ -485,38 +511,43 @@ public class TaskServiceImpl implements TaskService {
         // 处理流程任务
         Integer nodeType = nodeModel.getType();
         if (0 == nodeType) {
-            /**
+            /*
              * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
              */
             flwTasks.addAll(this.saveTask(flwTask, PerformType.start, taskActors, execution));
 
-            /**
+            /*
              * 执行进入下一个节点
              */
             nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         } else if (1 == nodeType) {
-            /**
+            /*
              * 1，审批人
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(flwTask, performType, taskActors, execution));
         } else if (2 == nodeType) {
-            /**
+            /*
              * 2，抄送任务
              */
             this.saveTaskCc(nodeModel, execution);
 
-            /**
+            /*
              * 可能存在子节点
              */
             nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         } else if (3 == nodeType) {
-            /**
+            /*
              * 3，条件审批
              */
             FlwTask singleFlwTask = flwTask.cloneTask(null);
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(singleFlwTask, performType, taskActors, execution));
+        }
+
+        // 更新当前执行节点信息，抄送节点除外
+        if (2 != nodeType) {
+            this.updateCurrentNode(flwTask);
         }
         return flwTasks;
     }
@@ -526,7 +557,6 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param nodeModel 节点模型
      * @param execution 执行对象
-     * @return Task任务对象
      */
     public void saveTaskCc(NodeModel nodeModel, Execution execution) {
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
@@ -537,7 +567,7 @@ public class TaskServiceImpl implements TaskService {
                 if (taskCcMapper.selectCount(Wrappers.<FlwTaskCc>lambdaQuery()
                         .eq(FlwTaskCc::getInstanceId, instanceId)
                         .eq(FlwTaskCc::getActorId, nodeUser.getId())) > 0) {
-                    /**
+                    /*
                      * 同一个流程实例不重复抄送给同一人
                      */
                     continue;
@@ -580,9 +610,9 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 保存任务及参与者信息
      *
-     * @param flwTask    任务对象
+     * @param flwTask    流程任务对象
      * @param taskActors 参与者ID集合
-     * @return
+     * @return 流程任务列表
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {
         List<FlwTask> flwTasks = new ArrayList<>();
@@ -622,7 +652,7 @@ public class TaskServiceImpl implements TaskService {
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
         if (performType == PerformType.orSign) {
-            /**
+            /*
              * 或签一条任务多个参与者
              */
             taskMapper.insert(flwTask);
@@ -635,7 +665,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (performType == PerformType.sort) {
-            /**
+            /*
              * 按顺序依次审批，一个任务按顺序多个参与者依次添加
              */
             taskMapper.insert(flwTask);
@@ -653,7 +683,7 @@ public class TaskServiceImpl implements TaskService {
             return flwTasks;
         }
 
-        /**
+        /*
          * 会签（票签）每个参与者生成一条任务
          */
         taskActors.forEach(t -> {
@@ -673,9 +703,9 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 根据 taskId、createId 判断创建人是否允许执行任务
      *
-     * @param flwTask 任务对象
+     * @param flwTask 流程任务
      * @param userId  用户ID
-     * @return
+     * @return true 允许 false 不允许
      */
     @Override
     public boolean isAllowed(FlwTask flwTask, String userId) {
@@ -748,7 +778,7 @@ public class TaskServiceImpl implements TaskService {
         // 删除历史任务及参与者
         List<FlwHisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery().select(FlwHisTask::getId).eq(FlwHisTask::getInstanceId, instanceId));
         if (ObjectUtils.isNotEmpty(hisTaskList)) {
-            List<Long> hisTaskIds = hisTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+            List<Long> hisTaskIds = hisTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
             hisTaskActorMapper.deleteByTaskIds(hisTaskIds);
             hisTaskMapper.delete(Wrappers.<FlwHisTask>lambdaQuery().eq(FlwHisTask::getInstanceId, instanceId));
         }
@@ -756,7 +786,7 @@ public class TaskServiceImpl implements TaskService {
         // 删除任务及参与者
         List<FlwTask> flwTaskList = taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().select(FlwTask::getId).eq(FlwTask::getInstanceId, instanceId));
         if (ObjectUtils.isNotEmpty(flwTaskList)) {
-            List<Long> taskIds = flwTaskList.stream().map(t -> t.getId()).collect(Collectors.toList());
+            List<Long> taskIds = flwTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
             taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getTaskId, taskIds));
             taskMapper.delete(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
         }

@@ -131,9 +131,9 @@ public class NodeModel implements ModelInstance, Serializable {
     private NodeModel parentNode;
 
     @Override
-    public void execute(FlowLongContext flowLongContext, Execution execution) {
+    public boolean execute(FlowLongContext flowLongContext, Execution execution) {
         if (ObjectUtils.isNotEmpty(conditionNodes)) {
-            /**
+            /*
              * 执行条件分支
              */
             Map<String, Object> args = execution.getArgs();
@@ -147,7 +147,7 @@ public class NodeModel implements ModelInstance, Serializable {
                 conditionNodeOptional = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
                 Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
             }
-            /**
+            /*
              * 执行创建条件任务
              */
             conditionNodeOptional.ifPresent(conditionNode -> {
@@ -162,14 +162,14 @@ public class NodeModel implements ModelInstance, Serializable {
             });
         }
 
-        /**
+        /*
          * 执行创建抄送、审批任务
          */
         if (Objects.equals(2, this.type) || Objects.equals(1, this.type)) {
             flowLongContext.createTask(execution, this);
         }
 
-        /**
+        /*
          * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
          * 执行结束流程处理器
          */
@@ -178,6 +178,7 @@ public class NodeModel implements ModelInstance, Serializable {
                 execution.endInstance();
             }
         }
+        return true;
     }
 
     /**

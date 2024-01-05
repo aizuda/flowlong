@@ -97,4 +97,18 @@ public class DateUtils {
         }
         return null;
     }
+
+    /**
+     * 计算时间差
+     *
+     * @param startDate 开始时间
+     * @param endDate   接受时间
+     * @return 时间差
+     */
+    public static Long calculateDateDifference(Date startDate, Date endDate) {
+        if (null == startDate || null == endDate) {
+            return null;
+        }
+        return endDate.getTime() - startDate.getTime();
+    }
 }

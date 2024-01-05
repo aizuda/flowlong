@@ -86,9 +86,9 @@ public class Execution implements Serializable {
     /**
      * 用于产生子流程执行对象使用
      *
-     * @param execution
-     * @param process
-     * @param parentNodeName
+     * @param execution      {@link Execution}
+     * @param process        {@link FlwProcess}
+     * @param parentNodeName 上一节点名称
      */
     Execution(Execution execution, FlwProcess process, String parentNodeName) {
         if (execution == null || process == null || parentNodeName == null) {
@@ -126,10 +126,10 @@ public class Execution implements Serializable {
     /**
      * 根据当前执行对象execution、子流程定义process、当前节点名称产生子流程的执行对象
      *
-     * @param execution
-     * @param process
-     * @param parentNodeName
-     * @return
+     * @param execution      {@link Execution}
+     * @param process        {@link FlwProcess}
+     * @param parentNodeName 上一节点名称
+     * @return {@link Execution}
      */
     public Execution createSubExecution(Execution execution, FlwProcess process, String parentNodeName) {
         return new Execution(execution, process, parentNodeName);
@@ -146,7 +146,8 @@ public class Execution implements Serializable {
             Assert.illegalArgument(flwTask.major(), "存在未完成的主办任务");
             engine.taskService().complete(flwTask.getId(), FlowCreator.ADMIN);
         }
-        /**
+
+        /*
          * 结束当前流程实例
          */
         return engine.runtimeService().complete(flwInstance.getId());
@@ -155,7 +156,7 @@ public class Execution implements Serializable {
     /**
      * 添加任务集合
      *
-     * @param flwTasks
+     * @param flwTasks 流程任务列表
      */
     public void addTasks(List<FlwTask> flwTasks) {
         this.flwTasks.addAll(flwTasks);
@@ -164,7 +165,7 @@ public class Execution implements Serializable {
     /**
      * 添加任务
      *
-     * @param flwTask
+     * @param flwTask 流程任务
      */
     public void addTask(FlwTask flwTask) {
         this.flwTasks.add(flwTask);
@@ -173,7 +174,7 @@ public class Execution implements Serializable {
     /**
      * 执行参数
      *
-     * @return {@link Map<String, Object>}
+     * @return {@link Map}
      */
     public Map<String, Object> getArgs() {
         if (null == this.args) {
