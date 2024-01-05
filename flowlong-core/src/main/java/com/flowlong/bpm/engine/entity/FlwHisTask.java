@@ -4,10 +4,13 @@
 package com.flowlong.bpm.engine.entity;
 
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.Date;
 
 /**
  * 历史任务实体类
@@ -24,9 +27,17 @@ import lombok.ToString;
 @ToString
 public class FlwHisTask extends FlwTask {
     /**
+     * 完成时间
+     */
+    protected Date finishTime;
+    /**
      * 任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转
      */
     protected Integer taskState;
+    /**
+     * 处理耗时
+     */
+    protected Long duration;
 
     public FlwHisTask setTaskState(TaskState taskState) {
         this.taskState = taskState.getValue();
@@ -79,4 +90,11 @@ public class FlwHisTask extends FlwTask {
         return cloneTask(this.createId, this.createBy);
     }
 
+    /**
+     * 计算流程实例处理耗时
+     */
+    public void calculateDuration() {
+        this.finishTime = DateUtils.getCurrentDate();
+        this.duration = DateUtils.calculateDateDifference(this.createTime, this.finishTime);
+    }
 }

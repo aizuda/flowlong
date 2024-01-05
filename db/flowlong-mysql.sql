@@ -52,6 +52,7 @@ CREATE TABLE `flw_his_task`  (
     `viewed` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已阅 0，否 1，是',
     `finish_time` timestamp NULL DEFAULT NULL COMMENT '任务完成时间',
     `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转',
+    `duration` bigint COMMENT '处理耗时',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_his_task_instance_id`(`instance_id` ASC) USING BTREE,
     INDEX `idx_his_task_parent_task_id`(`parent_task_id` ASC) USING BTREE,
@@ -100,7 +101,6 @@ CREATE TABLE `flw_task`  (
     `remind_time` timestamp NULL DEFAULT NULL COMMENT '提醒时间',
     `remind_repeat` tinyint(1) NOT NULL DEFAULT 0 COMMENT '提醒次数',
     `viewed` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已阅 0，否 1，是',
-    `finish_time` timestamp NULL DEFAULT NULL COMMENT '完成时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX `idx_task_instance_id`(`instance_id` ASC) USING BTREE,
     CONSTRAINT `fk_task_instance_id` FOREIGN KEY (`instance_id`) REFERENCES `flw_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT

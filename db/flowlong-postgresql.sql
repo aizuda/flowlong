@@ -49,7 +49,8 @@ CREATE TABLE "public"."flw_his_task" (
     "remind_repeat" int2 NOT NULL,
     "viewed" int2 NOT NULL DEFAULT 0,
     "finish_time" timestamp(6),
-    "task_state" int2 NOT NULL DEFAULT 0
+    "task_state" int2 NOT NULL DEFAULT 0,
+    "duration" int8
 )
 ;
 COMMENT ON COLUMN "public"."flw_his_task"."id" IS '主键ID';
@@ -73,6 +74,7 @@ COMMENT ON COLUMN "public"."flw_his_task"."remind_repeat" IS '提醒次数';
 COMMENT ON COLUMN "public"."flw_his_task"."viewed" IS '已阅 0，否 1，是';
 COMMENT ON COLUMN "public"."flw_his_task"."finish_time" IS '任务完成时间';
 COMMENT ON COLUMN "public"."flw_his_task"."task_state" IS '任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转';
+COMMENT ON COLUMN "public"."flw_his_task"."duration" IS '处理耗时';
 COMMENT ON TABLE "public"."flw_his_task" IS '历史任务表';
 
 -- ----------------------------
@@ -123,8 +125,7 @@ CREATE TABLE "public"."flw_task" (
     "expire_time" timestamp(6),
     "remind_time" timestamp(6),
     "remind_repeat" int2 NOT NULL DEFAULT 0,
-    "viewed" int2 NOT NULL DEFAULT 0,
-    "finish_time" timestamp(6)
+    "viewed" int2 NOT NULL DEFAULT 0
 )
 ;
 COMMENT ON COLUMN "public"."flw_task"."id" IS '主键ID';
@@ -146,7 +147,6 @@ COMMENT ON COLUMN "public"."flw_task"."expire_time" IS '任务期望完成时间
 COMMENT ON COLUMN "public"."flw_task"."remind_time" IS '提醒时间';
 COMMENT ON COLUMN "public"."flw_task"."remind_repeat" IS '提醒次数';
 COMMENT ON COLUMN "public"."flw_task"."viewed" IS '已阅 0，否 1，是';
-COMMENT ON COLUMN "public"."flw_task"."finish_time" IS '完成时间';
 COMMENT ON TABLE "public"."flw_task" IS '任务表';
 
 -- ----------------------------

@@ -87,10 +87,6 @@ public class FlwTask extends FlowEntity {
      * 已阅 0，否 1，是
      */
     protected Integer viewed;
-    /**
-     * 完成时间
-     */
-    protected Date finishTime;
 
     public boolean major() {
         return Objects.equals(this.taskType, TaskType.major.getValue());

@@ -178,9 +178,9 @@ public class TaskServiceImpl implements TaskService {
     protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
         // 迁移 task 信息到 flw_his_task
         FlwHisTask hisTask = FlwHisTask.of(flwTask);
-        hisTask.setFinishTime(DateUtils.getCurrentDate());
         hisTask.setTaskState(taskState);
         hisTask.setFlowCreator(flowCreator);
+        hisTask.calculateDuration();
         Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
 
         // 迁移任务参与者
@@ -621,7 +621,7 @@ public class TaskServiceImpl implements TaskService {
         if (performType == PerformType.start) {
             // 发起任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
-            flwHisTask.setFinishTime(DateUtils.getCurrentDate());
+            flwHisTask.calculateDuration();
             if (hisTaskMapper.insert(flwHisTask) > 0) {
                 // 设置为执行任务
                 execution.setFlwTask(flwHisTask);
