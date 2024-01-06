@@ -46,7 +46,7 @@ CREATE TABLE "public"."flw_his_task" (
     "assignor" varchar(100) COLLATE "pg_catalog"."default",
     "expire_time" timestamp(6),
     "remind_time" timestamp(6),
-    "remind_repeat" int2 NOT NULL,
+    "remind_repeat" int2 NOT NULL DEFAULT 0,
     "viewed" int2 NOT NULL DEFAULT 0,
     "finish_time" timestamp(6),
     "task_state" int2 NOT NULL DEFAULT 0,
