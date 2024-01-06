@@ -40,7 +40,7 @@ public class TestCountersign extends MysqlTest {
             this.executeTask(instance.getId(), test3Creator, flwTask -> this.flowLongEngine.executeJumpTask(flwTask.getId(), "发起人", test3Creator));
 
             // 执行发起
-            this.executeTask(instance.getId(), testCreator);
+            this.executeActiveTasks(instance.getId(), testCreator, args);
 
             // 测试会签审批人001【审批】
             this.executeTask(instance.getId(), testCreator);

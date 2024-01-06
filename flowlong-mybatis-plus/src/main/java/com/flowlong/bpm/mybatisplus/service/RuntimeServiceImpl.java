@@ -14,10 +14,7 @@ import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.TaskState;
-import com.flowlong.bpm.engine.entity.FlwHisInstance;
-import com.flowlong.bpm.engine.entity.FlwInstance;
-import com.flowlong.bpm.engine.entity.FlwProcess;
-import com.flowlong.bpm.engine.entity.FlwTask;
+import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
@@ -25,6 +22,7 @@ import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * 流程实例运行业务类
@@ -215,22 +213,15 @@ public class RuntimeServiceImpl implements RuntimeService {
         List<FlwHisInstance> flwHisInstances = hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
                 .eq(FlwHisInstance::getProcessId, processId));
         if (ObjectUtils.isNotEmpty(flwHisInstances)) {
-            flwHisInstances.forEach(t -> {
-                // 删除活动任务相关信息
-                taskService.cascadeRemoveByInstanceId(t.getId());
-                // 删除抄送任务
-                // ccInstanceMapper.delete(Wrappers.<CCInstance>lambdaQuery().eq(CCInstance::getInstanceId, t.getId()));
+            // 删除活动任务相关信息
+            taskService.cascadeRemoveByInstanceIds(flwHisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
-                // 删除代理任务
+            // 删除历史实例
+            hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery().eq(FlwHisInstance::getProcessId, processId));
 
-            });
+            // 删除实例
+            instanceMapper.delete(Wrappers.<FlwInstance>lambdaQuery().eq(FlwInstance::getProcessId, processId));
         }
-
-        // 删除历史实例
-        hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery().eq(FlwHisInstance::getProcessId, processId));
-
-        // 删除实例
-        instanceMapper.delete(Wrappers.<FlwInstance>lambdaQuery().eq(FlwInstance::getProcessId, processId));
     }
 
 }

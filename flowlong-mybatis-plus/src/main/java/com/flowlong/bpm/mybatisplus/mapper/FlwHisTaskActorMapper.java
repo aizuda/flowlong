@@ -30,13 +30,4 @@ public interface FlwHisTaskActorMapper extends BaseMapper<FlwHisTaskActor> {
         return this.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery().eq(FlwHisTaskActor::getTaskId, taskId));
     }
 
-    /**
-     * 通过任务ID删除参与者
-     *
-     * @param taskIds 任务ID列表
-     */
-    default boolean deleteByTaskIds(List<Long> taskIds) {
-        return this.delete(Wrappers.<FlwHisTaskActor>lambdaQuery().in(FlwHisTaskActor::getTaskId, taskIds)) > 0;
-    }
-
 }

@@ -44,6 +44,7 @@ public class NodeAssignee implements Serializable {
         nodeAssignee.setTenantId(flwTaskActor.getTenantId());
         nodeAssignee.setId(flwTaskActor.getActorId());
         nodeAssignee.setName(flwTaskActor.getActorName());
+        nodeAssignee.setWeight(flwTaskActor.getWeight());
         return nodeAssignee;
     }
 }

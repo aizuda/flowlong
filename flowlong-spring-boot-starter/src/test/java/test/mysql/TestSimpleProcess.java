@@ -49,7 +49,7 @@ class TestSimpleProcess extends MysqlTest {
             }
 
             // 测试会签审批人003【审批】
-            this.executeTask(instance.getId(), test3Creator);
+            this.executeActiveTasks(instance.getId(), test3Creator, args);
 
             //撤回任务(条件路由子审批) 回到测试会签审批人003【审批】任务
             QueryService queryService = flowLongEngine.queryService();
@@ -59,7 +59,7 @@ class TestSimpleProcess extends MysqlTest {
             taskService.withdrawTask(hisTask.getId(), testCreator);
 
             // 测试会签审批人003【审批】
-            this.executeTask(instance.getId(), test3Creator);
+            this.executeActiveTasks(instance.getId(), test3Creator, args);
 
             // 年龄审批【审批】
             this.executeTask(instance.getId(), testCreator);

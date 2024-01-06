@@ -261,7 +261,7 @@ public interface TaskService {
     /**
      * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor
      *
-     * @param instanceId 流程实例ID
+     * @param instanceIds 流程实例ID列表
      */
-    void cascadeRemoveByInstanceId(Long instanceId);
+    void cascadeRemoveByInstanceIds(List<Long> instanceIds);
 }

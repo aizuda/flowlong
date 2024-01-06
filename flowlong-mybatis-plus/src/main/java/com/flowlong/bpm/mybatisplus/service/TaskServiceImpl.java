@@ -769,30 +769,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_cc, flw_task_actor
+     * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_task_cc, flw_his_instance, flw_instance
      *
-     * @param instanceId 流程实例ID
+     * @param instanceIds 流程实例ID列表
      */
     @Override
-    public void cascadeRemoveByInstanceId(Long instanceId) {
+    public void cascadeRemoveByInstanceIds(List<Long> instanceIds) {
         // 删除历史任务及参与者
-        List<FlwHisTask> hisTaskList = hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery().select(FlwHisTask::getId).eq(FlwHisTask::getInstanceId, instanceId));
-        if (ObjectUtils.isNotEmpty(hisTaskList)) {
-            List<Long> hisTaskIds = hisTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
-            hisTaskActorMapper.deleteByTaskIds(hisTaskIds);
-            hisTaskMapper.delete(Wrappers.<FlwHisTask>lambdaQuery().eq(FlwHisTask::getInstanceId, instanceId));
-        }
+        hisTaskActorMapper.delete(Wrappers.<FlwHisTaskActor>lambdaQuery().in(FlwHisTaskActor::getInstanceId, instanceIds));
+        hisTaskMapper.delete(Wrappers.<FlwHisTask>lambdaQuery().in(FlwHisTask::getInstanceId, instanceIds));
 
         // 删除任务及参与者
-        List<FlwTask> flwTaskList = taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().select(FlwTask::getId).eq(FlwTask::getInstanceId, instanceId));
-        if (ObjectUtils.isNotEmpty(flwTaskList)) {
-            List<Long> taskIds = flwTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
-            taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getTaskId, taskIds));
-            taskMapper.delete(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
-        }
+        taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getInstanceId, instanceIds));
+        taskMapper.delete(Wrappers.<FlwTask>lambdaQuery().in(FlwTask::getInstanceId, instanceIds));
 
         // 删除任务抄送
-        // TODO
+        taskCcMapper.delete(Wrappers.<FlwTaskCc>lambdaQuery().in(FlwTaskCc::getInstanceId, instanceIds));
     }
 
 }
