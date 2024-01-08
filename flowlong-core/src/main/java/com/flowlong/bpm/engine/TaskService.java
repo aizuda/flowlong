@@ -100,11 +100,11 @@ public interface TaskService {
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
      *
-     * @param taskId       任务ID
-     * @param flwTaskActor 任务参与者
+     * @param taskId      任务ID
+     * @param flowCreator 任务认领者
      * @return Task 任务对象
      */
-    FlwTask claim(Long taskId, FlwTaskActor flwTaskActor);
+    FlwTask claim(Long taskId, FlowCreator flowCreator);
 
     /**
      * 根据 任务ID 转办任务
@@ -156,11 +156,11 @@ public interface TaskService {
      * 该方法会导致流程状态不可控，请慎用
      * </p>
      *
-     * @param taskId       历史任务ID
-     * @param flwTaskActor 任务参与者
+     * @param taskId      历史任务ID
+     * @param flowCreator 任务唤醒者
      * @return {@link FlwTask} 唤醒后的任务对象
      */
-    FlwTask resume(Long taskId, FlwTaskActor flwTaskActor);
+    FlwTask resume(Long taskId, FlowCreator flowCreator);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）

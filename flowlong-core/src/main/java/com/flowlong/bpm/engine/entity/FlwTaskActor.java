@@ -58,6 +58,13 @@ public class FlwTaskActor implements Serializable {
      */
     protected Integer weight;
 
+    public static FlwTaskActor of(FlowCreator flowCreator, FlwTask flwTask) {
+        FlwTaskActor flwTaskActor = ofUser(flowCreator.getTenantId(), flowCreator.getCreateId(), flowCreator.getCreateBy());
+        flwTaskActor.setInstanceId(flwTask.getInstanceId());
+        flwTaskActor.setTaskId(flwTask.getId());
+        return flwTaskActor;
+    }
+
     public static FlwTaskActor ofFlwTask(FlwTask flwTask) {
         FlwTaskActor flwTaskActor = FlwTaskActor.ofUser(flwTask.getTenantId(),
                 flwTask.getCreateId(), flwTask.getCreateBy());
