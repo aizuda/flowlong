@@ -137,7 +137,7 @@ public class NodeModel implements ModelInstance, Serializable {
              * 执行条件分支
              */
             Map<String, Object> args = execution.getArgs();
-            Assert.illegalArgument(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
+            Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
             Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))

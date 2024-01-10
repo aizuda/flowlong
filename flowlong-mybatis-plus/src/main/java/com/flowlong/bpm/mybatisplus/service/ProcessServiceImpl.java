@@ -14,7 +14,6 @@ import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
 import com.flowlong.bpm.engine.entity.FlwProcess;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwProcessMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +123,7 @@ public class ProcessServiceImpl implements ProcessService {
             return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new FlowLongException(e);
+            throw Assert.throwable(e);
         }
     }
 

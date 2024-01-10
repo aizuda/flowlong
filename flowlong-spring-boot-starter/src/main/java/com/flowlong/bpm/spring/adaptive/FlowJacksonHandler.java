@@ -7,7 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.flowlong.bpm.engine.exception.FlowLongException;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.handler.FlowJsonHandler;
 
 /**
@@ -36,7 +36,7 @@ public class FlowJacksonHandler implements FlowJsonHandler {
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw new FlowLongException(e);
+            throw Assert.throwable(e);
         }
     }
 
@@ -48,7 +48,7 @@ public class FlowJacksonHandler implements FlowJsonHandler {
         try {
             return OBJECT_MAPPER.readValue(jsonString, clazz);
         } catch (JsonProcessingException e) {
-            throw new FlowLongException(e);
+            throw Assert.throwable(e);
         }
     }
 }

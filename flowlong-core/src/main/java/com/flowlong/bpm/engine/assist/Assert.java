@@ -25,15 +25,15 @@ public abstract class Assert {
      * @param message    异常打印信息
      */
     public static void isTrue(boolean expression, String message) {
-        illegalArgument(expression, message);
+        illegal(expression, message);
     }
 
     public static void isFalse(boolean expression, String message) {
-        illegalArgument(!expression, message);
+        illegal(!expression, message);
     }
 
     public static void isZero(int result, String message) {
-        illegalArgument(Objects.equals(0, result), message);
+        illegal(Objects.equals(0, result), message);
     }
 
     /**
@@ -51,8 +51,18 @@ public abstract class Assert {
      * @param object  待检测对象
      * @param message 异常打印信息
      */
+    public static void isEmpty(Object object, String message) {
+        illegal(ObjectUtils.isEmpty(object), message);
+    }
+
+    /**
+     * 断言给定的object对象为空
+     *
+     * @param object  待检测对象
+     * @param message 异常打印信息
+     */
     public static void isNull(Object object, String message) {
-        illegalArgument(null == object, message);
+        illegal(null == object, message);
     }
 
     /**
@@ -71,7 +81,7 @@ public abstract class Assert {
      * @param message 异常打印信息
      */
     public static void notNull(Object object, String message) {
-        illegalArgument(null != object, message);
+        illegal(null != object, message);
     }
 
     /**
@@ -99,7 +109,7 @@ public abstract class Assert {
      * @param message 提升内容
      */
     public static void notEmpty(String str, String message) {
-        illegalArgument(str == null || str.isEmpty(), message);
+        illegal(str == null || str.isEmpty(), message);
     }
 
     /**
@@ -108,9 +118,49 @@ public abstract class Assert {
      * @param illegal 判断条件
      * @param message 提示内容
      */
-    public static void illegalArgument(boolean illegal, String message) {
+    public static void illegal(boolean illegal, String message) {
         if (illegal) {
-            throw new FlowLongException(message);
+            throw throwable(message);
         }
+    }
+
+    /**
+     * 非法参数断言
+     *
+     * @param message 提示内容
+     */
+    public static void illegal(String message) {
+        throw throwable(message);
+    }
+
+    /**
+     * 创建 FlowLongException 异常信息
+     *
+     * @param message 提示内容
+     * @return {@link FlowLongException}
+     */
+    public static FlowLongException throwable(String message) {
+        return new FlowLongException(message);
+    }
+
+    /**
+     * 创建 FlowLongException 异常信息
+     *
+     * @param message 提示内容
+     * @param cause   {@link Throwable}
+     * @return {@link FlowLongException}
+     */
+    public static FlowLongException throwable(String message, Throwable cause) {
+        return new FlowLongException(message, cause);
+    }
+
+    /**
+     * 创建 FlowLongException 异常信息
+     *
+     * @param cause {@link Throwable}
+     * @return {@link FlowLongException}
+     */
+    public static FlowLongException throwable(Throwable cause) {
+        return new FlowLongException(cause);
     }
 }

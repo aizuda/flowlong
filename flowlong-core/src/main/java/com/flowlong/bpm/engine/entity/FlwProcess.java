@@ -8,7 +8,6 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -145,7 +144,7 @@ public class FlwProcess extends FlowEntity {
      */
     public FlwProcess checkState() {
         if (Objects.equals(0, this.processState)) {
-            throw new FlowLongException("指定的流程定义[id=" + this.id + ",processVersion=" + this.processVersion + "]为非活动状态");
+            Assert.illegal("指定的流程定义[id=" + this.id + ",processVersion=" + this.processVersion + "]为非活动状态");
         }
         return this;
     }

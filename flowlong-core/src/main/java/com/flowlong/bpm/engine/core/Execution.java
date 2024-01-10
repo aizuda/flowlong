@@ -10,7 +10,6 @@ import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -91,7 +90,7 @@ public class Execution implements Serializable {
      */
     Execution(Execution execution, FlwProcess process, String parentNodeName) {
         if (execution == null || process == null || parentNodeName == null) {
-            throw new FlowLongException("构造Execution对象失败，请检查execution、process、parentNodeName是否为空");
+            throw Assert.throwable("构造Execution对象失败，请检查execution、process、parentNodeName是否为空");
         }
         this.engine = execution.getEngine();
         this.process = process;
@@ -113,7 +112,7 @@ public class Execution implements Serializable {
     public Execution(FlowLongEngine engine, FlwProcess process, FlowCreator flowCreator,
                      FlwInstance flwInstance, Map<String, Object> args) {
         if (process == null || flwInstance == null) {
-            throw new FlowLongException("构造Execution对象失败，请检查process、order是否为空");
+            throw Assert.throwable("构造Execution对象失败，请检查process、order是否为空");
         }
         this.engine = engine;
         this.process = process;
@@ -142,7 +141,7 @@ public class Execution implements Serializable {
     public boolean endInstance() {
         List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
         for (FlwTask flwTask : flwTasks) {
-            Assert.illegalArgument(flwTask.major(), "存在未完成的主办任务");
+            Assert.illegal(flwTask.major(), "存在未完成的主办任务");
             engine.taskService().complete(flwTask.getId(), FlowCreator.ADMIN);
         }
 

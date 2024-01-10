@@ -3,8 +3,6 @@
  */
 package com.flowlong.bpm.engine.assist;
 
-import com.flowlong.bpm.engine.exception.FlowLongException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +27,7 @@ public class StreamUtils {
             stream = StreamUtils.class.getClassLoader().getResourceAsStream(name);
         }
         if (stream == null) {
-            throw new FlowLongException("resource " + name + " does not exist");
+            throw Assert.throwable("resource " + name + " does not exist");
         }
         return stream;
     }
@@ -39,7 +37,7 @@ public class StreamUtils {
         try {
             return function.apply(readBytes(in));
         } catch (Exception e) {
-            throw new FlowLongException(e.getMessage(), e);
+            throw Assert.throwable(e.getMessage(), e);
         }
     }
 

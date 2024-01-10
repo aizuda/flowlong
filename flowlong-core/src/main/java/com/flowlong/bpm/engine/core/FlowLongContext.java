@@ -5,7 +5,6 @@ package com.flowlong.bpm.engine.core;
 
 import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.CreateTaskHandler;
 import com.flowlong.bpm.engine.handler.FlowJsonHandler;
 import com.flowlong.bpm.engine.handler.impl.DefaultCreateTaskHandler;
@@ -120,16 +119,14 @@ public class FlowLongContext {
      *
      * @return {@link FlowLongEngine}
      */
-    public FlowLongContext build(FlowLongEngine configEngine) throws FlowLongException {
+    public FlowLongContext build(FlowLongEngine configEngine) {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
         /*
          * 由服务上下文返回流程引擎
          */
-        if (configEngine == null) {
-            throw new FlowLongException("Unable to discover implementation class for LongEngine");
-        }
+        Assert.isNull(configEngine, "Unable to discover implementation class for LongEngine");
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine be found:" + configEngine.getClass());
         }

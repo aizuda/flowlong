@@ -198,7 +198,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void updateInstance(FlwInstance flwInstance) {
-        Assert.illegalArgument(null == flwInstance || null == flwInstance.getId(),
+        Assert.illegal(null == flwInstance || null == flwInstance.getId(),
                 "instance id cannot be empty");
         instanceMapper.updateById(flwInstance);
     }

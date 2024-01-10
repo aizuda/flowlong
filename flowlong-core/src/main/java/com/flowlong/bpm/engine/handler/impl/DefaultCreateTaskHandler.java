@@ -4,10 +4,10 @@
 package com.flowlong.bpm.engine.handler.impl;
 
 import com.flowlong.bpm.engine.FlowLongInterceptor;
+import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.FlwTask;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.handler.CreateTaskHandler;
 import com.flowlong.bpm.engine.model.NodeModel;
 import lombok.extern.slf4j.Slf4j;
@@ -56,7 +56,7 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             return true;
         } catch (Exception e) {
             log.error("拦截器执行失败={}", e.getMessage());
-            throw new FlowLongException(e);
+            throw Assert.throwable(e);
         }
     }
 }

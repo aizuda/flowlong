@@ -16,7 +16,6 @@ import com.flowlong.bpm.engine.core.enums.PerformType;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.*;
-import com.flowlong.bpm.engine.exception.FlowLongException;
 import com.flowlong.bpm.engine.listener.TaskListener;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
@@ -267,7 +266,7 @@ public class TaskServiceImpl implements TaskService {
     public FlwTask claim(Long taskId, FlowCreator flowCreator) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         if (!isAllowed(flwTask, flowCreator.getCreateId())) {
-            throw new FlowLongException("当前执行用户ID [" + flowCreator.getCreateBy() + "] 不允许提取任务 [taskId=" + taskId + "]");
+            Assert.illegal("当前执行用户ID [" + flowCreator.getCreateBy() + "] 不允许提取任务 [taskId=" + taskId + "]");
         }
         // 删除任务参与者
         taskActorMapper.deleteByTaskId(taskId);
@@ -369,9 +368,7 @@ public class TaskServiceImpl implements TaskService {
                     flwTasks = taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().in(FlwTask::getParentTaskId, hisTaskIds));
                 }
             }
-            if (ObjectUtils.isEmpty(flwTasks)) {
-                throw new FlowLongException("后续活动任务已完成或不存在，无法撤回.");
-            }
+            Assert.isEmpty(flwTasks, "后续活动任务已完成或不存在，无法撤回.");
             List<Long> taskIds = flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
             // 查询任务参与者
             List<Long> taskActorIds = taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getTaskId, taskIds))
