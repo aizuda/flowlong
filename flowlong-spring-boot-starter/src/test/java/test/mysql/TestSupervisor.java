@@ -29,7 +29,7 @@ public class TestSupervisor extends MysqlTest {
     @BeforeEach
     public void before() {
         processId = this.deployByResource("test/supervisor.json", testCreator);
-        /**
+        /*
          * 自定义参与者提供测试
          */
         this.flowLongEngine.getContext().setTaskActorProvider(
@@ -42,7 +42,7 @@ public class TestSupervisor extends MysqlTest {
                             return Collections.singletonList(FlwTaskActor.ofFlowCreator(execution.getFlowCreator()));
                         }
                         if (nodeModel.getType() == 1 && nodeModel.getSetType() == 7) {
-                            /**
+                            /*
                              * 审核人类型 1，指定成员 7，连续多级主管
                              */
                             List<FlwTaskActor> flwTaskActors = new ArrayList<>();
@@ -53,7 +53,7 @@ public class TestSupervisor extends MysqlTest {
                             return flwTaskActors;
                         }
                         if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-                            return nodeModel.getNodeUserList().stream().map(t -> FlwTaskActor.ofNodeAssignee(t)).collect(Collectors.toList());
+                            return nodeModel.getNodeUserList().stream().map(FlwTaskActor::ofNodeAssignee).collect(Collectors.toList());
                         } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
                             return nodeModel.getNodeRoleList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName()))
                                     .collect(Collectors.toList());

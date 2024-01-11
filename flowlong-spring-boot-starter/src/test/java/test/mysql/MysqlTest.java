@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 public class MysqlTest extends TestFlowLong {
 
     protected FlowCreator testCreator = FlowCreator.of(testUser1, "测试001");
+    protected FlowCreator test2Creator = FlowCreator.of(testUser2, "测试002");
     protected FlowCreator test3Creator = FlowCreator.of(testUser3, "测试003");
 
     /**

@@ -158,6 +158,9 @@ public class NodeModel implements ModelInstance, Serializable {
                 }
                 if (null != childNode) {
                     childNode.execute(flowLongContext, execution);
+                } else {
+                    // 不存在任何子节点结束流程
+                    execution.endInstance();
                 }
             });
         }

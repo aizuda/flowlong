@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * issue 问题测试
  */
@@ -30,10 +33,7 @@ public class TestIssue extends MysqlTest {
     }
 
     /**
-     * 驳回发起人测试
-     * <p>
-     * https://gitee.com/aizuda/flowlong/issues/I8MVO7
-     * </p>
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I8MVO7">驳回发起人测试</a>
      */
     @Test
     public void testRejectTask() {
@@ -53,6 +53,23 @@ public class TestIssue extends MysqlTest {
             this.executeActiveTasks(instance.getId(), test3Creator);
 
             // 流转到人事审批
+        });
+    }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I8VGPC">驳回发起人测试</a>
+     */
+    @Test
+    public void testConditionEnd() {
+        Long processId = this.deployByResource("test/conditionEnd.json", testCreator);
+
+        // 启动发起
+        flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> {
+
+            // 人事审批
+            Map<String, Object> args = new HashMap<>();
+            args.put("day", 1);
+            this.executeActiveTasks(instance.getId(), test2Creator, args);
         });
     }
 }
