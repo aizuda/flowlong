@@ -150,8 +150,8 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行创建条件任务
              */
-            conditionNodeOptional.ifPresent(conditionNode -> {
-                NodeModel childNode = conditionNode.getChildNode();
+            if (conditionNodeOptional.isPresent()) {
+                NodeModel childNode = conditionNodeOptional.get().getChildNode();
                 if (null == childNode) {
                     // 当前条件节点无执行节点，进入当前执行条件节点的下一个节点
                     childNode = this.getChildNode();
@@ -161,8 +161,9 @@ public class NodeModel implements ModelInstance, Serializable {
                 } else {
                     // 不存在任何子节点结束流程
                     execution.endInstance();
+                    return true;
                 }
-            });
+            }
         }
 
         /*
