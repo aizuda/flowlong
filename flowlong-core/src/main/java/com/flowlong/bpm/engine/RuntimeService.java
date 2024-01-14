@@ -3,11 +3,13 @@
  */
 package com.flowlong.bpm.engine;
 
+import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * 流程实例运行业务类
@@ -28,10 +30,10 @@ public interface RuntimeService {
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @param currentNode 当前所在节点
-     * @param businessKey 业务KEY（用于关联业务逻辑实现预留）
+     * @param supplier    初始化流程实例提供者
      * @return 活动流程实例对象
      */
-    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, String businessKey);
+    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, Supplier<FlwInstance> supplier);
 
     /**
      * 向指定实例id添加全局变量数据
@@ -44,10 +46,11 @@ public interface RuntimeService {
     /**
      * 流程实例正常完成（审批通过）
      *
+     * @param execution  {@link Execution}
      * @param instanceId 流程实例ID
      * @return true 成功 false 失败
      */
-    boolean complete(Long instanceId);
+    boolean complete(Execution execution, Long instanceId);
 
     /**
      * 保存流程实例

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 /**
  * 测试租户逻辑
  */
-public class TestTenantProcess extends TestProcess {
+public class TestTenantProcess extends TestSubProcess {
 
     @Test
     public void testTenant() {

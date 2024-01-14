@@ -60,6 +60,7 @@ public class FlwHisInstance extends FlwInstance {
         his.createBy = flwInstance.getCreateBy();
         his.createTime = flwInstance.getCreateTime();
         his.processId = flwInstance.getProcessId();
+        his.parentInstanceId = flwInstance.getParentInstanceId();
         his.priority = flwInstance.getPriority();
         his.instanceNo = flwInstance.getInstanceNo();
         his.businessKey = flwInstance.getBusinessKey();

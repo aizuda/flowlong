@@ -3,12 +3,14 @@
  */
 package com.flowlong.bpm.engine;
 
+import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * FlowLong流程引擎接口
@@ -73,16 +75,17 @@ public interface FlowLongEngine {
      * @param id          流程定义ID
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
+     * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
+    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier);
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
         return this.startInstanceById(id, flowCreator, args, null);
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey) {
-        return this.startInstanceById(id, flowCreator, null, businessKey);
+        return this.startInstanceById(id, flowCreator, null, () -> FlwInstance.of(businessKey));
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator) {
@@ -96,21 +99,35 @@ public interface FlowLongEngine {
      * @param version     版本号
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
+     * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, String businessKey);
+    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier);
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
         return this.startInstanceByProcessKey(processKey, version, flowCreator, args, null);
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey) {
-        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, businessKey);
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, () -> FlwInstance.of(businessKey));
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator) {
         return this.startInstanceByProcessKey(processKey, version, flowCreator, null, null);
     }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator) {
+        return this.startInstanceByProcessKey(processKey, null, flowCreator);
+    }
+
+    /**
+     * 重启流程实例（从当前所在节点currentNode位置开始）
+     *
+     * @param id          流程定义ID
+     * @param currentNode 当前所在节点
+     * @param execution   {@link Execution}
+     */
+    void restartProcessInstance(Long id, String currentNode, Execution execution);
 
     /**
      * 根据任务ID，创建人ID，参数列表执行任务

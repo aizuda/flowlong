@@ -540,6 +540,16 @@ public class TaskServiceImpl implements TaskService {
             FlwTask singleFlwTask = flwTask.cloneTask(null);
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(singleFlwTask, performType, taskActors, execution));
+        } else if (5 == nodeType) {
+            /*
+             * 5，办理子流程
+             */
+            FlowCreator flowCreator = execution.getFlowCreator();
+            execution.getEngine().startInstanceByProcessKey(nodeModel.getCallProcessKey(), null, flowCreator, null, () -> {
+                FlwInstance flwInstance = new FlwInstance();
+                flwInstance.setParentInstanceId(flwTask.getInstanceId());
+                return flwInstance;
+            }).ifPresent(instance -> hisTaskMapper.insert(FlwHisTask.ofCallInstance(nodeModel, instance)));
         }
 
         // 更新当前执行节点信息，抄送节点除外
@@ -753,6 +763,23 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTaskActor> taskActorList = taskActorMapper.selectListByTaskId(taskId);
         Assert.isTrue(ObjectUtils.isEmpty(taskActorList), "not found task actor");
         return taskActorList;
+    }
+
+    @Override
+    public void endCallProcessTask(Long callProcessId, Long callInstanceId) {
+        List<FlwHisTask> flwHisTasks = hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
+                .eq(FlwHisTask::getCallProcessId, callProcessId)
+                .eq(FlwHisTask::getCallInstanceId, callInstanceId));
+        if (ObjectUtils.isNotEmpty(flwHisTasks)) {
+            FlwHisTask dbHis = flwHisTasks.get(0);
+            FlwHisTask his = new FlwHisTask();
+            his.setId(dbHis.getId());
+            his.setCreateTime(dbHis.getCreateTime());
+            his.setTaskState(TaskState.complete);
+            his.calculateDuration();
+            his.setCreateTime(null);
+            hisTaskMapper.updateById(his);
+        }
     }
 
     @Override

@@ -1,0 +1,30 @@
+{
+  "key": "workHandover",
+  "name": "工作交接",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "接收工作",
+      "type": 1,
+      "setType": 1,
+      "nodeUserList": [
+        {
+          "tenantId": "3000",
+          "id": "test003",
+          "name": "测试003"
+        }
+      ],
+      "nodeRoleList": [],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0
+    }
+  }
+}

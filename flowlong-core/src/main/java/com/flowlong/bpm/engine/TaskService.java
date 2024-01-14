@@ -246,6 +246,15 @@ public interface TaskService {
     }
 
     /**
+     * 结束调用外部流程任务
+     *
+     * @param callProcessId  调用外部流程定义ID
+     * @param callInstanceId 调用外部流程实例ID
+     * @return true 成功 false 失败
+     */
+    void endCallProcessTask(Long callProcessId, Long callInstanceId);
+
+    /**
      * 对指定的任务ID删除参与者【减签】
      *
      * @param taskId   任务ID

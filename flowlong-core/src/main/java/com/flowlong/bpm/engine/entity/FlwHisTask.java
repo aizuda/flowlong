@@ -6,6 +6,7 @@ package com.flowlong.bpm.engine.entity;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.enums.TaskState;
+import com.flowlong.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,6 +27,14 @@ import java.util.Date;
 @Setter
 @ToString
 public class FlwHisTask extends FlwTask {
+    /**
+     * 调用外部流程定义ID
+     */
+    protected Long callProcessId;
+    /**
+     * 调用外部流程实例ID
+     */
+    protected Long callInstanceId;
     /**
      * 完成时间
      */
@@ -76,6 +85,21 @@ public class FlwHisTask extends FlwTask {
         hisTask.remindRepeat = flwTask.getRemindRepeat();
         hisTask.viewed = flwTask.getViewed();
         return hisTask;
+    }
+
+    public static FlwHisTask ofCallInstance(NodeModel nodeModel, FlwInstance instance) {
+        FlwHisTask flwHisTask = new FlwHisTask();
+        flwHisTask.setTenantId(instance.getTenantId());
+        flwHisTask.setCreateId(instance.getCreateId());
+        flwHisTask.setCreateBy(instance.getCreateBy());
+        flwHisTask.setCreateTime(instance.getCreateTime());
+        flwHisTask.setInstanceId(instance.getParentInstanceId());
+        flwHisTask.setTaskName(nodeModel.getNodeName());
+        flwHisTask.setDisplayName(nodeModel.getNodeName());
+        flwHisTask.setCallProcessId(instance.getProcessId());
+        flwHisTask.setCallInstanceId(instance.getId());
+        flwHisTask.setTaskType(nodeModel.getType());
+        return flwHisTask;
     }
 
     /**

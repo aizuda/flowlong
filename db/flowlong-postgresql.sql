@@ -36,6 +36,8 @@ CREATE TABLE "public"."flw_his_task" (
     "create_time" timestamp(6) NOT NULL,
     "instance_id" int8 NOT NULL,
     "parent_task_id" int8,
+    "call_process_id" int8,
+    "call_instance_id" int8,
     "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
     "task_type" int2 NOT NULL,
@@ -60,6 +62,8 @@ COMMENT ON COLUMN "public"."flw_his_task"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_his_task"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_his_task"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "public"."flw_his_task"."parent_task_id" IS '父任务ID';
+COMMENT ON COLUMN "public"."flw_his_task"."call_process_id" IS '调用外部流程定义ID';
+COMMENT ON COLUMN "public"."flw_his_task"."call_instance_id" IS '调用外部流程实例ID';
 COMMENT ON COLUMN "public"."flw_his_task"."task_name" IS '任务名称';
 COMMENT ON COLUMN "public"."flw_his_task"."display_name" IS '任务显示名称';
 COMMENT ON COLUMN "public"."flw_his_task"."task_type" IS '任务类型';
@@ -197,6 +201,7 @@ CREATE TABLE "public"."flw_his_instance" (
     "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
     "create_time" timestamp(6) NOT NULL,
     "process_id" int8 NOT NULL,
+    "parent_instance_id" int8,
     "priority" int2,
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
@@ -216,6 +221,7 @@ COMMENT ON COLUMN "public"."flw_his_instance"."create_id" IS '创建人ID';
 COMMENT ON COLUMN "public"."flw_his_instance"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_his_instance"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_his_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "public"."flw_his_instance"."parent_instance_id" IS '父流程实例ID';
 COMMENT ON COLUMN "public"."flw_his_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_his_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_his_instance"."business_key" IS '业务KEY';
@@ -240,6 +246,7 @@ CREATE TABLE "public"."flw_instance" (
     "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
     "create_time" timestamp(6) NOT NULL,
     "process_id" int8 NOT NULL,
+    "parent_instance_id" int8,
     "priority" int2,
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
@@ -256,6 +263,7 @@ COMMENT ON COLUMN "public"."flw_instance"."create_id" IS '创建人ID';
 COMMENT ON COLUMN "public"."flw_instance"."create_by" IS '创建人名称';
 COMMENT ON COLUMN "public"."flw_instance"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "public"."flw_instance"."parent_instance_id" IS '父流程实例ID';
 COMMENT ON COLUMN "public"."flw_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_instance"."business_key" IS '业务KEY';

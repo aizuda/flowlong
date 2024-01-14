@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.engine.entity;
@@ -31,6 +31,10 @@ public class FlwInstance extends FlowEntity {
      */
     protected Long processId;
     /**
+     * 父流程实例ID
+     */
+    protected Long parentInstanceId;
+    /**
      * 流程实例优先级
      */
     protected Integer priority;
@@ -62,6 +66,12 @@ public class FlwInstance extends FlowEntity {
      * 流程实例上一次更新时间
      */
     protected Date lastUpdateTime;
+
+    public static FlwInstance of(String businessKey) {
+        FlwInstance flwInstance = new FlwInstance();
+        flwInstance.setBusinessKey(businessKey);
+        return flwInstance;
+    }
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getVariableMap() {

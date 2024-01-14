@@ -10,6 +10,7 @@ import com.flowlong.bpm.engine.TaskService;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
+import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
@@ -55,15 +56,20 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, String businessKey) {
-        FlwInstance flwInstance = new FlwInstance();
+    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, Supplier<FlwInstance> supplier) {
+        FlwInstance flwInstance = null;
+        if (null != supplier) {
+            flwInstance = supplier.get();
+        }
+        if (null == flwInstance) {
+            flwInstance = new FlwInstance();
+        }
         flwInstance.setCreateTime(DateUtils.getCurrentDate());
         flwInstance.setFlowCreator(flowCreator);
         flwInstance.setCurrentNode(currentNode);
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
-        flwInstance.setBusinessKey(businessKey);
         flwInstance.setVariable(args);
         this.saveInstance(flwInstance);
         return flwInstance;
@@ -91,7 +97,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public boolean complete(Long instanceId) {
+    public boolean complete(Execution execution, Long instanceId) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
         if (null != flwInstance) {
             FlwHisInstance his = new FlwHisInstance();
@@ -107,6 +113,19 @@ public class RuntimeServiceImpl implements RuntimeService {
             hisInstanceMapper.updateById(his);
             // 流程实例监听器通知
             this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId));
+
+            /*
+             * 实例为子流程，重启动父流程任务
+             */
+            if (null != flwInstance.getParentInstanceId()) {
+                // 重启父流程实例
+                FlwInstance parentFlwInstance = instanceMapper.selectById(flwInstance.getParentInstanceId());
+                execution.setFlwInstance(parentFlwInstance);
+                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNode());
+
+                // 结束调用外部流程任务
+                taskService.endCallProcessTask(flwInstance.getProcessId(), flwInstance.getId());
+            }
         }
         return true;
     }

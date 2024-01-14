@@ -30,11 +30,11 @@ public class ObjectUtils {
         }
         if (obj instanceof String) {
             String str = (String) obj;
-            return null == str || str.isEmpty();
+            return str.isEmpty();
         } else if (obj instanceof Collection) {
             return ((Collection<?>) obj).isEmpty();
         } else if (obj instanceof Map) {
-            return ((Map) obj).isEmpty();
+            return ((Map<?, ?>) obj).isEmpty();
         }
         return false;
     }

@@ -1,5 +1,5 @@
 {
-  "key": "process",
+  "key": "subProcess",
   "name": "请假审批",
   "nodeConfig": {
     "nodeName": "发起人",
@@ -75,16 +75,21 @@
           }
         ],
         "childNode": {
-          "nodeName": "抄送人",
-          "type": 2,
-          "userSelectFlag": true,
-          "nodeUserList": [
-            {
-              "tenantId": "1000",
-              "id": "test002",
-              "name": "何秀英"
-            }
-          ]
+          "nodeName": "工作交接",
+          "type": 5,
+          "callProcessKey": "workHandover",
+          "childNode": {
+            "nodeName": "抄送人",
+            "type": 2,
+            "userSelectFlag": true,
+            "nodeUserList": [
+              {
+                "tenantId": "1000",
+                "id": "test002",
+                "name": "何秀英"
+              }
+            ]
+          }
         }
       }
     }

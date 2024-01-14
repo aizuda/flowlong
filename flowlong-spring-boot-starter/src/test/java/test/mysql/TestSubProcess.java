@@ -14,15 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 测试简单流程
+ * 测试子流程
  *
  * @author xdg
  */
-public class TestProcess extends MysqlTest {
+public class TestSubProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
-        processId = this.deployByResource("test/process.json", getFlowCreator());
+        processId = this.deployByResource("test/subProcess.json", getFlowCreator());
+
+        // 部署子流程
+        this.deployByResource("test/workHandover.json", getFlowCreator());
     }
 
     /**
@@ -74,6 +77,13 @@ public class TestProcess extends MysqlTest {
                 // 领导审批【通过】，流程结束
                 this.executeActiveTasks(instance.getId(), flowCreator);
             }
+
+            // 找到子流程并执行【接收工作任务】完成启动父流程执行结束
+            flowLongEngine.queryService().getHisTasksByInstanceId(instance.getId()).ifPresent(flwHisTasks -> flwHisTasks.forEach(flwHisTask -> {
+                if (null != flwHisTask.getCallInstanceId()) {
+                    this.executeActiveTasks(flwHisTask.getCallInstanceId(), test3Creator);
+                }
+            }));
         });
 
         // 卸载指定的定义流程

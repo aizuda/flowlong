@@ -148,7 +148,17 @@ public class Execution implements Serializable {
         /*
          * 结束当前流程实例
          */
-        return engine.runtimeService().complete(flwInstance.getId());
+        return engine.runtimeService().complete(this, flwInstance.getId());
+    }
+
+    /**
+     * 重启流程实例（从当前所在节点currentNode位置开始）
+     *
+     * @param id          流程定义ID
+     * @param currentNode 当前所在节点
+     */
+    public void restartProcessInstance(Long id, String currentNode) {
+        engine.restartProcessInstance(id, currentNode, this);
     }
 
     /**

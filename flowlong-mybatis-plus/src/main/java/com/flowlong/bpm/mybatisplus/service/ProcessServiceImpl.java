@@ -57,7 +57,9 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public FlwProcess getProcessById(Long id) {
-        return processMapper.selectById(id);
+        FlwProcess process = processMapper.selectById(id);
+        Assert.isTrue(ObjectUtils.isEmpty(process), "process id [" + id + "] does not exist");
+        return process;
     }
 
     /**

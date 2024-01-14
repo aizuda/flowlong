@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * 基本的流程引擎实现类
@@ -51,21 +52,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人，参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessById(id);
-        if (null == process) {
-            return Optional.empty();
-        }
-        return this.startProcess(process.checkState(), flowCreator, args, businessKey);
+        return this.startProcessInstance(process.checkState(), flowCreator, args, supplier);
     }
 
     /**
      * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessByVersion(processKey, version);
-        return this.startProcess(process, flowCreator, args, businessKey);
+        return this.startProcessInstance(process, flowCreator, args, supplier);
     }
 
     /**
@@ -74,18 +72,30 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param process     流程定义对象
      * @param flowCreator 流程创建者
      * @param args        执行参数
-     * @param businessKey 业务KEY（用于关联业务逻辑实现预留）
+     * @param supplier    初始化流程实例提供者
      * @return 流程实例
      */
-    protected Optional<FlwInstance> startProcess(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String businessKey) {
+    protected Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
         // 执行启动模型
         return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel.getNodeName(), businessKey);
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel.getNodeName(), supplier);
             if (log.isDebugEnabled()) {
                 log.debug("创建流程实例对象:" + flwInstance);
             }
             return new Execution(this, process, flowCreator, flwInstance, args);
         });
+    }
+
+    /**
+     * 重启流程实例（从当前所在节点currentNode位置开始）
+     */
+    @Override
+    public void restartProcessInstance(Long id, String currentNode, Execution execution) {
+        FlwProcess process = processService().getProcessById(id);
+        NodeModel nodeModel = process.model().getNode(currentNode);
+        if (null != nodeModel) {
+            nodeModel.nextNode().ifPresent(childNode -> childNode.execute(flowLongContext, execution));
+        }
     }
 
     /**
@@ -236,8 +246,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
                 execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
-                flowLongContext.createTask(execution, nodeModel);
-                return true;
+                return flowLongContext.createTask(execution, nodeModel);
             }
         }
 

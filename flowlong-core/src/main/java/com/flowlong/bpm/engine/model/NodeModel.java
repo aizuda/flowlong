@@ -33,6 +33,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String nodeName;
     /**
+     * 调用外部流程定义 key 唯一标识 {@link com.flowlong.bpm.engine.entity.FlwProcess}
+     */
+    private String callProcessKey;
+    /**
      * 节点类型
      * <p>
      * 0，发起人
@@ -40,6 +44,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 2，抄送人
      * 3，条件审批
      * 4，条件分支
+     * 5，办理子流程
      * </p>
      */
     private Integer type;
@@ -167,9 +172,9 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         /*
-         * 执行创建抄送、审批任务
+         * 执行 1、审批任务 2、创建抄送 5、办理子流程
          */
-        if (Objects.equals(2, this.type) || Objects.equals(1, this.type)) {
+        if (Objects.equals(1, this.type) || Objects.equals(2, this.type) || Objects.equals(5, this.type)) {
             flowLongContext.createTask(execution, this);
         }
 
