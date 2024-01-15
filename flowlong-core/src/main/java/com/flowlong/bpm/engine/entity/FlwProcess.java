@@ -148,4 +148,12 @@ public class FlwProcess extends FlowEntity {
         }
         return this;
     }
+
+    /**
+     * 格式化 JSON 模型内容
+     */
+    public FlwProcess formatModelContent(String modelContent) {
+        this.modelContent = FlowLongContext.toJson(FlowLongContext.fromJson(modelContent, ProcessModel.class));
+        return this;
+    }
 }

@@ -118,10 +118,9 @@ public class ProcessServiceImpl implements ProcessService {
             process.setProcessName(processModel.getName());
             process.setInstanceUrl(processModel.getInstanceUrl());
             process.setUseScope(0);
-            process.setModelContent(jsonString);
             process.setFlowCreator(flowCreator);
             process.setCreateTime(DateUtils.getCurrentDate());
-            Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
+            Assert.isZero(processMapper.insert(process.formatModelContent(jsonString)), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -144,8 +143,7 @@ public class ProcessServiceImpl implements ProcessService {
         process.setProcessKey(processModel.getKey());
         process.setProcessName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());
-        process.setModelContent(jsonString);
-        return processMapper.updateById(process) > 0;
+        return processMapper.updateById(process.formatModelContent(jsonString)) > 0;
     }
 
     /**
