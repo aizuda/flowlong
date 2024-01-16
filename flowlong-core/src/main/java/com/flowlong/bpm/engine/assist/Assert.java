@@ -6,6 +6,7 @@ package com.flowlong.bpm.engine.assist;
 import com.flowlong.bpm.engine.exception.FlowLongException;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * 断言帮助类
@@ -26,6 +27,10 @@ public abstract class Assert {
      */
     public static void isTrue(boolean expression, String message) {
         illegal(expression, message);
+    }
+
+    public static void isFalse(boolean expression, Supplier<String> supplier) {
+        illegal(!expression, supplier);
     }
 
     public static void isFalse(boolean expression, String message) {
@@ -121,6 +126,18 @@ public abstract class Assert {
     public static void illegal(boolean illegal, String message) {
         if (illegal) {
             throw throwable(message);
+        }
+    }
+
+    /**
+     * 非法参数断言
+     *
+     * @param illegal  判断条件
+     * @param supplier 提示内容提供者
+     */
+    public static void illegal(boolean illegal, Supplier<String> supplier) {
+        if (illegal) {
+            throw throwable(supplier.get());
         }
     }
 

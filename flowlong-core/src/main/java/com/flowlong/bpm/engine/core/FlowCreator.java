@@ -31,8 +31,10 @@ public class FlowCreator implements Serializable {
      * 创建人
      */
     private String createBy;
-
-    public static FlowCreator ADMIN = new FlowCreator("0", "管理员");
+    /**
+     * 初始化管理员，用于操作权限忽略等场景
+     */
+    public static FlowCreator ADMIN = new FlowCreator("0", "admin");
 
     public FlowCreator(String createId, String createBy) {
         this.createId = createId;

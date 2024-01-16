@@ -77,14 +77,14 @@ public class TestIssue extends MysqlTest {
      * <a href="https://gitee.com/aizuda/flowlong/issues/I8WBFL">终止任务测试</a>
      */
     @Test
-    public void testTerminate() {
+    public void testRevoke() {
         Long processId = this.deployByResource("test/conditionEnd.json", testCreator);
 
         // 启动发起
         flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> {
 
             // 流程实例强制终止
-            flowLongEngine.runtimeService().terminate(instance.getId(), test2Creator);
+            flowLongEngine.runtimeService().revoke(instance.getId());
         });
     }
 }

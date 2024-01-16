@@ -162,7 +162,7 @@ public class TaskServiceImpl implements TaskService {
         if (null != args) {
             flwTask.setVariable(args);
         }
-        Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
+        Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), () -> "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
         return flwTask;
     }
 
@@ -716,8 +716,8 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean isAllowed(FlwTask flwTask, String userId) {
-        // 未指定创建人情况，默认为不验证执行权限
-        if (null == flwTask.getCreateId()) {
+        // 未指定创建人及 ADMIN 情况，默认为不验证执行权限
+        if (null == flwTask.getCreateId() || FlowCreator.ADMIN.getCreateId().equals(userId)) {
             return true;
         }
 
