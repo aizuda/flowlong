@@ -3,6 +3,8 @@
  */
 package com.flowlong.bpm.engine.core.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
 /**
@@ -15,40 +17,41 @@ import java.util.Arrays;
  * @author 江涛
  * @since 1.0
  */
+@Getter
 public enum TaskState {
     /**
      * 活动
      */
     active(0),
     /**
+     * 跳转
+     */
+    jump(1),
+    /**
      * 完成
      */
-    complete(1),
+    complete(2),
     /**
      * 拒绝
      */
-    reject(2),
+    reject(3),
+    /**
+     * 撤销审批
+     */
+    revoke(4),
     /**
      * 超时
      */
-    timeout(3),
+    timeout(5),
     /**
      * 终止
      */
-    termination(4),
-    /**
-     * 跳转
-     */
-    jump(5);
+    terminate(6);
 
     private final int value;
 
     TaskState(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static TaskState get(int value) {
@@ -59,9 +62,19 @@ public enum TaskState {
         if (instanceState == InstanceState.reject) {
             return reject;
         }
+        if (instanceState == InstanceState.revoke) {
+            return revoke;
+        }
         if (instanceState == InstanceState.timeout) {
             return timeout;
         }
+        if (instanceState == InstanceState.terminate) {
+            return terminate;
+        }
         return complete;
+    }
+
+    public static boolean allowedCheck(TaskState taskState) {
+        return active == taskState || jump == taskState || complete == taskState;
     }
 }

@@ -165,8 +165,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void timeout(Long instanceId) {
-        this.forceComplete(instanceId, FlowCreator.ADMIN, InstanceState.timeout, EventType.timeout);
+    public void timeout(Long instanceId, FlowCreator flowCreator) {
+        this.forceComplete(instanceId, flowCreator, InstanceState.timeout, EventType.timeout);
     }
 
     /**
@@ -177,7 +177,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.complete, EventType.complete);
+        this.forceComplete(instanceId, flowCreator, InstanceState.terminate, EventType.terminate);
     }
 
     /**

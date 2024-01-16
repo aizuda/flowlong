@@ -98,7 +98,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
-        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args);
+        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args, taskState);
 
         // 迁移任务至历史表
         this.moveToHisTask(flwTask, taskState, flowCreator);
@@ -113,7 +113,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
-        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null);
+        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
 
         // 执行跳转到目标节点
         Execution execution = executionFunction.apply(flwTask);
@@ -155,14 +155,17 @@ public class TaskServiceImpl implements TaskService {
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
      * @param args        执行参数
+     * @param taskState   {@link TaskState}
      * @return 流程任务
      */
-    protected FlwTask getAllowedFlwTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+    protected FlwTask getAllowedFlwTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         if (null != args) {
             flwTask.setVariable(args);
         }
-        Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), () -> "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
+        if (null == taskState || TaskState.allowedCheck(taskState)) {
+            Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), () -> "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
+        }
         return flwTask;
     }
 
@@ -218,7 +221,7 @@ public class TaskServiceImpl implements TaskService {
         if (ObjectUtils.isNotEmpty(flwTasks)) {
             for (FlwTask flwTask : flwTasks) {
                 // 迁移任务至历史表，设置任务状态为终止
-                if (!this.moveToHisTask(flwTask, TaskState.termination, flowCreator)) {
+                if (!this.moveToHisTask(flwTask, TaskState.terminate, flowCreator)) {
                     return false;
                 }
             }
@@ -716,8 +719,8 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public boolean isAllowed(FlwTask flwTask, String userId) {
-        // 未指定创建人及 ADMIN 情况，默认为不验证执行权限
-        if (null == flwTask.getCreateId() || FlowCreator.ADMIN.getCreateId().equals(userId)) {
+        // 未指定创建人情况，默认为不验证执行权限
+        if (null == flwTask.getCreateId()) {
             return true;
         }
 

@@ -60,25 +60,21 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                 Date currentDate = DateUtils.getCurrentDate();
                 for (FlwTask flwTask : flwTaskList) {
                     if (null != flwTask.getRemindTime() && DateUtils.after(flwTask.getRemindTime(), currentDate)) {
-                        /**
+                        /*
                          * 任务提醒
                          */
-                        try {
-                            if (flwTask.getRemindRepeat() > 0) {
-                                // 1，更新提醒次数减去 1 次
-                                FlwTask temp = new FlwTask();
-                                temp.setId(flwTask.getId());
-                                temp.setRemindRepeat(flwTask.getRemindRepeat() - 1);
-                                taskService.updateTaskById(temp);
+                        if (flwTask.getRemindRepeat() > 0) {
+                            // 1，更新提醒次数减去 1 次
+                            FlwTask temp = new FlwTask();
+                            temp.setId(flwTask.getId());
+                            temp.setRemindRepeat(flwTask.getRemindRepeat() - 1);
+                            taskService.updateTaskById(temp);
 
-                                // 2，调用提醒接口
-                                taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            // 2，调用提醒接口
+                            taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
                         }
                     } else {
-                        /**
+                        /*
                          * 任务超时
                          */
                         context.getRuntimeService().timeout(flwTask.getInstanceId());
@@ -92,7 +88,7 @@ public class SpringBootScheduler implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addTriggerTask(() -> remind(), triggerContext ->
+        taskRegistrar.addTriggerTask(this::remind, triggerContext ->
                 new CronTrigger(remindParam.getCron()).nextExecutionTime(triggerContext));
     }
 

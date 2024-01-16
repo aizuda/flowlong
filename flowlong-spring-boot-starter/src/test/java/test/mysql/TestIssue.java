@@ -84,7 +84,7 @@ public class TestIssue extends MysqlTest {
         flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> {
 
             // 流程实例强制终止
-            flowLongEngine.runtimeService().revoke(instance.getId());
+            flowLongEngine.runtimeService().revoke(instance.getId(), test3Creator);
         });
     }
 }

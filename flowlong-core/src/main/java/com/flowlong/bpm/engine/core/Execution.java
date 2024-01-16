@@ -142,7 +142,7 @@ public class Execution implements Serializable {
         List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
         for (FlwTask flwTask : flwTasks) {
             Assert.illegal(flwTask.major(), "存在未完成的主办任务");
-            engine.taskService().complete(flwTask.getId(), FlowCreator.ADMIN);
+            engine.taskService().complete(flwTask.getId(), this.flowCreator);
         }
 
         /*

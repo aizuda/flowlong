@@ -3,6 +3,8 @@
  */
 package com.flowlong.bpm.engine.core.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 /**
  * 流程状态
@@ -14,6 +16,7 @@ import java.util.Arrays;
  * @author 江涛
  * @since 1.0
  */
+@Getter
 public enum InstanceState {
     /**
      * 审批中
@@ -38,16 +41,12 @@ public enum InstanceState {
     /**
      * 强制终止
      */
-    termination(5);
+    terminate(5);
 
     private final int value;
 
     InstanceState(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static InstanceState get(int value) {

@@ -68,15 +68,6 @@ public interface RuntimeService {
     void reject(Long instanceId, FlowCreator flowCreator);
 
     /**
-     * 流程实例拒绝审批强制终止（忽略操作权限）
-     *
-     * @param instanceId  流程实例ID
-     */
-    default void reject(Long instanceId) {
-        revoke(instanceId, FlowCreator.ADMIN);
-    }
-
-    /**
      * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
      *
      * @param instanceId  流程实例ID
@@ -85,20 +76,21 @@ public interface RuntimeService {
     void revoke(Long instanceId, FlowCreator flowCreator);
 
     /**
-     * 流程实例撤销（忽略操作权限）
+     * 流程实例超时（设定审批时间超时，自动结束）
+     *
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
+     */
+    void timeout(Long instanceId, FlowCreator flowCreator);
+
+    /**
+     * 流程实例超时（忽略操作权限）
      *
      * @param instanceId  流程实例ID
      */
-    default void revoke(Long instanceId) {
-        revoke(instanceId, FlowCreator.ADMIN);
+    default void timeout(Long instanceId) {
+        this.timeout(instanceId, FlowCreator.ADMIN);
     }
-
-    /**
-     * 流程实例超时（设定审批时间超时，自动结束）
-     *
-     * @param instanceId 流程实例ID
-     */
-    void timeout(Long instanceId);
 
     /**
      * 流程实例强制终止
@@ -107,15 +99,6 @@ public interface RuntimeService {
      * @param flowCreator 处理人员
      */
     void terminate(Long instanceId, FlowCreator flowCreator);
-
-    /**
-     * 流程实例强制终止（忽略操作权限）
-     *
-     * @param instanceId  流程实例ID
-     */
-    default void terminate(Long instanceId) {
-        this.terminate(instanceId, FlowCreator.ADMIN);
-    }
 
     /**
      * 更新流程实例
