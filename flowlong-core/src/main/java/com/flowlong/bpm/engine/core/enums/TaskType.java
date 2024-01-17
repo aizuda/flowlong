@@ -33,17 +33,21 @@ public enum TaskType {
      */
     countersign(3),
     /**
+     * 抄送
+     */
+    cc(4),
+    /**
      * 调用外部流程任务
      */
-    callProcess(4),
+    callProcess(5),
     /**
      * 定时器任务
      */
-    timer(5),
+    timer(6),
     /**
      * 触发器任务
      */
-    trigger(6);
+    trigger(7);
 
     private final int value;
 

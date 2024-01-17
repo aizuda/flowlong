@@ -154,43 +154,6 @@ COMMENT ON COLUMN "public"."flw_task"."viewed" IS '已阅 0，否 1，是';
 COMMENT ON TABLE "public"."flw_task" IS '任务表';
 
 -- ----------------------------
--- Table structure for flw_task_cc
--- ----------------------------
-DROP TABLE IF EXISTS "public"."flw_task_cc";
-CREATE TABLE "public"."flw_task_cc" (
-    "id" int8 NOT NULL,
-    "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-    "create_id" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-    "create_by" varchar(50) COLLATE "pg_catalog"."default" NOT NULL,
-    "create_time" timestamp(6) NOT NULL,
-    "instance_id" int8 NOT NULL,
-    "parent_task_id" int8,
-    "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
-    "actor_id" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
-    "actor_name" varchar(300) COLLATE "pg_catalog"."default" NOT NULL,
-    "task_type" int4 NOT NULL,
-    "task_state" int2 NOT NULL,
-    "finish_time" timestamp(6)
-)
-;
-COMMENT ON COLUMN "public"."flw_task_cc"."id" IS '主键ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."tenant_id" IS '租户ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."create_id" IS '创建人ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."create_by" IS '创建人名称';
-COMMENT ON COLUMN "public"."flw_task_cc"."create_time" IS '创建时间';
-COMMENT ON COLUMN "public"."flw_task_cc"."instance_id" IS '流程实例ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."parent_task_id" IS '父任务ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."task_name" IS '任务名称';
-COMMENT ON COLUMN "public"."flw_task_cc"."display_name" IS '任务显示名称';
-COMMENT ON COLUMN "public"."flw_task_cc"."actor_id" IS '参与者ID';
-COMMENT ON COLUMN "public"."flw_task_cc"."actor_name" IS '参与者名称';
-COMMENT ON COLUMN "public"."flw_task_cc"."task_type" IS '任务类型 0，用户 1，角色 2，部门';
-COMMENT ON COLUMN "public"."flw_task_cc"."task_state" IS '任务状态 0，结束 1，活动';
-COMMENT ON COLUMN "public"."flw_task_cc"."finish_time" IS '完成时间';
-COMMENT ON TABLE "public"."flw_task_cc" IS '抄送任务表';
-
--- ----------------------------
 -- Table structure for flw_his_instance
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_his_instance";
@@ -401,11 +364,6 @@ CREATE INDEX "idx_task_actor_task_id" ON "public"."flw_task_actor" USING btree (
 -- Primary Key structure for table flw_task_actor
 -- ----------------------------
 ALTER TABLE "public"."flw_task_actor" ADD CONSTRAINT "flw_task_actor_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Primary Key structure for table flw_task_cc
--- ----------------------------
-ALTER TABLE "public"."flw_task_cc" ADD CONSTRAINT "flw_task_cc_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
 -- Foreign Keys structure for table flw_his_instance

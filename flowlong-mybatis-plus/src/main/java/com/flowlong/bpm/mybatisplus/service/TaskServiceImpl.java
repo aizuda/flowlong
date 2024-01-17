@@ -45,14 +45,13 @@ public class TaskServiceImpl implements TaskService {
     private final FlwInstanceMapper instanceMapper;
     private final FlwHisInstanceMapper hisInstanceMapper;
     private final FlwTaskMapper taskMapper;
-    private final FlwTaskCcMapper taskCcMapper;
     private final FlwTaskActorMapper taskActorMapper;
     private final FlwHisTaskMapper hisTaskMapper;
     private final FlwHisTaskActorMapper hisTaskActorMapper;
 
     public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlwProcessMapper processMapper,
                            FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper,
-                           FlwTaskCcMapper taskCcMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
+                           FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                            FlwHisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
@@ -60,7 +59,6 @@ public class TaskServiceImpl implements TaskService {
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.taskMapper = taskMapper;
-        this.taskCcMapper = taskCcMapper;
         this.taskActorMapper = taskActorMapper;
         this.hisTaskMapper = hisTaskMapper;
         this.hisTaskActorMapper = hisTaskActorMapper;
@@ -530,7 +528,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 2，抄送任务
              */
-            this.saveTaskCc(nodeModel, execution);
+            this.saveTaskCc(nodeModel, flwTask);
 
             /*
              * 可能存在子节点
@@ -566,34 +564,21 @@ public class TaskServiceImpl implements TaskService {
      * 保存抄送任务
      *
      * @param nodeModel 节点模型
-     * @param execution 执行对象
+     * @param flwTask   流程任务对象
      */
-    public void saveTaskCc(NodeModel nodeModel, Execution execution) {
-        if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-            Long parentTaskId = execution.getFlwTask().getId();
-            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+    public void saveTaskCc(NodeModel nodeModel, FlwTask flwTask) {
+        List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+        if (ObjectUtils.isNotEmpty(nodeUserList)) {
+            // 抄送任务
+            FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
+            flwHisTask.setTaskType(TaskType.cc);
+            flwHisTask.calculateDuration();
+            hisTaskMapper.insert(flwHisTask);
             for (NodeAssignee nodeUser : nodeUserList) {
-                Long instanceId = execution.getFlwInstance().getId();
-                if (taskCcMapper.selectCount(Wrappers.<FlwTaskCc>lambdaQuery()
-                        .eq(FlwTaskCc::getInstanceId, instanceId)
-                        .eq(FlwTaskCc::getActorId, nodeUser.getId())) > 0) {
-                    /*
-                     * 同一个流程实例不重复抄送给同一人
-                     */
-                    continue;
-                }
-                FlwTaskCc flwTaskCc = new FlwTaskCc();
-                flwTaskCc.setFlowCreator(execution.getFlowCreator());
-                flwTaskCc.setCreateTime(DateUtils.getCurrentDate());
-                flwTaskCc.setInstanceId(instanceId);
-                flwTaskCc.setParentTaskId(parentTaskId);
-                flwTaskCc.setTaskName(nodeModel.getNodeName());
-                flwTaskCc.setDisplayName(nodeModel.getNodeName());
-                flwTaskCc.setActorId(nodeUser.getId());
-                flwTaskCc.setActorName(nodeUser.getName());
-                flwTaskCc.setTaskType(0);
-                flwTaskCc.setTaskState(1);
-                taskCcMapper.insert(flwTaskCc);
+                FlwTaskActor flwTaskActor = FlwTaskActor.ofNodeAssignee(nodeUser);
+                flwTaskActor.setInstanceId(flwHisTask.getInstanceId());
+                flwTaskActor.setTaskId(flwHisTask.getId());
+                hisTaskActorMapper.insert(FlwHisTaskActor.of(flwTaskActor));
             }
         }
     }
@@ -809,9 +794,6 @@ public class TaskServiceImpl implements TaskService {
         // 删除任务及参与者
         taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getInstanceId, instanceIds));
         taskMapper.delete(Wrappers.<FlwTask>lambdaQuery().in(FlwTask::getInstanceId, instanceIds));
-
-        // 删除任务抄送
-        taskCcMapper.delete(Wrappers.<FlwTaskCc>lambdaQuery().in(FlwTaskCc::getInstanceId, instanceIds));
     }
 
 }

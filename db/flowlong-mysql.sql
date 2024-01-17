@@ -109,28 +109,6 @@ CREATE TABLE `flw_task`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for flw_task_cc
--- ----------------------------
-DROP TABLE IF EXISTS `flw_task_cc`;
-CREATE TABLE `flw_task_cc`  (
-    `id` bigint NOT NULL COMMENT '主键ID',
-    `tenant_id` varchar(50) COMMENT '租户ID',
-    `create_id` varchar(50) NOT NULL COMMENT '创建人ID',
-    `create_by` varchar(50) NOT NULL COMMENT '创建人名称',
-    `create_time` timestamp NOT NULL COMMENT '创建时间',
-    `instance_id` bigint NOT NULL COMMENT '流程实例ID',
-    `parent_task_id` bigint COMMENT '父任务ID',
-    `task_name` varchar(100) NOT NULL COMMENT '任务名称',
-    `display_name` varchar(200) NOT NULL COMMENT '任务显示名称',
-    `actor_id` varchar(300) NOT NULL COMMENT '参与者ID',
-    `actor_name` varchar(300) NOT NULL COMMENT '参与者名称',
-    `task_type` int NOT NULL COMMENT '任务类型 0，用户 1，角色 2，部门',
-    `task_state` tinyint(1) NOT NULL DEFAULT 1 COMMENT '任务状态 0，结束 1，活动',
-    `finish_time` timestamp NULL DEFAULT NULL COMMENT '完成时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '抄送任务表' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for flw_his_instance
 -- ----------------------------
 DROP TABLE IF EXISTS `flw_his_instance`;
