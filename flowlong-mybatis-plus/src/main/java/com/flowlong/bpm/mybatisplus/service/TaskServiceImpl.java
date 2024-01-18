@@ -575,10 +575,7 @@ public class TaskServiceImpl implements TaskService {
             flwHisTask.calculateDuration();
             hisTaskMapper.insert(flwHisTask);
             for (NodeAssignee nodeUser : nodeUserList) {
-                FlwTaskActor flwTaskActor = FlwTaskActor.ofNodeAssignee(nodeUser);
-                flwTaskActor.setInstanceId(flwHisTask.getInstanceId());
-                flwTaskActor.setTaskId(flwHisTask.getId());
-                hisTaskActorMapper.insert(FlwHisTaskActor.of(flwTaskActor));
+                hisTaskActorMapper.insert(FlwHisTaskActor.ofNodeAssignee(nodeUser, flwHisTask.getInstanceId(), flwHisTask.getId()));
             }
         }
     }
@@ -620,14 +617,9 @@ public class TaskServiceImpl implements TaskService {
             if (hisTaskMapper.insert(flwHisTask) > 0) {
                 // 设置为执行任务
                 execution.setFlwTask(flwHisTask);
-                if (ObjectUtils.isNotEmpty(taskActors)) {
-                    taskActors.forEach(taskActor -> {
-                        taskActor.setId(null);
-                        taskActor.setInstanceId(flwTask.getInstanceId());
-                        taskActor.setTaskId(flwHisTask.getId());
-                        hisTaskActorMapper.insert(FlwHisTaskActor.of(taskActor));
-                    });
-                }
+                // 记录发起人
+                hisTaskActorMapper.insert(FlwHisTaskActor.ofFlwHisTask(flwHisTask));
+                flwTasks.add(flwTask);
             }
             return flwTasks;
         }
