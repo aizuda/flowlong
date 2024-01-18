@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 测试简单流程
@@ -37,7 +38,7 @@ public class TestPurchase extends MysqlTest {
             // 撤回任务（领导审批）
             QueryService queryService = flowLongEngine.queryService();
             List<FlwHisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
-            FlwHisTask hisTask = hisTasks.get(0);
+            FlwHisTask hisTask = hisTasks.stream().filter(t -> Objects.equals("领导审批", t.getTaskName())).findFirst().get();
             TaskService taskService = flowLongEngine.taskService();
             taskService.withdrawTask(hisTask.getId(), testCreator);
 
