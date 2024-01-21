@@ -29,4 +29,10 @@ public class FlowLongProperties {
     @NestedConfigurationProperty
     private RemindParam remind;
 
+    /**
+     * 事件监听配置
+     */
+    @NestedConfigurationProperty
+    private EventingParam eventing;
+
 }

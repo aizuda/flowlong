@@ -10,6 +10,12 @@
             "name": "flowlong.remind",
             "sourceMethod": "getRemind()",
             "type": "com.flowlong.bpm.engine.scheduling.RemindParam"
+        },
+        {
+            "sourceType": "com.flowlong.bpm.spring.autoconfigure.FlowLongProperties",
+            "name": "flowlong.eventing",
+            "sourceMethod": "getEventing()",
+            "type": "com.flowlong.bpm.spring.autoconfigure.EventingParam"
         }
     ],
     "properties": [
@@ -19,6 +25,13 @@
             "defaultValue": "*/5 * * * * ?",
             "description": "remind cron.",
             "type": "java.lang.String"
+        },
+        {
+            "sourceType": "com.flowlong.bpm.spring.autoconfigure.EventingParam",
+            "name":  "flowlong.eventing.task",
+            "defaultValue": false,
+            "description": "task event listener property.",
+            "type": "java.lang.Boolean"
         }
     ]
 }
