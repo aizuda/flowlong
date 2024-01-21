@@ -21,7 +21,42 @@ FlowLong🐉飞龙工作流
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
 
-🚩中国特色流程操作概念
+# 引入依赖
+
+- Snapshot
+
+快照 SNAPSHOT 版本需要添加仓库，且版本号为快照版本[点击查看](https://s01.oss.sonatype.org/content/repositories/snapshots/com/flowlong/flowlong-spring-boot-starter/)最新快照版本号。
+
+> Maven 添加仓库及依赖
+```
+<repository>
+    <id>snapshots</id>
+    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+</repository>
+```
+```
+<dependency>
+    <groupId>com.baomidou</groupId>
+    <artifactId>mybatis-plus</artifactId>
+    <version>最新版本</version>
+</dependency>
+```
+
+> Gradle 添加仓库及依赖
+```
+repositories {
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+}
+```
+```
+//Gradle Version:<4.1
+compile group: 'com.baomidou', name: 'mybatis-plus', version: '最新版本'
+//Gradle Version:>=4.1 (The function compile has been deprecated since Gradle 4.10, and removed since Gradle 7.0. Please use implementation instead.)
+implementation 'com.baomidou:mybatis-plus:最新版本'
+```
+
+
+# 🚩中国特色流程操作概念
 
 | 支持功能 | 功能描述                                                                    | 完成程度 |
 |------|-------------------------------------------------------------------------|------|

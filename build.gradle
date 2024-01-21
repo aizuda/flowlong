@@ -27,7 +27,7 @@ description = "FlowLong BPM"
 // 项目配置
 allprojects {
     group "com.flowlong"
-    version "0.0.1"
+    version "0.0.1-SNAPSHOT"
 }
 
 
@@ -36,6 +36,7 @@ allprojects {
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
     apply plugin: "io.spring.dependency-management"
 
     tasks.withType(JavaCompile) {
@@ -101,24 +102,114 @@ subprojects {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.warnings = false
+        options.deprecation = true
+        options.compilerArgs += ["-parameters"]
+    }
+
+    tasks.withType(GenerateModuleMetadata) {
+        enabled = false
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        archiveClassifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    javadoc {
+        options {
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            author true
+            version true
+            failOnError false
+            links "http://docs.oracle.com/javase/8/docs/api"
+        }
+    }
+
+    task javadocJar(type: Jar) {
+        archiveClassifier = 'javadoc'
+        from javadoc
+    }
+
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains('signMavenJavaPublication')) {
+            task.enabled = new File(project.property('signing.secretKeyRingFile') as String).isFile()
+        }
+    }
+
     publishing {
+        repositories {
+            maven {
+                def userName = System.getProperty("un")
+                def passWord = System.getProperty("ps")
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username userName
+                    password passWord
+                }
+            }
+        }
         publications {
             mavenJava(MavenPublication) {
-                groupId = "$project.group"
-                artifactId = "$project.name"
-                version = "$project.version"
                 from components.java
-                versionMapping {
-                    usage('java-api') {
-                        fromResolutionOf('runtimeClasspath')
+
+                artifact sourcesJar
+                artifact javadocJar
+
+                pom {
+                    name = 'flowlong'
+                    packaging 'jar'
+                    description = 'flowlong bpm engine'
+                    url = 'https://github.com/aizuda/flowlong'
+
+                    scm {
+                        connection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
+                        developerConnection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
+                        url = 'https://github.com/aizuda/flowlong'
                     }
-                    usage('java-runtime') {
-                        fromResolutionResult()
+
+                    licenses {
+                        license {
+                            name = 'The AGPL License, Version 3.0'
+                            url = 'https://www.gnu.org/licenses/agpl-3.0'
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = 'aizuda'
+                            name = '青苗'
+                            email = 'jobob@qq.com'
+                        }
+                    }
+
+                    withXml {
+                        def root = asNode()
+                        root.dependencies.'*'.findAll {
+                            def d = it
+                            d.scope.text() == 'runtime' && project.configurations.findByName("implementation").allDependencies.find { dep ->
+                                dep.name == it.artifactId.text()
+                            }.each() {
+                                d.scope*.value = 'compile'
+                                d.appendNode('optional', true)
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
+    signing {
+        sign publishing.publications.mavenJava
+    }
+
 
     // 编译任务忽略案例模块
     afterEvaluate { project ->
