@@ -13,6 +13,8 @@ spring:
 flowlong:
   remind:
     cron: "*/5 * * * * ?"
+  eventing:
+    task: true
 
 # Logger Config
 logging:
