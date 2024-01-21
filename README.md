@@ -36,8 +36,8 @@ FlowLong🐉飞龙工作流
 ```
 ```
 <dependency>
-    <groupId>com.baomidou</groupId>
-    <artifactId>mybatis-plus</artifactId>
+    <groupId>com.flowlong</groupId>
+    <artifactId>flowlong-spring-boot-starter</artifactId>
     <version>最新版本</version>
 </dependency>
 ```
@@ -50,9 +50,9 @@ repositories {
 ```
 ```
 //Gradle Version:<4.1
-compile group: 'com.baomidou', name: 'mybatis-plus', version: '最新版本'
+compile group: 'com.flowlong', name: 'flowlong-spring-boot-starter', version: '最新版本'
 //Gradle Version:>=4.1 (The function compile has been deprecated since Gradle 4.10, and removed since Gradle 7.0. Please use implementation instead.)
-implementation 'com.baomidou:mybatis-plus:最新版本'
+implementation 'com.flowlong:flowlong-spring-boot-starter:最新版本'
 ```
 
 
