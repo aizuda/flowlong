@@ -21,11 +21,13 @@ import com.flowlong.bpm.mybatisplus.service.TaskServiceImpl;
 import com.flowlong.bpm.spring.adaptive.FlowJacksonHandler;
 import com.flowlong.bpm.spring.adaptive.SpelExpression;
 import com.flowlong.bpm.spring.adaptive.SpringBootScheduler;
+import com.flowlong.bpm.spring.event.EventTaskListener;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -139,4 +141,14 @@ public class FlowLongAutoConfiguration {
         return flc.build(flowLongEngine);
     }
 
+    /**
+     * 注入自定义 TaskListener 实现该方法不再生效
+     *
+     * @param eventPublisher {@link ApplicationEventPublisher}
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public EventTaskListener taskListener(ApplicationEventPublisher eventPublisher) {
+        return new EventTaskListener(eventPublisher);
+    }
 }
