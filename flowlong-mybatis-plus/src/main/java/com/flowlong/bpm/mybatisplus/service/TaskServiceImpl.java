@@ -574,6 +574,8 @@ public class TaskServiceImpl implements TaskService {
             // 抄送任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
             flwHisTask.setTaskType(TaskType.cc);
+            // fix：参与类型添加抄送
+            flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskMapper.insert(flwHisTask);
             for (NodeAssignee nodeUser : nodeUserList) {
