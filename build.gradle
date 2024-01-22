@@ -2,7 +2,7 @@
 buildscript {
     ext {
         springBootVersion = "2.7.0"
-        mybatisPlusVersion = "3.5.3.2"
+        mybatisPlusVersion = "3.5.5"
         solonVersion = "2.5.11"
     }
 
@@ -73,8 +73,6 @@ subprojects {
             // orm db
             dependency("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
             dependency("com.baomidou:mybatis-plus-core:${mybatisPlusVersion}")
-            dependency("com.baomidou:mybatis-plus-annotation:${mybatisPlusVersion}")
-            dependency("com.baomidou:mybatis-plus-extension:${mybatisPlusVersion}")
 
         }
     }
