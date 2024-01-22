@@ -127,6 +127,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean userSelectFlag;
     /**
+     * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
+     */
+    private Map<String, Object> extendConfig;
+    /**
      * 子节点
      */
     private NodeModel childNode;
