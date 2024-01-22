@@ -86,19 +86,6 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
-    @ConditionalOnMissingBean
-    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
-                                                   TaskReminder taskReminder, JobLock jobLock) {
-        SpringBootScheduler scheduler = new SpringBootScheduler();
-        scheduler.setContext(flowLongContext);
-        scheduler.setRemindParam(properties.getRemind());
-        scheduler.setTaskReminder(taskReminder);
-        scheduler.setJobLock(jobLock);
-        return scheduler;
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public Expression expression() {
         return new SpelExpression();
@@ -140,6 +127,19 @@ public class FlowLongAutoConfiguration {
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
         return flc.build(flowLongEngine);
+    }
+
+    @Bean
+    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    @ConditionalOnMissingBean
+    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
+                                                   TaskReminder taskReminder, JobLock jobLock) {
+        SpringBootScheduler scheduler = new SpringBootScheduler();
+        scheduler.setContext(flowLongContext);
+        scheduler.setRemindParam(properties.getRemind());
+        scheduler.setTaskReminder(taskReminder);
+        scheduler.setJobLock(jobLock);
+        return scheduler;
     }
 
     /**

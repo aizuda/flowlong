@@ -135,7 +135,6 @@ public class TaskServiceImpl implements TaskService {
         if (0 == nodeModel.getType()) {
             // 发起节点，创建发起任务，分配发起人
             FlwTask initiationTask = this.createTaskBase(nodeModel, execution);
-            // 设置PerfromType为发起人
             initiationTask.setPerformType(PerformType.start);
             Assert.isFalse(taskMapper.insert(initiationTask) > 0, "Failed to create initiation task");
             taskActorMapper.insert(FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), initiationTask.getId()));
@@ -574,7 +573,6 @@ public class TaskServiceImpl implements TaskService {
             // 抄送任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
             flwHisTask.setTaskType(TaskType.cc);
-            // fix：参与类型添加抄送
             flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskMapper.insert(flwHisTask);
