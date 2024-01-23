@@ -85,26 +85,6 @@ public interface ProcessService {
     Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat);
 
     /**
-     * 根据InputStream输入流，部署流程定义
-     *
-     * @param id    流程定义id
-     * @param input 流程定义输入流
-     * @return true 成功 false 失败
-     */
-    default boolean redeploy(Long id, InputStream input) {
-        return StreamUtils.readBytes(input, t -> this.redeploy(id, t));
-    }
-
-    /**
-     * 根据 流程定义jsonString 重新部署流程定义
-     *
-     * @param id         流程定义id
-     * @param jsonString 流程定义json字符串
-     * @return true 成功 false 失败
-     */
-    boolean redeploy(Long id, String jsonString);
-
-    /**
      * 卸载指定的定义流程，更新为未启用状态
      *
      * @param id 流程定义ID

@@ -57,8 +57,12 @@ public class FlowLongContext {
     @Setter
     private static ProcessModelParser PROCESS_MODEL_PARSER;
 
-    public static ProcessModel parseProcessModel(String content, Long processId, boolean redeploy) {
-        return PROCESS_MODEL_PARSER.parse(content, processId, redeploy);
+    public static ProcessModel parseProcessModel(String content, String cacheKey, boolean redeploy) {
+        return PROCESS_MODEL_PARSER.parse(content, cacheKey, redeploy);
+    }
+
+    public static void invalidateProcessModel(String cacheKey) {
+        PROCESS_MODEL_PARSER.invalidate(cacheKey);
     }
 
     /**

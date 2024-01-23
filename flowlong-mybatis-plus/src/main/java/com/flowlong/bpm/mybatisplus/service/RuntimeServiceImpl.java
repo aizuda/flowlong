@@ -17,6 +17,8 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
+import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
 
@@ -41,15 +43,16 @@ public class RuntimeServiceImpl implements RuntimeService {
     private final TaskService taskService;
     private final FlwInstanceMapper instanceMapper;
     private final FlwHisInstanceMapper hisInstanceMapper;
+    private final FlwExtInstanceMapper extInstanceMapper;
 
-    public RuntimeServiceImpl(InstanceListener instanceListener,
-                              QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
-                              FlwHisInstanceMapper hisInstanceMapper) {
+    public RuntimeServiceImpl(InstanceListener instanceListener, QueryService queryService, TaskService taskService,
+                              FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper, FlwExtInstanceMapper extInstanceMapper) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceMapper = instanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
+        this.extInstanceMapper = extInstanceMapper;
     }
 
     /**
@@ -71,8 +74,21 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
         flwInstance.setVariable(args);
-        this.saveInstance(flwInstance);
+        this.saveInstance(flwInstance, process.getModelContent());
         return flwInstance;
+    }
+
+    /**
+     * 根据流程实例ID获取流程实例模型
+     *
+     * @param instanceId 流程实例ID
+     * @return {@link ProcessModel}
+     */
+    @Override
+    public ProcessModel getProcessModelByInstanceId(Long instanceId) {
+        FlwExtInstance flwExtInstance = extInstanceMapper.selectById(instanceId);
+        Assert.isNull(flwExtInstance, "The process instance model does not exist.");
+        return flwExtInstance.model();
     }
 
     /**
@@ -139,16 +155,20 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 流程实例数据会保存至活动实例表、历史实例表
      *
-     * @param flwInstance 流程实例对象
+     * @param flwInstance  流程实例对象
+     * @param modelContent 流程定义模型内容
      */
     @Override
-    public void saveInstance(FlwInstance flwInstance) {
-        // 保存实例
+    public void saveInstance(FlwInstance flwInstance, String modelContent) {
+        // 保存流程实例
         instanceMapper.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
         FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.active);
         hisInstanceMapper.insert(flwHisInstance);
+
+        // 保存扩展流程实例
+        extInstanceMapper.insert(FlwExtInstance.of(flwInstance, modelContent));
 
         // 流程实例监听器通知
         this.instanceNotify(EventType.create, () -> flwHisInstance);
@@ -234,6 +254,9 @@ public class RuntimeServiceImpl implements RuntimeService {
         if (ObjectUtils.isNotEmpty(flwHisInstances)) {
             // 删除活动任务相关信息
             taskService.cascadeRemoveByInstanceIds(flwHisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+
+            // 删除扩展实例
+            extInstanceMapper.delete(Wrappers.<FlwExtInstance>lambdaQuery().eq(FlwExtInstance::getProcessId, processId));
 
             // 删除历史实例
             hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery().eq(FlwHisInstance::getProcessId, processId));

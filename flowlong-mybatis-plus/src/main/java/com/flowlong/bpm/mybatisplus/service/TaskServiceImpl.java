@@ -115,7 +115,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 执行跳转到目标节点
         Execution execution = executionFunction.apply(flwTask);
-        ProcessModel processModel = execution.getProcess().model();
+        ProcessModel processModel = execution.getProcessModel();
         Assert.isNull(processModel, "当前任务未找到流程定义模型");
 
         // 查找模型节点

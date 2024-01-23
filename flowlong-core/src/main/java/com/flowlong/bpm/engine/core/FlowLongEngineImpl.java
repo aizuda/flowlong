@@ -14,6 +14,7 @@ import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.model.NodeAssignee;
 import com.flowlong.bpm.engine.model.NodeModel;
+import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
@@ -82,7 +83,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (log.isDebugEnabled()) {
                 log.debug("创建流程实例对象:" + flwInstance);
             }
-            return new Execution(this, process, flowCreator, flwInstance, args);
+            return new Execution(this, process.model(), flowCreator, flwInstance, args);
         });
     }
 
@@ -106,7 +107,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 完成任务，并且构造执行对象
         return this.execute(taskId, flowCreator, args, execution -> {
             // 执行节点模型
-            return execution.getProcess().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
+            return execution.getProcessModel().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
         });
     }
 
@@ -118,8 +119,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeName, flowCreator, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
-            FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
-            return new Execution(this, process, flowCreator, flwInstance, null);
+            ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+            return new Execution(this, processModel, flowCreator, flwInstance, null);
         });
     }
 
@@ -165,7 +166,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         /*
          * 流程模型
          */
-        FlwProcess process = processService().getProcessById(flwInstance.getProcessId());
+        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
 
         /*
          * 票签（ 总权重大于 50% 表示通过 ）
@@ -173,7 +174,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.voteSign) {
             Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
             if (flwTaskActorsOptional.isPresent()) {
-                NodeModel nodeModel = process.model().getNode(flwTask.getTaskName());
+                NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
@@ -199,14 +200,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 args.put(entry.getKey(), entry.getValue());
             }
         }
-        Execution execution = new Execution(this, process, flowCreator, flwInstance, args);
+        Execution execution = new Execution(this, processModel, flowCreator, flwInstance, args);
         execution.setFlwTask(flwTask);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = process.model().getNode(flwTask.getTaskName());
+            NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();

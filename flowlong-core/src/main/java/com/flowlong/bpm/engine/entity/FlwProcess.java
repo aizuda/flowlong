@@ -3,7 +3,10 @@
  */
 package com.flowlong.bpm.engine.entity;
 
+import com.flowlong.bpm.engine.FlowConstants;
+import com.flowlong.bpm.engine.ProcessModelCache;
 import com.flowlong.bpm.engine.assist.Assert;
+import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
@@ -31,7 +34,7 @@ import java.util.function.Function;
 @Getter
 @Setter
 @ToString
-public class FlwProcess extends FlowEntity {
+public class FlwProcess extends FlowEntity implements ProcessModelCache {
     /**
      * 流程定义 key 唯一标识
      */
@@ -82,38 +85,22 @@ public class FlwProcess extends FlowEntity {
         this.processState = flowState.getValue();
     }
 
-    /**
-     * 模型解析
-     */
-    public ProcessModel model() {
-        if (null == this.modelContent) {
-            return null;
-        }
-        return FlowLongContext.parseProcessModel(this.modelContent, this.id, false);
+    @Override
+    public String modelCacheKey() {
+        return FlowConstants.processCacheKey + this.id;
     }
 
-    /**
-     * 执行节点模型
-     *
-     * @param flowLongContext 流程引擎上下文
-     * @param execution       流程执行对象
-     * @param nodeName        节点名称
-     */
-    public boolean executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
-        Assert.isNull(this.modelContent, "FlwProcess modelContent cannot be empty");
-        NodeModel nodeModel = this.model().getNode(nodeName);
-        Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
-        if (executeNodeOptional.isPresent()) {
-            // 执行流程节点
-            NodeModel executeNode = executeNodeOptional.get();
-            return executeNode.execute(flowLongContext, execution);
-        }
-
-        /*
-         * 无执行节点流程结束
-         */
-        return execution.endInstance();
+    public static FlwProcess of(FlowCreator flowCreator, ProcessModel processModel, String jsonString) {
+        FlwProcess process = new FlwProcess();
+        process.setProcessVersion(1);
+        process.setFlowState(FlowState.active);
+        process.setProcessKey(processModel.getKey());
+        process.setProcessName(processModel.getName());
+        process.setInstanceUrl(processModel.getInstanceUrl());
+        process.setUseScope(0);
+        process.setFlowCreator(flowCreator);
+        process.setCreateTime(DateUtils.getCurrentDate());
+        return process.formatModelContent(jsonString);
     }
 
     /**
@@ -155,5 +142,12 @@ public class FlwProcess extends FlowEntity {
     public FlwProcess formatModelContent(String modelContent) {
         this.modelContent = FlowLongContext.toJson(FlowLongContext.fromJson(modelContent, ProcessModel.class));
         return this;
+    }
+
+    /**
+     * 下一个流程版本
+     */
+    public int nextProcessVersion() {
+        return processVersion + 1;
     }
 }

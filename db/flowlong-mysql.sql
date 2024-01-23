@@ -162,6 +162,19 @@ CREATE TABLE `flw_instance`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '流程实例表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Table structure for flw_instance
+-- ----------------------------
+DROP TABLE IF EXISTS `flw_ext_instance`;
+CREATE TABLE `flw_ext_instance`  (
+    `id` bigint NOT NULL COMMENT '主键ID',
+    `tenant_id` varchar(50) COMMENT '租户ID',
+    `process_id` bigint NOT NULL COMMENT '流程定义ID',
+    `model_content` text COMMENT '流程模型定义JSON内容',
+    PRIMARY KEY (`id`) USING BTREE,
+    CONSTRAINT `fk_ext_instance_id` FOREIGN KEY (`id`) REFERENCES `flw_his_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '扩展流程实例表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
 -- Table structure for flw_process
 -- ----------------------------
 DROP TABLE IF EXISTS `flw_process`;

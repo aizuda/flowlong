@@ -42,10 +42,9 @@ public class DefaultProcessModelParser implements ProcessModelParser {
     }
 
     @Override
-    public ProcessModel parse(String content, Long processId, boolean redeploy) {
+    public ProcessModel parse(String content, String cacheKey, boolean redeploy) {
         // 缓存解析逻辑
-        if (null != processId) {
-            final String cacheKey = "flwProcessModel#" + processId;
+        if (null != cacheKey) {
             FlowCache flowCache = this.getFlowCache();
             ProcessModel processModel = flowCache.get(cacheKey);
             if (null == processModel || redeploy) {
@@ -64,5 +63,10 @@ public class DefaultProcessModelParser implements ProcessModelParser {
         Assert.isNull(processModel, "process model json parser error");
         processModel.buildParentNode(processModel.getNodeConfig());
         return processModel;
+    }
+
+    @Override
+    public void invalidate(String cacheKey) {
+        this.getFlowCache().remove(cacheKey);
     }
 }

@@ -3,13 +3,14 @@
  */
 package com.flowlong.bpm.engine.core;
 
+import com.flowlong.bpm.engine.FlowConstants;
 import com.flowlong.bpm.engine.FlowLongEngine;
 import com.flowlong.bpm.engine.TaskActorProvider;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.entity.FlwInstance;
-import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
+import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,9 +37,9 @@ public class Execution implements Serializable {
      */
     private FlowLongEngine engine;
     /**
-     * 流程定义对象
+     * JSON BPM 模型
      */
-    private FlwProcess process;
+    private ProcessModel processModel;
     /**
      * 流程实例对象
      */
@@ -85,15 +86,15 @@ public class Execution implements Serializable {
      * 用于产生子流程执行对象使用
      *
      * @param execution      {@link Execution}
-     * @param process        {@link FlwProcess}
+     * @param processModel   {@link ProcessModel}
      * @param parentNodeName 上一节点名称
      */
-    Execution(Execution execution, FlwProcess process, String parentNodeName) {
-        if (execution == null || process == null || parentNodeName == null) {
+    Execution(Execution execution, ProcessModel processModel, String parentNodeName) {
+        if (execution == null || processModel == null || parentNodeName == null) {
             throw Assert.throwable("构造Execution对象失败，请检查execution、process、parentNodeName是否为空");
         }
         this.engine = execution.getEngine();
-        this.process = process;
+        this.processModel = processModel;
         this.args = execution.getArgs();
         this.parentFlwInstance = execution.getFlwInstance();
         this.parentNodeName = parentNodeName;
@@ -103,19 +104,19 @@ public class Execution implements Serializable {
     /**
      * 构造函数，接收流程定义、流程实例对象、执行参数
      *
-     * @param engine      {@link FlowLongEngine}
-     * @param process     {@link FlwProcess}
-     * @param flowCreator {@link FlowCreator}
-     * @param flwInstance {@link FlwInstance}
-     * @param args        执行参数
+     * @param engine       {@link FlowLongEngine}
+     * @param processModel {@link ProcessModel}
+     * @param flowCreator  {@link FlowCreator}
+     * @param flwInstance  {@link FlwInstance}
+     * @param args         执行参数
      */
-    public Execution(FlowLongEngine engine, FlwProcess process, FlowCreator flowCreator,
+    public Execution(FlowLongEngine engine, ProcessModel processModel, FlowCreator flowCreator,
                      FlwInstance flwInstance, Map<String, Object> args) {
-        if (process == null || flwInstance == null) {
+        if (processModel == null || flwInstance == null) {
             throw Assert.throwable("构造Execution对象失败，请检查process、order是否为空");
         }
         this.engine = engine;
-        this.process = process;
+        this.processModel = processModel;
         this.flowCreator = flowCreator;
         this.flwInstance = flwInstance;
         this.args = args;
@@ -125,12 +126,12 @@ public class Execution implements Serializable {
      * 根据当前执行对象execution、子流程定义process、当前节点名称产生子流程的执行对象
      *
      * @param execution      {@link Execution}
-     * @param process        {@link FlwProcess}
+     * @param processModel   {@link ProcessModel}
      * @param parentNodeName 上一节点名称
      * @return {@link Execution}
      */
-    public Execution createSubExecution(Execution execution, FlwProcess process, String parentNodeName) {
-        return new Execution(execution, process, parentNodeName);
+    public Execution createSubExecution(Execution execution, ProcessModel processModel, String parentNodeName) {
+        return new Execution(execution, processModel, parentNodeName);
     }
 
     /**
@@ -144,6 +145,11 @@ public class Execution implements Serializable {
             Assert.illegal(flwTask.major(), "存在未完成的主办任务");
             engine.taskService().complete(flwTask.getId(), this.flowCreator);
         }
+
+        /*
+         * 销毁流程实例模型缓存
+         */
+        FlowLongContext.invalidateProcessModel(FlowConstants.processInstanceCacheKey + flwInstance.getId());
 
         /*
          * 结束当前流程实例

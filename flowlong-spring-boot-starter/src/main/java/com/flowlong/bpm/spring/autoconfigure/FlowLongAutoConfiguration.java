@@ -67,10 +67,10 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener,
-                                         QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
-                                         FlwHisInstanceMapper hisInstanceMapper) {
-        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper);
+    public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener, QueryService queryService,
+                                         TaskService taskService, FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                                         FlwExtInstanceMapper extInstanceMapper) {
+        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper, extInstanceMapper);
     }
 
     @Bean

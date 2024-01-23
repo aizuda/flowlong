@@ -62,10 +62,10 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @Condition(onMissingBean = RuntimeService.class)
-    public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener,
-                                         QueryService queryService, TaskService taskService, FlwInstanceMapper instanceMapper,
-                                         FlwHisInstanceMapper hisInstanceMapper) {
-        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper);
+    public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener, QueryService queryService,
+                                         TaskService taskService, FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                                         FlwExtInstanceMapper extInstanceMapper) {
+        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper, extInstanceMapper);
     }
 
     @Bean

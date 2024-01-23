@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.flowlong.bpm.engine.ProcessService;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.assist.Assert;
-import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
@@ -100,27 +99,19 @@ public class ProcessServiceImpl implements ProcessService {
                     .eq(FlwProcess::getProcessKey, processModel.getKey())
                     .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
                     .orderByDesc(FlwProcess::getProcessVersion));
-            Integer version = 0;
             if (ObjectUtils.isNotEmpty(processList)) {
                 FlwProcess process = processList.get(0);
                 if (!repeat) {
                     return process.getId();
                 }
-                version = process.getProcessVersion();
+                Assert.isFalse(this.redeploy(process.getId(), jsonString, process.nextProcessVersion()), "Redeploy failed");
+                return process.getId();
             }
             /*
              * 当前版本 +1 添加一条新的流程记录
              */
-            FlwProcess process = new FlwProcess();
-            process.setProcessVersion(version + 1);
-            process.setFlowState(FlowState.active);
-            process.setProcessKey(processModel.getKey());
-            process.setProcessName(processModel.getName());
-            process.setInstanceUrl(processModel.getInstanceUrl());
-            process.setUseScope(0);
-            process.setFlowCreator(flowCreator);
-            process.setCreateTime(DateUtils.getCurrentDate());
-            Assert.isZero(processMapper.insert(process.formatModelContent(jsonString)), "Failed to save the deployment process");
+            FlwProcess process = FlwProcess.of(flowCreator, processModel, jsonString);
+            Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -131,15 +122,16 @@ public class ProcessServiceImpl implements ProcessService {
     /**
      * 根据 流程定义jsonString 重新部署流程定义
      *
-     * @param id         流程定义id
-     * @param jsonString 流程定义json字符串
+     * @param id             流程定义id
+     * @param jsonString     流程定义json字符串
+     * @param processVersion 流程版本
      * @return true 成功 false 失败
      */
-    @Override
-    public boolean redeploy(Long id, String jsonString) {
+    public boolean redeploy(Long id, String jsonString, int processVersion) {
         FlwProcess process = processMapper.selectById(id);
         Assert.isNull(process);
-        ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, id, true);
+        ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, process.modelCacheKey(), true);
+        process.setProcessVersion(processVersion);
         process.setProcessKey(processModel.getKey());
         process.setProcessName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());

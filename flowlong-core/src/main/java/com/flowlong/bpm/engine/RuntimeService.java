@@ -7,6 +7,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.model.ProcessModel;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -36,6 +37,14 @@ public interface RuntimeService {
     FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, Supplier<FlwInstance> supplier);
 
     /**
+     * 根据流程实例ID获取流程实例模型
+     *
+     * @param instanceId 流程实例ID
+     * @return {@link ProcessModel}
+     */
+    ProcessModel getProcessModelByInstanceId(Long instanceId);
+
+    /**
      * 向指定实例id添加全局变量数据
      *
      * @param instanceId 实例id
@@ -55,9 +64,10 @@ public interface RuntimeService {
     /**
      * 保存流程实例
      *
-     * @param flwInstance 流程实例对象
+     * @param flwInstance  流程实例对象
+     * @param modelContent 流程定义模型内容
      */
-    void saveInstance(FlwInstance flwInstance);
+    void saveInstance(FlwInstance flwInstance, String modelContent);
 
     /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）
@@ -86,7 +96,7 @@ public interface RuntimeService {
     /**
      * 流程实例超时（忽略操作权限）
      *
-     * @param instanceId  流程实例ID
+     * @param instanceId 流程实例ID
      */
     default void timeout(Long instanceId) {
         this.timeout(instanceId, FlowCreator.ADMIN);
