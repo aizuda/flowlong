@@ -250,7 +250,6 @@ public interface TaskService {
      *
      * @param callProcessId  调用外部流程定义ID
      * @param callInstanceId 调用外部流程实例ID
-     * @return true 成功 false 失败
      */
     void endCallProcessTask(Long callProcessId, Long callInstanceId);
 
