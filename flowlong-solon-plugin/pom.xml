@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.flowlong</groupId>
         <artifactId>flowlong</artifactId>
-        <version>0.0.1</version>
+        <version>${revision}</version>
     </parent>
 
     <artifactId>flowlong-solon-plugin</artifactId>
