@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.flowlong</groupId>
     <artifactId>flowlong</artifactId>
-    <version>0.0.1</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -15,17 +15,18 @@
     </modules>
 
     <properties>
+        <revision>0.0.1</revision>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.7.0</spring-boot.version>
         <mybatis.plus-version>3.5.3.2</mybatis.plus-version>
         <mysql.version>8.0.32</mysql.version>
         <solon.version>2.6.0</solon.version>
-        <flowlong-version>0.0.1</flowlong-version>
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <lombok.version>1.18.30</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -40,22 +41,22 @@
             <dependency>
                 <groupId>com.flowlong</groupId>
                 <artifactId>flowlong-core</artifactId>
-                <version>${flowlong-version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.flowlong</groupId>
                 <artifactId>flowlong-mybatis-plus</artifactId>
-                <version>${flowlong-version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.flowlong</groupId>
                 <artifactId>flowlong-spring-boot-starter</artifactId>
-                <version>${flowlong-version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>com.flowlong</groupId>
                 <artifactId>flowlong-solon-plugin</artifactId>
-                <version>${flowlong-version}</version>
+                <version>${revision}</version>
             </dependency>
             <dependency>
                 <groupId>mysql</groupId>
@@ -105,6 +106,34 @@
     </repositories>
 
     <build>
+        <plugins>
+            <!-- 统一 revision 版本 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <!-- maven-surefire-plugin 插件，用于运行单元测试。 -->
