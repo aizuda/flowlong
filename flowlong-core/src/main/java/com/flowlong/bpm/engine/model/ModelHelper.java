@@ -3,7 +3,8 @@
  */
 package com.flowlong.bpm.engine.model;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * 流程模型辅助类
@@ -41,5 +42,87 @@ public class ModelHelper {
 
         // 往上继续找下一个执行节点
         return findNextNode(parentNode);
+    }
+
+    /**
+     * 获取节点 Map 格式列表
+     *
+     * @param rootNode   模型根节点
+     * @param biConsumer 模型节点处理消费者
+     */
+    public static List<Map<String, Object>> getNodeMapList(NodeModel rootNode, BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
+        List<Map<String, Object>> nodeMapList = new ArrayList<>();
+        nodeMapList.add(getNodeMap(rootNode, biConsumer));
+        int i = 0;
+        buildNodeModel(nodeMapList, rootNode, i, biConsumer);
+        return nodeMapList;
+    }
+
+    private static void buildNodeModel(List<Map<String, Object>> nodeMapList, NodeModel rootNode, int i,
+                                BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
+        List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
+        if (null != conditionNodes) {
+            // 处理条件节点
+            Map<String, Object> nodeMap = new HashMap<>();
+            nodeMap.put("conditionNode", 1);
+            int j = 0;
+            i = i + 1;
+            List<Map<String, Object>> conditionNodeMapList = new ArrayList<>();
+            for (ConditionNode conditionNode : conditionNodes) {
+                // 添加条件节点
+                Map<String, Object> conditionNodeMap = new HashMap<>();
+                j = j + 1;
+                conditionNodeMap.put("index", i + "_" + j);// 索引位置
+                conditionNodeMap.put("name", conditionNode.getNodeName());
+                conditionNodeMap.put("type", conditionNode.getType());
+                conditionNodeMap.put("priorityLevel", conditionNode.getPriorityLevel());
+                List<Map<String, Object>> conditionChildNodeMapList = new ArrayList<>();
+
+                // 递归条件子节点
+                NodeModel conditionChildNode = conditionNode.getChildNode();
+                if (null != conditionChildNode) {
+                    conditionChildNodeMapList.add(getNodeMap(conditionChildNode, biConsumer));
+                    buildNodeModel(conditionChildNodeMapList, conditionChildNode, i, biConsumer);
+                }
+                conditionNodeMap.put("childNode", conditionChildNodeMapList);
+                conditionNodeMapList.add(conditionNodeMap);
+            }
+            nodeMap.put("conditionNodeList", conditionNodeMapList);
+            nodeMapList.add(nodeMap);
+        } else {
+            // 递归子节点
+            NodeModel childNode = rootNode.getChildNode();
+            if (null != childNode) {
+                if (!Objects.equals(4, childNode.getType())) {
+                    nodeMapList.add(getNodeMap(childNode, biConsumer));
+                }
+                buildNodeModel(nodeMapList, childNode, i, biConsumer);
+            }
+        }
+    }
+
+    private static Map<String, Object> getNodeMap(NodeModel nodeModel, BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
+        Map<String, Object> nodeMap = new HashMap<>();
+        nodeMap.put("conditionNode", 0);
+        nodeMap.put("name", nodeModel.getNodeName());// 节点名称
+        nodeMap.put("type", nodeModel.getType());// 节点类型
+        nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
+        List<NodeAssignee> nodeAssigneeList = null;
+        if (Objects.equals(1, nodeModel.getSetType())) {
+            nodeAssigneeList = nodeModel.getNodeUserList();
+        } else if (Objects.equals(3, nodeModel.getSetType())) {
+            nodeAssigneeList = nodeModel.getNodeRoleList();
+        }
+        nodeMap.put("nodeAssigneeList", nodeAssigneeList);// 审核人
+        nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
+        nodeMap.put("callProcessKey", nodeModel.getCallProcessKey());// 调用外部流程定义 key 唯一标识
+        nodeMap.put("selectMode", nodeModel.getSelectMode());// 发起人自选类型
+        nodeMap.put("userSelectFlag", nodeModel.getUserSelectFlag());// 允许发起人自选抄送人
+        nodeMap.put("examineMode", nodeModel.getExamineMode());// 多人审批时审批方式
+        if (null != biConsumer) {
+            // 自定义处理消费者
+            biConsumer.accept(nodeMap, nodeModel);
+        }
+        return nodeMap;
     }
 }
