@@ -3,6 +3,7 @@ package test.mysql;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.mybatisplus.mapper.FlwProcessMapper;
 import org.junit.jupiter.api.Assertions;
@@ -85,6 +86,23 @@ public class TestIssue extends MysqlTest {
 
             // 流程实例强制终止
             flowLongEngine.runtimeService().revoke(instance.getId(), test3Creator);
+        });
+    }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I8YVHC">FlwInstance 获取 variable 变量值</a>
+     */
+    @Test
+    public void testFlwInstanceVariable() {
+        Long processId = this.deployByResource("test/purchase.json", testCreator);
+
+        // 启动发起
+        flowLongEngine.startInstanceById(processId, test3Creator, new HashMap<String, Object>(){{
+            put("hi", 123);
+            put("go", "abc");
+        }}).ifPresent(instance -> {
+            FlwInstance flwInstance = flowLongEngine.queryService().getInstance(instance.getId());
+            Assertions.assertEquals(flwInstance.variableToMap().get("hi"), 123);
         });
     }
 }

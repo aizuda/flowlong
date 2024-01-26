@@ -73,7 +73,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
-        flwInstance.setVariable(args);
+        flwInstance.setMapVariable(args);
         this.saveInstance(flwInstance, process.getModelContent());
         return flwInstance;
     }
@@ -100,11 +100,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void addVariable(Long instanceId, Map<String, Object> args) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
-        Map<String, Object> data = flwInstance.getVariableMap();
+        Map<String, Object> data = flwInstance.variableToMap();
         data.putAll(args);
         FlwInstance temp = new FlwInstance();
         temp.setId(instanceId);
-        temp.setVariable(data);
+        temp.setMapVariable(data);
         instanceMapper.updateById(temp);
     }
 

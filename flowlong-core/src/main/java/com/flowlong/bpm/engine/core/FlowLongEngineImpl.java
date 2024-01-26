@@ -191,7 +191,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         /*
          * 追加实例参数
          */
-        Map<String, Object> instanceMaps = flwInstance.getVariableMap();
+        Map<String, Object> instanceMaps = flwInstance.variableToMap();
         if (instanceMaps != null) {
             for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
                 if (args.containsKey(entry.getKey())) {

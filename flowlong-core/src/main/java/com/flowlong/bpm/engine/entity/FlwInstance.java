@@ -74,13 +74,13 @@ public class FlwInstance extends FlowEntity {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, Object> getVariableMap() {
+    public Map<String, Object> variableToMap() {
         Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();
         return map;
     }
 
-    public void setVariable(Map<String, Object> args) {
+    public void setMapVariable(Map<String, Object> args) {
         this.variable = FlowLongContext.toJson(args);
     }
 }
