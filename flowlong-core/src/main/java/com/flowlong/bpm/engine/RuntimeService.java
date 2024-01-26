@@ -7,6 +7,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
+import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 
 import java.util.Map;
@@ -123,4 +124,16 @@ public interface RuntimeService {
      * @param processId 流程ID
      */
     void cascadeRemoveByProcessId(Long processId);
+
+    /**
+     * 追加节点模型（不执行任务跳转）
+     * <p>
+     * 执行追加节点模型调用 {@link FlowLongEngine#executeAppendNodeModel(Long, NodeModel, FlowCreator, boolean)}
+     * </p>
+     *
+     * @param taskId      任务ID
+     * @param nodeModel   节点模型
+     * @param beforeAfter true 前置 false 后置
+     */
+    void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter);
 }

@@ -124,6 +124,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         });
     }
 
+    @Override
+    public boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
+        // 追加指定节点模型
+        runtimeService().appendNodeModel(taskId, nodeModel, beforeAfter);
+
+        // 执行任务并跳转到指定节点
+        return executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator);
+    }
+
     /**
      * 获取流程实例
      *

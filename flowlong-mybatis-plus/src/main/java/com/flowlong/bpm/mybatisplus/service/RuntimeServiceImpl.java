@@ -12,11 +12,13 @@ import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
+import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
+import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
@@ -266,4 +268,26 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
     }
 
+    @Override
+    public void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter) {
+        FlwTask flwTask = queryService.getTask(taskId);
+        FlwExtInstance flwExtInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
+        String appendTaskName = flwTask.getTaskName();
+
+        // 前置追溯父节点
+        if (beforeAfter) {
+            NodeModel parentNode = flwExtInstance.model().getNode(appendTaskName).getParentNode();
+            appendTaskName = parentNode.getNodeName();
+        }
+
+        // 追加节点模型
+        ProcessModel processModel = FlowLongContext.fromJson(flwExtInstance.getModelContent(), ProcessModel.class);
+        processModel.getNodeConfig().appendChildNode(appendTaskName, nodeModel);
+
+        // 更新最新模型
+        FlwExtInstance temp = new FlwExtInstance();
+        temp.setId(flwExtInstance.getId());
+        temp.setModelContent(FlowLongContext.toJson(processModel));
+        Assert.isFalse(extInstanceMapper.updateById(temp) != 1, "Update FlwExtInstance Failed");
+    }
 }

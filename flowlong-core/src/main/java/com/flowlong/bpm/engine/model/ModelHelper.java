@@ -32,7 +32,7 @@ public class ModelHelper {
         }
 
         // 如果当前节点不是条件分支的子节点、而是条件审批的子节点
-        if (parentNode.isConditionNode()) {
+        if (parentNode.conditionNode()) {
             NodeModel childNode = parentNode.getChildNode();
             if (null != childNode && !Objects.equals(childNode.getNodeName(), nodeModel.getNodeName())) {
                 // 条件执行节点，返回子节点

@@ -7,6 +7,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.entity.FlwInstance;
+import com.flowlong.bpm.engine.model.NodeModel;
 
 import java.util.Map;
 import java.util.Optional;
@@ -157,4 +158,14 @@ public interface FlowLongEngine {
      */
     boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator);
 
+    /**
+     * 执行追加节点模型
+     *
+     * @param taskId      当前任务ID
+     * @param nodeModel   加签节点模型
+     * @param flowCreator 任务创建者
+     * @param beforeAfter true 前置 false 后置
+     * @return true 成功 false 失败
+     */
+    boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter);
 }

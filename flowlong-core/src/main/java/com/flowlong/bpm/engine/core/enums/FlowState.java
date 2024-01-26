@@ -1,8 +1,11 @@
 package com.flowlong.bpm.engine.core.enums;
 
+import lombok.Getter;
+
 /**
  * 流程状态
  */
+@Getter
 public enum FlowState {
     /**
      * 启用
@@ -17,10 +20,6 @@ public enum FlowState {
 
     FlowState(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
 }

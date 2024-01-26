@@ -3,6 +3,8 @@
  */
 package com.flowlong.bpm.engine.core.enums;
 
+import lombok.Getter;
+
 import java.util.Arrays;
 
 /**
@@ -15,6 +17,7 @@ import java.util.Arrays;
  * @author hubin
  * @since 1.0
  */
+@Getter
 public enum PerformType {
     /**
      * 未知
@@ -49,10 +52,6 @@ public enum PerformType {
 
     PerformType(int value) {
         this.value = value;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     public static PerformType get(Integer value) {

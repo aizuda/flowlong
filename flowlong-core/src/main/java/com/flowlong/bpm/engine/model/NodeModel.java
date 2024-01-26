@@ -251,8 +251,34 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 判断是否为条件节点
      */
-    public boolean isConditionNode() {
+    public boolean conditionNode() {
         return 3 == type || 4 == type;
     }
 
+    /**
+     * 指定节点名称后追加新的节点模型
+     *
+     * @param targetNodeName 指定节点名称
+     * @param nodeModel      追加节点模型
+     */
+    public void appendChildNode(String targetNodeName, NodeModel nodeModel) {
+        if (Objects.equals(nodeName, targetNodeName)) {
+            // 找到指定节点名称追加新节点
+            nodeModel.childNode = childNode;
+            childNode = nodeModel;
+        } else {
+            // 递归条件节点
+            if (null != conditionNodes) {
+                NodeModel fromConditionNode = getFromConditionNodes(nodeName);
+                if (fromConditionNode != null) {
+                    fromConditionNode.appendChildNode(targetNodeName, nodeModel);
+                }
+            }
+
+            // 递归调用，处理子节点
+            if (null != childNode) {
+                childNode.appendChildNode(targetNodeName, nodeModel);
+            }
+        }
+    }
 }
