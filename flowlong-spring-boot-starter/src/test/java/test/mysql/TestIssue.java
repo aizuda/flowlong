@@ -103,6 +103,14 @@ public class TestIssue extends MysqlTest {
         }}).ifPresent(instance -> {
             FlwInstance flwInstance = flowLongEngine.queryService().getInstance(instance.getId());
             Assertions.assertEquals(flwInstance.variableToMap().get("hi"), 123);
+
+            /*
+             * 领导审批，debug 查看 {@link NodeModel#execute 方法 arg 参数是否传递}
+             */
+            this.executeActiveTasks(instance.getId(), testCreator, new HashMap<String, Object>(){{
+                put("hi", 678);// 会覆盖实例参数 123
+                put("day", 8);
+            }});
         });
     }
 }
