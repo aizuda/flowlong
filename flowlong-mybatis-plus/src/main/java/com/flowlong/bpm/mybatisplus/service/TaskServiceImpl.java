@@ -280,32 +280,61 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 根据 任务ID 分配任务给指定办理人、重置任务类型
      *
-     * @param taskId            任务ID
-     * @param taskType          任务类型
-     * @param taskActor         任务参与者
-     * @param assigneeTaskActor 指定办理人
+     * @param taskId              任务ID
+     * @param taskType            任务类型
+     * @param flowCreator         任务参与者
+     * @param assigneeFlowCreator 指定办理人
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
-        // 转办权限验证
-        List<FlwTaskActor> taskActors = taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId)
-                .eq(FlwTaskActor::getActorId, taskActor.getActorId()));
-        Assert.isTrue(ObjectUtils.isEmpty(taskActors), "无权转办该任务");
+    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+        // 受理任务权限验证
+        FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
         // 设置任务为委派任务或者为转办任务
         FlwTask flwTask = new FlwTask();
         flwTask.setId(taskId);
         flwTask.setTaskType(taskType);
-        flwTask.setAssignorId(taskActor.getActorId());
-        flwTask.setAssignor(taskActor.getActorName());
+        flwTask.setAssignorId(flowCreator.getCreateId());
+        flwTask.setAssignor(flowCreator.getCreateBy());
         taskMapper.updateById(flwTask);
 
         // 删除任务历史参与者
-        taskActorMapper.deleteBatchIds(taskActors.stream().map(FlwTaskActor::getId).collect(Collectors.toList()));
+        taskActorMapper.deleteById(flwTaskActor.getId());
 
         // 分配任务给办理人
-        assignTask(taskActors.get(0).getInstanceId(), taskId, assigneeTaskActor);
+        this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(assigneeFlowCreator));
+        return true;
+    }
+
+    /**
+     * 获取指定 任务ID 合法参与者对象
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务参与者
+     */
+    protected FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator) {
+        List<FlwTaskActor> taskActors = taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId)
+                .eq(FlwTaskActor::getActorId, flowCreator.getCreateId()));
+        Optional<FlwTaskActor> taskActorOpt = taskActors.stream().filter(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId())).findFirst();
+        Assert.isTrue(!taskActorOpt.isPresent(), "Not authorized to perform this task");
+        return taskActorOpt.get();
+    }
+
+    /**
+     * 根据 任务ID 解决委派任务
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务参与者
+     * @return true 成功 false 失败
+     */
+    @Override
+    public boolean resolveTask(Long taskId, FlowCreator flowCreator) {
+        // 解决任务权限验证
+        FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
+
+        // TODO
+
         return true;
     }
 

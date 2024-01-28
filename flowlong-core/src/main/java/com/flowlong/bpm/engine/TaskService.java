@@ -109,37 +109,46 @@ public interface TaskService {
     /**
      * 根据 任务ID 转办任务
      *
-     * @param taskId            任务ID
-     * @param taskActor         任务参与者
-     * @param assigneeTaskActor 任务办理人
+     * @param taskId              任务ID
+     * @param flowCreator         任务参与者
+     * @param assigneeFlowCreator 指定办理人
      * @return true 成功 false 失败
      */
-    default boolean transferTask(Long taskId, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
-        return this.assigneeTask(taskId, TaskType.transfer, taskActor, assigneeTaskActor);
+    default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, assigneeFlowCreator);
     }
 
     /**
      * 根据 任务ID 委派任务、代理人办理完任务该任务重新归还给原处理人
      *
-     * @param taskId            任务ID
-     * @param taskActor         任务参与者
-     * @param assigneeTaskActor 任务办理人
+     * @param taskId              任务ID
+     * @param flowCreator         任务参与者
+     * @param assigneeFlowCreator 指定办理人
      * @return true 成功 false 失败
      */
-    default boolean delegateTask(Long taskId, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor) {
-        return this.assigneeTask(taskId, TaskType.delegate, taskActor, assigneeTaskActor);
+    default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, assigneeFlowCreator);
     }
 
     /**
      * 根据 任务ID 分配任务给指定办理人、重置任务类型
      *
-     * @param taskId            任务ID
-     * @param taskType          任务类型
-     * @param taskActor         任务参与者
-     * @param assigneeTaskActor 指定办理人
+     * @param taskId              任务ID
+     * @param taskType            任务类型
+     * @param flowCreator         任务参与者
+     * @param assigneeFlowCreator 指定办理人
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlwTaskActor taskActor, FlwTaskActor assigneeTaskActor);
+    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, FlowCreator assigneeFlowCreator);
+
+    /**
+     * 根据 任务ID 解决委派任务
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务参与者
+     * @return true 成功 false 失败
+     */
+    boolean resolveTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 拿回任务、在当前办理人尚未处理文件前，允许上一节点提交人员执行拿回

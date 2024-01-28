@@ -4,6 +4,7 @@
 package test.mysql;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,11 +43,24 @@ public class TestCountersign extends MysqlTest {
             // 执行发起
             this.executeActiveTasks(instance.getId(), testCreator, args);
 
-            // 测试会签审批人001【审批】
-            this.executeTask(instance.getId(), testCreator);
+            // 测试会签审批人003【转办，交给 002 审批】
+            this.executeTask(instance.getId(), test3Creator, flwTask -> Assertions.assertTrue(this.flowLongEngine.taskService()
+                    .transferTask(flwTask.getId(), test3Creator, test2Creator)));
 
-            // 测试会签审批人003【审批】
-            this.executeTask(instance.getId(), test3Creator);
+            // 会签审批【转办 002 审批】
+            this.executeTask(instance.getId(), test2Creator);
+
+
+            // 测试会签审批人001【委派，交给 003 审批】
+            this.executeTask(instance.getId(), testCreator, flwTask -> Assertions.assertTrue(this.flowLongEngine.taskService()
+                    .delegateTask(flwTask.getId(), testCreator, test3Creator)));
+
+            // 会签审批【委派 003 审批】解决任务后回到 001 确认审批
+            this.executeTask(instance.getId(), test3Creator, flwTask -> Assertions.assertTrue(this.flowLongEngine.taskService()
+                    .resolveTask(flwTask.getId(), test3Creator)));
+
+            // 委派人 001 确认审批
+            this.executeTask(instance.getId(), testCreator);
 
             // 任务进入抄送人，流程自动结束
 
