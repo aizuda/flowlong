@@ -269,7 +269,7 @@ public class NodeModel implements ModelInstance, Serializable {
         } else {
             // 递归条件节点
             if (null != conditionNodes) {
-                NodeModel fromConditionNode = getFromConditionNodes(nodeName);
+                NodeModel fromConditionNode = getFromConditionNodes(targetNodeName);
                 if (fromConditionNode != null) {
                     fromConditionNode.appendChildNode(targetNodeName, nodeModel);
                 }
