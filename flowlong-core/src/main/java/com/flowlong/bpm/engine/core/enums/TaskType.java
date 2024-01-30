@@ -24,25 +24,29 @@ public enum TaskType {
      */
     major(0),
     /**
+     * 审批
+     */
+    approval(1),
+    /**
      * 转办、代理人办理完任务直接进入下一个节点
      */
-    transfer(1),
+    transfer(2),
     /**
      * 委派、代理人办理完任务该任务重新归还给原处理人
      */
-    delegate(2),
+    delegate(3),
     /**
      * 会签
      */
-    countersign(3),
+    countersign(4),
     /**
      * 抄送
      */
-    cc(4),
+    cc(5),
     /**
      * 调用外部流程任务
      */
-    callProcess(5),
+    callProcess(6),
     /**
      * 定时器任务
      */
@@ -50,7 +54,7 @@ public enum TaskType {
     /**
      * 触发器任务
      */
-    trigger(7);
+    trigger(8);
 
     private final int value;
 

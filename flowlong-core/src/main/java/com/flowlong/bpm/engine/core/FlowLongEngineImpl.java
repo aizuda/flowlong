@@ -130,8 +130,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 追加指定节点模型
         runtimeService().appendNodeModel(taskId, nodeModel, beforeAfter);
 
-        // 前置加签、执行任务并跳转到指定节点（后置加签无需处理任务流转，当前正常任务审批后进入后置加签节点模型）
-        return beforeAfter && executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator);
+        // 前置加签、执行任务并跳转到指定节点
+        if (beforeAfter) {
+            return executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator);
+        }
+
+        // 后置加签无需处理任务流转，当前正常任务审批后进入后置加签节点模型
+        return true;
     }
 
     /**
