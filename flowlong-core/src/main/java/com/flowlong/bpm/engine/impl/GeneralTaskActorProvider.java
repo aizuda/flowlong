@@ -25,14 +25,14 @@ import java.util.List;
 public class GeneralTaskActorProvider implements TaskActorProvider {
 
     public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
-        List<FlwTaskActor> flwHisTaskActors = new ArrayList<>();
+        List<FlwTaskActor> flwTaskActors = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
             // 指定用户审批
-            nodeModel.getNodeUserList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.of(t, 0)));
+            nodeModel.getNodeUserList().forEach(t -> flwTaskActors.add(FlwTaskActor.of(t, 0)));
         } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
             // 指定角色审批
-            nodeModel.getNodeRoleList().forEach(t -> flwHisTaskActors.add(FlwTaskActor.of(t, 1)));
+            nodeModel.getNodeRoleList().forEach(t -> flwTaskActors.add(FlwTaskActor.of(t, 1)));
         }
-        return ObjectUtils.isEmpty(flwHisTaskActors) ? null : flwHisTaskActors;
+        return ObjectUtils.isEmpty(flwTaskActors) ? null : flwTaskActors;
     }
 }
