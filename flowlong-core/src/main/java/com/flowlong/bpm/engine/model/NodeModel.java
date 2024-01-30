@@ -9,6 +9,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowLongContext;
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,6 +46,8 @@ public class NodeModel implements ModelInstance, Serializable {
      * 3，条件审批
      * 4，条件分支
      * 5，办理子流程
+     * 6，定时器任务
+     * 7，触发器任务
      * </p>
      */
     private Integer type;
@@ -178,7 +181,7 @@ public class NodeModel implements ModelInstance, Serializable {
         /*
          * 执行 1、审批任务 2、创建抄送 5、办理子流程
          */
-        if (Objects.equals(1, this.type) || Objects.equals(2, this.type) || Objects.equals(5, this.type)) {
+        if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type) || TaskType.callProcess.eq(this.type)) {
             flowLongContext.createTask(execution, this);
         }
 
@@ -252,7 +255,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 判断是否为条件节点
      */
     public boolean conditionNode() {
-        return 3 == type || 4 == type;
+        return TaskType.conditionNode.eq(type) || TaskType.conditionBranch.eq(type);
     }
 
     /**

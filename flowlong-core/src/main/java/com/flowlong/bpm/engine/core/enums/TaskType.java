@@ -28,25 +28,21 @@ public enum TaskType {
      */
     approval(1),
     /**
-     * 转办、代理人办理完任务直接进入下一个节点
-     */
-    transfer(2),
-    /**
-     * 委派、代理人办理完任务该任务重新归还给原处理人
-     */
-    delegate(3),
-    /**
-     * 会签
-     */
-    countersign(4),
-    /**
      * 抄送
      */
-    cc(5),
+    cc(2),
     /**
-     * 调用外部流程任务
+     * 条件审批
      */
-    callProcess(6),
+    conditionNode(3),
+    /**
+     * 条件分支
+     */
+    conditionBranch(4),
+    /**
+     * 调用外部流程任务【办理子流程】
+     */
+    callProcess(5),
     /**
      * 定时器任务
      */
@@ -54,7 +50,19 @@ public enum TaskType {
     /**
      * 触发器任务
      */
-    trigger(8);
+    trigger(7),
+    /**
+     * 转办、代理人办理完任务直接进入下一个节点
+     */
+    transfer(10),
+    /**
+     * 委派、代理人办理完任务该任务重新归还给原处理人
+     */
+    delegate(11),
+    /**
+     * 会签
+     */
+    countersign(12);
 
     private final int value;
 
@@ -62,7 +70,11 @@ public enum TaskType {
         this.value = value;
     }
 
+    public boolean eq(int value) {
+        return this.value == value;
+    }
+
     public static TaskType get(int value) {
-        return Arrays.stream(TaskType.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
+        return Arrays.stream(TaskType.values()).filter(s -> s.getValue() == value).findFirst().orElse(null);
     }
 }
