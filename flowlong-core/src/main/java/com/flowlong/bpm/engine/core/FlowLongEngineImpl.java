@@ -8,6 +8,7 @@ import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
 import com.flowlong.bpm.engine.core.enums.PerformType;
+import com.flowlong.bpm.engine.core.enums.TaskType;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import com.flowlong.bpm.engine.entity.FlwProcess;
 import com.flowlong.bpm.engine.entity.FlwTask;
@@ -221,6 +222,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
             if (ObjectUtils.isEmpty(nodeUserList)) {
+                // 当前任务实际办理人
+                String assigneeId = flowCreator.getCreateId();
+                if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
+                    assigneeId = flwTask.getAssignorId();
+                }
+
                 /*
                  * 模型未设置处理人，那么需要获取自定义参与者
                  */
@@ -232,7 +239,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                             nextNodeAssignee = NodeAssignee.of(taskActor);
                             break;
                         }
-                        if (Objects.equals(taskActor.getActorId(), flowCreator.getCreateId())) {
+
+                        // 判断找到当前任务实际办理人
+                        if (Objects.equals(taskActor.getActorId(), assigneeId)) {
                             findTaskActor = true;
                         }
                     }
