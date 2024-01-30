@@ -221,13 +221,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+            // 当前任务实际办理人
+            String assigneeId = flowCreator.getCreateId();
+            if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
+                assigneeId = flwTask.getAssignorId();
+            }
             if (ObjectUtils.isEmpty(nodeUserList)) {
-                // 当前任务实际办理人
-                String assigneeId = flowCreator.getCreateId();
-                if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
-                    assigneeId = flwTask.getAssignorId();
-                }
-
                 /*
                  * 模型未设置处理人，那么需要获取自定义参与者
                  */
@@ -256,7 +255,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                         nextNodeAssignee = nodeAssignee;
                         break;
                     }
-                    if (Objects.equals(nodeAssignee.getId(), flowCreator.getCreateId())) {
+                    if (Objects.equals(nodeAssignee.getId(), assigneeId)) {
                         findTaskActor = true;
                     }
                 }
