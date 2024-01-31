@@ -60,9 +60,9 @@ public enum TaskType {
      */
     delegate(11),
     /**
-     * 会签
+     * 委派归还任务
      */
-    countersign(12);
+    delegateReturn(12);
 
     private final int value;
 

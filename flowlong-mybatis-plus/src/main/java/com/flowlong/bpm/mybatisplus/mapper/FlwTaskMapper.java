@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.flowlong.bpm.mybatisplus.mapper;
@@ -30,7 +30,7 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
      */
     default FlwTask getCheckById(Long id) {
         FlwTask flwTask = selectById(id);
-        Assert.isNull(flwTask, "指定的任务[id=" + id + "]不存在");
+        Assert.isNull(flwTask, "The specified task [id=" + id + "] does not exist");
         return flwTask;
     }
 
@@ -38,7 +38,6 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
      * 根据流程实例ID获取任务列表
      *
      * @param instanceId 流程实例ID
-     * @return
      */
     default List<FlwTask> selectListByInstanceId(Long instanceId) {
         return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));

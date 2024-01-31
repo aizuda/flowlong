@@ -333,8 +333,23 @@ public class TaskServiceImpl implements TaskService {
         // 解决任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
-        // TODO
+        // 当前委托任务
+        FlwTask flwTask = taskMapper.getCheckById(taskId);
 
+        // 任务归还至委托人
+        FlwTaskActor taskActor = new FlwHisTaskActor();
+        taskActor.setId(flwTaskActor.getId());
+        taskActor.setActorId(flwTask.getAssignorId());
+        taskActor.setActorName(flwTask.getAssignor());
+        if (taskActorMapper.updateById(taskActor) > 0) {
+            // 设置任务状态为委托归还，委托人设置为归还人
+            FlwTask temp = new FlwTask();
+            temp.setId(taskId);
+            temp.setTaskType(TaskType.delegateReturn);
+            temp.setAssignorId(flowCreator.getCreateId());
+            temp.setAssignor(flowCreator.getCreateBy());
+            Assert.isFalse(taskMapper.updateById(temp) > 0, "resolveTask failed");
+        }
         return true;
     }
 
