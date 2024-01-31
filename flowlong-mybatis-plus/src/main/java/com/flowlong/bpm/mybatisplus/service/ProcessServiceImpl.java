@@ -95,17 +95,22 @@ public class ProcessServiceImpl implements ProcessService {
              * 查询流程信息获取最后版本号
              */
             List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
-                    .select(FlwProcess::getId, FlwProcess::getProcessVersion)
                     .eq(FlwProcess::getProcessKey, processModel.getKey())
                     .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
                     .orderByDesc(FlwProcess::getProcessVersion));
             if (ObjectUtils.isNotEmpty(processList)) {
                 FlwProcess process = processList.get(0);
+                Long processId = process.getId();
                 if (!repeat) {
-                    return process.getId();
+                    return processId;
                 }
-                Assert.isFalse(this.redeploy(process.getId(), jsonString, process.nextProcessVersion()), "Redeploy failed");
-                return process.getId();
+                // 更新当前版本
+                Assert.isFalse(this.redeploy(processId, jsonString, process.nextProcessVersion()), "Redeploy failed");
+
+                // 保留历史版本
+                process.setId(null);
+                processMapper.insert(process);
+                return processId;
             }
             /*
              * 当前版本 +1 添加一条新的流程记录
