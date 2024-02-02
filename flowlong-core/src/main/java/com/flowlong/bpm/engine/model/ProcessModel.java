@@ -100,4 +100,27 @@ public class ProcessModel implements Serializable {
             this.buildParentNode(childNode);
         }
     }
+
+    /**
+     * 清理父节点关系
+     */
+    public void cleanParentNode(NodeModel rootNode) {
+        rootNode.setParentNode(null);
+        // 清理条件节点
+        List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
+        if (null != conditionNodes) {
+            for (ConditionNode conditionNode : conditionNodes) {
+                NodeModel conditionChildNode = conditionNode.getChildNode();
+                if (null != conditionChildNode) {
+                    this.cleanParentNode(conditionChildNode);
+                }
+            }
+        }
+        // 清理子节点
+        NodeModel childNode = rootNode.getChildNode();
+        if (null != childNode) {
+            childNode.setParentNode(null);
+            this.cleanParentNode(childNode);
+        }
+    }
 }
