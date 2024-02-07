@@ -4,6 +4,7 @@
 package test.mysql;
 
 import com.flowlong.bpm.engine.assist.StreamUtils;
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeAssignee;
@@ -73,11 +74,23 @@ public class TestModel extends MysqlTest {
 
             // 测试会签审批人001【审批】，执行前置加签
             this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
-                    getNodeModel("前置加签"), testCreator, true));
+                    getNodeModel("前置加签", test3Creator), testCreator, true));
+
+            // 执行前加签
+            this.executeTask(instance.getId(), test3Creator);
 
             // 测试会签审批人003【审批】，执行后置加签
-//            this.executeTask(instance.getId(), test3Creator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
-//                    getNodeModel("后置加签"), test3Creator, false));
+            this.executeTask(instance.getId(), test3Creator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
+                    getNodeModel("后置加签", test2Creator), test3Creator, false));
+
+            // 会签审批人001【审批】
+            this.executeTask(instance.getId(), testCreator);
+
+            // 会签审批人003【审批】
+            this.executeTask(instance.getId(), test3Creator);
+
+            // 执行后加签
+            this.executeTask(instance.getId(), test2Creator);
 
             // 观察 flw_ext_instance 对应实例的模型变化
 
@@ -87,14 +100,14 @@ public class TestModel extends MysqlTest {
     /**
      * 构建加签节点
      */
-    public NodeModel getNodeModel(String nodeName) {
+    public NodeModel getNodeModel(String nodeName, FlowCreator flowCreator) {
         NodeModel nodeModel = new NodeModel();
         nodeModel.setNodeName(nodeName);
         nodeModel.setType(1);
         nodeModel.setSetType(1);
         NodeAssignee nodeAssignee = new NodeAssignee();
-        nodeAssignee.setId(test3Creator.getCreateId());
-        nodeAssignee.setName(test3Creator.getCreateBy());
+        nodeAssignee.setId(flowCreator.getCreateId());
+        nodeAssignee.setName(flowCreator.getCreateBy());
         nodeModel.setNodeUserList(Collections.singletonList(nodeAssignee));
         return nodeModel;
     }
