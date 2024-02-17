@@ -291,6 +291,12 @@ public class TaskServiceImpl implements TaskService {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
+        // 不允许重复分配
+        FlwTask dbFlwTask = taskMapper.selectById(taskId);
+        if (ObjectUtils.isNotEmpty(dbFlwTask.getAssignorId())) {
+            Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
+        }
+
         // 设置任务为委派任务或者为转办任务
         FlwTask flwTask = new FlwTask();
         flwTask.setId(taskId);

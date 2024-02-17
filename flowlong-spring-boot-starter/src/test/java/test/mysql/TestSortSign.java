@@ -25,8 +25,12 @@ public class TestSortSign extends MysqlTest {
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
-            // test1 领导审批同意
-            this.executeActiveTasks(instance.getId(), testCreator);
+            // 会签审批人001【审批】，执行转办、任务交给 test2 处理
+            this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
+                    .transferTask(flwTask.getId(), testCreator, test2Creator));
+
+            // 被转办人 test2 审批
+            this.executeTask(instance.getId(), test2Creator);
 
             // test3 领导审批同意
             this.executeActiveTasks(instance.getId(), test3Creator);

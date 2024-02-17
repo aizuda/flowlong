@@ -83,10 +83,22 @@ public class TestModel extends MysqlTest {
             this.executeTask(instance.getId(), test3Creator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
                     getNodeModel("后置加签", test2Creator), test3Creator, false));
 
-            // 会签审批人001【审批】
-            this.executeTask(instance.getId(), testCreator);
+            // 会签审批人001【审批】，执行转办、任务交给 test2 处理
+            this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
+                    .transferTask(flwTask.getId(), testCreator, test2Creator));
 
-            // 会签审批人003【审批】
+            // 被转办人 test2 审批
+            this.executeTask(instance.getId(), test2Creator);
+
+            // 会签审批人003【审批】，执行委派、任务委派给 test2 处理
+            this.executeTask(instance.getId(), test3Creator, flwTask -> flowLongEngine.taskService()
+                    .delegateTask(flwTask.getId(), test3Creator, test2Creator));
+
+            // 被委派人 test2 解决问题，后归还任务给委派人
+            this.executeTask(instance.getId(), test2Creator, flwTask -> flowLongEngine.taskService()
+                    .resolveTask(flwTask.getId(), test2Creator));
+
+            // 委派人 test3 执行完成任务
             this.executeTask(instance.getId(), test3Creator);
 
             // 执行后加签
