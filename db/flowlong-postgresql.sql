@@ -154,6 +154,23 @@ COMMENT ON COLUMN "public"."flw_task"."viewed" IS '已阅 0，否 1，是';
 COMMENT ON TABLE "public"."flw_task" IS '任务表';
 
 -- ----------------------------
+-- Table structure for flw_ext_instance
+-- ----------------------------
+DROP TABLE IF EXISTS "public"."flw_ext_instance";
+CREATE TABLE "public"."flw_ext_instance" (
+                                             "id" int8 NOT NULL,
+                                             "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+                                             "process_id" int8 NOT NULL,
+                                             "model_content" text COLLATE "pg_catalog"."default"
+)
+;
+COMMENT ON COLUMN "public"."flw_ext_instance"."id" IS '主键ID';
+COMMENT ON COLUMN "public"."flw_ext_instance"."tenant_id" IS '租户ID';
+COMMENT ON COLUMN "public"."flw_ext_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "public"."flw_ext_instance"."model_content" IS '流程模型定义JSON内容';
+COMMENT ON TABLE "public"."flw_ext_instance" IS '扩展流程实例表';
+
+-- ----------------------------
 -- Table structure for flw_his_instance
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_his_instance";
@@ -237,24 +254,6 @@ COMMENT ON COLUMN "public"."flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_instance"."last_update_time" IS '上次更新时间';
 COMMENT ON TABLE "public"."flw_instance" IS '流程实例表';
 
-
--- ----------------------------
--- Table structure for flw_ext_instance
--- ----------------------------
-DROP TABLE IF EXISTS "public"."flw_ext_instance";
-CREATE TABLE "public"."flw_ext_instance" (
-     "id" int8 NOT NULL,
-     "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-     "process_id" int8 NOT NULL,
-     "model_content" text COLLATE "pg_catalog"."default"
-)
-;
-COMMENT ON COLUMN "public"."flw_ext_instance"."id" IS '主键ID';
-COMMENT ON COLUMN "public"."flw_ext_instance"."tenant_id" IS '租户ID';
-COMMENT ON COLUMN "public"."flw_ext_instance"."process_id" IS '流程定义ID';
-COMMENT ON COLUMN "public"."flw_ext_instance"."model_content" IS '流程模型定义JSON内容';
-COMMENT ON TABLE "public"."flw_ext_instance" IS '扩展流程实例表';
-
 -- ----------------------------
 -- Table structure for flw_process
 -- ----------------------------
@@ -336,6 +335,16 @@ CREATE INDEX "idx_his_task_actor_task_id" ON "public"."flw_his_task_actor" USING
 ALTER TABLE "public"."flw_his_task_actor" ADD CONSTRAINT "flw_his_task_actor_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
+-- Primary Key structure for table flw_ext_instance
+-- ----------------------------
+ALTER TABLE "public"."flw_ext_instance" ADD CONSTRAINT "flw_ext_instance_pkey" PRIMARY KEY ("id");
+
+-- ----------------------------
+-- Foreign Keys structure for table flw_ext_instance
+-- ----------------------------
+ALTER TABLE "public"."flw_ext_instance" ADD CONSTRAINT "fk_ext_instance_id" FOREIGN KEY ("id") REFERENCES "public"."flw_his_instance" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- ----------------------------
 -- Indexes structure for table flw_instance
 -- ----------------------------
 CREATE INDEX "idx_instance_process_id" ON "public"."flw_instance" USING btree (
@@ -346,16 +355,6 @@ CREATE INDEX "idx_instance_process_id" ON "public"."flw_instance" USING btree (
 -- Primary Key structure for table flw_instance
 -- ----------------------------
 ALTER TABLE "public"."flw_instance" ADD CONSTRAINT "flw_instance_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Primary Key structure for table flw_ext_instance
--- ----------------------------
-ALTER TABLE "public"."flw_ext_instance" ADD CONSTRAINT "flw_ext_instance_pkey" PRIMARY KEY ("id");
-
--- ----------------------------
--- Foreign Keys structure for table flw_ext_instance
--- ----------------------------
-ALTER TABLE "public"."flw_ext_instance" ADD CONSTRAINT "fk_ext_instance_id" FOREIGN KEY ("id") REFERENCES "public"."flw_his_instance" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- ----------------------------
 -- Indexes structure for table flw_process
