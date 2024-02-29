@@ -559,6 +559,12 @@ public class TaskServiceImpl implements TaskService {
 
         // 处理流程任务
         Integer nodeType = nodeModel.getType();
+
+        // 更新当前执行节点信息，抄送节点除外
+        if (2 != nodeType) {
+            this.updateCurrentNode(flwTask);
+        }
+
         if (0 == nodeType) {
             /*
              * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
@@ -604,10 +610,6 @@ public class TaskServiceImpl implements TaskService {
             }).ifPresent(instance -> hisTaskMapper.insert(FlwHisTask.ofCallInstance(nodeModel, instance)));
         }
 
-        // 更新当前执行节点信息，抄送节点除外
-        if (2 != nodeType) {
-            this.updateCurrentNode(flwTask);
-        }
         return flwTasks;
     }
 
