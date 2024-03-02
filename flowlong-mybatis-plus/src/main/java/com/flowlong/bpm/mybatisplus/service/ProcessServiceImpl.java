@@ -70,7 +70,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public FlwProcess getProcessByVersion(String processKey, Integer version) {
-        Assert.notEmpty(processKey);
+        Assert.isEmpty(processKey);
         List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, processKey)
                 .eq(null != version, FlwProcess::getProcessVersion, version)
                 .orderByDesc(FlwProcess::getProcessVersion));

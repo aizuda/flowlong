@@ -47,18 +47,9 @@ public abstract class Assert {
      * @param expression 判断条件
      */
     public static void isTrue(boolean expression) {
-        isTrue(expression, "[Assertion failed] - this expression must be true");
+        isTrue(expression, "[Assertion failed] - this expression must be false");
     }
 
-    /**
-     * 断言给定的object对象为空
-     *
-     * @param object  待检测对象
-     * @param message 异常打印信息
-     */
-    public static void isEmpty(Object object, String message) {
-        illegal(ObjectUtils.isEmpty(object), message);
-    }
 
     /**
      * 断言给定的object对象为空
@@ -76,7 +67,7 @@ public abstract class Assert {
      * @param object 待检测对象
      */
     public static void isNull(Object object) {
-        isNull(object, "[Assertion failed] - the object argument must be null");
+        isNull(object, "[Assertion failed] - the object argument must not be null");
     }
 
     /**
@@ -95,7 +86,26 @@ public abstract class Assert {
      * @param object 待检测对象
      */
     public static void notNull(Object object) {
-        notNull(object, "[Assertion failed] - this argument is required; it must not be null");
+        notNull(object, "[Assertion failed] - the object argument must be null");
+    }
+
+    /**
+     * 断言给定的object对象为空
+     *
+     * @param object  待检测对象
+     */
+    public static void isEmpty(Object object) {
+        isEmpty(object, "[Assertion failed] - this argument must not be null or empty");
+    }
+
+    /**
+     * 断言给定的object对象为空
+     *
+     * @param object  待检测对象
+     * @param message 异常打印信息
+     */
+    public static void isEmpty(Object object, String message) {
+        illegal(ObjectUtils.isEmpty(object), message);
     }
 
     /**
@@ -104,7 +114,7 @@ public abstract class Assert {
      * @param str 待检测字符串
      */
     public static void notEmpty(String str) {
-        notEmpty(str, "[Assertion failed] - this argument is required; it must not be null or empty");
+        notEmpty(str, "[Assertion failed] - this argument must be null or empty");
     }
 
     /**
@@ -114,7 +124,7 @@ public abstract class Assert {
      * @param message 提升内容
      */
     public static void notEmpty(String str, String message) {
-        illegal(str == null || str.isEmpty(), message);
+        illegal(ObjectUtils.isNotEmpty(str), message);
     }
 
     /**
