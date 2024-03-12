@@ -257,4 +257,11 @@ public class NodeModel implements ModelInstance, Serializable {
     public boolean conditionNode() {
         return TaskType.conditionNode.eq(type) || TaskType.conditionBranch.eq(type);
     }
+
+    /**
+     * 判断是否为抄送节点
+     */
+    public boolean ccNode() {
+        return TaskType.cc.eq(type);
+    }
 }

@@ -58,6 +58,22 @@ public class TestModel extends MysqlTest {
     }
 
     /**
+     * 测试模型节点名称
+     */
+    @Test
+    public void testNodeNames() {
+        ProcessModel processModel = getProcessModel("test/simpleProcess.json");
+        Assertions.assertEquals("simpleProcess", processModel.getKey());
+        processModel.buildParentNode(processModel.getNodeConfig());
+        List<String> previousNodeNames = ModelHelper.getAllPreviousNodeNames(processModel.getNode("条件内部审核"));
+        Assertions.assertEquals(previousNodeNames.size(), 5);
+        List<String> nextNodeNames = ModelHelper.getAllNextNodeNames(processModel.getNode("7天领导审批"));
+        Assertions.assertEquals(nextNodeNames.size(), 3);
+        // 判断无重复，可用于模型校验
+        Assertions.assertEquals(nextNodeNames.stream().distinct().count(), nextNodeNames.size());
+    }
+
+    /**
      * 测试动态加签
      */
     @Test

@@ -3,8 +3,11 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.flowlong.bpm.engine.assist.ObjectUtils;
+
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * 流程模型辅助类
@@ -45,6 +48,85 @@ public class ModelHelper {
     }
 
     /**
+     * 获取所有上一个节点名称
+     *
+     * @param nodeModel 当前节点
+     * @return 所有节点名称
+     */
+    public static List<String> getAllPreviousNodeNames(NodeModel nodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != nodeModel) {
+            NodeModel parentNode = nodeModel.getParentNode();
+            if (null != parentNode) {
+                if (!parentNode.ccNode()) {
+                    // 非抄送节点
+                    if (parentNode.conditionNode()) {
+                        // 条件节点找子节点
+                        nodeNames.addAll(getAllConditionNodeNames(parentNode));
+                    } else {
+                        // 普通节点
+                        nodeNames.add(parentNode.getNodeName());
+                    }
+                }
+                // 继续找上一个节点
+                nodeNames.addAll(getAllPreviousNodeNames(parentNode));
+            }
+        }
+        // 往上递归需要去重
+        return nodeNames.stream().distinct().collect(Collectors.toList());
+    }
+
+    private static List<String> getAllConditionNodeNames(NodeModel nodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != nodeModel) {
+            List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+            if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                for (ConditionNode conditionNode : conditionNodes) {
+                    NodeModel childNodeMode = conditionNode.getChildNode();
+                    if (null != childNodeMode) {
+                        if (childNodeMode.conditionNode()) {
+                            // 条件路由继续往下找
+                            nodeNames.addAll(getAllConditionNodeNames(childNodeMode));
+                        } else {
+                            // 其它节点找子节点
+                            nodeNames.addAll(getAllNextNodeNames(childNodeMode));
+                        }
+                    }
+                }
+            }
+        }
+        return nodeNames;
+    }
+
+    /**
+     * 获取所有下一个节点名称
+     *
+     * @param nodeModel 当前节点
+     * @return 所有节点名称
+     */
+    public static List<String> getAllNextNodeNames(NodeModel nodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != nodeModel) {
+            if (nodeModel.conditionNode()) {
+                // 条件节点找子节点
+                nodeNames.addAll(getAllConditionNodeNames(nodeModel));
+            } else {
+                if (!nodeModel.ccNode()) {
+                    // 普通节点
+                    nodeNames.add(nodeModel.getNodeName());
+                }
+
+                // 找子节点
+                NodeModel childNodeModel = nodeModel.getChildNode();
+                if (null != childNodeModel) {
+                    nodeNames.addAll(getAllNextNodeNames(childNodeModel));
+                }
+            }
+        }
+        return nodeNames;
+    }
+
+    /**
      * 获取节点 Map 格式列表
      *
      * @param rootNode   模型根节点
@@ -59,7 +141,7 @@ public class ModelHelper {
     }
 
     private static void buildNodeModel(List<Map<String, Object>> nodeMapList, NodeModel rootNode, int i,
-                                BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
+                                       BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
         List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
         if (null != conditionNodes) {
             // 处理条件节点
