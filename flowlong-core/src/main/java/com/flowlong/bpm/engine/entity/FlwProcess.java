@@ -140,7 +140,11 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      * 格式化 JSON 模型内容
      */
     public FlwProcess formatModelContent(String modelContent) {
-        this.modelContent = FlowLongContext.toJson(FlowLongContext.fromJson(modelContent, ProcessModel.class));
+        return setModelContent2Json(FlowLongContext.fromJson(modelContent, ProcessModel.class));
+    }
+
+    public FlwProcess setModelContent2Json(ProcessModel processModel) {
+        this.modelContent = FlowLongContext.toJson(processModel);
         return this;
     }
 
