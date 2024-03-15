@@ -4,6 +4,7 @@
 package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.flowlong.bpm.engine.FlowDataTransfer;
 import com.flowlong.bpm.engine.QueryService;
 import com.flowlong.bpm.engine.RuntimeService;
 import com.flowlong.bpm.engine.TaskService;
@@ -18,9 +19,7 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
-import com.flowlong.bpm.engine.model.ConditionNode;
-import com.flowlong.bpm.engine.model.NodeModel;
-import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.model.*;
 import com.flowlong.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
@@ -78,6 +77,35 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
         flwInstance.setMapVariable(args);
+
+        /*
+         * 处理追加模型逻辑
+         */
+        Map<String, Object> modelData = FlowDataTransfer.getAll();
+        if (ObjectUtils.isNotEmpty(modelData)) {
+            ProcessModel processModel = process.model();
+            modelData.forEach((key, value) -> {
+                if (value instanceof DynamicAssignee) {
+                    NodeModel nodeModel = processModel.getNode(key);
+                    if (null != nodeModel) {
+                        DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
+                        if (Objects.equals(1, dynamicAssignee.getType())) {
+                            nodeModel.setNodeUserList(dynamicAssignee.getAssigneeList());
+                        } else {
+                            nodeModel.setNodeRoleList(dynamicAssignee.getAssigneeList());
+                        }
+                    }
+                }
+            });
+            // 清理父节点
+            processModel.cleanParentNode(processModel.getNodeConfig());
+            // 更新模型
+            process.setModelContent(FlowLongContext.toJson(processModel));
+            // 清理缓存
+            FlowDataTransfer.remove();
+        }
+
+        // 保存实例
         this.saveInstance(flwInstance, process.getModelContent());
         return flwInstance;
     }

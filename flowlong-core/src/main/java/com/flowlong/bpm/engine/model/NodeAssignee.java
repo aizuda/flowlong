@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.io.Serializable;
 
 /**
- * JSON BPM 分配到任务的人
+ * JSON BPM 分配到任务的人或角色
  *
  * <p>
  * 尊重知识产权，不允许非法使用，后果自负
