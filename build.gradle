@@ -3,7 +3,7 @@ buildscript {
     ext {
         springBootVersion = "2.7.0"
         mybatisPlusVersion = "3.5.5"
-        solonVersion = "2.5.11"
+        solonVersion = "2.7.2"
     }
 
     // 仓库配置
