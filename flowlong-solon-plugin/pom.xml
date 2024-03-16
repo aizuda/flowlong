@@ -14,7 +14,7 @@
     <description>flowLong mybatis-plus solon plugin</description>
 
     <properties>
-        <solon.version>2.5.12</solon.version>
+        <solon.version>2.7.2</solon.version>
     </properties>
 
     <dependencies>
