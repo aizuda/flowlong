@@ -3,22 +3,18 @@
  */
 package test.mysql;
 
+import com.flowlong.bpm.engine.FlowDataTransfer;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.model.ModelHelper;
-import com.flowlong.bpm.engine.model.NodeAssignee;
-import com.flowlong.bpm.engine.model.NodeModel;
-import com.flowlong.bpm.engine.model.ProcessModel;
+import com.flowlong.bpm.engine.entity.FlwTaskActor;
+import com.flowlong.bpm.engine.model.*;
 import com.flowlong.bpm.spring.adaptive.FlowJacksonHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 流程模型相关测试类
@@ -71,6 +67,35 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals(nextNodeNames.size(), 3);
         // 判断无重复，可用于模型校验
         Assertions.assertEquals(nextNodeNames.stream().distinct().count(), nextNodeNames.size());
+    }
+
+    /**
+     * 测试动态追加处理人
+     */
+    @Test
+    public void testDynamicAssignee() {
+        processId = this.deployByResource("test/purchase.json", testCreator);
+        String nodeName = "抄送主管";
+        String nodeName2 = "领导审批";
+        List<NodeAssignee> assigneeList = Arrays.asList(
+                // 动态抄送给：用户01、用户02、用户03
+                NodeAssignee.ofFlowCreator(testCreator),
+                NodeAssignee.ofFlowCreator(test2Creator),
+                NodeAssignee.ofFlowCreator(test3Creator)
+        );
+        // 传输动态节点处理人
+        FlowDataTransfer.put(new HashMap<String, Object>(){{
+            put(nodeName, DynamicAssignee.assigneeUserList(assigneeList));
+            put(nodeName2, DynamicAssignee.assigneeUserList(Collections.singletonList(NodeAssignee.ofFlowCreator(test3Creator))));
+        }});
+        // 发起流程验证
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(instance.getId());
+            List<NodeAssignee> nodeUserList = processModel.getNode(nodeName).getNodeUserList();
+            Assertions.assertEquals(3, nodeUserList.size());
+            nodeUserList.forEach(t -> Assertions.assertTrue(assigneeList.stream().anyMatch(s -> s.getName().equals(t.getName()))));
+            Assertions.assertTrue(processModel.getNode(nodeName).getNodeUserList().stream().anyMatch(t -> t.getName().equals(test3Creator.getCreateBy())));
+        });
     }
 
     /**

@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +46,14 @@ public class NodeAssignee implements Serializable {
         nodeAssignee.setId(flwTaskActor.getActorId());
         nodeAssignee.setName(flwTaskActor.getActorName());
         nodeAssignee.setWeight(flwTaskActor.getWeight());
+        return nodeAssignee;
+    }
+
+    public static NodeAssignee ofFlowCreator(FlowCreator flowCreator) {
+        NodeAssignee nodeAssignee = new NodeAssignee();
+        nodeAssignee.setTenantId(flowCreator.getTenantId());
+        nodeAssignee.setId(flowCreator.getCreateId());
+        nodeAssignee.setName(flowCreator.getCreateBy());
         return nodeAssignee;
     }
 }

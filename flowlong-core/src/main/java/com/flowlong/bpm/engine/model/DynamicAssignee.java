@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.engine.model;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,7 @@ import java.util.List;
  */
 @Getter
 @Setter
+@Builder
 public class DynamicAssignee {
     /**
      * 分配到任务的人或角色列表
@@ -30,4 +32,11 @@ public class DynamicAssignee {
      */
     private Integer type;
 
+    public static DynamicAssignee assigneeUserList(List<NodeAssignee> assigneeList) {
+        return DynamicAssignee.builder().assigneeList(assigneeList).type(1).build();
+    }
+
+    public static DynamicAssignee assigneeRoleList(List<NodeAssignee> assigneeList) {
+        return DynamicAssignee.builder().assigneeList(assigneeList).type(2).build();
+    }
 }
