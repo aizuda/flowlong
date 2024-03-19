@@ -6,6 +6,7 @@ package com.flowlong.bpm.engine.assist;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
 /**
@@ -47,7 +48,7 @@ public class StreamUtils {
             for (int count; (count = in.read(buffer)) != -1; ) {
                 out.write(buffer, 0, count);
             }
-            return out.toString();
+            return out.toString(StandardCharsets.UTF_8.toString());
         }
     }
 }
