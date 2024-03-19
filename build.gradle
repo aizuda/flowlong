@@ -27,7 +27,7 @@ description = "FlowLong BPM"
 // 项目配置
 allprojects {
     group "com.flowlong"
-    version "0.0.1-SNAPSHOT"
+    version "0.0.2-SNAPSHOT"
 }
 
 
