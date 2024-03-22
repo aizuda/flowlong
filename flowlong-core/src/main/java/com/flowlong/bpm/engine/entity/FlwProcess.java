@@ -11,6 +11,7 @@ import com.flowlong.bpm.engine.core.Execution;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
 import com.flowlong.bpm.engine.core.enums.FlowState;
+import com.flowlong.bpm.engine.model.ModelHelper;
 import com.flowlong.bpm.engine.model.NodeModel;
 import com.flowlong.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -116,6 +117,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
             NodeModel nodeModel = this.model().getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             Assert.isFalse(flowLongContext.getTaskActorProvider().isAllowed(nodeModel, flowCreator), "No permission to execute");
+            Assert.isTrue(ModelHelper.checkDuplicateNodeNames(nodeModel), "There are duplicate node names present");
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
             // 创建首个审批任务

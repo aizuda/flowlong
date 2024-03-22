@@ -207,4 +207,21 @@ public class ModelHelper {
         }
         return nodeMap;
     }
+
+    /**
+     * 检查是否存在重复节点名称
+     *
+     * @param nodeModel 节点模型
+     * @return true 重复 false 不重复
+     */
+    public static boolean checkDuplicateNodeNames(NodeModel nodeModel) {
+        List<String> allNextNodeNames = getAllNextNodeNames(nodeModel);
+        Set<String> set = new HashSet<>();
+        for (String nodeName : allNextNodeNames) {
+            if (!set.add(nodeName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

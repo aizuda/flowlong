@@ -70,6 +70,15 @@ public class TestModel extends MysqlTest {
     }
 
     /**
+     * 测试检查是否存在重复节点名称
+     */
+    @Test
+    public void testCheckDuplicateNodeNames() {
+        ProcessModel processModel = getProcessModel("test/duplicateNodeNames.json");
+        Assertions.assertTrue(ModelHelper.checkDuplicateNodeNames(processModel.getNodeConfig()));
+    }
+
+    /**
      * 测试动态追加处理人
      */
     @Test
