@@ -189,14 +189,8 @@ public class ModelHelper {
         nodeMap.put("name", nodeModel.getNodeName());// 节点名称
         nodeMap.put("type", nodeModel.getType());// 节点类型
         nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
-        List<NodeAssignee> nodeAssigneeList = null;
-        if (Objects.equals(1, nodeModel.getSetType())) {
-            nodeAssigneeList = nodeModel.getNodeUserList();
-        } else if (Objects.equals(3, nodeModel.getSetType())) {
-            nodeAssigneeList = nodeModel.getNodeRoleList();
-        }
-        nodeMap.put("nodeAssigneeList", nodeAssigneeList);// 审核人
-        nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
+        nodeMap.put("nodeUserList", nodeModel.getNodeUserList());// 审核用户
+        nodeMap.put("nodeRoleList", nodeModel.getNodeRoleList());// 审角色
         nodeMap.put("callProcessKey", nodeModel.getCallProcessKey());// 调用外部流程定义 key 唯一标识
         nodeMap.put("selectMode", nodeModel.getSelectMode());// 发起人自选类型
         nodeMap.put("userSelectFlag", nodeModel.getUserSelectFlag());// 允许发起人自选抄送人
