@@ -1,0 +1,60 @@
+{
+  "key": "testClaim ",
+  "name": "认领申请",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "主管审批",
+      "type": 1,
+      "setType": 1,
+      "nodeUserList": [
+        {
+          "id": "test001",
+          "name": "段超"
+        }
+      ],
+      "nodeRoleList": [],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0,
+      "childNode": {
+        "nodeName": "总监审批",
+        "type": 1,
+        "setType": 3,
+        "nodeUserList": [],
+        "nodeRoleList": [
+          {
+            "id": "role01",
+            "name": "技术总监"
+          }
+        ],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "examineMode": 1,
+        "directorMode": 0,
+        "childNode": {
+          "nodeName": "抄送人",
+          "type": 2,
+          "userSelectFlag": true,
+          "nodeUserList": [
+            {
+              "id": "0",
+              "name": "管理员"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

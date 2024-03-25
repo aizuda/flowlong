@@ -367,11 +367,7 @@ public class TaskServiceImpl implements TaskService {
         return this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<FlwTask> flwTaskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
-                List<Long> taskIds = flwTaskList.stream().map(FlowEntity::getId).collect(Collectors.toList());
-                // 删除当前任务
-                taskMapper.deleteBatchIds(taskIds);
-                // 删除当前任务处理人
-                taskActorMapper.deleteByTaskIds(taskIds);
+                flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
             }
         });
     }
