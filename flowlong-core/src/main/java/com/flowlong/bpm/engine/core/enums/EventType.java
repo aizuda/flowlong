@@ -16,6 +16,10 @@ public enum EventType {
      */
     create,
     /**
+     * 抄送
+     */
+    cc,
+    /**
      * 分配
      */
     assignment,

@@ -593,6 +593,9 @@ public class TaskServiceImpl implements TaskService {
              */
             this.saveTaskCc(nodeModel, flwTask);
 
+            // 任务监听器通知
+            this.taskNotify(EventType.cc, () -> flwTask, execution.getFlowCreator());
+
             /*
              * 可能存在子节点
              */
