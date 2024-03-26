@@ -153,7 +153,7 @@ public interface TaskService {
     /**
      * 拿回任务、在当前办理人尚未处理文件前，允许上一节点提交人员执行拿回
      *
-     * @param taskId      任务ID
+     * @param taskId      任务ID（当前节点的父任务ID属于历史任务）
      * @param flowCreator 任务创建者
      * @return 拿回任务
      */
