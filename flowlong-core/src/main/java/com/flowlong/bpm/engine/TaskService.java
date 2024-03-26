@@ -84,9 +84,10 @@ public interface TaskService {
     /**
      * 更新任务对象
      *
-     * @param flwTask 任务对象
+     * @param flwTask     任务对象
+     * @param flowCreator 处理人员
      */
-    void updateTaskById(FlwTask flwTask);
+    void updateTaskById(FlwTask flwTask, FlowCreator flowCreator);
 
     /**
      * 查看任务设置为已阅状态

@@ -67,8 +67,9 @@ public interface RuntimeService {
      *
      * @param flwInstance  流程实例对象
      * @param modelContent 流程定义模型内容
+     * @param flowCreator  处理人员
      */
-    void saveInstance(FlwInstance flwInstance, String modelContent);
+    void saveInstance(FlwInstance flwInstance, String modelContent, FlowCreator flowCreator);
 
     /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）

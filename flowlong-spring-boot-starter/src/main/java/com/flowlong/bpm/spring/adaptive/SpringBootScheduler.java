@@ -68,7 +68,7 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                             FlwTask temp = new FlwTask();
                             temp.setId(flwTask.getId());
                             temp.setRemindRepeat(flwTask.getRemindRepeat() - 1);
-                            taskService.updateTaskById(temp);
+                            taskService.updateTaskById(temp, null);
 
                             // 2，调用提醒接口
                             taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());

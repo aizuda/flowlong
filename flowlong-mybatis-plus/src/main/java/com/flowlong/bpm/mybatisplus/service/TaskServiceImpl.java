@@ -102,7 +102,7 @@ public class TaskServiceImpl implements TaskService {
         this.moveToHisTask(flwTask, taskState, flowCreator);
 
         // 任务监听器通知
-        this.taskNotify(eventType, () -> flwTask);
+        this.taskNotify(eventType, () -> flwTask, flowCreator);
         return flwTask;
     }
 
@@ -144,7 +144,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 任务监听器通知
-        this.taskNotify(EventType.jump, () -> flwTask);
+        this.taskNotify(EventType.jump, () -> flwTask, flowCreator);
         return true;
     }
 
@@ -198,9 +198,9 @@ public class TaskServiceImpl implements TaskService {
         return taskMapper.deleteById(flwTask.getId()) > 0;
     }
 
-    protected void taskNotify(EventType eventType, Supplier<FlwTask> supplier) {
+    protected void taskNotify(EventType eventType, Supplier<FlwTask> supplier, FlowCreator flowCreator) {
         if (null != taskListener) {
-            taskListener.notify(eventType, supplier);
+            taskListener.notify(eventType, supplier, flowCreator);
         }
     }
 
@@ -234,10 +234,10 @@ public class TaskServiceImpl implements TaskService {
      * @param flwTask 任务对象
      */
     @Override
-    public void updateTaskById(FlwTask flwTask) {
+    public void updateTaskById(FlwTask flwTask, FlowCreator flowCreator) {
         taskMapper.updateById(flwTask);
         // 任务监听器通知
-        this.taskNotify(EventType.update, () -> flwTask);
+        this.taskNotify(EventType.update, () -> flwTask, flowCreator);
     }
 
     /**
@@ -274,6 +274,9 @@ public class TaskServiceImpl implements TaskService {
         taskActorMapper.deleteByTaskId(taskId);
         // 插入当前用户ID作为唯一参与者
         taskActorMapper.insert(FlwTaskActor.of(flowCreator, flwTask));
+
+        // 任务监听器通知
+        this.taskNotify(EventType.claim, () -> flwTask, flowCreator);
         return flwTask;
     }
 
@@ -364,12 +367,16 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator) {
-        return this.undoHisTask(taskId, flowCreator, hisTask -> {
+        Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<FlwTask> flwTaskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             Assert.isEmpty(flwTaskList, "No approval tasks found");
             Assert.isFalse(Objects.equals(flwTaskList.get(0).getParentTaskId(), taskId), "Do not allow cross level reclaim task");
             flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
         });
+
+        // 任务监听器通知
+        flwTaskOptional.ifPresent(flwTask ->  this.taskNotify(EventType.reclaim, () -> flwTask, flowCreator));
+        return flwTaskOptional;
     }
 
     /**
@@ -394,6 +401,9 @@ public class TaskServiceImpl implements TaskService {
 
         // 更新当前执行节点信息
         this.updateCurrentNode(flwTask);
+
+        // 任务监听器通知
+        this.taskNotify(EventType.resume, () -> flwTask, flowCreator);
         return flwTask;
     }
 
@@ -688,6 +698,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
+
+        final FlowCreator flowCreator = execution.getFlowCreator();
         if (performType == PerformType.orSign) {
             /*
              * 或签一条任务多个参与者
@@ -697,7 +709,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(flwTask);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, () -> flwTask);
+            this.taskNotify(EventType.create, () -> flwTask, flowCreator);
             return flwTasks;
         }
 
@@ -716,7 +728,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, () -> flwTask);
+            this.taskNotify(EventType.create, () -> flwTask, flowCreator);
             return flwTasks;
         }
 
@@ -732,7 +744,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), t);
 
             // 创建任务监听
-            this.taskNotify(EventType.create, () -> newFlwTask);
+            this.taskNotify(EventType.create, () -> newFlwTask, flowCreator);
         });
         return flwTasks;
     }

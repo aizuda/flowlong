@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.spring.event;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.entity.FlwInstance;
 import lombok.Getter;
@@ -25,5 +26,6 @@ import java.io.Serializable;
 public class InstanceEvent implements Serializable {
     private EventType eventType;
     private FlwInstance flwInstance;
+    private FlowCreator flowCreator;
 
 }

@@ -20,6 +20,18 @@ public enum EventType {
      */
     assignment,
     /**
+     * 认领
+     */
+    claim,
+    /**
+     * 拿回
+     */
+    reclaim,
+    /**
+     * 唤醒
+     */
+    resume,
+    /**
      * 完成
      */
     complete,

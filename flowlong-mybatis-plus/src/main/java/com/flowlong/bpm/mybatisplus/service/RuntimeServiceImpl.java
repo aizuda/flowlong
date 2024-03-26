@@ -19,7 +19,10 @@ import com.flowlong.bpm.engine.core.enums.InstanceState;
 import com.flowlong.bpm.engine.core.enums.TaskState;
 import com.flowlong.bpm.engine.entity.*;
 import com.flowlong.bpm.engine.listener.InstanceListener;
-import com.flowlong.bpm.engine.model.*;
+import com.flowlong.bpm.engine.model.ConditionNode;
+import com.flowlong.bpm.engine.model.DynamicAssignee;
+import com.flowlong.bpm.engine.model.NodeModel;
+import com.flowlong.bpm.engine.model.ProcessModel;
 import com.flowlong.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.flowlong.bpm.mybatisplus.mapper.FlwInstanceMapper;
@@ -106,7 +109,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
 
         // 保存实例
-        this.saveInstance(flwInstance, process.getModelContent());
+        this.saveInstance(flwInstance, process.getModelContent(), flowCreator);
         return flwInstance;
     }
 
@@ -160,7 +163,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
             hisInstanceMapper.updateById(his);
             // 流程实例监听器通知
-            this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId));
+            this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId), execution.getFlowCreator());
 
             /*
              * 实例为子流程，重启动父流程任务
@@ -178,9 +181,9 @@ public class RuntimeServiceImpl implements RuntimeService {
         return true;
     }
 
-    protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier) {
+    protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
         if (null != instanceListener) {
-            instanceListener.notify(eventType, supplier);
+            instanceListener.notify(eventType, supplier, flowCreator);
         }
     }
 
@@ -191,7 +194,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param modelContent 流程定义模型内容
      */
     @Override
-    public void saveInstance(FlwInstance flwInstance, String modelContent) {
+    public void saveInstance(FlwInstance flwInstance, String modelContent, FlowCreator flowCreator) {
         // 保存流程实例
         instanceMapper.insert(flwInstance);
 
@@ -203,7 +206,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         extInstanceMapper.insert(FlwExtInstance.of(flwInstance, modelContent));
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.create, () -> flwHisInstance);
+        this.instanceNotify(EventType.create, () -> flwHisInstance, flowCreator);
     }
 
     @Override
@@ -260,7 +263,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceMapper.deleteById(instanceId);
 
             // 流程实例监听器通知
-            this.instanceNotify(eventType, () -> flwHisInstance);
+            this.instanceNotify(eventType, () -> flwHisInstance, flowCreator);
         }
     }
 

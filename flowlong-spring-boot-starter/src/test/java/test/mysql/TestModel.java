@@ -7,7 +7,6 @@ import com.flowlong.bpm.engine.FlowDataTransfer;
 import com.flowlong.bpm.engine.assist.StreamUtils;
 import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.FlowLongContext;
-import com.flowlong.bpm.engine.entity.FlwTaskActor;
 import com.flowlong.bpm.engine.model.*;
 import com.flowlong.bpm.spring.adaptive.FlowJacksonHandler;
 import org.junit.jupiter.api.Assertions;

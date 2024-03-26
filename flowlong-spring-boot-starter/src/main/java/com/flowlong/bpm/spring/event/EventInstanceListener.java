@@ -3,6 +3,7 @@
  */
 package com.flowlong.bpm.spring.event;
 
+import com.flowlong.bpm.engine.core.FlowCreator;
 import com.flowlong.bpm.engine.core.enums.EventType;
 import com.flowlong.bpm.engine.entity.FlwHisInstance;
 import com.flowlong.bpm.engine.listener.InstanceListener;
@@ -28,10 +29,11 @@ public class EventInstanceListener implements InstanceListener {
     }
 
     @Override
-    public boolean notify(EventType eventType, Supplier<FlwHisInstance> supplier) {
+    public boolean notify(EventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
         InstanceEvent instanceEvent = new InstanceEvent();
         instanceEvent.setEventType(eventType);
         instanceEvent.setFlwInstance(supplier.get());
+        instanceEvent.setFlowCreator(flowCreator);
         eventPublisher.publishEvent(instanceEvent);
         return true;
     }
