@@ -42,6 +42,10 @@ public class TestPurchase extends MysqlTest {
             TaskService taskService = flowLongEngine.taskService();
             taskService.withdrawTask(hisTask.getId(), testCreator);
 
+            // 当前任务ID 用拿回任务
+            // this.executeActiveTasks(instance.getId(), t -> taskService.reclaimTask(t.getParentTaskId(), testCreator));
+
+
             // 驳回任务（领导审批驳回，任务至发起人）
             this.executeActiveTasks(instance.getId(), t ->
                     taskService.rejectTask(t, testCreator, new HashMap<String, Object>() {{

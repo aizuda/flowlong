@@ -51,12 +51,9 @@ class TestSimpleProcess extends MysqlTest {
             // 测试会签审批人003【审批】
             this.executeActiveTasks(instance.getId(), test3Creator, args);
 
-            //撤回任务(条件路由子审批) 回到测试会签审批人003【审批】任务
-            QueryService queryService = flowLongEngine.queryService();
-            List<FlwHisTask> hisTasks = queryService.getHisTasksByInstanceId(instance.getId()).get();
-            FlwHisTask hisTask = hisTasks.get(0);
+            // 拿回任务(条件路由子审批) 回到测试会签审批人003【审批】任务
             TaskService taskService = flowLongEngine.taskService();
-            taskService.withdrawTask(hisTask.getId(), testCreator);
+            this.executeActiveTasks(instance.getId(), t -> taskService.reclaimTask(t.getParentTaskId(), testCreator));
 
             // 测试会签审批人003【审批】
             this.executeActiveTasks(instance.getId(), test3Creator, args);
