@@ -724,10 +724,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(flwTask);
 
             // 分配一个参与者
-            FlwTaskActor nextFlwTaskActor = null;
-            if (null != execution) {
-                nextFlwTaskActor = execution.getNextFlwTaskActor();
-            }
+            FlwTaskActor nextFlwTaskActor = execution.getNextFlwTaskActor();
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
 
             // 创建任务监听
