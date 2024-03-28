@@ -92,7 +92,7 @@ public class TestModel extends MysqlTest {
                 NodeAssignee.ofFlowCreator(test3Creator)
         );
         // 传输动态节点处理人
-        FlowDataTransfer.put(new HashMap<String, Object>(){{
+        FlowDataTransfer.appendNodeModel(new HashMap<String, Object>() {{
             put(nodeName, DynamicAssignee.assigneeUserList(assigneeList));
             put(nodeName2, DynamicAssignee.assigneeUserList(Collections.singletonList(NodeAssignee.ofFlowCreator(test3Creator))));
         }});

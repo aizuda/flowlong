@@ -51,6 +51,15 @@ public class FlowDataTransfer {
     }
 
     /**
+     * 追加节点模型
+     *
+     * @param dataMap 追加节点信息
+     */
+    public static void appendNodeModel(Map<String, Object> dataMap) {
+        put(FlowConstants.processAppendNodeModel, dataMap);
+    }
+
+    /**
      * 获取传递参数
      *
      * @param param 传递参数

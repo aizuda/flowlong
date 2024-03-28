@@ -4,10 +4,7 @@
 package com.flowlong.bpm.mybatisplus.service;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.flowlong.bpm.engine.FlowDataTransfer;
-import com.flowlong.bpm.engine.QueryService;
-import com.flowlong.bpm.engine.RuntimeService;
-import com.flowlong.bpm.engine.TaskService;
+import com.flowlong.bpm.engine.*;
 import com.flowlong.bpm.engine.assist.Assert;
 import com.flowlong.bpm.engine.assist.DateUtils;
 import com.flowlong.bpm.engine.assist.ObjectUtils;
@@ -84,7 +81,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         /*
          * 处理追加模型逻辑
          */
-        Map<String, Object> modelData = FlowDataTransfer.getAll();
+        Map<String, Object> modelData = FlowDataTransfer.get(FlowConstants.processAppendNodeModel);
         if (ObjectUtils.isNotEmpty(modelData)) {
             ProcessModel processModel = process.model();
             modelData.forEach((key, value) -> {

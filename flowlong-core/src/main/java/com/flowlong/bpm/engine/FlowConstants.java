@@ -25,4 +25,9 @@ public interface FlowConstants {
      */
     String processInstanceCacheKey = "flwProcessInstanceModel#";
 
+    /**
+     * 流程追加模型节点
+     */
+    String processAppendNodeModel = "flwProcessAppendNodeModel";
+
 }
