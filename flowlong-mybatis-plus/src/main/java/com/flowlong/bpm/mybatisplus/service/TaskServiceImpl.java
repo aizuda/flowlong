@@ -375,7 +375,7 @@ public class TaskServiceImpl implements TaskService {
         });
 
         // 任务监听器通知
-        flwTaskOptional.ifPresent(flwTask ->  this.taskNotify(EventType.reclaim, () -> flwTask, flowCreator));
+        flwTaskOptional.ifPresent(flwTask -> this.taskNotify(EventType.reclaim, () -> flwTask, flowCreator));
         return flwTaskOptional;
     }
 
@@ -591,10 +591,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 2，抄送任务
              */
-            this.saveTaskCc(nodeModel, flwTask);
-
-            // 任务监听器通知
-            this.taskNotify(EventType.cc, () -> flwTask, execution.getFlowCreator());
+            this.saveTaskCc(nodeModel, flwTask, execution.getFlowCreator());
 
             /*
              * 可能存在子节点
@@ -625,10 +622,11 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 保存抄送任务
      *
-     * @param nodeModel 节点模型
-     * @param flwTask   流程任务对象
+     * @param nodeModel   节点模型
+     * @param flwTask     流程任务对象
+     * @param flowCreator 处理人
      */
-    public void saveTaskCc(NodeModel nodeModel, FlwTask flwTask) {
+    public void saveTaskCc(NodeModel nodeModel, FlwTask flwTask, FlowCreator flowCreator) {
         List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
         if (ObjectUtils.isNotEmpty(nodeUserList)) {
             // 抄送任务
@@ -637,6 +635,10 @@ public class TaskServiceImpl implements TaskService {
             flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskMapper.insert(flwHisTask);
+
+            // 任务监听器通知
+            this.taskNotify(EventType.cc, () -> flwHisTask, flowCreator);
+
             for (NodeAssignee nodeUser : nodeUserList) {
                 hisTaskActorMapper.insert(FlwHisTaskActor.ofNodeAssignee(nodeUser, flwHisTask.getInstanceId(), flwHisTask.getId()));
             }

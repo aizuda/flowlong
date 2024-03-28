@@ -187,14 +187,21 @@ public class ModelHelper {
         Map<String, Object> nodeMap = new HashMap<>();
         nodeMap.put("conditionNode", 0);
         nodeMap.put("name", nodeModel.getNodeName());// 节点名称
+        nodeMap.put("callProcessKey", nodeModel.getCallProcessKey());// 调用外部流程定义 key 唯一标识
         nodeMap.put("type", nodeModel.getType());// 节点类型
         nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
         nodeMap.put("nodeUserList", nodeModel.getNodeUserList());// 审核用户
         nodeMap.put("nodeRoleList", nodeModel.getNodeRoleList());// 审角色
-        nodeMap.put("callProcessKey", nodeModel.getCallProcessKey());// 调用外部流程定义 key 唯一标识
+        nodeMap.put("examineLevel", nodeModel.getExamineLevel());// 指定主管层级
+        nodeMap.put("directorLevel", nodeModel.getDirectorLevel());// 自定义连续主管审批层级
         nodeMap.put("selectMode", nodeModel.getSelectMode());// 发起人自选类型
-        nodeMap.put("userSelectFlag", nodeModel.getUserSelectFlag());// 允许发起人自选抄送人
+        nodeMap.put("termAuto", nodeModel.getTermAuto());// 审批期限超时自动审批
+        nodeMap.put("term", nodeModel.getTerm());// 审批期限
+        nodeMap.put("termMode", nodeModel.getTermMode());// 审批期限超时后执行类型
         nodeMap.put("examineMode", nodeModel.getExamineMode());// 多人审批时审批方式
+        nodeMap.put("directorMode", nodeModel.getDirectorMode());// 连续主管审批方式
+        nodeMap.put("passWeight", nodeModel.getPassWeight());// 通过权重
+        nodeMap.put("userSelectFlag", nodeModel.getUserSelectFlag());// 允许发起人自选抄送人
         if (null != biConsumer) {
             // 自定义处理消费者
             biConsumer.accept(nodeMap, nodeModel);
