@@ -26,8 +26,8 @@ public interface FlowConstants {
     String processInstanceCacheKey = "flwProcessInstanceModel#";
 
     /**
-     * 流程追加模型节点
+     * 流程节点动态分配节点处理人或角色
      */
-    String processAppendNodeModel = "flwProcessAppendNodeModel";
+    String processDynamicAssignee = "flwProcessDynamicAssignee";
 
 }

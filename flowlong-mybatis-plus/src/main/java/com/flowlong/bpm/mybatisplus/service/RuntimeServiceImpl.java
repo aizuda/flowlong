@@ -81,7 +81,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         /*
          * 处理追加模型逻辑
          */
-        Map<String, Object> modelData = FlowDataTransfer.get(FlowConstants.processAppendNodeModel);
+        Map<String, Object> modelData = FlowDataTransfer.get(FlowConstants.processDynamicAssignee);
         if (ObjectUtils.isNotEmpty(modelData)) {
             ProcessModel processModel = process.model();
             modelData.forEach((key, value) -> {

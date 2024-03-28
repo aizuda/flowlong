@@ -51,12 +51,12 @@ public class FlowDataTransfer {
     }
 
     /**
-     * 追加节点模型
+     * 动态分配节点处理人或角色
      *
-     * @param dataMap 追加节点信息
+     * @param dataMap 处理人或角色信息
      */
-    public static void appendNodeModel(Map<String, Object> dataMap) {
-        put(FlowConstants.processAppendNodeModel, dataMap);
+    public static void dynamicAssignee(Map<String, Object> dataMap) {
+        put(FlowConstants.processDynamicAssignee, dataMap);
     }
 
     /**
