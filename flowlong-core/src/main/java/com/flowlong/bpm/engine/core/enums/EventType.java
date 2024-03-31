@@ -24,15 +24,23 @@ public enum EventType {
      */
     assignment,
     /**
+     * 驳回至上一步处理
+     */
+    reject,
+    /**
      * 认领
      */
     claim,
     /**
-     * 拿回
+     * 拿回未执行任务
      */
     reclaim,
     /**
-     * 唤醒
+     * 撤回指定任务
+     */
+    withdraw,
+    /**
+     * 唤醒历史任务
      */
     resume,
     /**
@@ -55,10 +63,6 @@ public enum EventType {
      * 删除
      */
     delete,
-    /**
-     * 驳回
-     */
-    reject,
     /**
      * 超时
      */

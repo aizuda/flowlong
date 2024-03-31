@@ -248,11 +248,25 @@ public interface TaskService {
      * @param taskId        任务ID
      * @param performType   参与类型 {@link PerformType}
      * @param flwTaskActors 参与者列表
+     * @param flowCreator   执行操作人员
      */
-    boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors);
+    boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors, FlowCreator flowCreator);
 
-    default boolean addTaskActor(Long taskId, PerformType performType, FlwTaskActor flwTaskActor) {
-        return this.addTaskActor(taskId, performType, Collections.singletonList(flwTaskActor));
+    default boolean addTaskActor(Long taskId, PerformType performType, FlwTaskActor flwTaskActor, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, performType, Collections.singletonList(flwTaskActor), flowCreator);
+    }
+
+    /**
+     * 对指定的任务ID删除参与者【减签】
+     *
+     * @param taskId      任务ID
+     * @param actorIds    参与者ID列表
+     * @param flowCreator 执行操作人员
+     */
+    boolean removeTaskActor(Long taskId, List<String> actorIds, FlowCreator flowCreator);
+
+    default boolean removeTaskActor(Long taskId, String actorId, FlowCreator flowCreator) {
+        return removeTaskActor(taskId, Collections.singletonList(actorId), flowCreator);
     }
 
     /**
@@ -262,19 +276,6 @@ public interface TaskService {
      * @param callInstanceId 调用外部流程实例ID
      */
     void endCallProcessTask(Long callProcessId, Long callInstanceId);
-
-    /**
-     * 对指定的任务ID删除参与者【减签】
-     *
-     * @param taskId   任务ID
-     * @param actorIds 参与者ID列表
-     * @return true 成功 false 失败
-     */
-    boolean removeTaskActor(Long taskId, List<String> actorIds);
-
-    default boolean removeTaskActor(Long taskId, String actorId) {
-        return removeTaskActor(taskId, Collections.singletonList(actorId));
-    }
 
     /**
      * 级联删除 flw_his_task, flw_his_task_actor, flw_task, flw_task_actor

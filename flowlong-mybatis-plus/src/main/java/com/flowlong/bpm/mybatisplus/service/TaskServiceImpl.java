@@ -451,6 +451,9 @@ public class TaskServiceImpl implements TaskService {
                 taskActorMapper.deleteBatchIds(taskActorIds);
             }
             taskMapper.deleteBatchIds(flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+
+            // 任务监听器通知
+            this.taskNotify(EventType.withdraw, () -> hisTask, flowCreator);
         });
     }
 
@@ -463,7 +466,11 @@ public class TaskServiceImpl implements TaskService {
 
         // 撤回至上一级任务
         Long parentTaskId = currentFlwTask.getParentTaskId();
-        return this.undoHisTask(parentTaskId, flowCreator, null);
+        Optional<FlwTask> flwTaskOptional = this.undoHisTask(parentTaskId, flowCreator, null);
+
+        // 任务监听器通知
+        flwTaskOptional.ifPresent(flwTask -> this.taskNotify(EventType.claim, () -> flwTask, flowCreator));
+        return flwTaskOptional;
     }
 
     /**
@@ -802,7 +809,7 @@ public class TaskServiceImpl implements TaskService {
      * @param flwTaskActors 参与者列表
      */
     @Override
-    public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors) {
+    public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors, FlowCreator flowCreator) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
         List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
         Map<String, FlwTaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(FlwTaskActor::getActorId, t -> t));
@@ -816,13 +823,31 @@ public class TaskServiceImpl implements TaskService {
         FlwTask temp = new FlwTask();
         temp.setId(taskId);
         temp.setPerformType(performType);
-        return taskMapper.updateById(temp) > 0;
+        if (taskMapper.updateById(temp) > 0) {
+            // 创建任务监听
+            this.taskNotify(EventType.assignment, () -> flwTask, flowCreator);
+            return true;
+        }
+        return false;
     }
 
     protected List<FlwTaskActor> getTaskActorsByTaskId(Long taskId) {
         List<FlwTaskActor> taskActorList = taskActorMapper.selectListByTaskId(taskId);
         Assert.isTrue(ObjectUtils.isEmpty(taskActorList), "not found task actor");
         return taskActorList;
+    }
+
+    @Override
+    public boolean removeTaskActor(Long taskId, List<String> actorIds, FlowCreator flowCreator) {
+        List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
+        Assert.isTrue(Objects.equals(actorIds.size(), taskActorList.size()), "cannot all be deleted");
+
+        // 删除参与者表，任务关联关系
+        taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId).in(FlwTaskActor::getActorId, actorIds));
+
+        // 创建任务监听
+        this.taskNotify(EventType.assignment, () -> taskMapper.selectById(taskId), flowCreator);
+        return true;
     }
 
     @Override
@@ -840,16 +865,6 @@ public class TaskServiceImpl implements TaskService {
             his.setCreateTime(null);
             hisTaskMapper.updateById(his);
         }
-    }
-
-    @Override
-    public boolean removeTaskActor(Long taskId, List<String> actorIds) {
-        List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
-        Assert.isTrue(Objects.equals(actorIds.size(), taskActorList.size()), "cannot all be deleted");
-
-        // 删除参与者表，任务关联关系
-        taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId).in(FlwTaskActor::getActorId, actorIds));
-        return true;
     }
 
     /**
