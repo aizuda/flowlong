@@ -366,6 +366,14 @@ public class TaskServiceImpl implements TaskService {
             temp.setAssignorId(flowCreator.getCreateId());
             temp.setAssignor(flowCreator.getCreateBy());
             Assert.isFalse(taskMapper.updateById(temp) > 0, "resolveTask failed");
+
+            // 任务监听器通知
+            this.taskNotify(EventType.assignment, () -> {
+                flwTask.setTaskType(temp.getTaskType());
+                flwTask.setAssignorId(temp.getCreateId());
+                flwTask.setAssignor(temp.getCreateBy());
+                return flwTask;
+            }, flowCreator);
         }
         return true;
     }
