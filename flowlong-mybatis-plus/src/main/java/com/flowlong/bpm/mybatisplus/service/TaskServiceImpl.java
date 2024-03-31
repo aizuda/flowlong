@@ -313,6 +313,14 @@ public class TaskServiceImpl implements TaskService {
 
         // 分配任务给办理人
         this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(assigneeFlowCreator));
+
+        // 任务监听器通知
+        this.taskNotify(EventType.assignment, () -> {
+            dbFlwTask.setTaskType(taskType);
+            dbFlwTask.setAssignorId(flwTask.getAssignorId());
+            dbFlwTask.setAssignor(flwTask.getAssignor());
+            return dbFlwTask;
+        }, flowCreator);
         return true;
     }
 
