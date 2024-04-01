@@ -3,8 +3,8 @@
  */
 package test;
 
-import com.flowlong.bpm.engine.FlowLongEngine;
-import com.flowlong.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.FlowLongEngine;
+import com.aizuda.bpm.engine.core.FlowCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

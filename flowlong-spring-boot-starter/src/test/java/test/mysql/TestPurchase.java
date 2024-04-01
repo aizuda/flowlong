@@ -3,9 +3,9 @@
  */
 package test.mysql;
 
-import com.flowlong.bpm.engine.QueryService;
-import com.flowlong.bpm.engine.TaskService;
-import com.flowlong.bpm.engine.entity.FlwHisTask;
+import com.aizuda.bpm.engine.QueryService;
+import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.entity.FlwHisTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

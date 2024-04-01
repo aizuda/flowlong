@@ -3,11 +3,11 @@
  */
 package test.mysql.config;
 
+import com.aizuda.bpm.spring.autoconfigure.FlowLongAutoConfiguration;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
-import com.flowlong.bpm.spring.autoconfigure.FlowLongAutoConfiguration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.type.JdbcType;
 import org.mybatis.spring.annotation.MapperScan;
@@ -22,7 +22,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("com.flowlong.bpm.mybatisplus.mapper")
+@MapperScan("com.aizuda.bpm.mybatisplus.mapper")
 public class MysqlConfig extends FlowLongAutoConfiguration {
 
     @Bean("mybatisSqlSession")

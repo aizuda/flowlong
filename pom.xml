@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.flowlong</groupId>
+    <groupId>com.aizuda</groupId>
     <artifactId>flowlong</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
@@ -39,22 +39,22 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.flowlong</groupId>
+                <groupId>com.aizuda</groupId>
                 <artifactId>flowlong-core</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.flowlong</groupId>
+                <groupId>com.aizuda</groupId>
                 <artifactId>flowlong-mybatis-plus</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.flowlong</groupId>
+                <groupId>com.aizuda</groupId>
                 <artifactId>flowlong-spring-boot-starter</artifactId>
                 <version>${revision}</version>
             </dependency>
             <dependency>
-                <groupId>com.flowlong</groupId>
+                <groupId>com.aizuda</groupId>
                 <artifactId>flowlong-solon-plugin</artifactId>
                 <version>${revision}</version>
             </dependency>

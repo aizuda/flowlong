@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.flowlong</groupId>
+        <groupId>com.aizuda</groupId>
         <artifactId>flowlong</artifactId>
         <version>${revision}</version>
     </parent>

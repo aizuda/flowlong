@@ -26,8 +26,8 @@ description = "FlowLong BPM"
 
 // 项目配置
 allprojects {
-    group "com.flowlong"
-    version "0.0.2-SNAPSHOT"
+    group "com.aizuda"
+    version "0.0.1"
 }
 
 
@@ -124,6 +124,12 @@ subprojects {
             version true
             failOnError false
             links "http://docs.oracle.com/javase/8/docs/api"
+        }
+    }
+
+    tasks.withType(MavenPublication) {
+        doFirst {
+            options.skipCertificateChecks = true
         }
     }
 

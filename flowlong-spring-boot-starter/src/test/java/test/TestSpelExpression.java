@@ -1,7 +1,7 @@
 package test;
 
-import com.flowlong.bpm.engine.model.NodeExpression;
-import com.flowlong.bpm.spring.adaptive.SpelExpression;
+import com.aizuda.bpm.engine.model.NodeExpression;
+import com.aizuda.bpm.spring.adaptive.SpelExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
