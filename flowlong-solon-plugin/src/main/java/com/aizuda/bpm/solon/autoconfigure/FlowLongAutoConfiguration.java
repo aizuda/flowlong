@@ -6,6 +6,8 @@ package com.aizuda.bpm.solon.autoconfigure;
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
+import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
+import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
 import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
 import com.aizuda.bpm.engine.listener.InstanceListener;
@@ -108,6 +110,8 @@ public class FlowLongAutoConfiguration {
                                            Expression expression,
                                            TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider,
+                                           ConditionArgsHandler conditionArgsHandler,
+                                           CreateTaskHandler createTaskHandler,
                                            FlowLongEngine flowLongEngine) {
 
         // 静态注入 Jackson 解析 JSON 处理器
@@ -121,6 +125,8 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
+        flc.setConditionArgsHandler(conditionArgsHandler);
+        flc.setCreateTaskHandler(createTaskHandler);
         return flc.build(flowLongEngine);
     }
 

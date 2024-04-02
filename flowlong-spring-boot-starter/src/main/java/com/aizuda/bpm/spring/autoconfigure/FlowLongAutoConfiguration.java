@@ -6,6 +6,8 @@ package com.aizuda.bpm.spring.autoconfigure;
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
+import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
+import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
 import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
 import com.aizuda.bpm.engine.listener.InstanceListener;
@@ -115,7 +117,9 @@ public class FlowLongAutoConfiguration {
     @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine) {
+                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine,
+                                           @Autowired(required = false) ConditionArgsHandler conditionArgsHandler,
+                                           @Autowired(required = false) CreateTaskHandler createTaskHandler) {
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         // 注入 FlowLong 上下文
@@ -127,6 +131,8 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
+        flc.setConditionArgsHandler(conditionArgsHandler);
+        flc.setCreateTaskHandler(createTaskHandler);
         return flc.build(flowLongEngine);
     }
 
