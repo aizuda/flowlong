@@ -5,8 +5,10 @@ package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
+import com.aizuda.bpm.engine.handler.impl.DefaultConditionArgsHandler;
 import com.aizuda.bpm.engine.handler.impl.DefaultCreateTaskHandler;
 import com.aizuda.bpm.engine.impl.DefaultProcessModelParser;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -36,10 +38,17 @@ public class FlowLongContext {
     private RuntimeService runtimeService;
     private TaskService taskService;
     private Expression expression;
+
     /**
      * 流程任务创建处理器
      */
     private CreateTaskHandler createTaskHandler;
+
+    /**
+     * 流程执行条件参数处理器
+     */
+    private ConditionArgsHandler conditionArgsHandler;
+
     /**
      * 流程引擎拦截器
      */
@@ -105,6 +114,15 @@ public class FlowLongContext {
      */
     public CreateTaskHandler getCreateTaskHandler() {
         return null != createTaskHandler ? createTaskHandler : DefaultCreateTaskHandler.getInstance();
+    }
+
+    /**
+     * 获取创建流程任务处理器实现类
+     *
+     * @return {@link CreateTaskHandler}
+     */
+    public ConditionArgsHandler getConditionArgsHandler() {
+        return null != conditionArgsHandler ? conditionArgsHandler : DefaultConditionArgsHandler.getInstance();
     }
 
     /**

@@ -150,7 +150,7 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行条件分支
              */
-            Map<String, Object> args = execution.getArgs();
+            Map<String, Object> args = flowLongContext.getConditionArgsHandler().handle(flowLongContext, execution, this);
             Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
             Expression expression = flowLongContext.getExpression();
             Assert.isNull(expression, "Interface Expression not implemented");
