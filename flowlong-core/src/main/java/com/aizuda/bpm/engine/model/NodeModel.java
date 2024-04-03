@@ -95,11 +95,14 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean termAuto;
     /**
-     * 审批期限
+     * 审批期限（小时）
      */
     private Integer term;
     /**
      * 审批期限超时后执行类型
+     * <p>
+     * 0，自动通过 1，自动拒绝
+     * </p>
      */
     private Integer termMode;
     /**
@@ -132,6 +135,18 @@ public class NodeModel implements ModelInstance, Serializable {
      * 允许发起人自选抄送人
      */
     private Boolean userSelectFlag;
+    /**
+     * 允许转交
+     */
+    private Boolean allowTransfer;
+    /**
+     * 允许加签/减签
+     */
+    private Boolean allowAppendNode;
+    /**
+     * 允许回退
+     */
+    private Boolean allowRollback;
     /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
      */
