@@ -201,7 +201,12 @@ public class ModelHelper {
         nodeMap.put("examineMode", nodeModel.getExamineMode());// 多人审批时审批方式
         nodeMap.put("directorMode", nodeModel.getDirectorMode());// 连续主管审批方式
         nodeMap.put("passWeight", nodeModel.getPassWeight());// 通过权重
-        nodeMap.put("userSelectFlag", nodeModel.getUserSelectFlag());// 允许发起人自选抄送人
+        nodeMap.put("allowSelection", nodeModel.getAllowSelection());// 允许发起人自选抄送人
+        nodeMap.put("allowTransfer", nodeModel.getAllowTransfer());// 允许转交
+        nodeMap.put("allowAppendNode", nodeModel.getAllowAppendNode());// 允许加签/减签
+        nodeMap.put("allowRollback", nodeModel.getAllowRollback());// 允许回退
+        nodeMap.put("approveSelf", nodeModel.getApproveSelf());// 审批人与提交人为同一人时
+        nodeMap.put("extendConfig", nodeModel.getExtendConfig());// 扩展配置
         if (null != biConsumer) {
             // 自定义处理消费者
             biConsumer.accept(nodeMap, nodeModel);

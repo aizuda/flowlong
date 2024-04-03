@@ -134,10 +134,6 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 允许发起人自选抄送人
      */
-    private Boolean userSelectFlag;
-    /**
-     * 允许选择审批人员
-     */
     private Boolean allowSelection;
     /**
      * 允许转交
