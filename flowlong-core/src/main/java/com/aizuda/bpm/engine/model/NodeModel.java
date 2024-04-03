@@ -189,14 +189,18 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         /*
+         * 执行结束流程
+         */
+        else if (TaskType.end.eq(this.type)) {
+            return execution.endInstance(this);
+        }
+
+        /*
          * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
          * 执行结束流程处理器
          */
-        if (this.type == -1) {
-            execution.endInstance(this);
-        }
         if (null == this.getChildNode() && null == this.getConditionNodes()) {
-            if (!this.nextNode().isPresent() && this.getType() != 1) {
+            if (!this.nextNode().isPresent() && !TaskType.approval.eq(this.type)) {
                 execution.endInstance(this);
             }
         }

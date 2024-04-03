@@ -20,6 +20,10 @@ import java.util.Arrays;
 @Getter
 public enum TaskType {
     /**
+     * 结束节点
+     */
+    end(-1),
+    /**
      * 主办
      */
     major(0),
