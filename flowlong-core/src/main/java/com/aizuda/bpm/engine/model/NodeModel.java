@@ -148,6 +148,16 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean allowRollback;
     /**
+     * 审批人与提交人为同一人时
+     * <p>
+     * 0，由发起人对自己审批
+     * 1，自动跳过
+     * 2，转交给直接上级审批
+     * 3，转交给部门负责人审批
+     * </p>
+     */
+    private Integer approveSelf;
+    /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
      */
     private Map<String, Object> extendConfig;
