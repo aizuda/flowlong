@@ -63,7 +63,11 @@
               "term": 0,
               "termMode": 1,
               "examineMode": 1,
-              "directorMode": 0
+              "directorMode": 0,
+              "childNode": {
+                "nodeName": "领导审批结束",
+                "type": -1
+              }
             }
           },
           {

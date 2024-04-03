@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -139,7 +140,7 @@ public class Execution implements Serializable {
      *
      * @return true 执行成功  false 执行失败
      */
-    public boolean endInstance() {
+    public boolean endInstance(NodeModel endNode) {
         List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
         for (FlwTask flwTask : flwTasks) {
             Assert.illegal(flwTask.major(), "存在未完成的主办任务");
@@ -154,7 +155,7 @@ public class Execution implements Serializable {
         /*
          * 结束当前流程实例
          */
-        return engine.runtimeService().complete(this, flwInstance.getId());
+        return engine.runtimeService().complete(this, flwInstance.getId(), endNode.getNodeName());
     }
 
     /**

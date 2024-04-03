@@ -75,7 +75,7 @@ public class ProcessModel implements Serializable {
         /*
          * 无执行节点流程结束
          */
-        return execution.endInstance();
+        return execution.endInstance(nodeModel);
     }
 
     /**

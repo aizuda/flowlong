@@ -60,7 +60,7 @@ public interface RuntimeService {
      * @param instanceId 流程实例ID
      * @return true 成功 false 失败
      */
-    boolean complete(Execution execution, Long instanceId);
+    boolean complete(Execution execution, Long instanceId, String currentNode);
 
     /**
      * 保存流程实例

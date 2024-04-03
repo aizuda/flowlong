@@ -1,5 +1,6 @@
 package test.mysql;
 
+import com.aizuda.bpm.engine.entity.FlwHisInstance;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
@@ -71,6 +72,28 @@ public class TestIssue extends MysqlTest {
             Map<String, Object> args = new HashMap<>();
             args.put("day", 1);
             this.executeActiveTasks(instance.getId(), test2Creator, args);
+        });
+    }
+
+    /**
+     * 测试：记录不同的结束节点
+     */
+    @Test
+    public void testEnd() {
+        Long processId = this.deployByResource("test/conditionEnd.json", testCreator);
+
+        // 启动发起
+        flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> {
+
+            // 人事审批
+            Map<String, Object> args = new HashMap<>();
+            args.put("day", 8);
+            this.executeActiveTasks(instance.getId(), test2Creator, args);
+
+            this.executeActiveTasks(instance.getId(), testCreator, args);
+
+            FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
+            Assertions.assertEquals("领导审批结束", histInstance.getCurrentNode());
         });
     }
 
