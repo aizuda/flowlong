@@ -18,3 +18,5 @@
 bin/
 *.log
 jdbc.properties
+
+**/target/

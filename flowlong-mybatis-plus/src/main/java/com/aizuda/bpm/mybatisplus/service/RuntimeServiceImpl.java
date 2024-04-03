@@ -22,6 +22,7 @@ import com.aizuda.bpm.engine.model.ProcessModel;
 import com.aizuda.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.aizuda.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.aizuda.bpm.mybatisplus.mapper.FlwInstanceMapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
@@ -145,14 +146,14 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public boolean complete(Execution execution, Long instanceId) {
+    public boolean complete(Execution execution, Long instanceId, String currentNode) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
         if (null != flwInstance) {
             FlwHisInstance his = new FlwHisInstance();
             his.setId(instanceId);
             InstanceState instanceState = InstanceState.complete;
             his.setInstanceState(instanceState);
-            his.setCurrentNode(instanceState.name());
+            his.setCurrentNode(StringUtils.isNotEmpty(currentNode) ? currentNode : instanceState.name());
             his.setCreateTime(flwInstance.getCreateTime());
             his.setLastUpdateBy(flwInstance.getLastUpdateBy());
             his.setLastUpdateTime(flwInstance.getLastUpdateTime());

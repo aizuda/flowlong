@@ -42,6 +42,7 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 节点类型
      * <p>
+     * -1，结束节点
      * 0，发起人
      * 1，审批人
      * 2，抄送人
@@ -174,7 +175,7 @@ public class NodeModel implements ModelInstance, Serializable {
                     childNode.execute(flowLongContext, execution);
                 } else {
                     // 不存在任何子节点结束流程
-                    execution.endInstance();
+                    execution.endInstance(this);
                     return true;
                 }
             }
@@ -191,9 +192,12 @@ public class NodeModel implements ModelInstance, Serializable {
          * 不存在子节点，不存在其它分支节点，当前执行节点为最后节点 并且当前节点不是审批节点
          * 执行结束流程处理器
          */
+        if (this.type == -1) {
+            execution.endInstance(this);
+        }
         if (null == this.getChildNode() && null == this.getConditionNodes()) {
             if (!this.nextNode().isPresent() && this.getType() != 1) {
-                execution.endInstance();
+                execution.endInstance(this);
             }
         }
         return true;
