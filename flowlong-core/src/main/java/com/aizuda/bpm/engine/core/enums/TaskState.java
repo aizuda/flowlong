@@ -46,7 +46,11 @@ public enum TaskState {
     /**
      * 终止
      */
-    terminate(6);
+    terminate(6),
+    /**
+     * 驳回终止
+     */
+    rejectEnd(7);
 
     private final int value;
 
@@ -60,7 +64,7 @@ public enum TaskState {
 
     public static TaskState of(InstanceState instanceState) {
         if (instanceState == InstanceState.reject) {
-            return reject;
+            return rejectEnd;
         }
         if (instanceState == InstanceState.revoke) {
             return revoke;

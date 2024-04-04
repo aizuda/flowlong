@@ -27,7 +27,7 @@ public enum InstanceState {
      */
     complete(1),
     /**
-     * 审批拒绝
+     * 审批拒绝【 驳回结束流程 】
      */
     reject(2),
     /**

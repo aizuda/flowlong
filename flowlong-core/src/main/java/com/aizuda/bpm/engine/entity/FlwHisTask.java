@@ -40,7 +40,7 @@ public class FlwHisTask extends FlwTask {
      */
     protected Date finishTime;
     /**
-     * 任务状态 0，活动 1，结束 2，拒绝 3，超时 4，终止  5，跳转
+     * 任务状态 0，活动 1，跳转 2，完成 3，拒绝 4，撤销审批  5，超时 6，终止 7，驳回终止
      */
     protected Integer taskState;
     /**
