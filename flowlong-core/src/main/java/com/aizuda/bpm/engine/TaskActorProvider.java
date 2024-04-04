@@ -27,15 +27,6 @@ import java.util.Objects;
 public interface TaskActorProvider {
 
     /**
-     * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
-     *
-     * @param nodeModel 节点模型
-     * @param execution 执行对象
-     * @return 参与者数组
-     */
-    List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution);
-
-    /**
      * 流程创建者是否允许操作执行当前节点
      *
      * @param nodeModel   当前执行节点
@@ -47,8 +38,18 @@ public interface TaskActorProvider {
         if (ObjectUtils.isNotEmpty(nodeUserList)) {
             return nodeUserList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
         }
+
         // 角色判断必须要求子类实现
         Assert.isTrue(ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList()), "Please implement the interface TaskActorProvider method isAllow");
         return true;
     }
+
+    /**
+     * 根据Task模型的assignee、assignmentHandler属性以及运行时数据，确定参与者
+     *
+     * @param nodeModel 节点模型
+     * @param execution 执行对象
+     * @return 参与者数组
+     */
+    List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution);
 }
