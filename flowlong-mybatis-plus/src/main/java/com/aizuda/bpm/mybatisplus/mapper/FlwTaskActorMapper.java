@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.mybatisplus.mapper;
@@ -28,6 +28,15 @@ public interface FlwTaskActorMapper extends BaseMapper<FlwTaskActor> {
      */
     default List<FlwTaskActor> selectListByTaskId(Long taskId) {
         return this.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId));
+    }
+
+    /**
+     * 通过流程实例ID获取参与者列表
+     *
+     * @param instanceId 流程实例ID
+     */
+    default List<FlwTaskActor> selectListByInstanceId(Long instanceId) {
+        return this.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getInstanceId, instanceId));
     }
 
     /**

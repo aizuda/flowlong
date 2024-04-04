@@ -54,6 +54,10 @@ public enum PerformType {
         this.value = value;
     }
 
+    public boolean eq(int value) {
+        return this.value == value;
+    }
+
     public static PerformType get(Integer value) {
         if (null == value) {
             return unknown;

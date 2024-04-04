@@ -24,6 +24,14 @@ public enum EventType {
      */
     assignment,
     /**
+     * 任务加签
+     */
+    addTaskActor,
+    /**
+     * 任务减签
+     */
+    removeTaskActor,
+    /**
      * 驳回至上一步处理
      */
     reject,

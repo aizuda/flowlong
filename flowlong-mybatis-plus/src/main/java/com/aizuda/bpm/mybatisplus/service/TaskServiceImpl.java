@@ -811,21 +811,37 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors, FlowCreator flowCreator) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
+        Assert.isTrue(ObjectUtils.isEmpty(flwTaskActors), "actorIds cannot be empty");
+
         List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
         Map<String, FlwTaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(FlwTaskActor::getActorId, t -> t));
         for (FlwTaskActor flwTaskActor : flwTaskActors) {
             // 不存在的参与者
-            if (null == taskActorMap.get(flwTaskActor.getActorId())) {
+            if (null != taskActorMap.get(flwTaskActor.getActorId())) {
+                continue;
+            }
+            if (PerformType.countersign.eq(flwTask.getPerformType())) {
+                /*
+                 * 会签多任务情况
+                 */
+                FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
+                taskMapper.insert(newFlwTask);
+                this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), flwTaskActor);
+            } else {
+                /*
+                 * 单一任务多处理人员情况
+                 */
                 this.assignTask(flwTask.getInstanceId(), taskId, flwTaskActor);
             }
         }
+
         // 更新任务参与类型
         FlwTask temp = new FlwTask();
         temp.setId(taskId);
         temp.setPerformType(performType);
         if (taskMapper.updateById(temp) > 0) {
             // 创建任务监听
-            this.taskNotify(EventType.assignment, () -> flwTask, flowCreator);
+            this.taskNotify(EventType.addTaskActor, () -> flwTask, flowCreator);
             return true;
         }
         return false;
@@ -839,14 +855,36 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public boolean removeTaskActor(Long taskId, List<String> actorIds, FlowCreator flowCreator) {
-        List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
-        Assert.isTrue(Objects.equals(actorIds.size(), taskActorList.size()), "cannot all be deleted");
+        FlwTask flwTask = taskMapper.getCheckById(taskId);
+        Assert.isTrue(ObjectUtils.isEmpty(actorIds), "actorIds cannot be empty");
 
-        // 删除参与者表，任务关联关系
-        taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId).in(FlwTaskActor::getActorId, actorIds));
+        if (PerformType.countersign.eq(flwTask.getPerformType())) {
+            /*
+             * 会签多任务情况
+             */
+            List<FlwTaskActor> taskActorList = taskActorMapper.selectListByInstanceId(flwTask.getInstanceId());
+            Assert.isTrue(taskActorList.size() >= actorIds.size(), "cannot all be deleted");
+            taskActorList.forEach(t -> {
+                if (actorIds.contains(t.getActorId())) {
+                    // 删除参与者表
+                    taskActorMapper.deleteById(t.getId());
+                    // 删除任务表
+                    taskMapper.deleteById(t.getTaskId());
+                }
+            });
+        } else {
+            /*
+             * 单一任务多处理人员情况
+             */
+            List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
+            Assert.isTrue(taskActorList.size() >= actorIds.size(), "cannot all be deleted");
+
+            // 删除参与者表，任务关联关系
+            taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId).in(FlwTaskActor::getActorId, actorIds));
+        }
 
         // 创建任务监听
-        this.taskNotify(EventType.assignment, () -> taskMapper.selectById(taskId), flowCreator);
+        this.taskNotify(EventType.removeTaskActor, () -> flwTask, flowCreator);
         return true;
     }
 
