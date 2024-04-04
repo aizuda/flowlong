@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.solon.autoconfigure;
@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
 import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
+import com.aizuda.bpm.engine.handler.FlowJsonHandler;
 import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
 import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
 import com.aizuda.bpm.engine.listener.InstanceListener;
@@ -112,11 +113,15 @@ public class FlowLongAutoConfiguration {
                                            TaskActorProvider taskActorProvider,
                                            FlowLongEngine flowLongEngine,
                                            @Inject(required = false) ProcessModelParser processModelParser,
+                                           @Inject(required = false) FlowJsonHandler flowJsonHandler,
                                            @Inject(required = false) ConditionArgsHandler conditionArgsHandler,
                                            @Inject(required = false) CreateTaskHandler createTaskHandler) {
 
         // 静态注入 Jackson 解析 JSON 处理器
-        FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
+        if (null == flowJsonHandler) {
+            flowJsonHandler = new SolonFlowJsonHandler();
+        }
+        FlowLongContext.setFlowJsonHandler(flowJsonHandler);
         // 注入 FlowLong 上下文
         FlowLongContext flc = new FlowLongContext(processModelParser);
         flc.setProcessService(processService);
