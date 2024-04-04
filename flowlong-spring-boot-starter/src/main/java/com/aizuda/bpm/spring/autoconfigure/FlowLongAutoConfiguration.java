@@ -118,12 +118,13 @@ public class FlowLongAutoConfiguration {
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine,
+                                           @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) ConditionArgsHandler conditionArgsHandler,
                                            @Autowired(required = false) CreateTaskHandler createTaskHandler) {
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
         // 注入 FlowLong 上下文
-        FlowLongContext flc = new FlowLongContext();
+        FlowLongContext flc = new FlowLongContext(processModelParser);
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);

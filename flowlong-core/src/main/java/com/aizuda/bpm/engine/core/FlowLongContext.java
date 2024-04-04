@@ -77,13 +77,12 @@ public class FlowLongContext {
     /**
      * 注入默认流程模型解析器
      */
-    public FlowLongContext() {
-        this(new DefaultProcessModelParser());
-    }
-
     public FlowLongContext(ProcessModelParser processModelParser) {
-        Assert.isNull(processModelParser, "Please implement the ProcessModelParser interface class");
-        PROCESS_MODEL_PARSER = processModelParser;
+        if (null == processModelParser) {
+            PROCESS_MODEL_PARSER = new DefaultProcessModelParser();
+        } else {
+            PROCESS_MODEL_PARSER = processModelParser;
+        }
     }
 
 

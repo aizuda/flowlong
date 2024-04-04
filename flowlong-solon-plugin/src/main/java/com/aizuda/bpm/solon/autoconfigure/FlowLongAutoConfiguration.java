@@ -110,14 +110,15 @@ public class FlowLongAutoConfiguration {
                                            Expression expression,
                                            TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider,
-                                           ConditionArgsHandler conditionArgsHandler,
-                                           CreateTaskHandler createTaskHandler,
-                                           FlowLongEngine flowLongEngine) {
+                                           FlowLongEngine flowLongEngine,
+                                           @Inject(required = false) ProcessModelParser processModelParser,
+                                           @Inject(required = false) ConditionArgsHandler conditionArgsHandler,
+                                           @Inject(required = false) CreateTaskHandler createTaskHandler) {
 
         // 静态注入 Jackson 解析 JSON 处理器
         FlowLongContext.setFlowJsonHandler(new SolonFlowJsonHandler());
         // 注入 FlowLong 上下文
-        FlowLongContext flc = new FlowLongContext();
+        FlowLongContext flc = new FlowLongContext(processModelParser);
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);

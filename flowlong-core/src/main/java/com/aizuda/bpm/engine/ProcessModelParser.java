@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 /**
@@ -33,4 +34,9 @@ public interface ProcessModelParser {
      * @param cacheKey 缓存 KEY
      */
     void invalidate(String cacheKey);
+
+    /**
+     * 流程缓存实现类
+     */
+    FlowCache getFlowCache();
 }
