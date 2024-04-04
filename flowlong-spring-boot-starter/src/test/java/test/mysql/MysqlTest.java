@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import test.TestFlowLong;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
 /**
  * Mysql 测试基类
  */
+@Transactional
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
