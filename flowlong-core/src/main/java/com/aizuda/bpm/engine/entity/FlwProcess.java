@@ -99,6 +99,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
         process.setProcessName(processModel.getName());
         process.setInstanceUrl(processModel.getInstanceUrl());
         process.setUseScope(0);
+        process.setSort(0);
         process.setFlowCreator(flowCreator);
         process.setCreateTime(DateUtils.getCurrentDate());
         return process.formatModelContent(jsonString);

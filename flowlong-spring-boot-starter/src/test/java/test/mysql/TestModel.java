@@ -41,15 +41,10 @@ public class TestModel extends MysqlTest {
      * 测试获取节点 Map 格式列表
      */
     @Test
-    public void testNodeMapList() {
+    public void testProcessModel() {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
-        List<Map<String, Object>> nodeMapList = ModelHelper.getNodeMapList(processModel.getNodeConfig(), ((nodeMap, nodeModel) -> {
-            nodeMap.put("termAuto", nodeModel.getTermAuto());
-            nodeMap.put("term", nodeModel.getTerm());
-            nodeMap.put("termMode", nodeModel.getTermMode());
-        }));
-        Assertions.assertEquals(nodeMapList.get(1).get("conditionNode"), 1);
+        Assertions.assertEquals(processModel.getNodeConfig().getNodeName(), "发起人");
     }
 
     /**

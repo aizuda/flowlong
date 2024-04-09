@@ -684,6 +684,8 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setDisplayName(nodeModel.getNodeName());
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setParentTaskId(execution.getFlwTask() == null ? 0L : execution.getFlwTask().getId());
+        flwTask.setRemindRepeat(0);
+        flwTask.setViewed(0);
         return flwTask;
     }
 

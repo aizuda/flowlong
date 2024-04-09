@@ -6,7 +6,6 @@ package com.aizuda.bpm.engine.model;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 
 import java.util.*;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
@@ -124,94 +123,6 @@ public class ModelHelper {
             }
         }
         return nodeNames;
-    }
-
-    /**
-     * 获取节点 Map 格式列表
-     *
-     * @param rootNode   模型根节点
-     * @param biConsumer 模型节点处理消费者
-     */
-    public static List<Map<String, Object>> getNodeMapList(NodeModel rootNode, BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
-        List<Map<String, Object>> nodeMapList = new ArrayList<>();
-        nodeMapList.add(getNodeMap(rootNode, biConsumer));
-        int i = 0;
-        buildNodeModel(nodeMapList, rootNode, i, biConsumer);
-        return nodeMapList;
-    }
-
-    private static void buildNodeModel(List<Map<String, Object>> nodeMapList, NodeModel rootNode, int i,
-                                       BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
-        List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
-        if (null != conditionNodes) {
-            // 处理条件节点
-            Map<String, Object> nodeMap = new HashMap<>();
-            nodeMap.put("conditionNode", 1);
-            int j = 0;
-            i = i + 1;
-            List<Map<String, Object>> conditionNodeMapList = new ArrayList<>();
-            for (ConditionNode conditionNode : conditionNodes) {
-                // 添加条件节点
-                Map<String, Object> conditionNodeMap = new HashMap<>();
-                j = j + 1;
-                conditionNodeMap.put("index", i + "_" + j);// 索引位置
-                conditionNodeMap.put("name", conditionNode.getNodeName());
-                conditionNodeMap.put("type", conditionNode.getType());
-                conditionNodeMap.put("priorityLevel", conditionNode.getPriorityLevel());
-                List<Map<String, Object>> conditionChildNodeMapList = new ArrayList<>();
-
-                // 递归条件子节点
-                NodeModel conditionChildNode = conditionNode.getChildNode();
-                if (null != conditionChildNode) {
-                    conditionChildNodeMapList.add(getNodeMap(conditionChildNode, biConsumer));
-                    buildNodeModel(conditionChildNodeMapList, conditionChildNode, i, biConsumer);
-                }
-                conditionNodeMap.put("childNode", conditionChildNodeMapList);
-                conditionNodeMapList.add(conditionNodeMap);
-            }
-            nodeMap.put("conditionNodeList", conditionNodeMapList);
-            nodeMapList.add(nodeMap);
-        } else {
-            // 递归子节点
-            NodeModel childNode = rootNode.getChildNode();
-            if (null != childNode) {
-                if (!Objects.equals(4, childNode.getType())) {
-                    nodeMapList.add(getNodeMap(childNode, biConsumer));
-                }
-                buildNodeModel(nodeMapList, childNode, i, biConsumer);
-            }
-        }
-    }
-
-    private static Map<String, Object> getNodeMap(NodeModel nodeModel, BiConsumer<Map<String, Object>, NodeModel> biConsumer) {
-        Map<String, Object> nodeMap = new HashMap<>();
-        nodeMap.put("conditionNode", 0);
-        nodeMap.put("name", nodeModel.getNodeName());// 节点名称
-        nodeMap.put("callProcessKey", nodeModel.getCallProcessKey());// 调用外部流程定义 key 唯一标识
-        nodeMap.put("type", nodeModel.getType());// 节点类型
-        nodeMap.put("setType", nodeModel.getSetType());// 审核人类型
-        nodeMap.put("nodeUserList", nodeModel.getNodeUserList());// 审核用户
-        nodeMap.put("nodeRoleList", nodeModel.getNodeRoleList());// 审角色
-        nodeMap.put("examineLevel", nodeModel.getExamineLevel());// 指定主管层级
-        nodeMap.put("directorLevel", nodeModel.getDirectorLevel());// 自定义连续主管审批层级
-        nodeMap.put("selectMode", nodeModel.getSelectMode());// 发起人自选类型
-        nodeMap.put("termAuto", nodeModel.getTermAuto());// 审批期限超时自动审批
-        nodeMap.put("term", nodeModel.getTerm());// 审批期限
-        nodeMap.put("termMode", nodeModel.getTermMode());// 审批期限超时后执行类型
-        nodeMap.put("examineMode", nodeModel.getExamineMode());// 多人审批时审批方式
-        nodeMap.put("directorMode", nodeModel.getDirectorMode());// 连续主管审批方式
-        nodeMap.put("passWeight", nodeModel.getPassWeight());// 通过权重
-        nodeMap.put("allowSelection", nodeModel.getAllowSelection());// 允许发起人自选抄送人
-        nodeMap.put("allowTransfer", nodeModel.getAllowTransfer());// 允许转交
-        nodeMap.put("allowAppendNode", nodeModel.getAllowAppendNode());// 允许加签/减签
-        nodeMap.put("allowRollback", nodeModel.getAllowRollback());// 允许回退
-        nodeMap.put("approveSelf", nodeModel.getApproveSelf());// 审批人与提交人为同一人时
-        nodeMap.put("extendConfig", nodeModel.getExtendConfig());// 扩展配置
-        if (null != biConsumer) {
-            // 自定义处理消费者
-            biConsumer.accept(nodeMap, nodeModel);
-        }
-        return nodeMap;
     }
 
     /**
