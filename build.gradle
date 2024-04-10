@@ -27,7 +27,7 @@ description = "FlowLong BPM"
 // 项目配置
 allprojects {
     group "com.aizuda"
-    version "0.0.1"
+    version "0.0.2"
 }
 
 
@@ -147,8 +147,8 @@ subprojects {
     publishing {
         repositories {
             maven {
-                def userName = "andto"
-                def passWord = "243194995"
+                def userName = System.getProperty("un")
+                def passWord = System.getProperty("ps")
                 def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
                 def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl

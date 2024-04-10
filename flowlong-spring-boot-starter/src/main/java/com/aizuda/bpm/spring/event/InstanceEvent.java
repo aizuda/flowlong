@@ -25,6 +25,12 @@ import java.io.Serializable;
 @Setter
 public class InstanceEvent implements Serializable {
     private EventType eventType;
+    /**
+     * EventType.complete 完成时，实例对象实际为子类 FlwHisInstance 对象
+     * <p>
+     * FlwHisInstance hisInstance = (FlwHisInstance) flwInstance;
+     * </p>
+     */
     private FlwInstance flwInstance;
     private FlowCreator flowCreator;
 
