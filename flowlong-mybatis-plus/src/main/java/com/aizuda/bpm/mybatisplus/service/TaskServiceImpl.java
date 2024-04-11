@@ -560,8 +560,8 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public NodeModel getTaskModel(Long taskId) {
-        FlwTask flwTask = taskMapper.getCheckById(taskId);
-        FlwInstance flwInstance = instanceMapper.selectById(flwTask.getInstanceId());
+        FlwTask flwTask = hisTaskMapper.getCheckById(taskId);
+        FlwInstance flwInstance = hisInstanceMapper.selectById(flwTask.getInstanceId());
         Assert.isNull(flwInstance);
         FlwProcess process = processMapper.selectById(flwInstance.getProcessId());
         ProcessModel model = process.model();
