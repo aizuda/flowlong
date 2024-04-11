@@ -48,10 +48,10 @@ public class FlowLongAutoConfiguration {
     @Bean
     @Condition(onMissingBean = TaskService.class)
     public TaskService taskService(@Inject(required = false) TaskAccessStrategy taskAccessStrategy, @Inject(required = false) TaskListener taskListener,
-                                   FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
-                                   FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
-                                   FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, processMapper, instanceMapper, hisInstanceMapper,
+                                   FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper,
+                                   FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
+                                   FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, processMapper, instanceMapper, extInstanceMapper, hisInstanceMapper,
                 taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
     }
 

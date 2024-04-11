@@ -5,6 +5,7 @@ import com.aizuda.bpm.engine.entity.FlwInstance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import java.util.Optional;
  * @author songyinyin
  * @since 2024/4/8 上午9:52
  */
+@Transactional
 public class TestRedeployProcess extends MysqlTest {
 
     @BeforeEach

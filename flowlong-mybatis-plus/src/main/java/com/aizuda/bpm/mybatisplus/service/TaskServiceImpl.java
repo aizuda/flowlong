@@ -43,6 +43,7 @@ public class TaskServiceImpl implements TaskService {
     private final FlwProcessMapper processMapper;
     private final TaskListener taskListener;
     private final FlwInstanceMapper instanceMapper;
+    private final FlwExtInstanceMapper extInstanceMapper;
     private final FlwHisInstanceMapper hisInstanceMapper;
     private final FlwTaskMapper taskMapper;
     private final FlwTaskActorMapper taskActorMapper;
@@ -50,13 +51,14 @@ public class TaskServiceImpl implements TaskService {
     private final FlwHisTaskActorMapper hisTaskActorMapper;
 
     public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlwProcessMapper processMapper,
-                           FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper,
-                           FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
+                           FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper, FlwHisInstanceMapper hisInstanceMapper,
+                           FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                            FlwHisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
         this.processMapper = processMapper;
         this.taskListener = taskListener;
         this.instanceMapper = instanceMapper;
+        this.extInstanceMapper = extInstanceMapper;
         this.hisInstanceMapper = hisInstanceMapper;
         this.taskMapper = taskMapper;
         this.taskActorMapper = taskActorMapper;
@@ -560,11 +562,12 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public NodeModel getTaskModel(Long taskId) {
-        FlwTask flwTask = hisTaskMapper.getCheckById(taskId);
-        FlwInstance flwInstance = hisInstanceMapper.selectById(flwTask.getInstanceId());
-        Assert.isNull(flwInstance);
-        FlwProcess process = processMapper.selectById(flwInstance.getProcessId());
-        ProcessModel model = process.model();
+        FlwTask flwTask = hisTaskMapper.selectById(taskId);
+        if (null == flwTask) {
+            flwTask = taskMapper.getCheckById(taskId);
+        }
+        FlwExtInstance extInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
+        ProcessModel model = extInstance.model();
         NodeModel nodeModel = model.getNode(flwTask.getTaskName());
         Assert.isNull(nodeModel, "任务ID无法找到节点模型.");
         return nodeModel;

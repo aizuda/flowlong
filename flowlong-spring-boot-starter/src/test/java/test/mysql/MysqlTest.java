@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 /**
  * Mysql 测试基类
  */
-@Transactional
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(locations = {"classpath:spring-test-mysql.xml"})
 public class MysqlTest extends TestFlowLong {
