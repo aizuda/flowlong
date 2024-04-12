@@ -33,8 +33,8 @@ public class LocalLock implements JobLock {
     }
 
     @Override
-    public void lock() {
-        getLocalLock().lock();
+    public boolean tryLock() {
+        return getLocalLock().tryLock();
     }
 
     @Override
