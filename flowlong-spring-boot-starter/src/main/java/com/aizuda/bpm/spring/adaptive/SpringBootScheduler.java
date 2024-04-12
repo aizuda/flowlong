@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.scheduling.RemindParam;
 import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.scheduling.support.CronTrigger;
@@ -28,6 +29,7 @@ import java.util.List;
  * @author hubin
  * @since 1.0
  */
+@Slf4j
 @Getter
 @Setter
 public class SpringBootScheduler implements SchedulingConfigurer {
@@ -53,7 +55,10 @@ public class SpringBootScheduler implements SchedulingConfigurer {
      */
     public void remind() {
         try {
-            jobLock.lock();
+            if (!jobLock.tryLock()) {
+                log.info("[FlowLong] remind is already running, just return.");
+                return;
+            }
             TaskService taskService = context.getTaskService();
             List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
             if (ObjectUtils.isNotEmpty(flwTaskList)) {

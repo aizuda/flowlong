@@ -13,6 +13,7 @@ import com.aizuda.bpm.engine.scheduling.RemindParam;
 import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
  * @author noear
  * @since 1.0
  */
+@Slf4j
 @Setter
 @Getter
 public class SolonScheduler {
@@ -53,7 +55,10 @@ public class SolonScheduler {
      */
     public void remind() {
         try {
-            jobLock.lock();
+            if (!jobLock.tryLock()) {
+                log.info("[FlowLong] remind is already running, just return.");
+                return;
+            }
             TaskService taskService = context.getTaskService();
             List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
             if (ObjectUtils.isNotEmpty(flwTaskList)) {

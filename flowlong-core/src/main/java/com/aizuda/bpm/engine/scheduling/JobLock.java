@@ -16,9 +16,11 @@ package com.aizuda.bpm.engine.scheduling;
 public interface JobLock {
 
     /**
-     * 进入锁
+     * 进入锁（获取锁），立即返回，不会阻塞等待锁
+     *
+     * @return true -> 获取到锁，false -> 未获取到锁
      */
-    void lock();
+    boolean tryLock();
 
     /**
      * 解除锁

@@ -20,3 +20,4 @@ bin/
 jdbc.properties
 
 **/target/
+.flattened-pom.xml
