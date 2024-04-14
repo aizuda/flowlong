@@ -18,6 +18,13 @@ FlowLong🐉飞龙工作流
 
 [点击设计器源码下载](https://gitee.com/flowlong/flowlong-designer)
 
+# 特别用户
+
+<p>
+  <a href="http://boot.aizuda.com/?from=mp" target="_blank">
+   <img alt="AiZuDa-Logo" src="https://baomidou.com/img/azd01.png" width="160px" height="50px">
+  </a>
+</p>
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
 
