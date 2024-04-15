@@ -4,6 +4,7 @@
 package com.aizuda.bpm.solon.autoconfigure;
 
 import com.aizuda.bpm.engine.*;
+import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
 import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
@@ -112,6 +113,7 @@ public class FlowLongAutoConfiguration {
                                            TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider,
                                            FlowLongEngine flowLongEngine,
+                                           @Inject(required = false) FlowCache flowCache,
                                            @Inject(required = false) ProcessModelParser processModelParser,
                                            @Inject(required = false) FlowJsonHandler flowJsonHandler,
                                            @Inject(required = false) ConditionArgsHandler conditionArgsHandler,
@@ -123,7 +125,7 @@ public class FlowLongAutoConfiguration {
         }
         FlowLongContext.setFlowJsonHandler(flowJsonHandler);
         // 注入 FlowLong 上下文
-        FlowLongContext flc = new FlowLongContext(processModelParser);
+        FlowLongContext flc = new FlowLongContext(flowCache, processModelParser);
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine.cache;
@@ -18,10 +18,11 @@ public interface FlowCache {
     /**
      * 根据关键字缓存对象
      *
-     * @param key   缓存关键字
-     * @param value 缓存对象
+     * @param key      缓存关键字
+     * @param value    缓存对象
+     * @param duration 有效时长（单位秒)小于等于 0 不处理
      */
-    void put(String key, Object value);
+    void put(String key, Object value, long duration);
 
     /**
      * 从缓存中获取对象

@@ -4,6 +4,7 @@
 package com.aizuda.bpm.spring.autoconfigure;
 
 import com.aizuda.bpm.engine.*;
+import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
 import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
@@ -119,6 +120,7 @@ public class FlowLongAutoConfiguration {
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine,
+                                           @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
                                            @Autowired(required = false) ConditionArgsHandler conditionArgsHandler,
@@ -129,7 +131,7 @@ public class FlowLongAutoConfiguration {
         }
         FlowLongContext.setFlowJsonHandler(flowJsonHandler);
         // 注入 FlowLong 上下文
-        FlowLongContext flc = new FlowLongContext(processModelParser);
+        FlowLongContext flc = new FlowLongContext(flowCache, processModelParser);
         flc.setProcessService(processService);
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);

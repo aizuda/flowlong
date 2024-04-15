@@ -5,6 +5,7 @@ package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
@@ -77,9 +78,9 @@ public class FlowLongContext {
     /**
      * 注入默认流程模型解析器
      */
-    public FlowLongContext(ProcessModelParser processModelParser) {
+    public FlowLongContext(FlowCache flowCache, ProcessModelParser processModelParser) {
         if (null == processModelParser) {
-            PROCESS_MODEL_PARSER = new DefaultProcessModelParser();
+            PROCESS_MODEL_PARSER = new DefaultProcessModelParser(flowCache);
         } else {
             PROCESS_MODEL_PARSER = processModelParser;
         }

@@ -30,7 +30,15 @@ public class DefaultProcessModelParser implements ProcessModelParser {
      * 流程缓存处理类，默认 ConcurrentHashMap 实现
      * 使用其它缓存框架可在初始化时赋值该静态属性
      */
-    private static FlowCache flowCache;
+    private FlowCache flowCache;
+
+    public DefaultProcessModelParser(FlowCache flowCache) {
+        if (null == flowCache) {
+            this.flowCache = new FlowSimpleCache();
+        } else {
+            this.flowCache = flowCache;
+        }
+    }
 
     @Override
     public ProcessModel parse(String content, String cacheKey, boolean redeploy) {
@@ -40,7 +48,7 @@ public class DefaultProcessModelParser implements ProcessModelParser {
             ProcessModel processModel = flowCache.get(cacheKey);
             if (null == processModel || redeploy) {
                 processModel = parseProcessModel(content);
-                flowCache.put(cacheKey, processModel);
+                flowCache.put(cacheKey, processModel, 0);
             }
             return processModel;
         }
@@ -63,11 +71,6 @@ public class DefaultProcessModelParser implements ProcessModelParser {
 
     @Override
     public FlowCache getFlowCache() {
-        if (null == flowCache) {
-            synchronized (DefaultProcessModelParser.class) {
-                flowCache = new FlowSimpleCache();
-            }
-        }
         return flowCache;
     }
 }

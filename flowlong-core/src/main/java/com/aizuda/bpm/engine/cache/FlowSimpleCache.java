@@ -20,7 +20,7 @@ public class FlowSimpleCache implements FlowCache {
     private final Map<String, Object> localCache = new ConcurrentHashMap<>();
 
     @Override
-    public void put(String key, Object value) {
+    public void put(String key, Object value, long duration) {
         localCache.put(key, value);
     }
 
