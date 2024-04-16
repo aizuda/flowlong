@@ -164,7 +164,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         FlwTask flwTask = taskService().complete(taskId, flowCreator, args);
         if (log.isDebugEnabled()) {
-            log.debug("任务[taskId=" + taskId + "]已完成");
+            log.debug("任务[taskId={}]已完成", taskId);
         }
         FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         PerformType performType = PerformType.get(flwTask.getPerformType());

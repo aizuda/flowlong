@@ -61,7 +61,7 @@ public class ModelHelper {
                     // 非抄送节点
                     if (parentNode.conditionNode()) {
                         // 条件节点找子节点
-                        nodeNames.addAll(getAllConditionNodeNames(parentNode));
+                        nodeNames.addAll(getAllNextNodeNames(parentNode));
                     } else {
                         // 普通节点
                         nodeNames.add(parentNode.getNodeName());
@@ -75,28 +75,6 @@ public class ModelHelper {
         return nodeNames.stream().distinct().collect(Collectors.toList());
     }
 
-    private static List<String> getAllConditionNodeNames(NodeModel nodeModel) {
-        List<String> nodeNames = new ArrayList<>();
-        if (null != nodeModel) {
-            List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
-            if (ObjectUtils.isNotEmpty(conditionNodes)) {
-                for (ConditionNode conditionNode : conditionNodes) {
-                    NodeModel childNodeMode = conditionNode.getChildNode();
-                    if (null != childNodeMode) {
-                        if (childNodeMode.conditionNode()) {
-                            // 条件路由继续往下找
-                            nodeNames.addAll(getAllConditionNodeNames(childNodeMode));
-                        } else {
-                            // 其它节点找子节点
-                            nodeNames.addAll(getAllNextNodeNames(childNodeMode));
-                        }
-                    }
-                }
-            }
-        }
-        return nodeNames;
-    }
-
     /**
      * 获取所有下一个节点名称
      *
@@ -107,13 +85,19 @@ public class ModelHelper {
         List<String> nodeNames = new ArrayList<>();
         if (null != nodeModel) {
             if (nodeModel.conditionNode()) {
-                // 条件节点找子节点
-                nodeNames.addAll(getAllConditionNodeNames(nodeModel));
-            } else {
-                if (!nodeModel.ccNode()) {
-                    // 普通节点
-                    nodeNames.add(nodeModel.getNodeName());
+                List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+                if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                    for (ConditionNode conditionNode : conditionNodes) {
+                        // 条件节点分支子节点
+                        nodeNames.addAll(getAllNextNodeNames(conditionNode.getChildNode()));
+                    }
                 }
+
+                // 条件节点子节点
+                nodeNames.addAll(getAllNextNodeNames(nodeModel.getChildNode()));
+            } else {
+                // 普通节点
+                nodeNames.add(nodeModel.getNodeName());
 
                 // 找子节点
                 NodeModel childNodeModel = nodeModel.getChildNode();
@@ -140,5 +124,47 @@ public class ModelHelper {
             }
         }
         return false;
+    }
+
+    /**
+     * 检查条件节点
+     *
+     * @param nodeModel {@link NodeModel}
+     * @return 0，合法情况 1，存在多个条件表达式为空 2，存在多个子节点为空
+     */
+    public static int checkConditionNode(NodeModel nodeModel) {
+        if (null != nodeModel) {
+            List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+            if (ObjectUtils.isEmpty(conditionNodes)) {
+                return checkConditionNode(nodeModel.getChildNode());
+            }
+            int i = 0;
+            int j = 0;
+            for (ConditionNode conditionNode : conditionNodes) {
+                List<List<NodeExpression>> conditionList = conditionNode.getConditionList();
+                if (ObjectUtils.isEmpty(conditionList)) {
+                    i++;
+                }
+                if (null == conditionNode.getChildNode()) {
+                    j++;
+                }
+                if (i > 1 || j > 1) {
+                    break;
+                }
+            }
+            if (i > 1) {
+                // 存在多个条件表达式为空
+                return 1;
+            }
+            if (j > 1) {
+                // 存在多个子节点为空
+                return 2;
+            }
+            for (ConditionNode conditionNode : conditionNodes) {
+                return checkConditionNode(conditionNode.getChildNode());
+            }
+        }
+        // 合法情况
+        return 0;
     }
 }
