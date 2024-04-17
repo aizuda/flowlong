@@ -127,7 +127,7 @@
                 }
               ],
               "childNode": {
-                "nodeName": "抄送人",
+                "nodeName": "抄送人2",
                 "type": 2,
                 "userSelectFlag": true,
                 "nodeUserList": [
@@ -189,7 +189,7 @@
         }
       ],
       "childNode": {
-        "nodeName": "抄送人",
+        "nodeName": "抄送人3",
         "type": 2,
         "userSelectFlag": true,
         "nodeUserList": [
