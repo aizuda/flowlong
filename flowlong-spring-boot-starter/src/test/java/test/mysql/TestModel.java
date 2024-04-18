@@ -56,11 +56,11 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         processModel.buildParentNode(processModel.getNodeConfig());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeNames(processModel.getNode("条件内部审核"));
-        Assertions.assertEquals(previousNodeNames.size(), 5);
-        List<String> nextNodeNames = ModelHelper.getAllNextNodeNames(processModel.getNode("7天领导审批"));
-        Assertions.assertEquals(nextNodeNames.size(), 3);
-        // 判断无重复，可用于模型校验
-        Assertions.assertEquals(nextNodeNames.stream().distinct().count(), nextNodeNames.size());
+        Assertions.assertEquals(previousNodeNames.size(), 4);
+
+        NodeModel rootNodeModel = processModel.getNodeConfig();
+        Assertions.assertFalse(ModelHelper.checkDuplicateNodeNames(rootNodeModel));
+        Assertions.assertEquals(ModelHelper.checkConditionNode(rootNodeModel), 0);
     }
 
     /**

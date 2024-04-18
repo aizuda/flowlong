@@ -47,41 +47,69 @@ public class ModelHelper {
     }
 
     /**
-     * 获取所有上一个节点名称
+     * 获取所有上一个节点名称，不包含抄送节点
      *
      * @param nodeModel 当前节点
      * @return 所有节点名称
      */
     public static List<String> getAllPreviousNodeNames(NodeModel nodeModel) {
-        List<String> nodeNames = new ArrayList<>();
-        if (null != nodeModel) {
-            NodeModel parentNode = nodeModel.getParentNode();
-            if (null != parentNode) {
-                if (!parentNode.ccNode()) {
-                    // 非抄送节点
-                    if (parentNode.conditionNode()) {
-                        // 条件节点找子节点
-                        nodeNames.addAll(getAllNextNodeNames(parentNode));
-                    } else {
-                        // 普通节点
-                        nodeNames.add(parentNode.getNodeName());
-                    }
-                }
-                // 继续找上一个节点
-                nodeNames.addAll(getAllPreviousNodeNames(parentNode));
-            }
-        }
+        List<String> nodeNames = getAllParentNodeNames(nodeModel.getNodeName(), nodeModel.getParentNode());
         // 往上递归需要去重
         return nodeNames.stream().distinct().collect(Collectors.toList());
     }
 
-    /**
-     * 获取所有下一个节点名称
-     *
-     * @param nodeModel 当前节点
-     * @return 所有节点名称
-     */
-    public static List<String> getAllNextNodeNames(NodeModel nodeModel) {
+    private static List<String> getAllParentNodeNames(String currentNodeName, NodeModel nodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != nodeModel) {
+            if (!nodeModel.ccNode()) {
+                // 非抄送节点
+                if (nodeModel.conditionNode()) {
+                    // 条件节点找子节点
+                    nodeNames.addAll(getAllConditionNodeNames(currentNodeName, nodeModel));
+                } else {
+                    // 普通节点
+                    nodeNames.add(nodeModel.getNodeName());
+                }
+            }
+            // 继续找上一个节点
+            nodeNames.addAll(getAllParentNodeNames(currentNodeName, nodeModel.getParentNode()));
+        }
+        return nodeNames;
+    }
+
+    private static List<String> getAllConditionNodeNames(String currentNodeName, NodeModel nodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != nodeModel) {
+            List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+            if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                for (ConditionNode conditionNode : conditionNodes) {
+                    NodeModel childNodeMode = conditionNode.getChildNode();
+                    if (null != childNodeMode) {
+                        if (childNodeMode.conditionNode()) {
+                            // 条件路由继续往下找
+                            nodeNames.addAll(getAllConditionNodeNames(currentNodeName, childNodeMode));
+                        } else {
+                            // 其它节点找子节点，必须包含当前节点的子节点分支
+                            List<String> allNextNodeNames = getAllNextConditionNodeNames(childNodeMode);
+                            if (allNextNodeNames.contains(currentNodeName)) {
+                                List<String> legalNodeNames = new ArrayList<>();
+                                for (String t : allNextNodeNames) {
+                                    if (currentNodeName.equals(t)) {
+                                        break;
+                                    }
+                                    legalNodeNames.add(t);
+                                }
+                                nodeNames.addAll(legalNodeNames);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return nodeNames;
+    }
+
+    private static List<String> getAllNextConditionNodeNames(NodeModel nodeModel) {
         List<String> nodeNames = new ArrayList<>();
         if (null != nodeModel) {
             if (nodeModel.conditionNode()) {
@@ -89,20 +117,56 @@ public class ModelHelper {
                 if (ObjectUtils.isNotEmpty(conditionNodes)) {
                     for (ConditionNode conditionNode : conditionNodes) {
                         // 条件节点分支子节点
-                        nodeNames.addAll(getAllNextNodeNames(conditionNode.getChildNode()));
+                        nodeNames.addAll(getAllNextConditionNodeNames(conditionNode.getChildNode()));
                     }
                 }
 
                 // 条件节点子节点
-                nodeNames.addAll(getAllNextNodeNames(nodeModel.getChildNode()));
+                nodeNames.addAll(getAllNextConditionNodeNames(nodeModel.getChildNode()));
             } else {
-                // 普通节点
-                nodeNames.add(nodeModel.getNodeName());
+                if (!nodeModel.ccNode()) {
+                    // 非抄送节点
+                    nodeNames.add(nodeModel.getNodeName());
+                }
 
                 // 找子节点
                 NodeModel childNodeModel = nodeModel.getChildNode();
                 if (null != childNodeModel) {
-                    nodeNames.addAll(getAllNextNodeNames(childNodeModel));
+                    nodeNames.addAll(getAllNextConditionNodeNames(childNodeModel));
+                }
+            }
+        }
+        return nodeNames;
+    }
+
+    /**
+     * 获取根节点下的所有节点名称【 注意，只对根节点查找有效！】
+     *
+     * @param rootNodeModel 根节点模型
+     * @return 所有节点名称
+     */
+    private static List<String> getRootNodeAllChildNodeNames(NodeModel rootNodeModel) {
+        List<String> nodeNames = new ArrayList<>();
+        if (null != rootNodeModel) {
+            if (rootNodeModel.conditionNode()) {
+                List<ConditionNode> conditionNodes = rootNodeModel.getConditionNodes();
+                if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                    for (ConditionNode conditionNode : conditionNodes) {
+                        // 条件节点分支子节点
+                        nodeNames.addAll(getRootNodeAllChildNodeNames(conditionNode.getChildNode()));
+                    }
+                }
+
+                // 条件节点子节点
+                nodeNames.addAll(getRootNodeAllChildNodeNames(rootNodeModel.getChildNode()));
+            } else {
+                // 普通节点
+                nodeNames.add(rootNodeModel.getNodeName());
+
+                // 找子节点
+                NodeModel childNodeModel = rootNodeModel.getChildNode();
+                if (null != childNodeModel) {
+                    nodeNames.addAll(getRootNodeAllChildNodeNames(childNodeModel));
                 }
             }
         }
@@ -112,11 +176,11 @@ public class ModelHelper {
     /**
      * 检查是否存在重复节点名称
      *
-     * @param nodeModel 节点模型
+     * @param rootNodeModel 根节点模型
      * @return true 重复 false 不重复
      */
-    public static boolean checkDuplicateNodeNames(NodeModel nodeModel) {
-        List<String> allNextNodeNames = getAllNextNodeNames(nodeModel);
+    public static boolean checkDuplicateNodeNames(NodeModel rootNodeModel) {
+        List<String> allNextNodeNames = getRootNodeAllChildNodeNames(rootNodeModel);
         Set<String> set = new HashSet<>();
         for (String nodeName : allNextNodeNames) {
             if (!set.add(nodeName)) {
