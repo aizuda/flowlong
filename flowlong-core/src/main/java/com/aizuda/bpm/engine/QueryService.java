@@ -3,7 +3,12 @@
  */
 package com.aizuda.bpm.engine;
 
-import com.aizuda.bpm.engine.entity.*;
+import com.aizuda.bpm.engine.entity.FlwHisInstance;
+import com.aizuda.bpm.engine.entity.FlwHisTask;
+import com.aizuda.bpm.engine.entity.FlwHisTaskActor;
+import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 
 import java.util.List;
 import java.util.Optional;
@@ -114,6 +119,10 @@ public interface QueryService {
 
     /**
      * 根据实例ID获取实例所有历史任务，时间倒序
+     *
+     * <p>
+     *     根据唯一的ID进行排序，防止低版本数据库时间重复的情况。（注：ID 是时间增长的，也是有时间顺序的）
+     * </p>
      *
      * @param instanceId 实例ID
      * @return 历史任务列表
