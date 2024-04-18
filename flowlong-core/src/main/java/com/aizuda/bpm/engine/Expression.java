@@ -9,6 +9,7 @@ import com.aizuda.bpm.engine.model.NodeExpression;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -36,15 +37,26 @@ public interface Expression {
      * 根据表达式串、参数解析表达式并返回指定类型
      *
      * @param conditionList 条件组列表
+     * @param argsSupplier  参数列表提供者
      * @param evalFunc      执行表单式函数
      * @return true 成功 false 失败
      */
-    default boolean eval(List<List<NodeExpression>> conditionList, Function<String, Boolean> evalFunc) {
+    default boolean eval(List<List<NodeExpression>> conditionList, Supplier<Map<String, Object>> argsSupplier, Function<String, Boolean> evalFunc) {
         if (ObjectUtils.isEmpty(conditionList)) {
             return false;
         }
-        String expr = conditionList.stream().map(cl -> cl.stream().map(t -> "#" + t.getField() + t.getOperator() + t.getValue())
+        Map<String, Object> args = argsSupplier.get();
+        String expr = conditionList.stream().map(cl -> cl.stream().map(t -> exprOfArgs(t, args))
                 .collect(Collectors.joining(" && "))).collect(Collectors.joining(" || "));
         return evalFunc.apply(expr);
+    }
+
+    default String exprOfArgs(NodeExpression nodeExpression, Map<String, Object> args) {
+        String value = nodeExpression.getValue();
+        Object fieldValue = args.get(nodeExpression.getField());
+        if (fieldValue instanceof String) {
+            value = "'" + nodeExpression.getValue() + "'";
+        }
+        return "#" + nodeExpression.getField() + nodeExpression.getOperator() + value;
     }
 }

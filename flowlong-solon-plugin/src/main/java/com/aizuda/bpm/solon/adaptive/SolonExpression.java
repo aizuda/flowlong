@@ -26,7 +26,7 @@ public class SolonExpression implements Expression {
 
     @Override
     public boolean eval(List<List<NodeExpression>> conditionList, Map<String, Object> args) {
-        return this.eval(conditionList, expr -> {
+        return this.eval(conditionList, () -> args, expr -> {
             if (expr.startsWith("#{")) {
                 expr = expr.substring(2, expr.length() - 2);
             } else if (expr.startsWith("#")) {

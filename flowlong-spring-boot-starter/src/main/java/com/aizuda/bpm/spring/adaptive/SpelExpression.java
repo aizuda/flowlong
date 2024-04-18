@@ -33,7 +33,7 @@ public class SpelExpression implements Expression {
 
     @Override
     public boolean eval(List<List<NodeExpression>> conditionList, Map<String, Object> args) {
-        return this.eval(conditionList, expr -> {
+        return this.eval(conditionList, () -> args, expr -> {
             EvaluationContext context = new StandardEvaluationContext();
             for (Entry<String, Object> entry : args.entrySet()) {
                 context.setVariable(entry.getKey(), entry.getValue());
