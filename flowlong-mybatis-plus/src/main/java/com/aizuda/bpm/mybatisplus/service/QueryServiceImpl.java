@@ -119,6 +119,7 @@ public class QueryServiceImpl implements QueryService {
     public Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId) {
         return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
                 .eq(FlwHisTask::getInstanceId, instanceId)
+                .orderByDesc(FlwHisTask::getFinishTime)
                 .orderByDesc(FlwHisTask::getId)));
     }
 
