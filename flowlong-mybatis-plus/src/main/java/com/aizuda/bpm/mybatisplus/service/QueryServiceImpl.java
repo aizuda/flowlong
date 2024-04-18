@@ -4,8 +4,18 @@
 package com.aizuda.bpm.mybatisplus.service;
 
 import com.aizuda.bpm.engine.QueryService;
-import com.aizuda.bpm.engine.entity.*;
-import com.aizuda.bpm.mybatisplus.mapper.*;
+import com.aizuda.bpm.engine.entity.FlwHisInstance;
+import com.aizuda.bpm.engine.entity.FlwHisTask;
+import com.aizuda.bpm.engine.entity.FlwHisTaskActor;
+import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
+import com.aizuda.bpm.mybatisplus.mapper.FlwHisTaskActorMapper;
+import com.aizuda.bpm.mybatisplus.mapper.FlwHisTaskMapper;
+import com.aizuda.bpm.mybatisplus.mapper.FlwInstanceMapper;
+import com.aizuda.bpm.mybatisplus.mapper.FlwTaskActorMapper;
+import com.aizuda.bpm.mybatisplus.mapper.FlwTaskMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
@@ -109,7 +119,8 @@ public class QueryServiceImpl implements QueryService {
     public Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId) {
         return Optional.ofNullable(hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
                 .eq(FlwHisTask::getInstanceId, instanceId)
-                .orderByDesc(FlwHisTask::getFinishTime)));
+                .orderByDesc(FlwHisTask::getFinishTime)
+                .orderByDesc(FlwHisTask::getId)));
     }
 
 }
