@@ -702,6 +702,7 @@ public class TaskServiceImpl implements TaskService {
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {
         List<FlwTask> flwTasks = new ArrayList<>();
         flwTask.setPerformType(performType);
+        final FlowCreator flowCreator = execution.getFlowCreator();
 
         if (performType == PerformType.start) {
             // 发起任务
@@ -713,10 +714,12 @@ public class TaskServiceImpl implements TaskService {
                 // 记录发起人
                 hisTaskActorMapper.insert(FlwHisTaskActor.ofFlwHisTask(flwHisTask));
                 flwTasks.add(flwTask);
+
+                // 创建任务监听
+                this.taskNotify(EventType.create, () -> flwTask, flowCreator);
             }
             return flwTasks;
         }
-
 
         if (performType == PerformType.unknown) {
             // 未知任务
@@ -727,12 +730,14 @@ public class TaskServiceImpl implements TaskService {
                 taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), t));
             }
             flwTasks.add(flwTask);
+
+            // 创建任务监听
+            this.taskNotify(EventType.create, () -> flwTask, flowCreator);
             return flwTasks;
         }
 
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
 
-        final FlowCreator flowCreator = execution.getFlowCreator();
         if (performType == PerformType.orSign) {
             /*
              * 或签一条任务多个参与者
