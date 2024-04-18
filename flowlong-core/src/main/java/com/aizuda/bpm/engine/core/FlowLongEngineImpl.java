@@ -18,7 +18,11 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -161,6 +165,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     protected boolean execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Function<Execution, Boolean> executeNextStep) {
         if (args == null) {
             args = new HashMap<>();
+        } else {
+            // 防止 args 传入的是 Collections.singletonMap 会执行报错。
+            args = new HashMap<String, Object>(args);
         }
         FlwTask flwTask = taskService().complete(taskId, flowCreator, args);
         if (log.isDebugEnabled()) {
