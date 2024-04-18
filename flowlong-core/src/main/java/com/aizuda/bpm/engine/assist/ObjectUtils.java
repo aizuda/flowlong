@@ -1,10 +1,11 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine.assist;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Java 对象判断处理帮助类
@@ -49,4 +50,10 @@ public class ObjectUtils {
         return !isEmpty(obj);
     }
 
+    /**
+     * 判断 Map 是否未 Collections$SingletonMap 对象
+     */
+    public static boolean isSingletonMap(Map<?, ?> mapObj) {
+        return Objects.equals(mapObj.getClass().getName(), "java.util.Collections$SingletonMap");
+    }
 }
