@@ -121,7 +121,10 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return taskService().executeJumpTask(taskId, nodeName, flowCreator, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
-            return new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
+            Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
+            // 传递父节点信息
+            execution.setFlwTask(flwTask);
+            return execution;
         });
     }
 
