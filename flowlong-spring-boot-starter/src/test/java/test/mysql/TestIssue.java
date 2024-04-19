@@ -1,8 +1,15 @@
 package test.mysql;
 
+import com.aizuda.bpm.engine.ProcessService;
+import com.aizuda.bpm.engine.QueryService;
+import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwHisInstance;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
+import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.model.NodeAssignee;
+import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -11,8 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * issue 问题测试
@@ -120,7 +126,7 @@ public class TestIssue extends MysqlTest {
         Long processId = this.deployByResource("test/purchase.json", testCreator);
 
         // 启动发起
-        flowLongEngine.startInstanceById(processId, test3Creator, new HashMap<String, Object>(){{
+        flowLongEngine.startInstanceById(processId, test3Creator, new HashMap<String, Object>() {{
             put("hi", 123);
             put("go", "abc");
         }}).ifPresent(instance -> {
@@ -130,10 +136,65 @@ public class TestIssue extends MysqlTest {
             /*
              * 领导审批，debug 查看 {@link NodeModel#execute 方法 arg 参数是否传递}
              */
-            this.executeActiveTasks(instance.getId(), testCreator, new HashMap<String, Object>(){{
+            this.executeActiveTasks(instance.getId(), testCreator, new HashMap<String, Object>() {{
                 put("hi", 678);// 会覆盖实例参数 123
                 put("day", 8);
             }});
+        });
+    }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I9HTX1">测试加签节点存在多人时，当其中一人驳回异常问题</a>
+     */
+    @Test
+    public void testI9HTX1() {
+        final ProcessService processService = flowLongEngine.processService();
+        final QueryService queryService = flowLongEngine.queryService();
+        final TaskService taskService = flowLongEngine.taskService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_I9HTX1.json", testCreator, false);
+
+        // 启动流程
+        final Map<String, Object> args = new HashMap<>();
+        args.put("yg", 1);
+        args.put("money", 500);
+        args.put("fl", 1);
+        args.put("ftlb", 1);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(flwInstance -> {
+
+            // 部门经理
+            FlowCreator shiYong = FlowCreator.of("370000197405268159", "石勇");
+            this.executeTask(flwInstance.getId(), shiYong, flwTask -> flowLongEngine.executeTask(flwTask.getId(), shiYong));
+
+            // 人资部薪资专员
+            FlowCreator weiLei = FlowCreator.of("410000199512025445", "魏磊");
+            this.executeTask(flwInstance.getId(), weiLei, flwTask -> flowLongEngine.executeTask(flwTask.getId(), weiLei));
+
+            // 总裁办主任（加签）
+            queryService.getActiveTasksByInstanceId(flwInstance.getId()).flatMap(flwTasks -> flwTasks.stream()
+                    .filter(t -> Objects.equals("总裁办主任", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
+                NodeModel nodeModel = new NodeModel();
+                nodeModel.setNodeName("人工选择，多人并审");
+                nodeModel.setType(1);
+                nodeModel.setSetType(1);
+                nodeModel.setExamineMode(1);
+                nodeModel.setNodeUserList(Arrays.asList(NodeAssignee.ofFlowCreator(FlowCreator.of("45000019760731722X", "汤强")),
+                        NodeAssignee.ofFlowCreator(FlowCreator.of("440000200407105727", "贾超"))));
+                flowLongEngine.executeAppendNodeModel(flwTask.getId(), nodeModel, FlowCreator.of("640000200911201176", "邵涛"), true);
+            });
+
+            // 加签节点（审批）
+            queryService.getActiveTasksByInstanceId(flwInstance.getId()).ifPresent(flwTasks -> {
+                FlwTask flwTask = flwTasks.get(0);
+                queryService.getTaskActorsByTaskId(flwTask.getId()).forEach(a -> {
+                    if ("汤强".equals(a.getActorName())) {
+                        flowLongEngine.executeTask(flwTask.getId(), FlowCreator.of(a.getActorId(), a.getActorName()));
+                    } else {
+                        taskService.rejectTask(flwTask, FlowCreator.of(a.getActorId(), a.getActorName()), Collections.singletonMap("rejectReason", "不同意"));
+                    }
+                });
+            });
         });
     }
 }
