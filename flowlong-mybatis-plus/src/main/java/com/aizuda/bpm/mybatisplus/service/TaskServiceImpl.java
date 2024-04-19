@@ -721,21 +721,6 @@ public class TaskServiceImpl implements TaskService {
             return flwTasks;
         }
 
-        if (performType == PerformType.unknown) {
-            // 未知任务
-            flwTask.setVariable(execution.getArgs());
-            taskMapper.insert(flwTask);
-            if (ObjectUtils.isNotEmpty(taskActors)) {
-                // 发起人保存参与者
-                taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), t));
-            }
-            flwTasks.add(flwTask);
-
-            // 创建任务监听
-            this.taskNotify(EventType.create, () -> flwTask, flowCreator);
-            return flwTasks;
-        }
-
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
 
         if (performType == PerformType.orSign) {

@@ -20,10 +20,6 @@ import java.util.Arrays;
 @Getter
 public enum PerformType {
     /**
-     * 未知
-     */
-    unknown(-1),
-    /**
      * 发起
      */
     start(0),
@@ -60,9 +56,10 @@ public enum PerformType {
 
     public static PerformType get(Integer value) {
         if (null == value) {
-            return unknown;
+            // 默认，按顺序依次审批
+            return sort;
         }
-        return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElse(unknown);
+        return Arrays.stream(PerformType.values()).filter(s -> s.getValue() == value).findFirst().orElse(sort);
     }
 
 }
