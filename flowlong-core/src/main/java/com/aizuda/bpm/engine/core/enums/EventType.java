@@ -12,6 +12,10 @@ package com.aizuda.bpm.engine.core.enums;
  */
 public enum EventType {
     /**
+     * 发起
+     */
+    launch,
+    /**
      * 创建
      */
     create,
