@@ -46,7 +46,27 @@
             "term": 0,
             "termMode": 1,
             "examineMode": 2,
-            "directorMode": 0
+            "directorMode": 0,
+            "childNode": {
+              "nodeName": "部门经理确认",
+              "type": 1,
+              "setType": 1,
+              "nodeUserList": [
+                {
+                  "id": "test002",
+                  "name": "于杰"
+                }
+              ],
+              "nodeRoleList": [],
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "term": 0,
+              "termMode": 1,
+              "examineMode": 1,
+              "directorMode": 0
+            }
           }
         },
         {

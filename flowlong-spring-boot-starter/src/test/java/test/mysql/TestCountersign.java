@@ -1,8 +1,10 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package test.mysql;
 
+import com.aizuda.bpm.engine.QueryService;
+import com.aizuda.bpm.engine.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,6 +63,20 @@ public class TestCountersign extends MysqlTest {
 
             // 委派人 001 确认审批
             this.executeTask(instance.getId(), testCreator);
+
+            final TaskService taskService = flowLongEngine.taskService();
+            final QueryService queryService = flowLongEngine.queryService();
+
+            // 部门经理确认驳回
+            this.executeActiveTasks(instance.getId(), t ->
+                    taskService.rejectTask(t, test2Creator, new HashMap<String, Object>() {{
+                        put("reason", "不符合要求");
+                    }})
+            );
+
+            // 测试 https://gitee.com/aizuda/flowlong/issues/I9HBJF 校验会签节点存在 2 个处理人
+            queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
+                    Assertions.assertEquals(2, flwTaskActors.size()));
 
             // 任务进入抄送人，流程自动结束
 
