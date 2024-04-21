@@ -102,8 +102,6 @@ public class RuntimeServiceImpl implements RuntimeService {
             processModel.cleanParentNode(processModel.getNodeConfig());
             // 更新模型
             process.setModelContent2Json(processModel);
-            // 清理缓存
-            FlowDataTransfer.remove();
         }
 
         // 保存实例
