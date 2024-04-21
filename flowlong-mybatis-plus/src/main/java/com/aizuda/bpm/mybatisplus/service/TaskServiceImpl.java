@@ -727,7 +727,7 @@ public class TaskServiceImpl implements TaskService {
                 flwTasks.add(flwTask);
 
                 // 创建任务监听
-                this.taskNotify(EventType.launch, () -> flwTask, flowCreator);
+                this.taskNotify(EventType.start, () -> flwTask, flowCreator);
             }
             return flwTasks;
         }
