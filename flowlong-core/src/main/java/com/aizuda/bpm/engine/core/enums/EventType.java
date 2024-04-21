@@ -14,7 +14,7 @@ public enum EventType {
     /**
      * 发起
      */
-    launch,
+    start,
     /**
      * 创建
      */
