@@ -104,6 +104,19 @@ public class TestIssue extends MysqlTest {
     }
 
     /**
+     * 测试驳回至起始节点
+     */
+    @Test
+    public void testRejectStartNode() {
+        Long processId = this.deployByResource("test/conditionEnd.json", testCreator);
+
+        // 启动发起
+        flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> executeActiveTasks(instance.getId(),
+                flwTask -> flowLongEngine.taskService().rejectTask(flwTask, test2Creator,
+                Collections.singletonMap("rejectReason", "不同意"))));
+    }
+
+    /**
      * <a href="https://gitee.com/aizuda/flowlong/issues/I8WBFL">终止任务测试</a>
      */
     @Test

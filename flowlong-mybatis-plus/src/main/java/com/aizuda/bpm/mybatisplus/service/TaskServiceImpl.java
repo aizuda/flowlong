@@ -491,7 +491,9 @@ public class TaskServiceImpl implements TaskService {
         // 撤回历史任务
         if (hisTask.startNode()) {
             // 如果直接撤回到发起人，构建发起人关联信息
-            taskActorMapper.insert(FlwTaskActor.ofFlwTask(hisTask.undoTask()));
+            FlwTask flwTask = hisTask.undoTask();
+            taskMapper.insert(flwTask);
+            taskActorMapper.insert(FlwTaskActor.ofFlwTask(flwTask));
         } else {
             List<FlwHisTask> hisTasks = new ArrayList<>();
             if (PerformType.countersign.eq(hisTask.getPerformType())) {
