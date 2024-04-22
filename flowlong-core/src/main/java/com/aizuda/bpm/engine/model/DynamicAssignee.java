@@ -26,7 +26,7 @@ public class DynamicAssignee {
      */
     private List<NodeAssignee> assigneeList;
     /**
-     * 分配类型 1，用户 2，角色 该属性决定 assigneeList 属性是分配到人还是角色
+     * 分配类型  0，用户 1，角色  2，部门 该属性决定 assigneeList 属性是分配到人还是角色
      */
     private Integer type;
 
@@ -45,10 +45,14 @@ public class DynamicAssignee {
     }
 
     public static DynamicAssignee assigneeUserList(List<NodeAssignee> assigneeList) {
-        return builder().assigneeList(assigneeList).type(1);
+        return builder().assigneeList(assigneeList).type(0);
     }
 
     public static DynamicAssignee assigneeRoleList(List<NodeAssignee> assigneeList) {
+        return builder().assigneeList(assigneeList).type(1);
+    }
+
+    public static DynamicAssignee assigneeDeptList(List<NodeAssignee> assigneeList) {
         return builder().assigneeList(assigneeList).type(2);
     }
 }
