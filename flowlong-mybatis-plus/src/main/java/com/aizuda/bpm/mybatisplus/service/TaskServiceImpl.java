@@ -112,13 +112,14 @@ public class TaskServiceImpl implements TaskService {
      * 执行节点跳转任务
      */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
+    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
 
         // 执行跳转到目标节点
         Execution execution = executionFunction.apply(flwTask);
         ProcessModel processModel = execution.getProcessModel();
         Assert.isNull(processModel, "当前任务未找到流程定义模型");
+        execution.setArgs(args);
 
         // 查找模型节点
         NodeModel nodeModel;
@@ -700,6 +701,7 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setDisplayName(nodeModel.getNodeName());
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setParentTaskId(execution.getFlwTask() == null ? 0L : execution.getFlwTask().getId());
+        flwTask.setVariable(execution.getArgs());
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;

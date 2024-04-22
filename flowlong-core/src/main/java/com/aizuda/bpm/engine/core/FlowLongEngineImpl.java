@@ -116,9 +116,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 执行任务并跳转到指定节点
      */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行任务跳转归档
-        return taskService().executeJumpTask(taskId, nodeName, flowCreator, flwTask -> {
+        return taskService().executeJumpTask(taskId, nodeName, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
             Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
@@ -129,13 +129,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
+    public boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter) {
         // 追加指定节点模型
         runtimeService().appendNodeModel(taskId, nodeModel, beforeAfter);
 
         // 前置加签、执行任务并跳转到指定节点
         if (beforeAfter) {
-            return executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator);
+            return executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator, args);
         }
 
         // 后置加签无需处理任务流转，当前正常任务审批后进入后置加签节点模型

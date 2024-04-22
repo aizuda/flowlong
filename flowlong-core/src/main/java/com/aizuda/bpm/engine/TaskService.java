@@ -67,11 +67,16 @@ public interface TaskService {
      *
      * @param taskId            任务ID
      * @param flowCreator       任务创建者
+     * @param args              任务参数
      * @param nodeName          跳转至目标节点名称
      * @param executionFunction 执行函数
      * @return 当前 flowCreator 所在的任务
      */
-    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
+    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction);
+
+    default boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
+        return executeJumpTask(taskId, nodeName, flowCreator, null, executionFunction);
+    }
 
     /**
      * 完成指定实例ID活动任务

@@ -154,9 +154,14 @@ public interface FlowLongEngine {
      * @param taskId      任务ID
      * @param nodeName    跳转的节点名称
      * @param flowCreator 任务创建者
+     * @param args        任务参数
      * @return true 成功 false 失败
      */
-    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator);
+    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
+
+    default boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
+        return executeJumpTask(taskId, nodeName, flowCreator, null);
+    }
 
     /**
      * 执行追加节点模型
@@ -164,8 +169,13 @@ public interface FlowLongEngine {
      * @param taskId      当前任务ID
      * @param nodeModel   加签节点模型
      * @param flowCreator 任务创建者
+     * @param args        任务参数
      * @param beforeAfter true 前置 false 后置
      * @return true 成功 false 失败
      */
-    boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter);
+    boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter);
+
+    default boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
+        return executeAppendNodeModel(taskId, nodeModel, flowCreator, null, beforeAfter);
+    }
 }
