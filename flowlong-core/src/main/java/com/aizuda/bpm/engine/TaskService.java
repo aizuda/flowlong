@@ -113,6 +113,18 @@ public interface TaskService {
     FlwTask claim(Long taskId, FlowCreator flowCreator);
 
     /**
+     * 根据 任务ID 指定代理人
+     *
+     * @param taskId           任务ID
+     * @param flowCreator      任务参与者
+     * @param agentFlowCreator 指定代理人
+     * @return true 成功 false 失败
+     */
+    default boolean agentTask(Long taskId, FlowCreator flowCreator, FlowCreator agentFlowCreator) {
+        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreator);
+    }
+
+    /**
      * 根据 任务ID 转办任务
      *
      * @param taskId              任务ID

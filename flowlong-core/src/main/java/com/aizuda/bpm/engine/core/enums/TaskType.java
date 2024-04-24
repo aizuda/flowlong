@@ -66,7 +66,11 @@ public enum TaskType {
     /**
      * 委派归还任务
      */
-    delegateReturn(12);
+    delegateReturn(12),
+    /**
+     * 代理人任务
+     */
+    agent(13);
 
     private final int value;
 

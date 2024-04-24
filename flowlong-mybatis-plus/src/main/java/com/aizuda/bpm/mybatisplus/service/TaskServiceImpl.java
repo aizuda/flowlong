@@ -311,11 +311,16 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setAssignor(flowCreator.getCreateBy());
         taskMapper.updateById(flwTask);
 
-        // 删除任务历史参与者
-        taskActorMapper.deleteById(flwTaskActor.getId());
+        if (taskType == TaskType.agent) {
+            // 分配代理人可见代理任务
+            taskActorMapper.insert(FlwTaskActor.of(assigneeFlowCreator, dbFlwTask));
+        } else {
+            // 删除任务历史参与者
+            taskActorMapper.deleteById(flwTaskActor.getId());
 
-        // 分配任务给办理人
-        this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(assigneeFlowCreator));
+            // 分配任务给办理人
+            this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(assigneeFlowCreator));
+        }
 
         // 任务监听器通知
         this.taskNotify(EventType.assignment, () -> {
