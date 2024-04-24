@@ -185,20 +185,55 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setTaskState(taskState);
         hisTask.setFlowCreator(flowCreator);
         hisTask.calculateDuration();
+
+        // 领导审批，代理人归还任务，回收代理人查看权限
+        if (TaskType.agentReturn.eq(flwTask.getTaskType())) {
+            hisTaskActorMapper.delete(Wrappers.<FlwHisTaskActor>lambdaQuery()
+                    .eq(FlwTaskActor::getTaskId, flwTask.getId())
+                    .eq(FlwTaskActor::getActorId, flwTask.getAssignorId()));
+            hisTaskMapper.deleteById(flwTask.getId());
+
+            // 设置为代理任务
+            hisTask.setTaskType(TaskType.agent);
+        }
+
         Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
 
-        // 迁移任务参与者
-        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(flwTask.getId());
-        if (ObjectUtils.isNotEmpty(taskActors)) {
-            // 将 task 参与者信息迁移到 flw_his_task_actor
-            taskActors.forEach(t -> Assert.isFalse(hisTaskActorMapper.insert(FlwHisTaskActor.of(t)) > 0,
-                    "Migration to FlwHisTaskActor table failed"));
-            // 移除 flw_task_actor 中 task 参与者信息
-            Assert.isFalse(taskActorMapper.deleteByTaskId(flwTask.getId()), "Delete FlwTaskActor table failed");
+        // 代理人审批
+        if (TaskType.agent.eq(flwTask.getTaskType())) {
+            // 迁移任务参与者
+            this.moveToHisTaskActor(taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery()
+                    .eq(FlwTaskActor::getTaskId, flwTask.getId())
+                    .eq(FlwTaskActor::getActorId, flowCreator.getCreateId())));
+
+            // 代理人完成任务，当前任务设置为代理人归还任务
+            FlwTask newFlwTask = new FlwTask();
+            newFlwTask.setId(flwTask.getId());
+            newFlwTask.setTaskType(TaskType.agentReturn);
+            return taskMapper.updateById(newFlwTask) > 0;
         }
+
+        // 迁移任务参与者
+        this.moveToHisTaskActor(taskActorMapper.selectListByTaskId(flwTask.getId()));
 
         // 删除 flw_task 中指定 task 信息
         return taskMapper.deleteById(flwTask.getId()) > 0;
+    }
+
+    /**
+     * 迁移任务参与者至历史表
+     *
+     * @param taskActors 任务参与者列表
+     */
+    protected void moveToHisTaskActor(List<FlwTaskActor> taskActors) {
+        if (null != taskActors) {
+            taskActors.forEach(t -> {
+                // 将 task 参与者信息迁移到 flw_his_task_actor
+                hisTaskActorMapper.insert(FlwHisTaskActor.of(t));
+                // 移除 flw_task_actor 中 task 参与者信息
+                taskActorMapper.deleteById(t.getId());
+            });
+        }
     }
 
     protected void taskNotify(EventType eventType, Supplier<FlwTask> supplier, FlowCreator flowCreator) {
@@ -307,8 +342,8 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = new FlwTask();
         flwTask.setId(taskId);
         flwTask.setTaskType(taskType);
-        flwTask.setAssignorId(flowCreator.getCreateId());
-        flwTask.setAssignor(flowCreator.getCreateBy());
+        flwTask.setAssignorId(assigneeFlowCreator.getCreateId());
+        flwTask.setAssignor(assigneeFlowCreator.getCreateBy());
         taskMapper.updateById(flwTask);
 
         if (taskType == TaskType.agent) {

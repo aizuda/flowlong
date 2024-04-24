@@ -70,7 +70,11 @@ public enum TaskType {
     /**
      * 代理人任务
      */
-    agent(13);
+    agent(13),
+    /**
+     * 代理人归还任务
+     */
+    agentReturn(14);
 
     private final int value;
 

@@ -172,6 +172,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("任务[taskId={}]已完成", taskId);
         }
+
+        if (TaskType.agent.eq(flwTask.getTaskType())) {
+            // 代理人完成任务，结束后续执行
+            return true;
+        }
+
         FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
