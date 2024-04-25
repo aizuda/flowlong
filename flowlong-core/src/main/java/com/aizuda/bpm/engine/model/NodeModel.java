@@ -163,6 +163,10 @@ public class NodeModel implements ModelInstance, Serializable {
     private Integer approveSelf;
     /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
+     * <p>
+     * 定时器任务：自定义参数 time 时间 unit 单位【 D 天 H 时 M 分 】 <br/>
+     * 例如：一小时后触发 {"time": 1, "unit": "H"} 发起后一小时三十分后触发 {"time": "01:30:00"}
+     * </p>
      */
     private Map<String, Object> extendConfig;
     /**

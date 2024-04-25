@@ -1,0 +1,38 @@
+{
+  "key": "testTimer",
+  "name": "条件直接结束审批测试",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "延时处理",
+      "type": 6,
+      "extendConfig": [
+        {"time": 7},
+        {"unit": "d"}
+      ],
+      "childNode": {
+        "nodeName": "人事审批",
+        "type": 1,
+        "setType": 1,
+        "nodeUserList": [
+          {
+            "tenantId": "1000",
+            "id": "test002",
+            "name": "测试002"
+          }
+        ],
+        "nodeRoleList": [],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "examineMode": 1,
+        "directorMode": 0
+      }
+    }
+  }
+}
