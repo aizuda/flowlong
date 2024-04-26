@@ -45,7 +45,7 @@ CREATE TABLE "public"."flw_his_task" (
     "action_url" varchar(200) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
     "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
-    "assignor" varchar(100) COLLATE "pg_catalog"."default",
+    "assignor" varchar(255) COLLATE "pg_catalog"."default",
     "expire_time" timestamp(6),
     "remind_time" timestamp(6),
     "remind_repeat" int2 NOT NULL DEFAULT 0,
@@ -103,7 +103,7 @@ COMMENT ON COLUMN "public"."flw_task_actor"."task_id" IS '任务ID';
 COMMENT ON COLUMN "public"."flw_task_actor"."actor_id" IS '参与者ID';
 COMMENT ON COLUMN "public"."flw_task_actor"."actor_name" IS '参与者名称';
 COMMENT ON COLUMN "public"."flw_task_actor"."actor_type" IS '参与者类型 0，用户 1，角色 2，部门';
-COMMENT ON COLUMN "public"."flw_task_actor"."weight" IS '票签权重';
+COMMENT ON COLUMN "public"."flw_task_actor"."weight" IS '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人';
 COMMENT ON TABLE "public"."flw_task_actor" IS '任务参与者表';
 
 -- ----------------------------
@@ -125,7 +125,7 @@ CREATE TABLE "public"."flw_task" (
     "action_url" varchar(200) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
     "assignor_id" varchar(100) COLLATE "pg_catalog"."default",
-    "assignor" varchar(100) COLLATE "pg_catalog"."default",
+    "assignor" varchar(255) COLLATE "pg_catalog"."default",
     "expire_time" timestamp(6),
     "remind_time" timestamp(6),
     "remind_repeat" int2 NOT NULL DEFAULT 0,

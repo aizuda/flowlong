@@ -72,9 +72,17 @@ public enum TaskType {
      */
     agent(13),
     /**
-     * 代理人归还任务
+     * 代理人归还的任务
      */
-    agentReturn(14);
+    agentReturn(14),
+    /**
+     * 代理人协办完成的任务
+     */
+    agentAssist(15),
+    /**
+     * 被代理人自己完成任务
+     */
+    agentOwn(16);
 
     private final int value;
 

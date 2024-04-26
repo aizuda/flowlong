@@ -13,10 +13,7 @@ import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -115,13 +112,13 @@ public interface TaskService {
     /**
      * 根据 任务ID 指定代理人
      *
-     * @param taskId           任务ID
-     * @param flowCreator      任务参与者
-     * @param agentFlowCreator 指定代理人
+     * @param taskId            任务ID
+     * @param flowCreator       任务参与者
+     * @param agentFlowCreators 指定代理人列表
      * @return true 成功 false 失败
      */
-    default boolean agentTask(Long taskId, FlowCreator flowCreator, FlowCreator agentFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreator);
+    default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators) {
+        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators);
     }
 
     /**
@@ -133,7 +130,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, assigneeFlowCreator);
+        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator));
     }
 
     /**
@@ -145,19 +142,19 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, assigneeFlowCreator);
+        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator));
     }
 
     /**
      * 根据 任务ID 分配任务给指定办理人、重置任务类型
      *
-     * @param taskId              任务ID
-     * @param taskType            任务类型
-     * @param flowCreator         任务参与者
-     * @param assigneeFlowCreator 指定办理人
+     * @param taskId               任务ID
+     * @param taskType             任务类型
+     * @param flowCreator          任务参与者
+     * @param assigneeFlowCreators 指定办理人列表
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, FlowCreator assigneeFlowCreator);
+    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators);
 
     /**
      * 根据 任务ID 解决委派任务

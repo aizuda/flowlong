@@ -4,9 +4,13 @@
 package test.mysql;
 
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.core.FlowCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 测试简单流程
@@ -27,8 +31,9 @@ public class TestAgent extends MysqlTest {
 
             final TaskService taskService = flowLongEngine.taskService();
 
-            // 领导审批指定代理人 test002
-            executeActiveTasks(instance.getId(), flwTask -> taskService.agentTask(flwTask.getId(), testCreator, test2Creator));
+            // 领导审批指定代理人 test002 test003
+            List<FlowCreator> agentFlowCreators = Arrays.asList(test2Creator, test3Creator);
+            executeActiveTasks(instance.getId(), flwTask -> taskService.agentTask(flwTask.getId(), testCreator, agentFlowCreators));
 
             // 代理人 test002 完成任务
             executeActiveTasks(instance.getId(), test2Creator);

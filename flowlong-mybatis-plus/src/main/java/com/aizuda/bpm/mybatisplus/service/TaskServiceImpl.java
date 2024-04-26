@@ -186,35 +186,66 @@ public class TaskServiceImpl implements TaskService {
         hisTask.setFlowCreator(flowCreator);
         hisTask.calculateDuration();
 
-        // 领导审批，代理人归还任务，回收代理人查看权限
-        if (TaskType.agentReturn.eq(flwTask.getTaskType())) {
-            hisTaskActorMapper.delete(Wrappers.<FlwHisTaskActor>lambdaQuery()
-                    .eq(FlwTaskActor::getTaskId, flwTask.getId())
-                    .eq(FlwTaskActor::getActorId, flwTask.getAssignorId()));
-            hisTaskMapper.deleteById(flwTask.getId());
-
-            // 设置为代理任务
-            hisTask.setTaskType(TaskType.agent);
-        }
-
-        Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
+        // 获取当前所有处理人员
+        List<FlwTaskActor> taskActors = taskActorMapper.selectListByTaskId(flwTask.getId());
 
         // 代理人审批
         if (TaskType.agent.eq(flwTask.getTaskType())) {
-            // 迁移任务参与者
-            this.moveToHisTaskActor(taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery()
-                    .eq(FlwTaskActor::getTaskId, flwTask.getId())
-                    .eq(FlwTaskActor::getActorId, flowCreator.getCreateId())));
 
-            // 代理人完成任务，当前任务设置为代理人归还任务
-            FlwTask newFlwTask = new FlwTask();
-            newFlwTask.setId(flwTask.getId());
-            newFlwTask.setTaskType(TaskType.agentReturn);
-            return taskMapper.updateById(newFlwTask) > 0;
+            // 当前处理人为代理人员
+            if (taskActors.stream().anyMatch(t -> t.agentActor() && t.eqActorId(flowCreator.getCreateId()))) {
+
+                // 设置历史代理任务状态为【代理人协办完成的任务】设置被代理人信息
+                hisTask.setTaskType(TaskType.agentAssist);
+                taskActors.stream().filter(t -> !t.agentActor()).findFirst().ifPresent(t -> {
+                    hisTask.setAssignorId(t.getActorId());
+                    hisTask.setAssignor(t.getActorName());
+                });
+                hisTaskMapper.insert(hisTask);
+
+                // 迁移任务当前代理人员，清理其它代理人
+                this.moveToHisTaskActor(Collections.singletonList(FlwTaskActor.of(flowCreator, flwTask, 1)));
+                taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, flwTask.getId())
+                        .eq(FlwTaskActor::getWeight, 1));
+
+                // 代理人完成任务，当前任务设置为代理人归还任务，代理人信息变更
+                FlwTask newFlwTask = new FlwTask();
+                newFlwTask.setId(flwTask.getId());
+                newFlwTask.setTaskType(TaskType.agentReturn);
+                newFlwTask.setAssignorId(flowCreator.getCreateId());
+                newFlwTask.setAssignor(flowCreator.getCreateBy());
+                return taskMapper.updateById(newFlwTask) > 0;
+            } else {
+
+                // 当前处理人员为被代理人，删除代理人员
+                List<FlwTaskActor> newFlwTaskActor = new ArrayList<>();
+                for (FlwTaskActor taskActor : taskActors) {
+                    if (taskActor.agentActor()) {
+                        taskActorMapper.deleteById(taskActor.getId());
+                    } else {
+                        newFlwTaskActor.add(taskActor);
+                    }
+                }
+                taskActors = newFlwTaskActor;
+                // 设置被代理人自己完成任务
+                flwTask.setTaskType(TaskType.agentOwn);
+            }
         }
 
+        // 领导审批，代理人归还任务，回收代理人查看权限
+        if (TaskType.agentReturn.eq(flwTask.getTaskType())) {
+            hisTaskActorMapper.delete(Wrappers.<FlwHisTaskActor>lambdaQuery().eq(FlwHisTaskActor::getTaskId, flwTask.getId()));
+            hisTaskMapper.deleteById(flwTask.getId());
+
+            // 代理人协办完成的任务
+            hisTask.setTaskType(TaskType.agentAssist);
+        }
+
+        // 迁移任务至历史表
+        Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
+
         // 迁移任务参与者
-        this.moveToHisTaskActor(taskActorMapper.selectListByTaskId(flwTask.getId()));
+        this.moveToHisTaskActor(taskActors);
 
         // 删除 flw_task 中指定 task 信息
         return taskMapper.deleteById(flwTask.getId()) > 0;
@@ -321,14 +352,14 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 根据 任务ID 分配任务给指定办理人、重置任务类型
      *
-     * @param taskId              任务ID
-     * @param taskType            任务类型
-     * @param flowCreator         任务参与者
-     * @param assigneeFlowCreator 指定办理人
+     * @param taskId               任务ID
+     * @param taskType             任务类型
+     * @param flowCreator          任务参与者
+     * @param assigneeFlowCreators 指定办理人列表
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
@@ -342,20 +373,29 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = new FlwTask();
         flwTask.setId(taskId);
         flwTask.setTaskType(taskType);
-        flwTask.setAssignorId(assigneeFlowCreator.getCreateId());
-        flwTask.setAssignor(assigneeFlowCreator.getCreateBy());
-        taskMapper.updateById(flwTask);
 
         if (taskType == TaskType.agent) {
+            // 设置代理人员信息，第一个人为主办 assignorId 其他人为协办 assignor 多个英文逗号分隔
+            FlowCreator afc = assigneeFlowCreators.get(0);
+            flwTask.setAssignorId(afc.getCreateId());
+            flwTask.setAssignor(assigneeFlowCreators.stream().map(FlowCreator::getCreateBy).collect(Collectors.joining(", ")));
             // 分配代理人可见代理任务
-            taskActorMapper.insert(FlwTaskActor.of(assigneeFlowCreator, dbFlwTask));
+            assigneeFlowCreators.forEach(t -> taskActorMapper.insert(FlwTaskActor.of(t, dbFlwTask, 1)));
         } else {
+            // 非代理情况只有一个处理人员
+            FlowCreator afc = assigneeFlowCreators.get(0);
+            flwTask.setAssignorId(afc.getCreateId());
+            flwTask.setAssignor(afc.getCreateBy());
+
             // 删除任务历史参与者
             taskActorMapper.deleteById(flwTaskActor.getId());
 
             // 分配任务给办理人
-            this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(assigneeFlowCreator));
+            this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(afc));
         }
+
+        // 更新任务
+        taskMapper.updateById(flwTask);
 
         // 任务监听器通知
         this.taskNotify(EventType.assignment, () -> {

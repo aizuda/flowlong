@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 任务参与者实体类
@@ -54,9 +55,32 @@ public class FlwTaskActor implements Serializable {
      */
     protected Integer actorType;
     /**
-     * 票签权重
+     * 权重
+     * <p>
+     * 票签任务时，该值为不同处理人员的分量比例
+     * </p>
+     * <p>
+     * 代理任务时，该值为 1 时为代理人
+     * </p>
      */
     protected Integer weight;
+
+    /**
+     * 是否为代理人
+     */
+    public boolean agentActor() {
+        return Objects.equals(1, this.weight);
+    }
+
+    public boolean eqActorId(String actorId) {
+        return Objects.equals(this.actorId, actorId);
+    }
+
+    public static FlwTaskActor of(FlowCreator flowCreator, FlwTask flwTask, Integer weight) {
+        FlwTaskActor flwTaskActor = of(flowCreator, flwTask);
+        flwTaskActor.setWeight(weight);
+        return flwTaskActor;
+    }
 
     public static FlwTaskActor of(FlowCreator flowCreator, FlwTask flwTask) {
         FlwTaskActor flwTaskActor = ofUser(flowCreator.getTenantId(), flowCreator.getCreateId(), flowCreator.getCreateBy());
