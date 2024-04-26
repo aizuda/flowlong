@@ -277,6 +277,9 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     /**
      * 级联删除指定流程实例的所有数据
+     * <p>
+     * 删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_his_instance, flw_ext_instance, flw_instance
+     * </p>
      *
      * @param processId 流程ID
      */

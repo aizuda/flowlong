@@ -1,6 +1,6 @@
 {
   "key": "testTimer",
-  "name": "条件直接结束审批测试",
+  "name": "测试定时器任务",
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,

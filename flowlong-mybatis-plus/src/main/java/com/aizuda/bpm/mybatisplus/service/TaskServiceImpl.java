@@ -512,7 +512,7 @@ public class TaskServiceImpl implements TaskService {
         Optional<FlwTask> flwTaskOptional = this.undoHisTask(parentTaskId, flowCreator, null);
 
         // 任务监听器通知
-        flwTaskOptional.ifPresent(flwTask -> this.taskNotify(EventType.claim, () -> flwTask, flowCreator));
+        flwTaskOptional.ifPresent(flwTask -> this.taskNotify(EventType.recreate, () -> flwTask, flowCreator));
         return flwTaskOptional;
     }
 
@@ -956,7 +956,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_task_cc, flw_his_instance, flw_instance
+     * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task
      *
      * @param instanceIds 流程实例ID列表
      */

@@ -20,6 +20,10 @@ public enum EventType {
      */
     create,
     /**
+     * 再创建，仅用于流程回退
+     */
+    recreate,
+    /**
      * 抄送
      */
     cc,
