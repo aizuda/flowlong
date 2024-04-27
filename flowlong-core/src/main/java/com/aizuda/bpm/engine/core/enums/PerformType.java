@@ -40,6 +40,14 @@ public enum PerformType {
      */
     voteSign(4),
     /**
+     * 定时器
+     */
+    timer(6),
+    /**
+     * 触发器
+     */
+    trigger(7),
+    /**
      * 抄送
      */
     copy(9);

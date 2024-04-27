@@ -8,10 +8,9 @@
     "childNode": {
       "nodeName": "延时处理",
       "type": 6,
-      "extendConfig": [
-        {"time": 7},
-        {"unit": "d"}
-      ],
+      "extendConfig": {
+        "time": "7:d"
+      },
       "childNode": {
         "nodeName": "人事审批",
         "type": 1,

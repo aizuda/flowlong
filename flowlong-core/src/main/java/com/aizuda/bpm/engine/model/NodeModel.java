@@ -95,10 +95,6 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer selectMode;
     /**
-     * 审批期限超时自动审批
-     */
-    private Boolean termAuto;
-    /**
      * 审批期限（小时）
      */
     private Integer term;
@@ -164,8 +160,9 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
      * <p>
-     * 定时器任务：自定义参数 time 时间 unit 单位【 D 天 H 时 M 分 】 <br/>
-     * 例如：一小时后触发 {"time": 1, "unit": "H"} 发起后一小时三十分后触发 {"time": "01:30:00"}
+     * 定时器任务：自定义参数 time 触发时间<br/>
+     * 例如：一小时后触发 {"time": "1:h"} 单位【 d 天 h 时 m 分 】<br/>
+     *      发起后一小时三十分后触发 {"time": "01:30:00"}
      * </p>
      */
     private Map<String, Object> extendConfig;
@@ -215,9 +212,11 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         /*
-         * 执行 1、审批任务 2、创建抄送 5、办理子流程
+         * 执行 1、审批任务 2、创建抄送 5、办理子流程 6、定时器任务
          */
-        if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type) || TaskType.callProcess.eq(this.type)) {
+        if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type)
+                || TaskType.callProcess.eq(this.type)
+                || TaskType.timer.eq(this.type)) {
             flowLongContext.createTask(execution, this);
         }
 

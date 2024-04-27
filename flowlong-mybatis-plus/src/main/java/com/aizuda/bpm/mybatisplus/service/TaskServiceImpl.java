@@ -687,11 +687,12 @@ public class TaskServiceImpl implements TaskService {
         Integer nodeType = nodeModel.getType();
 
         // 更新当前执行节点信息，抄送节点除外
-        if (2 != nodeType) {
+
+        if (!TaskType.cc.eq(nodeType)) {
             this.updateCurrentNode(flwTask);
         }
 
-        if (0 == nodeType) {
+        if (TaskType.major.eq(nodeType)) {
             /*
              * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
              */
@@ -701,13 +702,13 @@ public class TaskServiceImpl implements TaskService {
              * 执行进入下一个节点
              */
             nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
-        } else if (1 == nodeType) {
+        } else if (TaskType.approval.eq(nodeType)) {
             /*
              * 1，审批人
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(flwTask, performType, taskActors, execution));
-        } else if (2 == nodeType) {
+        } else if (TaskType.cc.eq(nodeType)) {
             /*
              * 2，抄送任务
              */
@@ -717,14 +718,14 @@ public class TaskServiceImpl implements TaskService {
              * 可能存在子节点
              */
             nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
-        } else if (3 == nodeType) {
+        } else if (TaskType.conditionNode.eq(nodeType)) {
             /*
              * 3，条件审批
              */
             FlwTask singleFlwTask = flwTask.cloneTask(null);
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(singleFlwTask, performType, taskActors, execution));
-        } else if (5 == nodeType) {
+        } else if (TaskType.callProcess.eq(nodeType)) {
             /*
              * 5，办理子流程
              */
@@ -734,6 +735,21 @@ public class TaskServiceImpl implements TaskService {
                 flwInstance.setParentInstanceId(flwTask.getInstanceId());
                 return flwInstance;
             }).ifPresent(instance -> hisTaskMapper.insert(FlwHisTask.ofCallInstance(nodeModel, instance)));
+        } else if (TaskType.timer.eq(nodeType)) {
+            /*
+             * 6，定时器任务
+             */
+            Date expireTime = null;
+            Map<String, Object> extendConfig = nodeModel.getExtendConfig();
+            if (null != extendConfig) {
+                String time = (String) extendConfig.get("time");
+                if (null != time) {
+                    expireTime = DateUtils.parseTimerTaskTime(time);
+                }
+            }
+            Assert.isEmpty(expireTime, "Timer task config error");
+            flwTask.setExpireTime(expireTime);
+            flwTasks.addAll(this.saveTask(flwTask, PerformType.timer, taskActors, execution));
         }
 
         return flwTasks;
@@ -782,6 +798,11 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setParentTaskId(execution.getFlwTask() == null ? 0L : execution.getFlwTask().getId());
         flwTask.setVariable(execution.getArgs());
+        // 审批期限非空，设置期望任务完成时间
+        Integer term = nodeModel.getTerm();
+        if (null != term && term > 0) {
+            flwTask.setExpireTime(DateUtils.toDate(DateUtils.now().plusHours(term)));
+        }
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;
@@ -798,6 +819,13 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTask> flwTasks = new ArrayList<>();
         flwTask.setPerformType(performType);
         final FlowCreator flowCreator = execution.getFlowCreator();
+
+        if (performType == PerformType.timer) {
+            // 定时器任务
+            taskMapper.insert(flwTask);
+            flwTasks.add(flwTask);
+            return flwTasks;
+        }
 
         if (performType == PerformType.start) {
             // 发起任务

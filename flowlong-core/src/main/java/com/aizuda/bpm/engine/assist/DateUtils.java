@@ -5,9 +5,7 @@ package com.aizuda.bpm.engine.assist;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 日期帮助类
@@ -20,7 +18,6 @@ import java.util.Map;
  * @since 1.0
  */
 public class DateUtils {
-    private static final String DATE_FORMAT_DEFAULT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 当前时间 Date 类型
@@ -32,6 +29,15 @@ public class DateUtils {
     }
 
     /**
+     * 当前时间 LocalDateTime 类型
+     *
+     * @return {@link LocalDateTime}
+     */
+    public static LocalDateTime now() {
+        return LocalDateTime.now();
+    }
+
+    /**
      * 日期判断
      */
     public static boolean after(Date arg0, Date arg1) {
@@ -39,63 +45,15 @@ public class DateUtils {
     }
 
     /**
-     * 日期 Date 转为 LocalDateTime
+     * 日期 LocalDateTime 转为 Date
      *
-     * @param date {@link Date}
-     * @return {@link LocalDateTime}
+     * @param localDateTime {@link LocalDateTime}
      */
-    public static LocalDateTime dateToLocalDateTime(Date date) {
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
-
-    private static String localDateTimeFormat(LocalDateTime localDateTime) {
-        return localDateTime.format(DateTimeFormatter.ofPattern(DATE_FORMAT_DEFAULT));
-    }
-
-    /**
-     * 解析日期时间对象
-     *
-     * @param date 日期类型对象
-     * @return 解析日期
-     */
-    public static String parseTime(Object date) {
-        if (date == null) {
+    public static Date toDate(LocalDateTime localDateTime) {
+        if (null == localDateTime) {
             return null;
         }
-        if (date instanceof Date) {
-            return localDateTimeFormat(dateToLocalDateTime((Date) date));
-        }
-        if (date instanceof String) {
-            return String.valueOf(date);
-        }
-        return "";
-    }
-
-    /**
-     * 对时限数据进行处理
-     * 1、运行时设置的date型数据直接返回
-     * 2、模型设置的需要特殊转换成date类型
-     * 3、运行时设置的转换为date型
-     *
-     * @param args      运行时参数
-     * @param parameter 模型参数
-     * @return Date类型
-     */
-    public static Date processTime(Map<String, Object> args, String parameter) {
-        if (ObjectUtils.isEmpty(parameter)) {
-            return null;
-        }
-        Object data = args.get(parameter);
-        if (data == null) {
-            data = parameter;
-        }
-        if (data instanceof Date) {
-            return (Date) data;
-        }
-        if (data instanceof Long) {
-            return new Date((Long) data);
-        }
-        return null;
+        return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /**
@@ -110,5 +68,34 @@ public class DateUtils {
             return null;
         }
         return endDate.getTime() - startDate.getTime();
+    }
+
+    /**
+     * 解析定时器任务时间
+     *
+     * @param time 自定义触发时间
+     * @return {@link Date}
+     */
+    public static Date parseTimerTaskTime(String time) {
+        LocalDateTime expireTime = null;
+        String[] timeArr = time.split(":");
+        int l = timeArr.length;
+        if (l == 2) {
+            long vary = Long.parseLong(timeArr[0]);
+            String unit = timeArr[1];
+            if ("d".equals(unit)) {
+                expireTime = DateUtils.now().plusDays(vary);
+            } else if ("h".equals(unit)) {
+                expireTime = DateUtils.now().plusHours(vary);
+            } else if ("m".equals(unit)) {
+                expireTime = DateUtils.now().plusMinutes(vary);
+            }
+        } else if (l == 3) {
+            long hours = Long.parseLong(timeArr[0]);
+            long minutes = Long.parseLong(timeArr[1]);
+            long seconds = Long.parseLong(timeArr[2]);
+            expireTime = DateUtils.now().plusHours(hours).plusMinutes(minutes).plusSeconds(seconds);
+        }
+        return DateUtils.toDate(expireTime);
     }
 }
