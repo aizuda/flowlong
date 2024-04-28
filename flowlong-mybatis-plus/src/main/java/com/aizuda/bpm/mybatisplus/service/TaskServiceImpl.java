@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.mybatisplus.service;
 
+import com.aizuda.bpm.engine.FlowTaskTrigger;
 import com.aizuda.bpm.engine.TaskAccessStrategy;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -40,7 +41,7 @@ import java.util.stream.Collectors;
  */
 public class TaskServiceImpl implements TaskService {
     private final TaskAccessStrategy taskAccessStrategy;
-    private final FlwProcessMapper processMapper;
+    private final FlowTaskTrigger flowTaskTrigger;
     private final TaskListener taskListener;
     private final FlwInstanceMapper instanceMapper;
     private final FlwExtInstanceMapper extInstanceMapper;
@@ -50,12 +51,12 @@ public class TaskServiceImpl implements TaskService {
     private final FlwHisTaskMapper hisTaskMapper;
     private final FlwHisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlwProcessMapper processMapper,
+    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlowTaskTrigger flowTaskTrigger,
                            FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper, FlwHisInstanceMapper hisInstanceMapper,
                            FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                            FlwHisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
-        this.processMapper = processMapper;
+        this.flowTaskTrigger = flowTaskTrigger;
         this.taskListener = taskListener;
         this.instanceMapper = instanceMapper;
         this.extInstanceMapper = extInstanceMapper;
@@ -416,9 +417,7 @@ public class TaskServiceImpl implements TaskService {
     protected FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator) {
         List<FlwTaskActor> taskActors = taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId)
                 .eq(FlwTaskActor::getActorId, flowCreator.getCreateId()));
-        Optional<FlwTaskActor> taskActorOpt = taskActors.stream().filter(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId())).findFirst();
-        Assert.isTrue(!taskActorOpt.isPresent(), "Not authorized to perform this task");
-        return taskActorOpt.get();
+        return taskAccessStrategy.getAllowedFlwTaskActor(taskId, flowCreator, taskActors);
     }
 
     /**
@@ -739,17 +738,27 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 6，定时器任务
              */
-            Date expireTime = null;
-            Map<String, Object> extendConfig = nodeModel.getExtendConfig();
-            if (null != extendConfig) {
-                String time = (String) extendConfig.get("time");
-                if (null != time) {
-                    expireTime = DateUtils.parseTimerTaskTime(time);
-                }
-            }
-            Assert.isEmpty(expireTime, "Timer task config error");
-            flwTask.setExpireTime(expireTime);
+            flwTask.loadExpireTime(nodeModel.getExtendConfig(), true);
             flwTasks.addAll(this.saveTask(flwTask, PerformType.timer, taskActors, execution));
+        } else if (TaskType.trigger.eq(nodeType)) {
+            /*
+             * 7、触发器任务
+             */
+            flwTask.loadExpireTime(nodeModel.getExtendConfig(), false);
+            if (null == flwTask.getExpireTime()) {
+                // 立即触发器，直接执行
+                execution.setFlwTask(flwTask);
+                Assert.isFalse(flowTaskTrigger.execute(nodeModel, execution), "task trigger execute failed");
+                // 执行成功，任务归档
+                FlwHisTask hisTask = FlwHisTask.of(flwTask);
+                hisTask.setTaskState(TaskState.complete);
+                hisTask.setFlowCreator(execution.getFlowCreator());
+                hisTask.calculateDuration();
+                hisTaskMapper.insert(hisTask);
+            } else {
+                // 定时触发器，等待执行
+                flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution));
+            }
         }
 
         return flwTasks;

@@ -212,11 +212,11 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         /*
-         * 执行 1、审批任务 2、创建抄送 5、办理子流程 6、定时器任务
+         * 执行 1、审批任务 2、创建抄送 5、办理子流程 6、定时器任务 7、触发器任务
          */
         if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type)
-                || TaskType.callProcess.eq(this.type)
-                || TaskType.timer.eq(this.type)) {
+                || TaskType.callProcess.eq(this.type) || TaskType.timer.eq(this.type)
+                || TaskType.trigger.eq(this.type)) {
             flowLongContext.createTask(execution, this);
         }
 

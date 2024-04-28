@@ -55,10 +55,10 @@ public class FlowLongAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public TaskService taskService(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
-                                   FlwProcessMapper processMapper, FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper,
+                                   @Autowired(required = false) FlowTaskTrigger flowTaskTrigger, FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper,
                                    FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
                                    FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, processMapper, instanceMapper, extInstanceMapper, hisInstanceMapper,
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, flowTaskTrigger, instanceMapper, extInstanceMapper, hisInstanceMapper,
                 taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
     }
 

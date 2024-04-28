@@ -54,12 +54,21 @@ public class FlowLongContext {
      * 流程引擎拦截器
      */
     private List<FlowLongInterceptor> interceptors;
+
+    /**
+     * 任务访问策略类
+     */
     private TaskAccessStrategy taskAccessStrategy;
 
     /**
      * 审批参与者提供者
      */
     private TaskActorProvider taskActorProvider;
+
+    /**
+     * 审批参与者提供者
+     */
+    private FlowTaskTrigger flowTaskTrigger;
 
     /**
      * 静态注入流程模型解析器

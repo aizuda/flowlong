@@ -126,6 +126,26 @@ public class FlwTask extends FlowEntity {
     }
 
     /**
+     * 从扩展配置中加载期望任务完成时间
+     *
+     * @param extendConfig 扩展配置
+     * @param checkEmpty   检查是否为空
+     */
+    public void loadExpireTime(Map<String, Object> extendConfig, boolean checkEmpty) {
+        Date expireTime = null;
+        if (null != extendConfig) {
+            String time = (String) extendConfig.get("time");
+            if (null != time) {
+                expireTime = DateUtils.parseTimerTaskTime(time);
+            }
+        }
+        if (checkEmpty) {
+            Assert.isEmpty(expireTime, "Timer task config error");
+        }
+        this.expireTime = expireTime;
+    }
+
+    /**
      * 开始节点判断
      *
      * @return true 是 false 非
