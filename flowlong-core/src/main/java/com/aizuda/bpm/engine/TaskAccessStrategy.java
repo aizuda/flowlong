@@ -1,8 +1,9 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 
 import java.util.List;
@@ -30,4 +31,17 @@ public interface TaskAccessStrategy {
      * @return boolean 是否允许访问
      */
     boolean isAllowed(String userId, List<FlwTaskActor> taskActors);
+
+    /**
+     * 获取指定合法参与者对象
+     * <p>
+     * 被使用在：分配任务，解决委派任务 场景
+     * </p>
+     *
+     * @param taskId      当前任务ID
+     * @param taskActors  通过任务ID查询到的任务参与者列表
+     * @param flowCreator 任务参与者
+     * @return {@link FlwTaskActor}
+     */
+    FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator, List<FlwTaskActor> taskActors);
 }
