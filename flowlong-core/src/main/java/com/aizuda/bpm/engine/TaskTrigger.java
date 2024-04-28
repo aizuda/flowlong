@@ -16,7 +16,7 @@ import com.aizuda.bpm.engine.model.NodeModel;
  * @author hubin
  * @since 1.0
  */
-public interface FlowTaskTrigger {
+public interface TaskTrigger {
 
     /**
      * 执行任务触发器节点

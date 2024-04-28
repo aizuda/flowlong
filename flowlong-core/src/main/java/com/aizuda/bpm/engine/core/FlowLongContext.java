@@ -68,7 +68,7 @@ public class FlowLongContext {
     /**
      * 审批参与者提供者
      */
-    private FlowTaskTrigger flowTaskTrigger;
+    private TaskTrigger taskTrigger;
 
     /**
      * 静态注入流程模型解析器

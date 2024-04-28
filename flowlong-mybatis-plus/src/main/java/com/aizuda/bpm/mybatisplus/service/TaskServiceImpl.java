@@ -3,7 +3,7 @@
  */
 package com.aizuda.bpm.mybatisplus.service;
 
-import com.aizuda.bpm.engine.FlowTaskTrigger;
+import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.TaskAccessStrategy;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  */
 public class TaskServiceImpl implements TaskService {
     private final TaskAccessStrategy taskAccessStrategy;
-    private final FlowTaskTrigger flowTaskTrigger;
+    private final TaskTrigger taskTrigger;
     private final TaskListener taskListener;
     private final FlwInstanceMapper instanceMapper;
     private final FlwExtInstanceMapper extInstanceMapper;
@@ -51,12 +51,12 @@ public class TaskServiceImpl implements TaskService {
     private final FlwHisTaskMapper hisTaskMapper;
     private final FlwHisTaskActorMapper hisTaskActorMapper;
 
-    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, FlowTaskTrigger flowTaskTrigger,
+    public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, TaskTrigger taskTrigger,
                            FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper, FlwHisInstanceMapper hisInstanceMapper,
                            FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper, FlwHisTaskMapper hisTaskMapper,
                            FlwHisTaskActorMapper hisTaskActorMapper) {
         this.taskAccessStrategy = taskAccessStrategy;
-        this.flowTaskTrigger = flowTaskTrigger;
+        this.taskTrigger = taskTrigger;
         this.taskListener = taskListener;
         this.instanceMapper = instanceMapper;
         this.extInstanceMapper = extInstanceMapper;
@@ -748,7 +748,7 @@ public class TaskServiceImpl implements TaskService {
             if (null == flwTask.getExpireTime()) {
                 // 立即触发器，直接执行
                 execution.setFlwTask(flwTask);
-                Assert.isFalse(flowTaskTrigger.execute(nodeModel, execution), "task trigger execute failed");
+                Assert.isFalse(taskTrigger.execute(nodeModel, execution), "task trigger execute failed");
                 // 执行成功，任务归档
                 FlwHisTask hisTask = FlwHisTask.of(flwTask);
                 hisTask.setTaskState(TaskState.complete);
