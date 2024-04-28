@@ -150,7 +150,7 @@ public class FlowLongContext {
          */
         Assert.isNull(configEngine, "Unable to discover implementation class for LongEngine");
         if (log.isInfoEnabled()) {
-            log.info("FlowLongEngine be found:" + configEngine.getClass());
+            log.info("FlowLongEngine be found {}", configEngine.getClass());
         }
         configEngine.configure(this);
         return this;

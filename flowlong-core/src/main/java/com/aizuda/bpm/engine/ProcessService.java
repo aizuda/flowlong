@@ -38,7 +38,7 @@ public interface ProcessService {
     FlwProcess getProcessById(Long id);
 
     /**
-     * 根据流程名称或版本号查找流程定义对象
+     * 根据流程定义KEY或版本号查找流程定义对象
      *
      * @param processKey 流程定义key
      * @param version    版本号
@@ -46,6 +46,12 @@ public interface ProcessService {
      */
     FlwProcess getProcessByVersion(String processKey, Integer version);
 
+    /**
+     * 根据流程定义KEY查找流程定义对象
+     *
+     * @param processKey 流程定义key
+     * @return {@link FlwProcess}
+     */
     default FlwProcess getProcessByKey(String processKey) {
         return getProcessByVersion(processKey, null);
     }

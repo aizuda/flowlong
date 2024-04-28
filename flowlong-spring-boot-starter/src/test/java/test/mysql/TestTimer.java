@@ -8,9 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * 测试简单流程
- *
- * @author xdg
+ * 测试定时器任务
  */
 @Slf4j
 public class TestTimer extends MysqlTest {
@@ -24,7 +22,7 @@ public class TestTimer extends MysqlTest {
     public void test() {
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
-            // TODO 测试定时器
+            // TODO 测试定时器任务
 
         });
     }

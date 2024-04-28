@@ -82,7 +82,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
             FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel.getNodeName(), supplier);
             if (log.isDebugEnabled()) {
-                log.debug("创建流程实例对象:" + flwInstance);
+                log.debug("start process instanceId={}", flwInstance.getId());
             }
             return new Execution(this, process.model(), flowCreator, flwInstance, args);
         });
