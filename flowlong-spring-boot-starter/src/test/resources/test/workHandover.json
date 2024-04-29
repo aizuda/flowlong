@@ -4,19 +4,18 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "接收工作",
       "type": 1,
       "setType": 1,
-      "nodeUserList": [
+      "nodeAssigneeList": [
         {
           "tenantId": "3000",
           "id": "test003",
           "name": "测试003"
         }
       ],
-      "nodeRoleList": [],
       "examineLevel": 1,
       "directorLevel": 1,
       "selectMode": 1,

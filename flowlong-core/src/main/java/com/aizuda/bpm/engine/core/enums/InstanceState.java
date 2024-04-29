@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.core.enums;
 import lombok.Getter;
 
 import java.util.Arrays;
+
 /**
  * 流程状态
  *

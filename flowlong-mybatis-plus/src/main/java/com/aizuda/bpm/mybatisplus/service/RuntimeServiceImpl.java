@@ -90,13 +90,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                     NodeModel nodeModel = processModel.getNode(key);
                     if (null != nodeModel) {
                         DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
-                        if (Objects.equals(1, dynamicAssignee.getType())) {
-                            nodeModel.setNodeRoleList(dynamicAssignee.getAssigneeList());
-                        } else if (Objects.equals(2, dynamicAssignee.getType())) {
-                            nodeModel.setNodeDeptList(dynamicAssignee.getAssigneeList());
-                        } else {
-                            nodeModel.setNodeUserList(dynamicAssignee.getAssigneeList());
-                        }
+                        nodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
                     }
                 }
             });

@@ -4,19 +4,18 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "人事审批",
       "type": 1,
       "setType": 1,
-      "nodeUserList": [
+      "nodeAssigneeList": [
         {
           "tenantId": "1000",
           "id": "test001",
           "name": "魏磊"
         }
       ],
-      "nodeRoleList": [],
       "examineLevel": 1,
       "directorLevel": 1,
       "selectMode": 1,
@@ -48,14 +47,13 @@
               "nodeName": "领导审批",
               "type": 1,
               "setType": 1,
-              "nodeUserList": [
+              "nodeAssigneeList": [
                 {
                   "tenantId": "1000",
                   "id": "test001",
                   "name": "何敏"
                 }
               ],
-              "nodeRoleList": [],
               "examineLevel": 1,
               "directorLevel": 1,
               "selectMode": 1,
@@ -82,7 +80,7 @@
             "nodeName": "抄送人",
             "type": 2,
             "userSelectFlag": true,
-            "nodeUserList": [
+            "nodeAssigneeList": [
               {
                 "tenantId": "1000",
                 "id": "test002",

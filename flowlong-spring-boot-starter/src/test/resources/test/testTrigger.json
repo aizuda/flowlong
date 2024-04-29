@@ -4,7 +4,7 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "延时触发器",
       "type": 7,
@@ -16,14 +16,13 @@
         "nodeName": "人事审批",
         "type": 1,
         "setType": 1,
-        "nodeUserList": [
+        "nodeAssigneeList": [
           {
             "tenantId": "1000",
             "id": "test002",
             "name": "测试002"
           }
         ],
-        "nodeRoleList": [],
         "examineLevel": 1,
         "directorLevel": 1,
         "selectMode": 1,

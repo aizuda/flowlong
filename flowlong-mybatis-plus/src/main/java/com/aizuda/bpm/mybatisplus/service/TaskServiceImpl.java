@@ -772,7 +772,7 @@ public class TaskServiceImpl implements TaskService {
      * @param flowCreator 处理人
      */
     public void saveTaskCc(NodeModel nodeModel, FlwTask flwTask, FlowCreator flowCreator) {
-        List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+        List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
         if (ObjectUtils.isNotEmpty(nodeUserList)) {
             // 抄送任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);

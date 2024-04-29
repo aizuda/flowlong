@@ -4,7 +4,7 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "条件路由",
       "type": 4,
@@ -28,13 +28,12 @@
             "nodeName": "部门经理",
             "type": 1,
             "setType": 1,
-            "nodeUserList": [
+            "nodeAssigneeList": [
               {
                 "id": "370000197405268159",
                 "name": "石勇"
               }
             ],
-            "nodeRoleList": [],
             "examineLevel": 1,
             "directorLevel": 1,
             "selectMode": 1,
@@ -85,13 +84,12 @@
                           "nodeName": "人资部薪资专员",
                           "type": 1,
                           "setType": 1,
-                          "nodeUserList": [
+                          "nodeAssigneeList": [
                             {
                               "id": "410000199512025445",
                               "name": "魏磊"
                             }
                           ],
-                          "nodeRoleList": [],
                           "examineLevel": 1,
                           "directorLevel": 1,
                           "selectMode": 1,
@@ -121,13 +119,12 @@
                           "nodeName": "人资部经理",
                           "type": 1,
                           "setType": 1,
-                          "nodeUserList": [
+                          "nodeAssigneeList": [
                             {
                               "id": "520000198407304275",
                               "name": "史平"
                             }
                           ],
-                          "nodeRoleList": [],
                           "examineLevel": 1,
                           "directorLevel": 1,
                           "selectMode": 1,
@@ -178,13 +175,12 @@
                             "nodeName": "核算会计",
                             "type": 1,
                             "setType": 1,
-                            "nodeUserList": [
+                            "nodeAssigneeList": [
                               {
                                 "id": "990000197205236780",
                                 "name": "田娟"
                               }
                             ],
-                            "nodeRoleList": [],
                             "examineLevel": 1,
                             "directorLevel": 1,
                             "selectMode": 1,
@@ -214,13 +210,12 @@
                             "nodeName": "总裁办主任",
                             "type": 1,
                             "setType": 1,
-                            "nodeUserList": [
+                            "nodeAssigneeList": [
                               {
                                 "id": "640000200911201176",
                                 "name": "邵涛"
                               }
                             ],
-                            "nodeRoleList": [],
                             "examineLevel": 1,
                             "directorLevel": 1,
                             "selectMode": 1,
@@ -295,13 +290,12 @@
                               "nodeName": "事业部副总",
                               "type": 1,
                               "setType": 1,
-                              "nodeUserList": [
+                              "nodeAssigneeList": [
                                 {
                                   "id": "500000199407048831",
                                   "name": "傅刚"
                                 }
                               ],
-                              "nodeRoleList": [],
                               "examineLevel": 1,
                               "directorLevel": 1,
                               "selectMode": 1,
@@ -314,13 +308,12 @@
                                 "nodeName": "总裁",
                                 "type": 1,
                                 "setType": 1,
-                                "nodeUserList": [
+                                "nodeAssigneeList": [
                                   {
                                     "id": "450000198307033289",
                                     "name": "康伟"
                                   }
                                 ],
-                                "nodeRoleList": [],
                                 "examineLevel": 1,
                                 "directorLevel": 1,
                                 "selectMode": 1,
@@ -352,7 +345,7 @@
                                         "nodeName": "抄送给人资培训专员",
                                         "type": 2,
                                         "userSelectFlag": true,
-                                        "nodeUserList": [
+                                        "nodeAssigneeList": [
                                           {
                                             "id": "220000200908305857",
                                             "name": "何秀英"

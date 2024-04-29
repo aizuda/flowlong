@@ -237,7 +237,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
-            List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
+            List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
             // 当前任务实际办理人
             String assigneeId = flowCreator.getCreateId();
             if (TaskType.transfer.getValue() == flwTask.getTaskType()) {

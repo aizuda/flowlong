@@ -7,6 +7,7 @@ import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -34,13 +35,13 @@ public interface TaskActorProvider {
      * @return true 允许 false 不被允许
      */
     default boolean isAllowed(NodeModel nodeModel, FlowCreator flowCreator) {
-        List<NodeAssignee> nodeUserList = nodeModel.getNodeUserList();
-        if (ObjectUtils.isNotEmpty(nodeUserList)) {
-            return nodeUserList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
+        List<NodeAssignee> nodeAssigneeList = nodeModel.getNodeAssigneeList();
+        if (NodeSetType.specifyMembers.eq(nodeModel.getSetType()) && ObjectUtils.isNotEmpty(nodeAssigneeList)) {
+            return nodeAssigneeList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
         }
 
         // 角色判断必须要求子类实现
-        Assert.isTrue(ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList()), "Please implement the interface TaskActorProvider method isAllow");
+        Assert.isNotEmpty(nodeAssigneeList, "Please implement the interface TaskActorProvider method isAllow");
         return true;
     }
 

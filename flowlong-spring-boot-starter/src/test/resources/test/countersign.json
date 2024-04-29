@@ -4,7 +4,7 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "条件路由",
       "type": 4,
@@ -28,7 +28,7 @@
             "nodeName": "7天领导审批",
             "type": 1,
             "setType": 1,
-            "nodeUserList": [
+            "nodeAssigneeList": [
               {
                 "id": "test001",
                 "name": "测试会签审批人001"
@@ -38,7 +38,6 @@
                 "name": "测试会签审批人003"
               }
             ],
-            "nodeRoleList": [],
             "examineLevel": 1,
             "directorLevel": 1,
             "selectMode": 1,
@@ -51,13 +50,12 @@
               "nodeName": "部门经理确认",
               "type": 1,
               "setType": 1,
-              "nodeUserList": [
+              "nodeAssigneeList": [
                 {
                   "id": "test002",
                   "name": "于杰"
                 }
               ],
-              "nodeRoleList": [],
               "examineLevel": 1,
               "directorLevel": 1,
               "selectMode": 1,
@@ -79,8 +77,7 @@
             "nodeName": "默认主管审批",
             "type": 1,
             "setType": 2,
-            "nodeUserList": [],
-            "nodeRoleList": [],
+            "nodeAssigneeList": [],
             "examineLevel": 1,
             "directorLevel": 1,
             "selectMode": 1,
@@ -96,7 +93,7 @@
         "nodeName": "抄送人",
         "type": 2,
         "userSelectFlag": true,
-        "nodeUserList": [
+        "nodeAssigneeList": [
           {
             "id": "test002",
             "name": "抄送人2"

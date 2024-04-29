@@ -4,18 +4,17 @@
   "nodeConfig": {
     "nodeName": "发起人",
     "type": 0,
-    "nodeRoleList": [],
+    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "主管审批",
       "type": 1,
       "setType": 1,
-      "nodeUserList": [
+      "nodeAssigneeList": [
         {
           "id": "test001",
           "name": "段超"
         }
       ],
-      "nodeRoleList": [],
       "examineLevel": 1,
       "directorLevel": 1,
       "selectMode": 1,
@@ -28,8 +27,7 @@
         "nodeName": "总监审批",
         "type": 1,
         "setType": 3,
-        "nodeUserList": [],
-        "nodeRoleList": [
+        "nodeAssigneeList": [
           {
             "id": "role01",
             "name": "技术总监"
@@ -47,7 +45,7 @@
           "nodeName": "抄送人",
           "type": 2,
           "userSelectFlag": true,
-          "nodeUserList": [
+          "nodeAssigneeList": [
             {
               "id": "0",
               "name": "管理员"

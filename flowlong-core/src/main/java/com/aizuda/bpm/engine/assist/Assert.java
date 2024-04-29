@@ -109,22 +109,13 @@ public abstract class Assert {
     }
 
     /**
-     * 断言给定的字符串为非空
+     * 断言给定的object对象非空
      *
-     * @param str 待检测字符串
+     * @param object  待检测对象
+     * @param message 异常打印信息
      */
-    public static void notEmpty(String str) {
-        notEmpty(str, "[Assertion failed] - this argument must be null or empty");
-    }
-
-    /**
-     * 断言给定的字符串为非空
-     *
-     * @param str     待检测字符串
-     * @param message 提升内容
-     */
-    public static void notEmpty(String str, String message) {
-        illegal(ObjectUtils.isNotEmpty(str), message);
+    public static void isNotEmpty(Object object, String message) {
+        illegal(ObjectUtils.isNotEmpty(object), message);
     }
 
     /**

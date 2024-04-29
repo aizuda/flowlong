@@ -62,22 +62,15 @@ public class NodeModel implements ModelInstance, Serializable {
      * 3，角色
      * 4，发起人自选
      * 5，发起人自己
-     * 7，连续多级主管
+     * 6，连续多级主管
+     * 7，部门
      * </p>
      */
     private Integer setType;
     /**
-     * 审核人成员
+     * 审核分配到任务的处理者，过 setType 区分个人角色或部门
      */
-    private List<NodeAssignee> nodeUserList;
-    /**
-     * 审核角色
-     */
-    private List<NodeAssignee> nodeRoleList;
-    /**
-     * 审核部门
-     */
-    private List<NodeAssignee> nodeDeptList;
+    private List<NodeAssignee> nodeAssigneeList;
     /**
      * 指定主管层级
      */
