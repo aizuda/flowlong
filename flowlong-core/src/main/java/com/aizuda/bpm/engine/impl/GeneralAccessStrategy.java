@@ -37,11 +37,4 @@ public class GeneralAccessStrategy implements TaskAccessStrategy {
         // 参与者 ID 默认非组，作为用户ID判断是否允许执行
         return taskActors.stream().anyMatch(t -> Objects.equals(t.getActorId(), userId));
     }
-
-    @Override
-    public FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator, List<FlwTaskActor> taskActors) {
-        Optional<FlwTaskActor> taskActorOpt = taskActors.stream().filter(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId())).findFirst();
-        Assert.isTrue(!taskActorOpt.isPresent(), "Not authorized to perform this task");
-        return taskActorOpt.get();
-    }
 }

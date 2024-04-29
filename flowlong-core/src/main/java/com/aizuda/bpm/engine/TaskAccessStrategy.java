@@ -3,10 +3,13 @@
  */
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 任务访问策略类
@@ -43,5 +46,9 @@ public interface TaskAccessStrategy {
      * @param flowCreator 任务参与者
      * @return {@link FlwTaskActor}
      */
-    FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator, List<FlwTaskActor> taskActors);
+    default FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator, List<FlwTaskActor> taskActors) {
+        Optional<FlwTaskActor> taskActorOpt = taskActors.stream().filter(t -> Objects.equals(t.getActorId(), flowCreator.getCreateId())).findFirst();
+        Assert.isTrue(!taskActorOpt.isPresent(), "Not authorized to perform this task");
+        return taskActorOpt.get();
+    }
 }
