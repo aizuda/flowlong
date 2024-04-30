@@ -192,7 +192,7 @@ public class TestIssue extends MysqlTest {
                 nodeModel.setType(1);
                 nodeModel.setSetType(1);
                 nodeModel.setExamineMode(1);
-                nodeModel.setNodeUserList(Arrays.asList(NodeAssignee.ofFlowCreator(FlowCreator.of("45000019760731722X", "汤强")),
+                nodeModel.setNodeAssigneeList(Arrays.asList(NodeAssignee.ofFlowCreator(FlowCreator.of("45000019760731722X", "汤强")),
                         NodeAssignee.ofFlowCreator(FlowCreator.of("440000200407105727", "贾超"))));
                 flowLongEngine.executeAppendNodeModel(flwTask.getId(), nodeModel, FlowCreator.of("640000200911201176", "邵涛"), true);
             });

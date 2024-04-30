@@ -4,6 +4,7 @@ import com.aizuda.bpm.engine.TaskActorProvider;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.extern.slf4j.Slf4j;
@@ -52,11 +53,13 @@ public class TestSupervisor extends MysqlTest {
                             flwTaskActors.add(FlwTaskActor.ofFlowCreator(user1));
                             return flwTaskActors;
                         }
-                        if (ObjectUtils.isNotEmpty(nodeModel.getNodeUserList())) {
-                            return nodeModel.getNodeUserList().stream().map(FlwTaskActor::ofNodeAssignee).collect(Collectors.toList());
-                        } else if (ObjectUtils.isNotEmpty(nodeModel.getNodeRoleList())) {
-                            return nodeModel.getNodeRoleList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName()))
-                                    .collect(Collectors.toList());
+                        if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
+                            if (NodeSetType.role.eq(nodeModel.getSetType())) {
+                                return nodeModel.getNodeAssigneeList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName()))
+                                        .collect(Collectors.toList());
+                            }
+
+                            return nodeModel.getNodeAssigneeList().stream().map(FlwTaskActor::ofNodeAssignee).collect(Collectors.toList());
                         }
                         return Collections.emptyList();
                     }

@@ -94,10 +94,10 @@ public class TestModel extends MysqlTest {
         // 发起流程验证
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
             ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(instance.getId());
-            List<NodeAssignee> nodeUserList = processModel.getNode(nodeName).getNodeUserList();
+            List<NodeAssignee> nodeUserList = processModel.getNode(nodeName).getNodeAssigneeList();
             Assertions.assertEquals(3, nodeUserList.size());
             nodeUserList.forEach(t -> Assertions.assertTrue(assigneeList.stream().anyMatch(s -> s.getName().equals(t.getName()))));
-            Assertions.assertTrue(processModel.getNode(nodeName).getNodeUserList().stream().anyMatch(t -> t.getName().equals(test3Creator.getCreateBy())));
+            Assertions.assertTrue(processModel.getNode(nodeName).getNodeAssigneeList().stream().anyMatch(t -> t.getName().equals(test3Creator.getCreateBy())));
         });
     }
 
@@ -165,7 +165,7 @@ public class TestModel extends MysqlTest {
         NodeAssignee nodeAssignee = new NodeAssignee();
         nodeAssignee.setId(flowCreator.getCreateId());
         nodeAssignee.setName(flowCreator.getCreateBy());
-        nodeModel.setNodeUserList(Collections.singletonList(nodeAssignee));
+        nodeModel.setNodeAssigneeList(Collections.singletonList(nodeAssignee));
         return nodeModel;
     }
 }
