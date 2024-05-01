@@ -53,7 +53,7 @@ class TestSimpleProcess extends MysqlTest {
             this.executeActiveTasks(instance.getId(), t -> taskService.reclaimTask(t.getParentTaskId(), testCreator));
 
             // 测试会签审批人003【审批】
-            this.executeActiveTasks(instance.getId(), test3Creator, args);
+            this.executeTask(instance.getId(), test3Creator, args);
 
             // 年龄审批【审批】
             this.executeTask(instance.getId(), testCreator);

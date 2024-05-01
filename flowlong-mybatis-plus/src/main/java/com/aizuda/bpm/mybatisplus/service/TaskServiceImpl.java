@@ -3,9 +3,9 @@
  */
 package com.aizuda.bpm.mybatisplus.service;
 
-import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.TaskAccessStrategy;
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -829,8 +829,8 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setPerformType(performType);
         final FlowCreator flowCreator = execution.getFlowCreator();
 
-        if (performType == PerformType.timer) {
-            // 定时器任务
+        if (performType == PerformType.timer || performType == PerformType.trigger) {
+            // 定时器任务，触发器任务
             taskMapper.insert(flwTask);
             flwTasks.add(flwTask);
             return flwTasks;

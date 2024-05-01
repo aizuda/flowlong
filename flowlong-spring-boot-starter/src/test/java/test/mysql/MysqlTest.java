@@ -51,6 +51,10 @@ public class MysqlTest extends TestFlowLong {
         executeTask(instanceId, flowCreator, flwTask -> this.flowLongEngine.executeTask(flwTask.getId(), flowCreator));
     }
 
+    public void executeTask(Long instanceId, FlowCreator flowCreator, Map<String, Object> args) {
+        executeTask(instanceId, flowCreator, flwTask -> this.flowLongEngine.executeTask(flwTask.getId(), flowCreator, args));
+    }
+
     public void executeTask(Long instanceId, FlowCreator flowCreator, Consumer<FlwTask> flwTaskConsumer) {
         QueryService queryService = this.flowLongEngine.queryService();
         List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instanceId);
