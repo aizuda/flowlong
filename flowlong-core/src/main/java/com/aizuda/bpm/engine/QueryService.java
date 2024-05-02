@@ -3,12 +3,7 @@
  */
 package com.aizuda.bpm.engine;
 
-import com.aizuda.bpm.engine.entity.FlwHisInstance;
-import com.aizuda.bpm.engine.entity.FlwHisTask;
-import com.aizuda.bpm.engine.entity.FlwHisTaskActor;
-import com.aizuda.bpm.engine.entity.FlwInstance;
-import com.aizuda.bpm.engine.entity.FlwTask;
-import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.engine.entity.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -76,6 +71,10 @@ public interface QueryService {
 
     List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
 
+    default Optional<List<FlwTask>> getActiveTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
+        return Optional.ofNullable(this.getTasksByInstanceIdAndTaskName(instanceId, taskName));
+    }
+
     /**
      * 根据 流程实例ID 获取当前活动任务列表
      *
@@ -96,9 +95,13 @@ public interface QueryService {
      * 根据任务ID获取活动任务参与者数组
      *
      * @param taskId 任务ID
-     * @return String[] 参与者ID数组
+     * @return 当前活动任务参与者列表
      */
     List<FlwTaskActor> getTaskActorsByTaskId(Long taskId);
+
+    default Optional<List<FlwTaskActor>> getActiveTaskActorsByTaskId(Long taskId) {
+        return Optional.ofNullable(this.getTaskActorsByTaskId(taskId));
+    }
 
     /**
      * 根据任务ID获取历史任务参与者数组
@@ -121,7 +124,7 @@ public interface QueryService {
      * 根据实例ID获取实例所有历史任务，时间倒序
      *
      * <p>
-     *     额外根据唯一的ID进行排序，防止低版本数据库时间重复的情况。（注：ID 是时间增长的，也是有时间顺序的）
+     * 额外根据唯一的ID进行排序，防止低版本数据库时间重复的情况。（注：ID 是时间增长的，也是有时间顺序的）
      * </p>
      *
      * @param instanceId 实例ID
