@@ -3,15 +3,11 @@
  */
 package com.aizuda.bpm.engine.model;
 
-import com.aizuda.bpm.engine.assist.Assert;
-import com.aizuda.bpm.engine.core.Execution;
-import com.aizuda.bpm.engine.core.FlowLongContext;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * JSON BPM 模型
@@ -51,31 +47,6 @@ public class ProcessModel implements Serializable {
      */
     public NodeModel getNode(String nodeName) {
         return null == nodeConfig ? null : nodeConfig.getNode(nodeName);
-    }
-
-
-    /**
-     * 执行节点模型
-     *
-     * @param flowLongContext 流程引擎上下文
-     * @param execution       流程执行对象
-     * @param nodeName        节点名称
-     */
-    public boolean executeNodeModel(FlowLongContext flowLongContext, Execution execution, String nodeName) {
-        Assert.isNull(this, "FlwProcess modelContent cannot be empty");
-        NodeModel nodeModel = this.getNode(nodeName);
-        Assert.isNull(nodeModel, "流程模型中未发现，流程节点" + nodeName);
-        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
-        if (executeNodeOptional.isPresent()) {
-            // 执行流程节点
-            NodeModel executeNode = executeNodeOptional.get();
-            return executeNode.execute(flowLongContext, execution);
-        }
-
-        /*
-         * 无执行节点流程结束
-         */
-        return execution.endInstance(nodeModel);
     }
 
     /**

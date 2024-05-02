@@ -86,5 +86,13 @@ public enum EventType {
     /**
      * 跳转
      */
-    jump
+    jump,
+    /**
+     * 自动审批完成
+     */
+    autoComplete,
+    /**
+     * 自动审批拒绝
+     */
+    autoReject
 }

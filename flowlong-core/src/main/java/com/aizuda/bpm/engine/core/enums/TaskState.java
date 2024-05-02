@@ -50,7 +50,15 @@ public enum TaskState {
     /**
      * 驳回终止
      */
-    rejectEnd(7);
+    rejectEnd(7),
+    /**
+     * 自动完成
+     */
+    autoComplete(8),
+    /**
+     * 自动驳回
+     */
+    autoReject(9);
 
     private final int value;
 

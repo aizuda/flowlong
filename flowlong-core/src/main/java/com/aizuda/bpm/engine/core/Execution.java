@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
@@ -92,7 +93,7 @@ public class Execution implements Serializable {
      */
     Execution(Execution execution, ProcessModel processModel, String parentNodeName) {
         if (execution == null || processModel == null || parentNodeName == null) {
-            throw Assert.throwable("构造Execution对象失败，请检查execution、process、parentNodeName是否为空");
+            throw Assert.throwable("Failed to construct Execution object. Please check if Execution, Process, and parentNodeName are empty");
         }
         this.engine = execution.getEngine();
         this.processModel = processModel;
@@ -114,7 +115,7 @@ public class Execution implements Serializable {
     public Execution(FlowLongEngine engine, ProcessModel processModel, FlowCreator flowCreator,
                      FlwInstance flwInstance, Map<String, Object> args) {
         if (processModel == null || flwInstance == null) {
-            throw Assert.throwable("构造Execution对象失败，请检查process、order是否为空");
+            throw Assert.throwable("Failed to construct Execution object, please check if process and order are empty");
         }
         this.engine = engine;
         this.processModel = processModel;
@@ -136,6 +137,30 @@ public class Execution implements Serializable {
     }
 
     /**
+     * 执行节点模型
+     *
+     * @param flowLongContext 流程引擎上下文
+     * @param nodeName        节点名称
+     */
+    public boolean executeNodeModel(FlowLongContext flowLongContext, String nodeName) {
+        ProcessModel processModel = this.getProcessModel();
+        Assert.isNull(processModel, "Process model content cannot be empty");
+        NodeModel nodeModel = processModel.getNode(nodeName);
+        Assert.isNull(nodeModel, "Not found in the process model, process node " + nodeName);
+        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
+        if (executeNodeOptional.isPresent()) {
+            // 执行流程节点
+            NodeModel executeNode = executeNodeOptional.get();
+            return executeNode.execute(flowLongContext, this);
+        }
+
+        /*
+         * 无执行节点流程结束
+         */
+        return this.endInstance(nodeModel);
+    }
+
+    /**
      * 执行结束当前流程实例
      *
      * @return true 执行成功  false 执行失败
@@ -143,7 +168,7 @@ public class Execution implements Serializable {
     public boolean endInstance(NodeModel endNode) {
         List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
         for (FlwTask flwTask : flwTasks) {
-            Assert.illegal(flwTask.major(), "存在未完成的主办任务");
+            Assert.illegal(flwTask.major(), "There are unfinished major tasks");
             engine.taskService().complete(flwTask.getId(), this.flowCreator);
         }
 

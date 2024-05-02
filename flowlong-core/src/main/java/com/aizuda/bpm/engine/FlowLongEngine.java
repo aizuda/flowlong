@@ -145,6 +145,23 @@ public interface FlowLongEngine {
     }
 
     /**
+     * 自动完成任务
+     *
+     * @param taskId 任务ID
+     * @return true 成功 false 失败
+     */
+    boolean autoCompleteTask(Long taskId);
+
+    /**
+     * 自动拒绝任务
+     *
+     * @param taskId 任务ID
+     * @return true 成功 false 失败
+     */
+    boolean autoRejectTask(Long taskId);
+
+
+    /**
      * 根据任务ID，创建人ID，参数列表执行任务，并且根据nodeName跳转到任意节点
      * <p>
      * 1、nodeName为null时，则跳转至上一步处理

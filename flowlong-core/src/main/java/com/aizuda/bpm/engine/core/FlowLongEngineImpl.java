@@ -7,7 +7,9 @@ import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
+import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.core.enums.PerformType;
+import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
@@ -106,10 +108,49 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
         // 完成任务，并且构造执行对象
-        return this.execute(taskId, flowCreator, args, execution -> {
-            // 执行节点模型
-            return execution.getProcessModel().executeNodeModel(flowLongContext, execution, execution.getFlwTask().getTaskName());
-        });
+        return this.execute(taskId, flowCreator, args, execution ->
+                // 执行节点模型
+                execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskName()));
+    }
+
+    /**
+     * 自动完成任务
+     */
+    @Override
+    public boolean autoCompleteTask(Long taskId) {
+        FlowCreator flowCreator = FlowCreator.ADMIN;
+        Map<String, Object> args = new HashMap<>();
+        FlwTask flwTask = taskService().executeTask(taskId, flowCreator, args, TaskState.autoComplete, EventType.autoComplete);
+        if (log.isDebugEnabled()) {
+            log.debug("Auto complete taskId={}", taskId);
+        }
+
+        /*
+         * 流程模型
+         */
+        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
+
+        // 当前流程实例
+        final FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+
+        // 构建执行对象
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
+
+        // 执行节点模型
+        return execution.executeNodeModel(flowLongContext, flwTask.getTaskName());
+    }
+
+    /**
+     * 自动拒绝任务
+     */
+    @Override
+    public boolean autoRejectTask(Long taskId) {
+        Map<String, Object> args = new HashMap<>();
+        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, args, TaskState.autoComplete, EventType.autoComplete);
+        if (log.isDebugEnabled()) {
+            log.debug("Auto reject taskId={}", taskId);
+        }
+        return null != flwTask;
     }
 
     /**
@@ -151,7 +192,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     protected FlwInstance getFlwInstance(Long instanceId, String updateBy) {
         FlwInstance flwInstance = queryService().getInstance(instanceId);
-        Assert.isNull(flwInstance, "指定的流程实例[id=" + instanceId + "]已完成或不存在");
+        Assert.isNull(flwInstance, "process instance [ id=" + instanceId + " ] completed or not present");
         flwInstance.setLastUpdateBy(updateBy);
         flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(flwInstance);
@@ -170,7 +211,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
         FlwTask flwTask = taskService().complete(taskId, flowCreator, args);
         if (log.isDebugEnabled()) {
-            log.debug("任务[taskId={}]已完成", taskId);
+            log.debug("Execute complete taskId={}", taskId);
         }
 
         if (TaskType.agent.eq(flwTask.getTaskType())) {
@@ -215,20 +256,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
         }
 
-        /*
-         * 追加实例参数
-         */
-        Map<String, Object> instanceMaps = flwInstance.variableToMap();
-        if (instanceMaps != null) {
-            for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
-                if (args.containsKey(entry.getKey())) {
-                    continue;
-                }
-                args.put(entry.getKey(), entry.getValue());
-            }
-        }
-        Execution execution = new Execution(this, processModel, flowCreator, flwInstance, args);
-        execution.setFlwTask(flwTask);
+        // 构建执行对象
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
@@ -288,4 +317,24 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 执行回调逻辑
         return executeNextStep.apply(execution);
     }
+
+    protected Execution createExecution(ProcessModel processModel, FlwInstance flwInstance, FlwTask flwTask,
+                                        FlowCreator flowCreator, Map<String, Object> args) {
+        /*
+         * 追加实例参数
+         */
+        Map<String, Object> instanceMaps = flwInstance.variableToMap();
+        if (instanceMaps != null) {
+            for (Map.Entry<String, Object> entry : instanceMaps.entrySet()) {
+                if (args.containsKey(entry.getKey())) {
+                    continue;
+                }
+                args.put(entry.getKey(), entry.getValue());
+            }
+        }
+        Execution execution = new Execution(this, processModel, flowCreator, flwInstance, args);
+        execution.setFlwTask(flwTask);
+        return execution;
+    }
+
 }
