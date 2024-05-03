@@ -4,6 +4,7 @@
 package com.aizuda.bpm.engine.model;
 
 import com.aizuda.bpm.engine.assist.ObjectUtils;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -140,37 +141,37 @@ public class ModelHelper {
     }
 
     /**
-     * 获取根节点下的所有节点名称【 注意，只对根节点查找有效！】
+     * 获取根节点下的所有节点类型【 注意，只对根节点查找有效！】
      *
      * @param rootNodeModel 根节点模型
      * @return 所有节点名称
      */
-    private static List<String> getRootNodeAllChildNodeNames(NodeModel rootNodeModel) {
-        List<String> nodeNames = new ArrayList<>();
+    private static List<NodeModel> getRootNodeAllChildNodes(NodeModel rootNodeModel) {
+        List<NodeModel> nodeModels = new ArrayList<>();
         if (null != rootNodeModel) {
             if (rootNodeModel.conditionNode()) {
                 List<ConditionNode> conditionNodes = rootNodeModel.getConditionNodes();
                 if (ObjectUtils.isNotEmpty(conditionNodes)) {
                     for (ConditionNode conditionNode : conditionNodes) {
                         // 条件节点分支子节点
-                        nodeNames.addAll(getRootNodeAllChildNodeNames(conditionNode.getChildNode()));
+                        nodeModels.addAll(getRootNodeAllChildNodes(conditionNode.getChildNode()));
                     }
                 }
 
                 // 条件节点子节点
-                nodeNames.addAll(getRootNodeAllChildNodeNames(rootNodeModel.getChildNode()));
+                nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
             } else {
                 // 普通节点
-                nodeNames.add(rootNodeModel.getNodeName());
+                nodeModels.add(rootNodeModel);
 
                 // 找子节点
                 NodeModel childNodeModel = rootNodeModel.getChildNode();
                 if (null != childNodeModel) {
-                    nodeNames.addAll(getRootNodeAllChildNodeNames(childNodeModel));
+                    nodeModels.addAll(getRootNodeAllChildNodes(childNodeModel));
                 }
             }
         }
-        return nodeNames;
+        return nodeModels;
     }
 
     /**
@@ -180,10 +181,10 @@ public class ModelHelper {
      * @return true 重复 false 不重复
      */
     public static boolean checkDuplicateNodeNames(NodeModel rootNodeModel) {
-        List<String> allNextNodeNames = getRootNodeAllChildNodeNames(rootNodeModel);
+        List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
         Set<String> set = new HashSet<>();
-        for (String nodeName : allNextNodeNames) {
-            if (!set.add(nodeName)) {
+        for (NodeModel nextNode : allNextNodes) {
+            if (!set.add(nextNode.getNodeName())) {
                 return true;
             }
         }
@@ -230,5 +231,16 @@ public class ModelHelper {
         }
         // 合法情况
         return 0;
+    }
+
+    /**
+     * 检查是否存在审批节点
+     *
+     * @param rootNodeModel 根节点模型
+     * @return true 存在 false 不存在
+     */
+    public static boolean checkExistApprovalNode(NodeModel rootNodeModel) {
+        List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
+        return allNextNodes.stream().anyMatch(t -> TaskType.approval.eq(t.getType()));
     }
 }

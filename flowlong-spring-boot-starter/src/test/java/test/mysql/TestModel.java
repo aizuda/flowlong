@@ -168,4 +168,15 @@ public class TestModel extends MysqlTest {
         nodeModel.setNodeAssigneeList(Collections.singletonList(nodeAssignee));
         return nodeModel;
     }
+
+    /**
+     * 测试错误模型
+     */
+    @Test
+    public void errorModel01() {
+        ProcessModel processModel = getProcessModel("test/simpleProcess.json");
+        Assertions.assertTrue(ModelHelper.checkExistApprovalNode(processModel.getNodeConfig()));
+        ProcessModel errorModel01 = getProcessModel("test/errorModel01.json");
+        Assertions.assertFalse(ModelHelper.checkExistApprovalNode(errorModel01.getNodeConfig()));
+    }
 }

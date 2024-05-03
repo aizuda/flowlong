@@ -1,0 +1,15 @@
+{
+  "key": "testErrorModel",
+  "name": "测试错误模型01",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "抄送人",
+      "type": 2,
+      "userSelectFlag": true,
+      "nodeAssigneeList": []
+    }
+  }
+}
