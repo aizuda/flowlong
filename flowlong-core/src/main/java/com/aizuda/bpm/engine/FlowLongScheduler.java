@@ -1,30 +1,25 @@
-package com.aizuda.bpm.spring.adaptive;
+package com.aizuda.bpm.engine;
 
-import com.aizuda.bpm.engine.FlowLongEngine;
-import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
-import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.EventType;
-import com.aizuda.bpm.engine.core.enums.TaskState;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.model.NodeModel;
+import com.aizuda.bpm.engine.model.ProcessModel;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.RemindParam;
 import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.SchedulingConfigurer;
-import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Objects;
 
 /**
- * Spring Boot 内置定时任务实现流程提醒处理类
+ * 定时任务实现流程提醒超时处理类
  *
  * <p>
  * 尊重知识产权，不允许非法使用，后果自负
@@ -36,11 +31,11 @@ import java.util.List;
 @Slf4j
 @Getter
 @Setter
-public class SpringBootScheduler implements SchedulingConfigurer {
+public abstract class FlowLongScheduler {
     /**
-     * 流程引擎上下文
+     * FlowLong流程引擎接口
      */
-    private FlowLongContext context;
+    private FlowLongEngine flowLongEngine;
     /**
      * 任务提醒接口
      */
@@ -54,28 +49,26 @@ public class SpringBootScheduler implements SchedulingConfigurer {
      */
     private RemindParam remindParam;
 
-
-    private FlowLongEngine flowLongEngine;
-
     /**
      * 流程提醒处理
      */
     public void remind() {
         try {
             if (!jobLock.tryLock()) {
-                log.info("[FlowLong] remind is already running, just return.");
+                log.info("[FlowLong] Scheduling is already running, just return.");
                 return;
             }
+            FlowLongContext context = flowLongEngine.getContext();
             TaskService taskService = context.getTaskService();
             List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 Date currentDate = DateUtils.getCurrentDate();
                 for (FlwTask flwTask : flwTaskList) {
-                    if (null != flwTask.getRemindTime() && DateUtils.after(flwTask.getRemindTime(), currentDate)) {
+                    if (null != flwTask.getRemindTime()) {
                         /*
                          * 任务提醒
                          */
-                        if (flwTask.getRemindRepeat() > 0) {
+                        if (DateUtils.after(flwTask.getRemindTime(), currentDate) && flwTask.getRemindRepeat() > 0) {
                             // 1，更新提醒次数减去 1 次
                             FlwTask temp = new FlwTask();
                             temp.setId(flwTask.getId());
@@ -85,18 +78,35 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                             // 2，调用提醒接口
                             taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
                         }
-                    } else {
-                        /*
-                         * 任务超时
-                         */
-                        if (flwTask.getTermMode() == null) {
+                    }
+                    /*
+                     * 任务超时
+                     */
+                    else if (null != flwTask.getExpireTime()) {
+                        // 定时器任务或触发器任务直接执行通过
+                        if (TaskType.timer.eq(flwTask.getTaskType()) || TaskType.trigger.eq(flwTask.getTaskType())) {
+                            if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                                log.info("Scheduling [taskName={}] failed to execute autoCompleteTask", flwTask.getTaskName());
+                            }
+                            continue;
+                        }
+
+                        // 获取当前执行模型节点
+                        ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
+                        NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+                        Integer termMode = nodeModel.getTermMode();
+                        if (null == termMode) {
+                            // 执行超时
                             context.getRuntimeService().timeout(flwTask.getInstanceId());
-                        }else {
-                            //自动同意或拒绝
-                            if (flwTask.getTermMode() == 0){
-                                flowLongEngine.autoCompleteTask(flwTask.getId());
-                            }else if (flwTask.getTermMode() == 1){
-                                flowLongEngine.autoRejectTask(flwTask.getId());
+                        } else if (Objects.equals(termMode, 0)) {
+                            // 自动通过
+                            if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                                log.info("Scheduling failed to execute autoCompleteTask");
+                            }
+                        } else if (Objects.equals(termMode, 1)) {
+                            // 自动拒绝
+                            if (!flowLongEngine.autoRejectTask(flwTask.getId())) {
+                                log.info("Scheduling failed to execute autoRejectTask");
                             }
                         }
                     }
@@ -105,12 +115,6 @@ public class SpringBootScheduler implements SchedulingConfigurer {
         } finally {
             jobLock.unlock();
         }
-    }
-
-    @Override
-    public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.addTriggerTask(this::remind, triggerContext ->
-                new CronTrigger(remindParam.getCron()).nextExecutionTime(triggerContext));
     }
 
     public void setRemindParam(RemindParam remindParam) {
