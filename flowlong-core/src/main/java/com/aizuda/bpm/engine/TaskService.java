@@ -13,7 +13,10 @@ import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -228,18 +231,21 @@ public interface TaskService {
     List<FlwTask> createTask(NodeModel taskModel, Execution execution);
 
     /**
-     * 根据已有任务ID、任务类型、参与者创建新的任务
+     * 根据已有任务、参与者创建新的任务
+     * <p>
+     * 适用于动态转派，动态协办等处理且流程图中不体现节点情况
+     * </p>
      *
-     * @param taskId     主办任务ID
-     * @param taskType   任务类型 {@link TaskType}
-     * @param taskActors 参与者集合
+     * @param taskId            主办任务ID
+     * @param taskActors        参与者集合
+     * @param taskType          任务类型
+     * @param performType       参与类型
+     * @param flowCreator       任务创建者
+     * @param executionFunction 执行函数
      * @return List<Task> 创建任务集合
      */
-    List<FlwTask> createNewTask(Long taskId, TaskType taskType, List<FlwTaskActor> taskActors);
-
-    default List<FlwTask> createNewTask(Long taskId, TaskType taskType, FlwTaskActor taskActor) {
-        return this.createNewTask(taskId, taskType, Collections.singletonList(taskActor));
-    }
+    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
+                                FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
 
     /**
      * 获取超时或者提醒的任务

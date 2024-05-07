@@ -6,11 +6,17 @@ package com.aizuda.bpm.engine;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.core.enums.PerformType;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -179,6 +185,23 @@ public interface FlowLongEngine {
     default boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
         return executeJumpTask(taskId, nodeName, flowCreator, null);
     }
+
+    /**
+     * 根据已有任务、参与者创建新的任务
+     * <p>
+     * 适用于动态转派，动态协办等处理且流程图中不体现节点情况
+     * </p>
+     *
+     * @param taskId      主办任务ID
+     * @param taskActors  参与者集合
+     * @param taskType    任务类型
+     * @param performType 参与类型
+     * @param flowCreator 任务创建者
+     * @param args        任务参数
+     * @return List<Task> 创建任务集合
+     */
+    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
+                                FlowCreator flowCreator, Map<String, Object> args);
 
     /**
      * 执行追加节点模型

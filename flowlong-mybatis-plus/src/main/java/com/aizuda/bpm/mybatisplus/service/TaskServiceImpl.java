@@ -623,17 +623,22 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 根据已有任务、任务类型、参与者创建新的任务
-     * 适用于转派，动态协办处理
+     * 根据已有任务、参与者创建新的任务
+     * <p>
+     * 适用于动态转派，动态协办等处理且流程图中不体现节点情况
+     * </p>
      */
     @Override
-    public List<FlwTask> createNewTask(Long taskId, TaskType taskType, List<FlwTaskActor> taskActors) {
-        Assert.isTrue(ObjectUtils.isEmpty(taskActors), "参与者不能为空");
+    public List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
+                                       FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
         FlwTask flwTask = taskMapper.getCheckById(taskId);
-        FlwTask newFlwTask = flwTask.cloneTask(null);
+        FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
         newFlwTask.setTaskType(taskType);
+        newFlwTask.setPerformType(performType);
         newFlwTask.setParentTaskId(taskId);
-        return this.saveTask(newFlwTask, PerformType.sort, taskActors, null);
+        Execution execution = executionFunction.apply(newFlwTask);
+        execution.setFlowCreator(flowCreator);
+        return this.saveTask(newFlwTask, performType, taskActors, execution);
     }
 
     /**

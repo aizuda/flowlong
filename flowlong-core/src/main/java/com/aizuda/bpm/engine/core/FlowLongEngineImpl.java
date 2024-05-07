@@ -170,6 +170,24 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
+    public List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
+                                       FlowCreator flowCreator, Map<String, Object> args) {
+        return taskService().createNewTask(taskId, taskType, performType, taskActors, flowCreator, flwTask -> {
+
+            /*
+             * 流程模型
+             */
+            final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
+
+            // 当前流程实例
+            final FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+
+            // 构建执行对象
+            return this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
+        });
+    }
+
+    @Override
     public boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter) {
         // 追加指定节点模型
         runtimeService().appendNodeModel(taskId, nodeModel, beforeAfter);
