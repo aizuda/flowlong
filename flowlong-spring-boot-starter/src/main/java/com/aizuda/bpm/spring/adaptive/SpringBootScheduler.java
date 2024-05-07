@@ -1,9 +1,13 @@
 package com.aizuda.bpm.spring.adaptive;
 
+import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
+import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.RemindParam;
@@ -50,6 +54,9 @@ public class SpringBootScheduler implements SchedulingConfigurer {
      */
     private RemindParam remindParam;
 
+
+    private FlowLongEngine flowLongEngine;
+
     /**
      * 流程提醒处理
      */
@@ -82,7 +89,16 @@ public class SpringBootScheduler implements SchedulingConfigurer {
                         /*
                          * 任务超时
                          */
-                        context.getRuntimeService().timeout(flwTask.getInstanceId());
+                        if (flwTask.getTermMode() == null) {
+                            context.getRuntimeService().timeout(flwTask.getInstanceId());
+                        }else {
+                            //自动同意或拒绝
+                            if (flwTask.getTermMode() == 0){
+                                flowLongEngine.autoCompleteTask(flwTask.getId());
+                            }else if (flwTask.getTermMode() == 1){
+                                flowLongEngine.autoRejectTask(flwTask.getId());
+                            }
+                        }
                     }
                 }
             }

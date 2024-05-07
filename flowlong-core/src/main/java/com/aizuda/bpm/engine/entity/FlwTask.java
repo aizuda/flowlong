@@ -88,6 +88,14 @@ public class FlwTask extends FlowEntity {
      */
     protected Integer viewed;
 
+    /**
+     * 审批期限超时后执行类型
+     * <p>
+     * 0，自动通过 1，自动拒绝
+     * </p>
+     */
+    private Integer termMode;
+
     public boolean major() {
         return Objects.equals(this.taskType, TaskType.major.getValue());
     }

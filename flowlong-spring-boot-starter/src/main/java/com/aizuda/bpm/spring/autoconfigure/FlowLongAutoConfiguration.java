@@ -145,15 +145,16 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
+    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class,FlowLongEngine.class})
     @ConditionalOnMissingBean
     public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
-                                                   TaskReminder taskReminder, JobLock jobLock) {
+                                                   TaskReminder taskReminder, JobLock jobLock,FlowLongEngine flowLongEngine) {
         SpringBootScheduler scheduler = new SpringBootScheduler();
         scheduler.setContext(flowLongContext);
         scheduler.setRemindParam(properties.getRemind());
         scheduler.setTaskReminder(taskReminder);
         scheduler.setJobLock(jobLock);
+        scheduler.setFlowLongEngine(flowLongEngine);
         return scheduler;
     }
 

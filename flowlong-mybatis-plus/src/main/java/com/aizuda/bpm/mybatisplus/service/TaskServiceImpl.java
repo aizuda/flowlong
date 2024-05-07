@@ -816,6 +816,7 @@ public class TaskServiceImpl implements TaskService {
         Integer term = nodeModel.getTerm();
         if (null != term && term > 0) {
             flwTask.setExpireTime(DateUtils.toDate(DateUtils.now().plusHours(term)));
+            flwTask.setTermMode(nodeModel.getTermMode());
         }
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
