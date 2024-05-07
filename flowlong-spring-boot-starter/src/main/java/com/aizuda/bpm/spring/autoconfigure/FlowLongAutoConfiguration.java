@@ -16,7 +16,6 @@ import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import com.aizuda.bpm.mybatisplus.mapper.*;
 import com.aizuda.bpm.mybatisplus.service.ProcessServiceImpl;
 import com.aizuda.bpm.mybatisplus.service.QueryServiceImpl;
@@ -24,12 +23,10 @@ import com.aizuda.bpm.mybatisplus.service.RuntimeServiceImpl;
 import com.aizuda.bpm.mybatisplus.service.TaskServiceImpl;
 import com.aizuda.bpm.spring.adaptive.FlowJacksonHandler;
 import com.aizuda.bpm.spring.adaptive.SpelExpression;
-import com.aizuda.bpm.spring.adaptive.SpringBootScheduler;
 import com.aizuda.bpm.spring.event.EventInstanceListener;
 import com.aizuda.bpm.spring.event.EventTaskListener;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -142,19 +139,6 @@ public class FlowLongAutoConfiguration {
         flc.setConditionArgsHandler(conditionArgsHandler);
         flc.setCreateTaskHandler(createTaskHandler);
         return flc.build(flowLongEngine);
-    }
-
-    @Bean
-    @ConditionalOnBean({FlowLongContext.class, TaskReminder.class})
-    @ConditionalOnMissingBean
-    public SpringBootScheduler springBootScheduler(FlowLongContext flowLongContext, FlowLongProperties properties,
-                                                   TaskReminder taskReminder, JobLock jobLock) {
-        SpringBootScheduler scheduler = new SpringBootScheduler();
-        scheduler.setContext(flowLongContext);
-        scheduler.setRemindParam(properties.getRemind());
-        scheduler.setTaskReminder(taskReminder);
-        scheduler.setJobLock(jobLock);
-        return scheduler;
     }
 
     /**
