@@ -5,11 +5,14 @@ package test.mysql;
 
 import com.aizuda.bpm.engine.QueryService;
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,10 +98,17 @@ public class TestCountersign extends MysqlTest {
             );
 
             // 测试 https://gitee.com/aizuda/flowlong/issues/I9HBJF 校验会签节点存在 2 个处理人
-            queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
+            queryService.getActiveTaskActorsByInstanceId(instance.getId ()).ifPresent(flwTaskActors ->
                     Assertions.assertEquals(2, flwTaskActors.size()));
 
-            // 任务进入抄送人，流程自动结束
+            //校验一个会签节点自动完成的话，不创建下一个task
+            queryService.getActiveTasksByInstanceId(instance.getId()).ifPresent(flwTasks -> {
+                flowLongEngine.autoCompleteTask(flwTasks.get(0).getId());
+            });
+
+            queryService.getActiveTaskActorsByInstanceId(instance.getId ()).ifPresent(flwTaskActors ->
+                    Assertions.assertEquals(1, flwTaskActors.size())
+            );
 
         });
     }

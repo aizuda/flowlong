@@ -43,7 +43,7 @@
             "selectMode": 1,
             "termAuto": false,
             "term": 0,
-            "termMode": 1,
+            "termMode": 0,
             "examineMode": 2,
             "directorMode": 0,
             "childNode": {
