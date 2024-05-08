@@ -124,11 +124,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("Auto complete taskId={}", taskId);
         }
-        //完成任务后续逻辑
-        return afterDoneTask(flowCreator,args,execution -> {
+        // 完成任务后续逻辑
+        return afterDoneTask(flowCreator, args, execution -> {
             // 执行节点模型
             return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskName());
-        },flwTask);
+        }, flwTask);
     }
 
     /**
@@ -230,7 +230,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 任务完成以后后续任务节点生成，逻辑判断
      */
     private boolean afterDoneTask(FlowCreator flowCreator, Map<String, Object> args,
-            Function<Execution, Boolean> executeNextStep, FlwTask flwTask) {
+                                  Function<Execution, Boolean> executeNextStep, FlwTask flwTask) {
         if (TaskType.agent.eq(flwTask.getTaskType())) {
             // 代理人完成任务，结束后续执行
             return true;
@@ -267,16 +267,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
-                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(),
-                                    flowCreator),
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
                             "Failed to close voting status");
                 }
             }
         }
 
         // 构建执行对象
-        final Execution execution = this.createExecution(processModel, flwInstance, flwTask,
-                flowCreator, args);
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
