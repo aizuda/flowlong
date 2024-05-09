@@ -11,7 +11,7 @@
       "extendConfig": {
         "time": "7:d",
         "args": "执行 json 参数",
-        "trigger": "接口 TaskTrigger 实现 class 如果不配置，调用全局实现子类"
+        "trigger": "test.mysql.TaskTriggerImpl"
       },
       "childNode": {
         "nodeName": "人事审批",

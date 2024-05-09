@@ -4,6 +4,7 @@
 package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowLongEngine;
+import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -15,6 +16,7 @@ import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.engine.exception.FlowLongException;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
@@ -124,11 +126,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("Auto complete taskId={}", taskId);
         }
-        //完成任务后续逻辑
-        return afterDoneTask(flowCreator,args,execution -> {
+        // 完成任务后续逻辑
+        return afterDoneTask(flowCreator, flwTask, args, execution -> {
             // 执行节点模型
             return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskName());
-        },flwTask);
+        });
     }
 
     /**
@@ -223,14 +225,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             log.debug("Execute complete taskId={}", taskId);
         }
 
-        return afterDoneTask(flowCreator, args, executeNextStep, flwTask);
+        return afterDoneTask(flowCreator, flwTask, args, executeNextStep);
     }
 
     /**
      * 任务完成以后后续任务节点生成，逻辑判断
      */
-    private boolean afterDoneTask(FlowCreator flowCreator, Map<String, Object> args,
-            Function<Execution, Boolean> executeNextStep, FlwTask flwTask) {
+    private boolean afterDoneTask(FlowCreator flowCreator, FlwTask flwTask, Map<String, Object> args,
+                                  Function<Execution, Boolean> executeNextStep) {
         if (TaskType.agent.eq(flwTask.getTaskType())) {
             // 代理人完成任务，结束后续执行
             return true;
@@ -267,16 +269,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
-                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(),
-                                    flowCreator),
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
                             "Failed to close voting status");
                 }
             }
         }
 
         // 构建执行对象
-        final Execution execution = this.createExecution(processModel, flwInstance, flwTask,
-                flowCreator, args);
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
@@ -331,6 +331,30 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
                 return flowLongContext.createTask(execution, nodeModel);
             }
+        }
+
+        /*
+         * 执行触发器任务
+         */
+        if (performType == PerformType.trigger) {
+            boolean flag = false;
+            NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+            Map<String, Object> extendConfig = nodeModel.getExtendConfig();
+            if (null != extendConfig) {
+                Object _trigger = extendConfig.get("trigger");
+                if (null != _trigger) {
+                    try {
+                        Class<?> triggerClass = Class.forName((String) _trigger);
+                        if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
+                            TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
+                            flag = taskTrigger.execute(nodeModel, execution);
+                        }
+                    } catch (Exception e) {
+                        throw new FlowLongException(e);
+                    }
+                }
+            }
+            Assert.isFalse(flag, "trigger execute error");
         }
 
         // 执行回调逻辑

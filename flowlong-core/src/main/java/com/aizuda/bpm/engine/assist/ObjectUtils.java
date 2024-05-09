@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.engine.assist;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -55,5 +56,13 @@ public class ObjectUtils {
      */
     public static boolean isSingletonMap(Map<?, ?> mapObj) {
         return Objects.equals(mapObj.getClass().getName(), "java.util.Collections$SingletonMap");
+    }
+
+    /**
+     * 使用反射机制创建类的实例
+     */
+    public static Object newInstance(Class<?> clazz) throws ReflectiveOperationException {
+        Constructor<?> constructor = clazz.getDeclaredConstructor();
+        return constructor.newInstance();
     }
 }

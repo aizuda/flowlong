@@ -98,15 +98,15 @@ public class TestCountersign extends MysqlTest {
             );
 
             // 测试 https://gitee.com/aizuda/flowlong/issues/I9HBJF 校验会签节点存在 2 个处理人
-            queryService.getActiveTaskActorsByInstanceId(instance.getId ()).ifPresent(flwTaskActors ->
+            queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
                     Assertions.assertEquals(2, flwTaskActors.size()));
 
-            //校验一个会签节点自动完成的话，不创建下一个task
+            // 校验一个会签节点自动完成的话，不创建下一个task
             queryService.getActiveTasksByInstanceId(instance.getId()).ifPresent(flwTasks -> {
                 flowLongEngine.autoCompleteTask(flwTasks.get(0).getId());
             });
 
-            queryService.getActiveTaskActorsByInstanceId(instance.getId ()).ifPresent(flwTaskActors ->
+            queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
                     Assertions.assertEquals(1, flwTaskActors.size())
             );
 
