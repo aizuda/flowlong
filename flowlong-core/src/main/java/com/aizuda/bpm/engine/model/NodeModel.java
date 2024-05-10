@@ -125,6 +125,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private List<ConditionNode> conditionNodes;
     /**
+     * 审批提醒
+     */
+    private Boolean remind;
+    /**
      * 允许发起人自选抄送人
      */
     private Boolean allowSelection;
