@@ -1,0 +1,268 @@
+{
+  "key": "11",
+  "name": "11",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeRoleList": [],
+    "childNode": {
+      "nodeName": "条件路由",
+      "type": 4,
+      "conditionNodes": [
+        {
+          "nodeName": "条件1",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "conditionList": [
+            [
+              {
+                "label": "条件1",
+                "field": "day",
+                "operator": "==",
+                "value": "1",
+                "type": "custom"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "审核人",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "1778235567803465730",
+                "name": "陈小超"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprover": "1",
+            "extendConfig": {
+              "formConfig": [
+                {
+                  "label": "网址",
+                  "id": 1715335027364,
+                  "opera": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "nodeName": "条件2",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1,
+          "conditionList": [
+            [
+              {
+                "label": "条件2",
+                "field": "day",
+                "operator": "==",
+                "value": "2",
+                "type": "custom"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "审核人2",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "1778236187025342466",
+                "name": "夏小华"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprover": "1",
+            "extendConfig": {
+              "formConfig": [
+                {
+                  "label": "网址",
+                  "id": 1715335027364,
+                  "opera": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "nodeName": "条件3",
+          "type": 3,
+          "priorityLevel": 3,
+          "conditionMode": 1,
+          "conditionList": [],
+          "childNode": {
+            "nodeName": "审核人3",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "410000199512025445",
+                "name": "魏磊"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprover": "1",
+            "extendConfig": {
+              "formConfig": [
+                {
+                  "label": "网址",
+                  "id": 1715335027364,
+                  "opera": "1"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "条件路由",
+        "type": 4,
+        "conditionNodes": [
+          {
+            "nodeName": "条件1",
+            "type": 3,
+            "priorityLevel": 1,
+            "conditionMode": 1,
+            "conditionList": [
+              [
+                {
+                  "label": "条件3",
+                  "field": "day",
+                  "operator": "==",
+                  "value": "3",
+                  "type": "custom"
+                }
+              ]
+            ],
+            "childNode": {
+              "nodeName": "条件路由",
+              "type": 4,
+              "conditionNodes": [
+                {
+                  "nodeName": "条件1",
+                  "type": 3,
+                  "priorityLevel": 1,
+                  "conditionMode": 1,
+                  "conditionList": [
+                    [
+                      {
+                        "label": "条件4",
+                        "field": "day",
+                        "operator": "==",
+                        "value": "4",
+                        "type": "custom"
+                      }
+                    ]
+                  ],
+                  "childNode": {
+                    "nodeName": "审核人5",
+                    "type": 1,
+                    "setType": 1,
+                    "nodeAssigneeList": [
+                      {
+                        "id": "1778264912529981441",
+                        "name": "陈小辉"
+                      }
+                    ],
+                    "examineLevel": 1,
+                    "directorLevel": 1,
+                    "selectMode": 1,
+                    "termAuto": false,
+                    "term": 0,
+                    "termMode": 1,
+                    "examineMode": 1,
+                    "approveSelf": 0,
+                    "directorMode": 0,
+                    "typeOfApprover": "1",
+                    "extendConfig": {
+                      "formConfig": [
+                        {
+                          "label": "网址",
+                          "id": 1715335027364,
+                          "opera": "1"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "nodeName": "条件2",
+                  "type": 3,
+                  "priorityLevel": 2,
+                  "conditionMode": 1,
+                  "conditionList": []
+                }
+              ]
+            }
+          },
+          {
+            "nodeName": "条件2",
+            "type": 3,
+            "priorityLevel": 2,
+            "conditionMode": 1,
+            "conditionList": [],
+            "childNode": {
+              "nodeName": "审核人4",
+              "type": 1,
+              "setType": 1,
+              "nodeAssigneeList": [
+                {
+                  "id": "990000197205236780",
+                  "name": "田娟"
+                }
+              ],
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "term": 0,
+              "termMode": 1,
+              "examineMode": 1,
+              "approveSelf": 0,
+              "directorMode": 0,
+              "typeOfApprover": "1"
+            }
+          }
+        ],
+        "childNode": {
+          "nodeName": "抄送人",
+          "type": 2,
+          "allowSelection": true,
+          "nodeAssigneeList": [
+            {
+              "id": "1778248547756670978",
+              "name": "李小广"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
