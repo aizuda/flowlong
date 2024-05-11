@@ -210,4 +210,30 @@ public class TestIssue extends MysqlTest {
             });
         });
     }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I9O8GV">复杂条件流转出现错误</a>
+     */
+    @Test
+    public void test_I9O8GV(){
+        final ProcessService processService = flowLongEngine.processService();
+        final QueryService queryService = flowLongEngine.queryService();
+        final TaskService taskService = flowLongEngine.taskService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issuses_#I9O8GV.json", testCreator, false);
+
+        // 启动流程
+        final Map<String, Object> args = new HashMap<>();
+        args.put("day", 3);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(flwInstance -> {
+
+            // 部门经理
+            FlowCreator shiYong = FlowCreator.of("410000199512025445", "魏磊");
+            this.executeTask(flwInstance.getId(), shiYong, flwTask -> flowLongEngine.executeTask(flwTask.getId(), shiYong));
+
+
+        });
+    }
+
 }
