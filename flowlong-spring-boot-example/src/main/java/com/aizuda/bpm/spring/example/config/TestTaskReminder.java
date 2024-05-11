@@ -1,9 +1,12 @@
 package com.aizuda.bpm.spring.example.config;
 
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.scheduling.TaskReminder;
+import com.aizuda.bpm.engine.TaskReminder;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
+
+import java.util.Date;
 
 /**
  * 注入自定义任务提醒处理类
@@ -14,7 +17,8 @@ import org.springframework.stereotype.Component;
 public class TestTaskReminder implements TaskReminder {
 
     @Override
-    public void remind(FlowLongContext context, Long instanceId, Long currentTaskId) {
+    public Date remind(FlowLongContext context, Long instanceId, FlwTask currentTask) {
         System.out.println("测试提醒：" + instanceId);
+        return null;
     }
 }

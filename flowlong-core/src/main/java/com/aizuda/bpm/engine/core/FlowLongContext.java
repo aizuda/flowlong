@@ -18,8 +18,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 /**
  * FlowLong流程引擎上下文
  *
@@ -51,9 +49,9 @@ public class FlowLongContext {
     private ConditionArgsHandler conditionArgsHandler;
 
     /**
-     * 流程引擎拦截器
+     * 流程任务创建拦截器
      */
-    private List<FlowLongInterceptor> interceptors;
+    private TaskCreateInterceptor taskCreateInterceptor;
 
     /**
      * 任务访问策略类
@@ -64,6 +62,11 @@ public class FlowLongContext {
      * 审批参与者提供者
      */
     private TaskActorProvider taskActorProvider;
+
+    /**
+     * 任务提醒接口
+     */
+    private TaskReminder taskReminder;
 
     /**
      * 审批参与者提供者
@@ -134,6 +137,11 @@ public class FlowLongContext {
         return null != conditionArgsHandler ? conditionArgsHandler : DefaultConditionArgsHandler.getInstance();
     }
 
+    public TaskReminder getTaskReminder() {
+        Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
+        return taskReminder;
+    }
+
     /**
      * 创建流程任务
      *
@@ -142,7 +150,19 @@ public class FlowLongContext {
      * @return true 执行成功  false 执行失败
      */
     public boolean createTask(Execution execution, NodeModel nodeModel) {
-        return this.getCreateTaskHandler().handle(this, execution, nodeModel);
+        // 拦截器前置处理
+        if (null != taskCreateInterceptor) {
+            taskCreateInterceptor.before(this, execution);
+        }
+
+        // 执行创建任务
+        boolean result = this.getCreateTaskHandler().handle(this, execution, nodeModel);
+
+        // 拦截器后置处理
+        if (null != taskCreateInterceptor) {
+            taskCreateInterceptor.after(this, execution);
+        }
+        return result;
     }
 
     /**

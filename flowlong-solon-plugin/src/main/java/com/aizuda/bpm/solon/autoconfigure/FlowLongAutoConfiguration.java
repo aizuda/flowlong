@@ -16,7 +16,6 @@ import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import com.aizuda.bpm.mybatisplus.mapper.*;
 import com.aizuda.bpm.mybatisplus.service.ProcessServiceImpl;
 import com.aizuda.bpm.mybatisplus.service.QueryServiceImpl;
@@ -117,7 +116,10 @@ public class FlowLongAutoConfiguration {
                                            @Inject(required = false) ProcessModelParser processModelParser,
                                            @Inject(required = false) FlowJsonHandler flowJsonHandler,
                                            @Inject(required = false) ConditionArgsHandler conditionArgsHandler,
-                                           @Inject(required = false) CreateTaskHandler createTaskHandler) {
+                                           @Inject(required = false) TaskCreateInterceptor taskCreateInterceptor,
+                                           @Inject(required = false) CreateTaskHandler createTaskHandler,
+                                           @Inject(required = false) TaskReminder taskReminder,
+                                           @Inject(required = false) TaskTrigger taskTrigger) {
 
         // 静态注入 Jackson 解析 JSON 处理器
         if (null == flowJsonHandler) {
@@ -134,7 +136,10 @@ public class FlowLongAutoConfiguration {
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
         flc.setConditionArgsHandler(conditionArgsHandler);
+        flc.setTaskCreateInterceptor(taskCreateInterceptor);
         flc.setCreateTaskHandler(createTaskHandler);
+        flc.setTaskReminder(taskReminder);
+        flc.setTaskTrigger(taskTrigger);
         return flc.build(flowLongEngine);
     }
 

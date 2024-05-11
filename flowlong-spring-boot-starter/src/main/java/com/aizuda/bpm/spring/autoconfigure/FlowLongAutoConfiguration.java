@@ -121,7 +121,10 @@ public class FlowLongAutoConfiguration {
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
                                            @Autowired(required = false) ConditionArgsHandler conditionArgsHandler,
-                                           @Autowired(required = false) CreateTaskHandler createTaskHandler) {
+                                           @Autowired(required = false) TaskCreateInterceptor taskCreateInterceptor,
+                                           @Autowired(required = false) CreateTaskHandler createTaskHandler,
+                                           @Autowired(required = false) TaskReminder taskReminder,
+                                           @Autowired(required = false) TaskTrigger taskTrigger) {
         // 静态注入 Jackson 解析 JSON 处理器
         if (null == flowJsonHandler) {
             flowJsonHandler = new FlowJacksonHandler();
@@ -137,7 +140,10 @@ public class FlowLongAutoConfiguration {
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
         flc.setConditionArgsHandler(conditionArgsHandler);
+        flc.setTaskCreateInterceptor(taskCreateInterceptor);
         flc.setCreateTaskHandler(createTaskHandler);
+        flc.setTaskReminder(taskReminder);
+        flc.setTaskTrigger(taskTrigger);
         return flc.build(flowLongEngine);
     }
 

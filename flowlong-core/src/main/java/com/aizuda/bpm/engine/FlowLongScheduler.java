@@ -9,7 +9,6 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.RemindParam;
-import com.aizuda.bpm.engine.scheduling.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +35,6 @@ public abstract class FlowLongScheduler {
      * FlowLong流程引擎接口
      */
     private FlowLongEngine flowLongEngine;
-    /**
-     * 任务提醒接口
-     */
-    private TaskReminder taskReminder;
     /**
      * 任务锁，可注入分布式锁实现
      */
@@ -69,14 +64,16 @@ public abstract class FlowLongScheduler {
                          * 任务提醒
                          */
                         if (DateUtils.after(flwTask.getRemindTime(), currentDate) && flwTask.getRemindRepeat() > 0) {
-                            // 1，更新提醒次数减去 1 次
+                            // 1，更新提醒次数加 1 次
                             FlwTask temp = new FlwTask();
                             temp.setId(flwTask.getId());
-                            temp.setRemindRepeat(flwTask.getRemindRepeat() - 1);
-                            taskService.updateTaskById(temp, null);
-
+                            temp.setRemindRepeat(flwTask.getRemindRepeat() + 1);
                             // 2，调用提醒接口
-                            taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
+                            Date nextRemindTime = context.getTaskReminder().remind(context, flwTask.getInstanceId(), flwTask);
+                            if (null != nextRemindTime) {
+                                temp.setRemindTime(nextRemindTime);
+                            }
+                            taskService.updateTaskById(temp, null);
                         }
                     }
                     /*

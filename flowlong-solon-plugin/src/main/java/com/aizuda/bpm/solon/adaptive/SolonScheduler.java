@@ -10,7 +10,7 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.RemindParam;
-import com.aizuda.bpm.engine.scheduling.TaskReminder;
+import com.aizuda.bpm.engine.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +76,7 @@ public class SolonScheduler {
                             taskService.updateTaskById(temp, null);
 
                             // 2，调用提醒接口
-                            taskReminder.remind(context, flwTask.getInstanceId(), flwTask.getId());
+                            taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
                         }
                     } else {
                         /*

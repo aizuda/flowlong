@@ -3,7 +3,6 @@
  */
 package com.aizuda.bpm.engine.handler.impl;
 
-import com.aizuda.bpm.engine.FlowLongInterceptor;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -45,13 +44,6 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             List<FlwTask> flwTasks = execution.getEngine().taskService().createTask(nodeModel, execution);
             if (null != flwTasks) {
                 execution.addTasks(flwTasks);
-            }
-            /*
-             * 从服务上下文中查找任务拦截器列表，依次对 task 集合进行拦截处理
-             */
-            List<FlowLongInterceptor> interceptors = flowLongContext.getInterceptors();
-            if (null != interceptors) {
-                interceptors.forEach(i -> i.handle(flowLongContext, execution));
             }
             return true;
         } catch (Exception e) {
