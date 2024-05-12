@@ -40,6 +40,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String callProcessKey;
     /**
+     * 任务关联的表单url
+     */
+    private String actionUrl;
+    /**
      * 节点类型
      * <p>
      * -1，结束节点
