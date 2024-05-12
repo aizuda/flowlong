@@ -137,11 +137,6 @@ public class FlowLongContext {
         return null != conditionArgsHandler ? conditionArgsHandler : DefaultConditionArgsHandler.getInstance();
     }
 
-    public TaskReminder getTaskReminder() {
-        Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
-        return taskReminder;
-    }
-
     /**
      * 创建流程任务
      *

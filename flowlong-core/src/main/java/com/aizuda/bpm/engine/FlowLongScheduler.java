@@ -1,5 +1,6 @@
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -69,7 +70,9 @@ public abstract class FlowLongScheduler {
                             temp.setId(flwTask.getId());
                             temp.setRemindRepeat(flwTask.getRemindRepeat() + 1);
                             // 2，调用提醒接口
-                            Date nextRemindTime = context.getTaskReminder().remind(context, flwTask.getInstanceId(), flwTask);
+                            TaskReminder taskReminder = context.getTaskReminder();
+                            Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
+                            Date nextRemindTime = taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
                             if (null != nextRemindTime) {
                                 temp.setRemindTime(nextRemindTime);
                             }

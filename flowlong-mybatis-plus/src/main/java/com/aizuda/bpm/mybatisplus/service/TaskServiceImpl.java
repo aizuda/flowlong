@@ -4,6 +4,7 @@
 package com.aizuda.bpm.mybatisplus.service;
 
 import com.aizuda.bpm.engine.TaskAccessStrategy;
+import com.aizuda.bpm.engine.TaskReminder;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -685,7 +686,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 模型中获取参与者信息
         List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
-        List<FlwTask> flwTasks = new LinkedList<>();
+        List<FlwTask> flwTasks = new ArrayList<>();
 
         // 处理流程任务
         Integer nodeType = nodeModel.getType();
@@ -712,6 +713,11 @@ public class TaskServiceImpl implements TaskService {
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(flwTask, performType, taskActors, execution));
+            // 审批提醒
+            TaskReminder taskReminder = execution.getEngine().getContext().getTaskReminder();
+            if (null != taskReminder) {
+                flwTasks.forEach(s -> taskReminder.remind(execution.getEngine().getContext(), s.getInstanceId(), s));
+            }
         } else if (TaskType.cc.eq(nodeType)) {
             /*
              * 2，抄送任务
