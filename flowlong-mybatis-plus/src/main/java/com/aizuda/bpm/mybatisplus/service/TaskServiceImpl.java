@@ -692,7 +692,6 @@ public class TaskServiceImpl implements TaskService {
         Integer nodeType = nodeModel.getType();
 
         // 更新当前执行节点信息，抄送节点除外
-
         if (!TaskType.cc.eq(nodeType)) {
             this.updateCurrentNode(flwTask);
         }

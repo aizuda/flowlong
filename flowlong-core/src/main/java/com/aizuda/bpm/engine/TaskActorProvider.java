@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -40,8 +41,13 @@ public interface TaskActorProvider {
             return nodeAssigneeList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
         }
 
+        if (TaskType.major.eq(nodeModel.getType()) && !NodeSetType.initiatorSelected.eq(nodeModel.getSetType())) {
+            // 发起人且非自选情况
+            return true;
+        }
+
         // 角色判断必须要求子类实现
-        Assert.isNotEmpty(nodeAssigneeList, "Please implement the interface TaskActorProvider method isAllow");
+        Assert.isEmpty(nodeAssigneeList, "Please implement the interface TaskActorProvider method isAllow");
         return true;
     }
 
