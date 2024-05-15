@@ -36,6 +36,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String nodeName;
     /**
+     * 节点 key
+     */
+    private String nodeKey;
+    /**
      * 调用外部流程定义 key 唯一标识 {@link FlwProcess}
      */
     private String callProcessKey;
@@ -248,24 +252,24 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
-     * 获取process定义的指定节点名称的节点模型
+     * 获取process定义的指定节点key的节点模型
      *
-     * @param nodeName 节点名称
+     * @param nodeKey 节点key
      * @return {@link NodeModel}
      */
-    public NodeModel getNode(String nodeName) {
-        if (Objects.equals(this.nodeName, nodeName)) {
+    public NodeModel getNode(String nodeKey) {
+        if (Objects.equals(this.nodeKey, nodeKey)) {
             return this;
         }
         if (null != conditionNodes) {
-            NodeModel fromConditionNode = getFromConditionNodes(nodeName);
+            NodeModel fromConditionNode = getFromConditionNodes(nodeKey);
             if (fromConditionNode != null) {
                 return fromConditionNode;
             }
         }
         // 条件节点中没有找到 那么去它的同级子节点中继续查找
         if (null != childNode) {
-            return childNode.getNode(nodeName);
+            return childNode.getNode(nodeKey);
         }
         return null;
     }
@@ -273,14 +277,14 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 从条件节点中获取节点
      *
-     * @param nodeName 节点名称
+     * @param nodeKey 节点 key
      * @return {@link NodeModel}
      */
-    private NodeModel getFromConditionNodes(String nodeName) {
+    private NodeModel getFromConditionNodes(String nodeKey) {
         for (ConditionNode conditionNode : conditionNodes) {
             NodeModel conditionChildNode = conditionNode.getChildNode();
             if (null != conditionChildNode) {
-                NodeModel nodeModel = conditionChildNode.getNode(nodeName);
+                NodeModel nodeModel = conditionChildNode.getNode(nodeKey);
                 if (null != nodeModel) {
                     return nodeModel;
                 }

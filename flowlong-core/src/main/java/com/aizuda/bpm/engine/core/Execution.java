@@ -140,13 +140,13 @@ public class Execution implements Serializable {
      * 执行节点模型
      *
      * @param flowLongContext 流程引擎上下文
-     * @param nodeName        节点名称
+     * @param nodeKey         节点key
      */
-    public boolean executeNodeModel(FlowLongContext flowLongContext, String nodeName) {
+    public boolean executeNodeModel(FlowLongContext flowLongContext, String nodeKey) {
         ProcessModel processModel = this.getProcessModel();
         Assert.isNull(processModel, "Process model content cannot be empty");
-        NodeModel nodeModel = processModel.getNode(nodeName);
-        Assert.isNull(nodeModel, "Not found in the process model, process node " + nodeName);
+        NodeModel nodeModel = processModel.getNode(nodeKey);
+        Assert.isNull(nodeModel, "Not found in the process model, process nodeKey=" + nodeKey);
         Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
         if (executeNodeOptional.isPresent()) {
             // 执行流程节点
@@ -186,11 +186,11 @@ public class Execution implements Serializable {
     /**
      * 重启流程实例（从当前所在节点currentNode位置开始）
      *
-     * @param id          流程定义ID
-     * @param currentNode 当前所在节点
+     * @param id             流程定义ID
+     * @param currentNodeKey 当前所在节点key
      */
-    public void restartProcessInstance(Long id, String currentNode) {
-        engine.restartProcessInstance(id, currentNode, this);
+    public void restartProcessInstance(Long id, String currentNodeKey) {
+        engine.restartProcessInstance(id, currentNodeKey, this);
     }
 
     /**

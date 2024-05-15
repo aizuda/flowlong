@@ -93,7 +93,7 @@ public abstract class FlowLongScheduler {
 
                         // 获取当前执行模型节点
                         ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
-                        NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+                        NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
                         Integer termMode = nodeModel.getTermMode();
                         if (null == termMode) {
                             // 执行超时

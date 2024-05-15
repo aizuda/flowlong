@@ -114,7 +114,7 @@ public class TaskServiceImpl implements TaskService {
      * 执行节点跳转任务
      */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
+    public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
 
         // 执行跳转到目标节点
@@ -125,14 +125,14 @@ public class TaskServiceImpl implements TaskService {
 
         // 查找模型节点
         NodeModel nodeModel;
-        if (null == nodeName) {
+        if (null == nodeKey) {
             // 1，找到当前节点的父节点
-            nodeModel = processModel.getNode(flwTask.getTaskName()).getParentNode();
+            nodeModel = processModel.getNode(flwTask.getTaskKey()).getParentNode();
         } else {
             // 2，找到指定 nodeName 节点
-            nodeModel = processModel.getNode(nodeName);
+            nodeModel = processModel.getNode(nodeKey);
         }
-        Assert.isNull(nodeModel, "根据节点名称[" + nodeName + "]无法找到节点模型");
+        Assert.isNull(nodeModel, "根据节点key[" + nodeKey + "]无法找到节点模型");
 
         // 获取当前执行实例的所有正在执行的任务，强制终止执行并跳到指定节点
         this.getTasksByInstanceId(flwTask.getInstanceId()).forEach(t -> this.moveToHisTask(t, TaskState.jump, flowCreator));
@@ -667,7 +667,7 @@ public class TaskServiceImpl implements TaskService {
         }
         FlwExtInstance extInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
         ProcessModel model = extInstance.model();
-        NodeModel nodeModel = model.getNode(flwTask.getTaskName());
+        NodeModel nodeModel = model.getNode(flwTask.getTaskKey());
         Assert.isNull(nodeModel, "任务ID无法找到节点模型.");
         return nodeModel;
     }
@@ -813,7 +813,7 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setCreateTime(DateUtils.getCurrentDate());
         flwTask.setInstanceId(execution.getFlwInstance().getId());
         flwTask.setTaskName(nodeModel.getNodeName());
-        flwTask.setDisplayName(nodeModel.getNodeName());
+        flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setParentTaskId(execution.getFlwTask() == null ? 0L : execution.getFlwTask().getId());
         Map<String, Object> args = execution.getArgs();

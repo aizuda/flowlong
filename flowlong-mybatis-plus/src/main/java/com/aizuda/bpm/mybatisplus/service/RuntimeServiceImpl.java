@@ -300,10 +300,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter) {
         FlwTask flwTask = queryService.getTask(taskId);
         FlwExtInstance flwExtInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
-        final String appendTaskName = flwTask.getTaskName();
+        final String appendTaskKey = flwTask.getTaskKey();
 
         ProcessModel processModel = flwExtInstance.model();
-        NodeModel selectNode = processModel.getNode(appendTaskName);
+        NodeModel selectNode = processModel.getNode(appendTaskKey);
         if (beforeAfter) {
             // 前置追溯父节点
             selectNode = selectNode.getParentNode();
@@ -312,7 +312,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 如果直接跟着条件节点，找到分支作为父节点
             for (ConditionNode conditionNode : selectNode.getConditionNodes()) {
                 NodeModel conditionChildNode = conditionNode.getChildNode();
-                if (Objects.equals(conditionChildNode.getNodeName(), appendTaskName)) {
+                if (Objects.equals(conditionChildNode.getNodeKey(), appendTaskKey)) {
                     nodeModel.setChildNode(conditionChildNode);
                     conditionNode.setChildNode(nodeModel);
                     break;

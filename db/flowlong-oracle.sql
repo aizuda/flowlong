@@ -104,7 +104,7 @@ CREATE TABLE "flw_his_task"
     "call_process_id" NUMBER (20,0),
     "call_instance_id" NUMBER (20,0),
     "task_name" NVARCHAR2(100) NOT NULL,
-    "display_name" NVARCHAR2(200) NOT NULL,
+    "task_key" NVARCHAR2(100) NOT NULL,
     "task_type" NUMBER (4,0) NOT NULL,
     "perform_type" NUMBER (4,0),
     "action_url" NVARCHAR2(200),
@@ -143,7 +143,7 @@ COMMENT ON COLUMN "flw_his_task"."parent_task_id" IS '父任务ID';
 COMMENT ON COLUMN "flw_his_task"."call_process_id" IS '调用外部流程定义ID';
 COMMENT ON COLUMN "flw_his_task"."call_instance_id" IS '调用外部流程实例ID';
 COMMENT ON COLUMN "flw_his_task"."task_name" IS '任务名称';
-COMMENT ON COLUMN "flw_his_task"."display_name" IS '任务显示名称';
+COMMENT ON COLUMN "flw_his_task"."task_key" IS '任务 key 唯一标识';
 COMMENT ON COLUMN "flw_his_task"."task_type" IS '任务类型';
 COMMENT ON COLUMN "flw_his_task"."perform_type" IS '参与类型';
 COMMENT ON COLUMN "flw_his_task"."action_url" IS '任务处理的url';
@@ -320,7 +320,7 @@ CREATE TABLE "flw_task"
     "instance_id" NUMBER (20,0) NOT NULL,
     "parent_task_id" NUMBER (20,0),
     "task_name" NVARCHAR2(100) NOT NULL,
-    "display_name" NVARCHAR2(200) NOT NULL,
+    "task_key" NVARCHAR2(100) NOT NULL,
     "task_type" NUMBER (4,0) NOT NULL,
     "perform_type" NUMBER (4,0),
     "action_url" NVARCHAR2(200),
@@ -354,7 +354,7 @@ COMMENT ON COLUMN "flw_task"."create_time" IS '创建时间';
 COMMENT ON COLUMN "flw_task"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "flw_task"."parent_task_id" IS '父任务ID';
 COMMENT ON COLUMN "flw_task"."task_name" IS '任务名称';
-COMMENT ON COLUMN "flw_task"."display_name" IS '任务显示名称';
+COMMENT ON COLUMN "flw_task"."task_key" IS '任务 key 唯一标识';
 COMMENT ON COLUMN "flw_task"."task_type" IS '任务类型';
 COMMENT ON COLUMN "flw_task"."perform_type" IS '参与类型';
 COMMENT ON COLUMN "flw_task"."action_url" IS '任务处理的url';
@@ -482,7 +482,7 @@ ALTER TABLE "flw_his_task"
 ALTER TABLE "flw_his_task"
     ADD CONSTRAINT "SYS_C0011817" CHECK ("task_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_his_task"
-    ADD CONSTRAINT "SYS_C0011818" CHECK ("display_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+    ADD CONSTRAINT "SYS_C0011818" CHECK ("task_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_his_task"
     ADD CONSTRAINT "SYS_C0011820" CHECK ("task_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_his_task"
@@ -662,7 +662,7 @@ ALTER TABLE "flw_task"
 ALTER TABLE "flw_task"
     ADD CONSTRAINT "SYS_C0011855" CHECK ("task_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_task"
-    ADD CONSTRAINT "SYS_C0011857" CHECK ("display_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+    ADD CONSTRAINT "SYS_C0011857" CHECK ("task_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_task"
     ADD CONSTRAINT "SYS_C0011858" CHECK ("task_type" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_task"

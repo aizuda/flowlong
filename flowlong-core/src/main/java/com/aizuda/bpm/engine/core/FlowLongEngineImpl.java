@@ -96,9 +96,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 重启流程实例（从当前所在节点currentNode位置开始）
      */
     @Override
-    public void restartProcessInstance(Long id, String currentNode, Execution execution) {
+    public void restartProcessInstance(Long id, String currentNodeKey, Execution execution) {
         FlwProcess process = processService().getProcessById(id);
-        NodeModel nodeModel = process.model().getNode(currentNode);
+        NodeModel nodeModel = process.model().getNode(currentNodeKey);
         if (null != nodeModel) {
             nodeModel.nextNode().ifPresent(childNode -> childNode.execute(flowLongContext, execution));
         }
@@ -112,7 +112,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 完成任务，并且构造执行对象
         return this.execute(taskId, flowCreator, args, execution ->
                 // 执行节点模型
-                execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskName()));
+                execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey()));
     }
 
     /**
@@ -129,7 +129,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 完成任务后续逻辑
         return afterDoneTask(flowCreator, flwTask, args, execution -> {
             // 执行节点模型
-            return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskName());
+            return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey());
         });
     }
 
@@ -261,7 +261,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.voteSign) {
             Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
             if (flwTaskActorsOptional.isPresent()) {
-                NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+                NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
@@ -282,7 +282,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+            NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
@@ -338,7 +338,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          */
         if (performType == PerformType.trigger) {
             boolean flag = false;
-            NodeModel nodeModel = processModel.getNode(flwTask.getTaskName());
+            NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
             Map<String, Object> extendConfig = nodeModel.getExtendConfig();
             if (null != extendConfig) {
                 Object _trigger = extendConfig.get("trigger");

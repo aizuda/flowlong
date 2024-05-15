@@ -73,7 +73,7 @@ public class FlwHisTask extends FlwTask {
         hisTask.instanceId = flwTask.getInstanceId();
         hisTask.parentTaskId = flwTask.getParentTaskId();
         hisTask.taskName = flwTask.getTaskName();
-        hisTask.displayName = flwTask.getDisplayName();
+        hisTask.taskKey = flwTask.getTaskKey();
         hisTask.taskType = flwTask.getTaskType();
         hisTask.performType = flwTask.getPerformType();
         hisTask.actionUrl = flwTask.getActionUrl();
@@ -95,7 +95,7 @@ public class FlwHisTask extends FlwTask {
         flwHisTask.setCreateTime(instance.getCreateTime());
         flwHisTask.setInstanceId(instance.getParentInstanceId());
         flwHisTask.setTaskName(nodeModel.getNodeName());
-        flwHisTask.setDisplayName(nodeModel.getNodeName());
+        flwHisTask.setTaskKey(nodeModel.getNodeKey());
         flwHisTask.setCallProcessId(instance.getProcessId());
         flwHisTask.setCallInstanceId(instance.getId());
         flwHisTask.setTaskType(nodeModel.getType());
