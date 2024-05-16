@@ -180,7 +180,7 @@ public class Execution implements Serializable {
         /*
          * 结束当前流程实例
          */
-        return engine.runtimeService().complete(this, flwInstance.getId(), endNode.getNodeName());
+        return engine.runtimeService().complete(this, flwInstance.getId(), endNode);
     }
 
     /**

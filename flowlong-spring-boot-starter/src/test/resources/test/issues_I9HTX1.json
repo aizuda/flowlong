@@ -3,14 +3,17 @@
   "name": "公共费用报销",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "条件路由",
+      "nodeKey": "k002",
       "type": 4,
       "conditionNodes": [
         {
           "nodeName": "条件1",
+          "nodeKey": "k003",
           "type": 3,
           "priorityLevel": 1,
           "conditionMode": 1,
@@ -26,6 +29,7 @@
           ],
           "childNode": {
             "nodeName": "部门经理",
+            "nodeKey": "k004",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -44,10 +48,12 @@
             "directorMode": 0,
             "childNode": {
               "nodeName": "条件路由",
+              "nodeKey": "k005",
               "type": 4,
               "conditionNodes": [
                 {
                   "nodeName": "条件1",
+                  "nodeKey": "k006",
                   "type": 3,
                   "priorityLevel": 1,
                   "conditionMode": 1,
@@ -63,10 +69,12 @@
                   ],
                   "childNode": {
                     "nodeName": "条件路由",
+                    "nodeKey": "k007",
                     "type": 4,
                     "conditionNodes": [
                       {
                         "nodeName": "条件1",
+                        "nodeKey": "k008",
                         "type": 3,
                         "priorityLevel": 1,
                         "conditionMode": 1,
@@ -82,6 +90,7 @@
                         ],
                         "childNode": {
                           "nodeName": "人资部薪资专员",
+                          "nodeKey": "k009",
                           "type": 1,
                           "setType": 1,
                           "nodeAssigneeList": [
@@ -102,6 +111,7 @@
                       },
                       {
                         "nodeName": "条件2",
+                        "nodeKey": "k010",
                         "type": 3,
                         "priorityLevel": 2,
                         "conditionMode": 1,
@@ -117,6 +127,7 @@
                         ],
                         "childNode": {
                           "nodeName": "人资部经理",
+                          "nodeKey": "k011",
                           "type": 1,
                           "setType": 1,
                           "nodeAssigneeList": [
@@ -137,6 +148,7 @@
                       },
                       {
                         "nodeName": "条件3",
+                        "nodeKey": "k012",
                         "type": 3,
                         "priorityLevel": 3,
                         "conditionMode": 1,
@@ -154,10 +166,12 @@
                     ],
                     "childNode": {
                       "nodeName": "条件路由",
+                      "nodeKey": "k014",
                       "type": 4,
                       "conditionNodes": [
                         {
                           "nodeName": "条件1",
+                          "nodeKey": "k015",
                           "type": 3,
                           "priorityLevel": 1,
                           "conditionMode": 1,
@@ -173,6 +187,7 @@
                           ],
                           "childNode": {
                             "nodeName": "核算会计",
+                            "nodeKey": "k016",
                             "type": 1,
                             "setType": 1,
                             "nodeAssigneeList": [
@@ -193,6 +208,7 @@
                         },
                         {
                           "nodeName": "条件2",
+                          "nodeKey": "k017",
                           "type": 3,
                           "priorityLevel": 2,
                           "conditionMode": 1,
@@ -208,6 +224,7 @@
                           ],
                           "childNode": {
                             "nodeName": "总裁办主任",
+                            "nodeKey": "k018",
                             "type": 1,
                             "setType": 1,
                             "nodeAssigneeList": [
@@ -228,6 +245,7 @@
                         },
                         {
                           "nodeName": "条件3",
+                          "nodeKey": "k019",
                           "type": 3,
                           "priorityLevel": 3,
                           "conditionMode": 1,
@@ -243,10 +261,12 @@
                           ],
                           "childNode": {
                             "nodeName": "条件路由",
+                            "nodeKey": "k020",
                             "type": 4,
                             "conditionNodes": [
                               {
                                 "nodeName": "条件1",
+                                "nodeKey": "k021",
                                 "type": 3,
                                 "priorityLevel": 1,
                                 "conditionMode": 1,
@@ -263,6 +283,7 @@
                               },
                               {
                                 "nodeName": "条件2",
+                                "nodeKey": "k022",
                                 "type": 3,
                                 "priorityLevel": 2,
                                 "conditionMode": 1,
@@ -288,6 +309,7 @@
                             ],
                             "childNode": {
                               "nodeName": "事业部副总",
+                              "nodeKey": "k023",
                               "type": 1,
                               "setType": 1,
                               "nodeAssigneeList": [
@@ -306,6 +328,7 @@
                               "directorMode": 0,
                               "childNode": {
                                 "nodeName": "总裁",
+                                "nodeKey": "k024",
                                 "type": 1,
                                 "setType": 1,
                                 "nodeAssigneeList": [
@@ -324,10 +347,12 @@
                                 "directorMode": 0,
                                 "childNode": {
                                   "nodeName": "条件路由",
+                                  "nodeKey": "k025",
                                   "type": 4,
                                   "conditionNodes": [
                                     {
                                       "nodeName": "条件1",
+                                      "nodeKey": "k026",
                                       "type": 3,
                                       "priorityLevel": 1,
                                       "conditionMode": 1,
@@ -343,6 +368,7 @@
                                       ],
                                       "childNode": {
                                         "nodeName": "抄送给人资培训专员",
+                                        "nodeKey": "k027",
                                         "type": 2,
                                         "userSelectFlag": true,
                                         "nodeAssigneeList": [
@@ -355,6 +381,7 @@
                                     },
                                     {
                                       "nodeName": "条件2",
+                                      "nodeKey": "k028",
                                       "type": 3,
                                       "priorityLevel": 2,
                                       "conditionMode": 1,
@@ -381,6 +408,7 @@
                 },
                 {
                   "nodeName": "条件2",
+                  "nodeKey": "k029",
                   "type": 3,
                   "priorityLevel": 2,
                   "conditionMode": 1,
@@ -401,6 +429,7 @@
         },
         {
           "nodeName": "条件2",
+          "nodeKey": "k030",
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,

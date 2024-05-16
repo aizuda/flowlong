@@ -99,7 +99,7 @@ public class TestIssue extends MysqlTest {
             this.executeActiveTasks(instance.getId(), testCreator, args);
 
             FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
-            Assertions.assertEquals("领导审批结束", histInstance.getCurrentNode());
+            Assertions.assertEquals("领导审批结束", histInstance.getCurrentNodeName());
         });
     }
 
@@ -189,6 +189,7 @@ public class TestIssue extends MysqlTest {
                     .filter(t -> Objects.equals("总裁办主任", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
                 NodeModel nodeModel = new NodeModel();
                 nodeModel.setNodeName("人工选择，多人并审");
+                nodeModel.setNodeKey("k00s001");
                 nodeModel.setType(1);
                 nodeModel.setSetType(1);
                 nodeModel.setExamineMode(1);

@@ -3,10 +3,12 @@
   "name": "认领申请",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "主管审批",
+      "nodeKey": "k002",
       "type": 1,
       "setType": 1,
       "nodeAssigneeList": [
@@ -25,6 +27,7 @@
       "directorMode": 0,
       "childNode": {
         "nodeName": "总监审批",
+        "nodeKey": "k003",
         "type": 1,
         "setType": 3,
         "nodeAssigneeList": [
@@ -43,6 +46,7 @@
         "directorMode": 0,
         "childNode": {
           "nodeName": "抄送人",
+          "nodeKey": "k004",
           "type": 2,
           "userSelectFlag": true,
           "nodeAssigneeList": [

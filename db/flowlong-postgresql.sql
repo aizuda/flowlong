@@ -186,7 +186,8 @@ CREATE TABLE "public"."flw_his_instance" (
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
-    "current_node" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
     "last_update_time" timestamp(6),
@@ -206,7 +207,8 @@ COMMENT ON COLUMN "public"."flw_his_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_his_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_his_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "public"."flw_his_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "public"."flw_his_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "public"."flw_his_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "public"."flw_his_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "public"."flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_time" IS '上次更新时间';
@@ -231,7 +233,8 @@ CREATE TABLE "public"."flw_instance" (
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
-    "current_node" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
     "last_update_time" timestamp(6)
@@ -248,7 +251,8 @@ COMMENT ON COLUMN "public"."flw_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "public"."flw_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "public"."flw_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "public"."flw_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "public"."flw_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "public"."flw_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "public"."flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_instance"."last_update_time" IS '上次更新时间';

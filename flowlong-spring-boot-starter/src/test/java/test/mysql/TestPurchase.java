@@ -55,7 +55,7 @@ public class TestPurchase extends MysqlTest {
 
             // 执行当前任务并跳到【经理确认】节点
             this.executeActiveTasks(instance.getId(), t ->
-                    flowLongEngine.executeJumpTask(t.getId(), "经理确认", testCreator)
+                    flowLongEngine.executeJumpTask(t.getId(), "k005", testCreator)
             );
 
             // 经理确认，流程结束

@@ -31,7 +31,8 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
             // 0，用户 1，角色 2，部门
             Integer actorType = null;
-            if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())) {
+            if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())
+                    || NodeSetType.initiatorThemselves.eq(nodeModel.getSetType())) {
                 actorType = 0;
             } else if (NodeSetType.role.eq(nodeModel.getSetType())) {
                 actorType = 1;

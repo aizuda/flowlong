@@ -46,7 +46,8 @@ CREATE TABLE "flw_his_instance"
     "instance_no" NVARCHAR2(50),
     "business_key" NVARCHAR2(100),
     "variable" NCLOB,
-    "current_node" NVARCHAR2(100) NOT NULL,
+    "current_node_name" NVARCHAR2(100) NOT NULL,
+    "current_node_key" NVARCHAR2(100) NOT NULL,
     "expire_time"      DATE,
     "last_update_by" NVARCHAR2(50),
     "last_update_time" DATE,
@@ -79,7 +80,8 @@ COMMENT ON COLUMN "flw_his_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "flw_his_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "flw_his_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "flw_his_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "flw_his_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "flw_his_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "flw_his_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_his_instance"."last_update_time" IS '上次更新时间';
@@ -215,7 +217,8 @@ CREATE TABLE "flw_instance"
     "instance_no" NVARCHAR2(50),
     "business_key" NVARCHAR2(100),
     "variable" NCLOB,
-    "current_node" NVARCHAR2(100) NOT NULL,
+    "current_node_name" NVARCHAR2(100) NOT NULL,
+    "current_node_key" NVARCHAR2(100) NOT NULL,
     "expire_time"      DATE,
     "last_update_by" NVARCHAR2(50),
     "last_update_time" DATE
@@ -245,7 +248,8 @@ COMMENT ON COLUMN "flw_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "flw_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "flw_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "flw_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "flw_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "flw_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "flw_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "flw_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_instance"."last_update_time" IS '上次更新时间';
@@ -440,7 +444,9 @@ ALTER TABLE "flw_his_instance"
 ALTER TABLE "flw_his_instance"
     ADD CONSTRAINT "SYS_C0011827" CHECK ("process_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_his_instance"
-    ADD CONSTRAINT "SYS_C0011828" CHECK ("current_node" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+    ADD CONSTRAINT "SYS_C0011828" CHECK ("current_node_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+ALTER TABLE "flw_his_instance"
+    ADD CONSTRAINT "SYS_C0011828" CHECK ("current_node_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_his_instance"
     ADD CONSTRAINT "SYS_C0011829" CHECK ("instance_state" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
@@ -578,7 +584,9 @@ ALTER TABLE "flw_instance"
 ALTER TABLE "flw_instance"
     ADD CONSTRAINT "SYS_C0011834" CHECK ("process_id" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 ALTER TABLE "flw_instance"
-    ADD CONSTRAINT "SYS_C0011835" CHECK ("current_node" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+    ADD CONSTRAINT "SYS_C0011835" CHECK ("current_node_name" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
+ALTER TABLE "flw_instance"
+    ADD CONSTRAINT "SYS_C0011835" CHECK ("current_node_key" IS NOT NULL) NOT DEFERRABLE INITIALLY IMMEDIATE NORELY VALIDATE;
 
 -- ----------------------------
 -- Indexes structure for table flw_instance

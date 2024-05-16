@@ -84,7 +84,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     protected Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
         // 执行启动模型
         return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel.getNodeName(), supplier);
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, supplier);
             if (log.isDebugEnabled()) {
                 log.debug("start process instanceId={}", flwInstance.getId());
             }
@@ -150,9 +150,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 执行任务并跳转到指定节点
      */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args) {
+    public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行任务跳转归档
-        return taskService().executeJumpTask(taskId, nodeName, flowCreator, args, flwTask -> {
+        return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
             Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
@@ -187,7 +187,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
         // 前置加签、执行任务并跳转到指定节点
         if (beforeAfter) {
-            return executeJumpTask(taskId, nodeModel.getNodeName(), flowCreator, args);
+            return executeJumpTask(taskId, nodeModel.getNodeKey(), flowCreator, args);
         }
 
         // 后置加签无需处理任务流转，当前正常任务审批后进入后置加签节点模型

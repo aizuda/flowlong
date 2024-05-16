@@ -3,10 +3,12 @@
   "name": "测试触发器任务",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "延时触发器",
+      "nodeKey": "k002",
       "type": 7,
       "extendConfig": {
         "time": "7:d",
@@ -15,6 +17,7 @@
       },
       "childNode": {
         "nodeName": "人事审批",
+        "nodeKey": "k003",
         "type": 1,
         "setType": 1,
         "nodeAssigneeList": [

@@ -3,10 +3,12 @@
   "name": "工作交接",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "接收工作",
+      "nodeKey": "k002",
       "type": 1,
       "setType": 1,
       "nodeAssigneeList": [

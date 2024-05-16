@@ -3,16 +3,19 @@
   "name": "测试定时器任务",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "延时处理",
+      "nodeKey": "k002",
       "type": 6,
       "extendConfig": {
         "time": "7:d"
       },
       "childNode": {
         "nodeName": "人事审批",
+        "nodeKey": "k003",
         "type": 1,
         "setType": 1,
         "nodeAssigneeList": [

@@ -3,10 +3,12 @@
   "name": "测试错误模型01",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "抄送人",
+      "nodeKey": "k002",
       "type": 2,
       "userSelectFlag": true,
       "nodeAssigneeList": []

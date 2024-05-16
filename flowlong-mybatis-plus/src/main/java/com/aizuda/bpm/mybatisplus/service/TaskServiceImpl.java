@@ -76,13 +76,15 @@ public class TaskServiceImpl implements TaskService {
     protected void updateCurrentNode(FlwTask flwTask) {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setId(flwTask.getInstanceId());
-        flwInstance.setCurrentNode(flwTask.getTaskName());
+        flwInstance.setCurrentNodeName(flwTask.getTaskName());
+        flwInstance.setCurrentNodeKey(flwTask.getTaskKey());
         flwInstance.setLastUpdateBy(flwTask.getCreateBy());
         flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
         instanceMapper.updateById(flwInstance);
         FlwHisInstance flwHisInstance = new FlwHisInstance();
         flwHisInstance.setId(flwInstance.getId());
-        flwHisInstance.setCurrentNode(flwInstance.getCurrentNode());
+        flwHisInstance.setCurrentNodeName(flwInstance.getCurrentNodeName());
+        flwHisInstance.setCurrentNodeKey(flwInstance.getCurrentNodeKey());
         flwHisInstance.setLastUpdateBy(flwInstance.getLastUpdateBy());
         flwHisInstance.setLastUpdateTime(flwInstance.getLastUpdateTime());
         hisInstanceMapper.updateById(flwHisInstance);
