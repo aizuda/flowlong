@@ -47,7 +47,7 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             }
             return true;
         } catch (Exception e) {
-            log.error("拦截器执行失败={}", e.getMessage());
+            log.error("DefaultCreateTaskHandler createTask failed. {}", e.getMessage());
             throw Assert.throwable(e);
         }
     }

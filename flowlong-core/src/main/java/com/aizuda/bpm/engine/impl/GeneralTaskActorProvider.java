@@ -29,16 +29,7 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
     public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
         List<FlwTaskActor> flwTaskActors = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
-            // 0，用户 1，角色 2，部门
-            Integer actorType = null;
-            if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())
-                    || NodeSetType.initiatorThemselves.eq(nodeModel.getSetType())) {
-                actorType = 0;
-            } else if (NodeSetType.role.eq(nodeModel.getSetType())) {
-                actorType = 1;
-            } else if (NodeSetType.department.eq(nodeModel.getSetType())) {
-                actorType = 2;
-            }
+            final Integer actorType = getActorType(nodeModel);
             if (null != actorType) {
                 for (NodeAssignee nodeAssignee : nodeModel.getNodeAssigneeList()) {
                     flwTaskActors.add(FlwTaskActor.of(nodeAssignee, actorType));
@@ -46,5 +37,25 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
             }
         }
         return ObjectUtils.isEmpty(flwTaskActors) ? null : flwTaskActors;
+    }
+
+    private static Integer getActorType(NodeModel nodeModel) {
+        // 0，用户
+        if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())
+                || NodeSetType.initiatorThemselves.eq(nodeModel.getSetType())
+                || NodeSetType.initiatorSelected.eq(nodeModel.getSetType())) {
+            return 0;
+        }
+
+        // 1，角色
+        if (NodeSetType.role.eq(nodeModel.getSetType())) {
+            return 1;
+        }
+
+        // 2，部门
+        if (NodeSetType.department.eq(nodeModel.getSetType())) {
+            return 2;
+        }
+        return null;
     }
 }

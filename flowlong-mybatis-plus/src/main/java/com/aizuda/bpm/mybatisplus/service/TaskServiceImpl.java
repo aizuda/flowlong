@@ -670,7 +670,9 @@ public class TaskServiceImpl implements TaskService {
         FlwExtInstance extInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
         ProcessModel model = extInstance.model();
         NodeModel nodeModel = model.getNode(flwTask.getTaskKey());
-        Assert.isNull(nodeModel, "任务ID无法找到节点模型.");
+        if (null == nodeModel) {
+            Assert.illegal("Cannot find NodeModel. taskId = " + taskId);
+        }
         return nodeModel;
     }
 
@@ -870,7 +872,10 @@ public class TaskServiceImpl implements TaskService {
             return flwTasks;
         }
 
-        Assert.isTrue(ObjectUtils.isEmpty(taskActors), "任务参与者不能为空");
+        if (ObjectUtils.isEmpty(taskActors)) {
+            Assert.illegal("taskActors cannot be empty. taskName = " + flwTask.getTaskName() + ", taskKey = " +
+                    flwTask.getTaskKey() + ", performType = " + performType.getValue());
+        }
 
         if (performType == PerformType.orSign) {
             /*
