@@ -27,7 +27,7 @@ public class ModelHelper {
      * @param nodeModel 当前节点
      * @return 流程节点模型
      */
-    public static NodeModel findNextNode(NodeModel nodeModel) {
+    public static NodeModel findNextNode(NodeModel nodeModel,List<String> currentTask) {
         NodeModel parentNode = nodeModel.getParentNode();
         if (null == parentNode || Objects.equals(0, parentNode.getType())) {
             // 递归至发起节点，流程结束
@@ -43,8 +43,19 @@ public class ModelHelper {
             }
         }
 
+        //判断当前节点是不是并行分支，需要判断当前并行是否走完
+        if (parentNode.parallelNode()){
+            //找到另外的分支，看是否列表有执行，有就不能返回childNode
+            //都执行完了
+            if (currentTask !=null &&Collections.disjoint(currentTask,getAllNextConditionNodeKeys(parentNode))){
+                return parentNode.getChildNode();
+            }else{
+                //有没执行完的
+                return null;
+            }
+        }
         // 往上继续找下一个执行节点
-        return findNextNode(parentNode);
+        return findNextNode(parentNode,currentTask);
     }
 
     /**
@@ -124,7 +135,11 @@ public class ModelHelper {
 
                 // 条件节点子节点
                 nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
-            } else {
+            } else if (nodeModel.parallelNode()){
+                for (NodeModel node:nodeModel.getParallelNodes()){
+                    nodeKeys.addAll(getAllNextConditionNodeKeys(node));
+                }
+            }else{
                 if (!nodeModel.ccNode()) {
                     // 非抄送节点
                     nodeKeys.add(nodeModel.getNodeKey());
