@@ -1,6 +1,7 @@
 /*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
+
 package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowConstants;
@@ -17,9 +18,11 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
@@ -146,18 +149,28 @@ public class Execution implements Serializable {
         ProcessModel processModel = this.getProcessModel();
         Assert.isNull(processModel, "Process model content cannot be empty");
         NodeModel nodeModel = processModel.getNode(nodeKey);
+        List<String> nodeKeys = new LinkedList<>();
+        flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId())
+                .ifPresent(x->{
+                    for (FlwTask flwTask1:x){
+                        nodeKeys.add(flwTask1.getTaskKey());
+                    }
+                });
         Assert.isNull(nodeModel, "Not found in the process model, process nodeKey=" + nodeKey);
-        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode();
+        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode(nodeKeys);
         if (executeNodeOptional.isPresent()) {
             // 执行流程节点
             NodeModel executeNode = executeNodeOptional.get();
             return executeNode.execute(flowLongContext, this);
         }
-
         /*
-         * 无执行节点流程结束
+         * 无执行节点流程结束,并且任务列表为空
          */
-        return this.endInstance(nodeModel);
+        if (nodeKeys.isEmpty()){
+            return this.endInstance(nodeModel);
+        }else {
+            return true;
+        }
     }
 
     /**

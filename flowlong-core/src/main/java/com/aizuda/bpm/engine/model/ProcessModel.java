@@ -65,6 +65,13 @@ public class ProcessModel implements Serializable {
                 }
             }
         }
+        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
+        if (null != parallelNodes) {
+            for (NodeModel nodeModel : parallelNodes) {
+                nodeModel.setParentNode(rootNode);
+                this.buildParentNode(nodeModel);
+            }
+        }
         NodeModel childNode = rootNode.getChildNode();
         if (null != childNode) {
             childNode.setParentNode(rootNode);
