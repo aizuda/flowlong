@@ -1,7 +1,6 @@
 /*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
-
 package com.aizuda.bpm.engine.model;
 
 import com.aizuda.bpm.engine.Expression;
@@ -15,7 +14,6 @@ import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import lombok.Getter;
 import lombok.Setter;
-import org.w3c.dom.Node;
 
 import java.io.Serializable;
 import java.util.*;
@@ -146,8 +144,9 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
      * <p>
-     * 定时器任务：自定义参数 time 触发时间<br/> 例如：一小时后触发 {"time": "1:h"} 单位【 d 天 h 时 m 分 】<br/> 发起后一小时三十分后触发
-     * {"time": "01:30:00"}
+     * 定时器任务：自定义参数 time 触发时间<br/>
+     * 例如：一小时后触发 {"time": "1:h"} 单位【 d 天 h 时 m 分 】<br/>
+     * 发起后一小时三十分后触发 {"time": "01:30:00"}
      * </p>
      */
     private Map<String, Object> extendConfig;
@@ -175,6 +174,7 @@ public class NodeModel implements ModelInstance, Serializable {
                 parallelNode.execute(flowLongContext, execution);
             }
         }
+
         if (ObjectUtils.isNotEmpty(conditionNodes)) {
             /*
              * 执行条件分支
@@ -189,11 +189,10 @@ public class NodeModel implements ModelInstance, Serializable {
                     .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
             if (!conditionNodeOptional.isPresent()) {
                 // 未发现满足条件分支，使用无条件分支
-                conditionNodeOptional = conditionNodes.stream()
-                        .filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
-                Assert.isFalse(conditionNodeOptional.isPresent(),
-                        "Not found executable ConditionNode");
+                conditionNodeOptional = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
+                Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
             }
+
             /*
              * 执行创建条件任务
              */
@@ -208,9 +207,7 @@ public class NodeModel implements ModelInstance, Serializable {
                 } else {
                     //查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
                     if (nextNode().isPresent()) {
-                        nextNode().ifPresent(nodeModel -> {
-                            nodeModel.execute(flowLongContext, execution);
-                        });
+                        nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
                     } else {
                         // 不存在任何子节点结束流程
                         execution.endInstance(this);
@@ -224,8 +221,8 @@ public class NodeModel implements ModelInstance, Serializable {
          * 执行 1、审批任务 2、创建抄送 5、办理子流程 6、定时器任务 7、触发器任务
          */
         if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type)
-            || TaskType.callProcess.eq(this.type) || TaskType.timer.eq(this.type)
-            || TaskType.trigger.eq(this.type)) {
+                || TaskType.callProcess.eq(this.type) || TaskType.timer.eq(this.type)
+                || TaskType.trigger.eq(this.type)) {
             flowLongContext.createTask(execution, this);
         }
 
@@ -330,7 +327,6 @@ public class NodeModel implements ModelInstance, Serializable {
         }
         return Optional.ofNullable(nextNode);
     }
-
 
     /**
      * 判断是否为条件节点

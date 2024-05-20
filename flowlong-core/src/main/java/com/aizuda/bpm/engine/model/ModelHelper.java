@@ -44,18 +44,19 @@ public class ModelHelper {
         }
 
         //判断当前节点是不是并行分支，需要判断当前并行是否走完
-        if (parentNode.parallelNode()){
+        if (parentNode.parallelNode()) {
             //找到另外的分支，看是否列表有执行，有就不能返回childNode
-            //都执行完了
-            if (currentTask !=null &&Collections.disjoint(currentTask,getAllNextConditionNodeKeys(parentNode))){
+            if (null != currentTask && Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
+                //都执行完了
                 return parentNode.getChildNode();
-            }else{
-                //有没执行完的
-                return null;
             }
+
+            //有没执行完的
+            return null;
         }
+
         // 往上继续找下一个执行节点
-        return findNextNode(parentNode,currentTask);
+        return findNextNode(parentNode, currentTask);
     }
 
     /**
@@ -135,11 +136,12 @@ public class ModelHelper {
 
                 // 条件节点子节点
                 nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
-            } else if (nodeModel.parallelNode()){
-                for (NodeModel node:nodeModel.getParallelNodes()){
+            } else if (nodeModel.parallelNode()) {
+                // 并行节点
+                for (NodeModel node : nodeModel.getParallelNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(node));
                 }
-            }else{
+            } else {
                 if (!nodeModel.ccNode()) {
                     // 非抄送节点
                     nodeKeys.add(nodeModel.getNodeKey());

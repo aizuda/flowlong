@@ -1,7 +1,6 @@
 /*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
-
 package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowConstants;
@@ -150,12 +149,11 @@ public class Execution implements Serializable {
         Assert.isNull(processModel, "Process model content cannot be empty");
         NodeModel nodeModel = processModel.getNode(nodeKey);
         List<String> nodeKeys = new LinkedList<>();
-        flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId())
-                .ifPresent(x->{
-                    for (FlwTask flwTask1:x){
-                        nodeKeys.add(flwTask1.getTaskKey());
-                    }
-                });
+        flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId()).ifPresent(flwTasks -> {
+            for (FlwTask ft : flwTasks) {
+                nodeKeys.add(ft.getTaskKey());
+            }
+        });
         Assert.isNull(nodeModel, "Not found in the process model, process nodeKey=" + nodeKey);
         Optional<NodeModel> executeNodeOptional = nodeModel.nextNode(nodeKeys);
         if (executeNodeOptional.isPresent()) {
@@ -163,14 +161,15 @@ public class Execution implements Serializable {
             NodeModel executeNode = executeNodeOptional.get();
             return executeNode.execute(flowLongContext, this);
         }
+
         /*
-         * 无执行节点流程结束,并且任务列表为空
+         * 无执行节点流程结束，并且任务列表为空
          */
-        if (nodeKeys.isEmpty()){
+        if (nodeKeys.isEmpty()) {
             return this.endInstance(nodeModel);
-        }else {
-            return true;
         }
+
+        return true;
     }
 
     /**

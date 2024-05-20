@@ -68,12 +68,10 @@ public class MysqlTest extends TestFlowLong {
         }
     }
 
-    public void executeTaskByKey(Long instanceId,FlowCreator flowCreator,String nodeKey){
+    public void executeTaskByKey(Long instanceId,FlowCreator flowCreator,String nodeKey) {
         QueryService queryService = this.flowLongEngine.queryService();
         List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instanceId);
-        flwTaskList.stream().filter(x->x.getTaskKey().equals(nodeKey)).findFirst().ifPresent(flwTask->{
-            this.flowLongEngine.executeTask(flwTask.getId(), flowCreator);
-        });
-
+        flwTaskList.stream().filter(flwTask -> flwTask.getTaskKey().equals(nodeKey)).findFirst()
+                .ifPresent(flwTask -> this.flowLongEngine.executeTask(flwTask.getId(), flowCreator));
     }
 }
