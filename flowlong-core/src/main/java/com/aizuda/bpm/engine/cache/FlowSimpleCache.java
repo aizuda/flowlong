@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine.cache;
@@ -20,7 +20,7 @@ public class FlowSimpleCache implements FlowCache {
     private final Map<String, Object> localCache = new ConcurrentHashMap<>();
 
     @Override
-    public void put(String key, Object value, long duration) {
+    public void put(String key, Object value) {
         localCache.put(key, value);
     }
 

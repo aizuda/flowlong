@@ -20,9 +20,8 @@ public interface FlowCache {
      *
      * @param key      缓存关键字
      * @param value    缓存对象
-     * @param duration 有效时长（单位秒)小于等于 0 不处理
      */
-    void put(String key, Object value, long duration);
+    void put(String key, Object value);
 
     /**
      * 从缓存中获取对象
