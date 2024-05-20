@@ -1,8 +1,9 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine.entity;
 
+import com.aizuda.bpm.engine.core.enums.ActorType;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class FlwHisTaskActor extends FlwTaskActor {
         his.setActorId(nodeAssignee.getId());
         his.setActorName(nodeAssignee.getName());
         his.setWeight(nodeAssignee.getWeight());
-        his.setActorType(0);
+        his.setActorType(ActorType.user.getValue());
         return his;
     }
 
@@ -43,7 +44,7 @@ public class FlwHisTaskActor extends FlwTaskActor {
         his.setTaskId(flwHisTask.getId());
         his.setActorId(flwHisTask.getCreateId());
         his.setActorName(flwHisTask.getCreateBy());
-        his.setActorType(0);
+        his.setActorType(ActorType.user.getValue());
         return his;
     }
 
