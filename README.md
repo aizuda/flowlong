@@ -22,16 +22,11 @@ FlowLong🐉飞龙工作流
 
 <p>
   <a href="http://boot.aizuda.com/?from=mp" target="_blank">
-   <img alt="AiZuDa-Logo" src="https://baomidou.com/img/azd01.png" width="220px" height="80px">
+   <img alt="AiZuDa-Logo" src="https://foruda.gitee.com/images/1715955628416785121/954c16ef_12260.png" width="220px" height="80px">
   </a>
 </p>
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
-
-# ⚠️代码`PR`提交规范
-
-> `idea` 下载插件 `Checkstyle-idea` <br/><br/>
-> 然后 `setting` -> `tools` -> 选择 `Checkstyle` 勾选 `Google Checks` 规范，应用保存。
 
 # 🚩中国特色流程操作概念
 
