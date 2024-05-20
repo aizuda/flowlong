@@ -28,6 +28,11 @@ FlowLong🐉飞龙工作流
 
 英文字母 `flw` 为 `flowlong workflow` 飞龙工作流的缩写
 
+# ⚠️代码`PR`提交规范
+
+> `idea` 下载插件 `Checkstyle-idea` <br/><br/>
+> 然后 `setting` -> `tools` -> 选择 `Checkstyle` 勾选 `Google Checks` 规范，应用保存。
+
 # 🚩中国特色流程操作概念
 
 | 支持功能 | 功能描述                                                                    | 完成程度 |
