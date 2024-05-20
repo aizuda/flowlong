@@ -51,9 +51,13 @@ public class FlwInstance extends FlowEntity {
      */
     protected String variable;
     /**
-     * 当前所在节点
+     * 当前所在节点名称
      */
-    protected String currentNode;
+    protected String currentNodeName;
+    /**
+     * 当前所在节点key
+     */
+    protected String currentNodeKey;
     /**
      * 流程实例期望完成时间
      */

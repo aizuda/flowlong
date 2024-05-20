@@ -63,7 +63,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, Supplier<FlwInstance> supplier) {
+    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier) {
         FlwInstance flwInstance = null;
         if (null != supplier) {
             flwInstance = supplier.get();
@@ -73,7 +73,8 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
         flwInstance.setCreateTime(DateUtils.getCurrentDate());
         flwInstance.setFlowCreator(flowCreator);
-        flwInstance.setCurrentNode(currentNode);
+        flwInstance.setCurrentNodeName(nodeModel.getNodeName());
+        flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(process.getId());
@@ -87,10 +88,10 @@ public class RuntimeServiceImpl implements RuntimeService {
             ProcessModel processModel = process.model();
             modelData.forEach((key, value) -> {
                 if (value instanceof DynamicAssignee) {
-                    NodeModel nodeModel = processModel.getNode(key);
-                    if (null != nodeModel) {
+                    NodeModel thisNodeModel = processModel.getNode(key);
+                    if (null != thisNodeModel) {
                         DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
-                        nodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
+                        thisNodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
                     }
                 }
             });
@@ -140,14 +141,20 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public boolean complete(Execution execution, Long instanceId, String currentNode) {
+    public boolean complete(Execution execution, Long instanceId, NodeModel endNode) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
         if (null != flwInstance) {
             FlwHisInstance his = new FlwHisInstance();
             his.setId(instanceId);
             InstanceState instanceState = InstanceState.complete;
             his.setInstanceState(instanceState);
-            his.setCurrentNode(StringUtils.isNotEmpty(currentNode) ? currentNode : instanceState.name());
+            if (null != endNode) {
+                his.setCurrentNodeName(endNode.getNodeName());
+                his.setCurrentNodeKey(endNode.getNodeKey());
+            } else {
+                his.setCurrentNodeName(instanceState.name());
+                his.setCurrentNodeKey(instanceState.name());
+            }
             his.setCreateTime(flwInstance.getCreateTime());
             his.setLastUpdateBy(flwInstance.getLastUpdateBy());
             his.setLastUpdateTime(flwInstance.getLastUpdateTime());
@@ -164,7 +171,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                 // 重启父流程实例
                 FlwInstance parentFlwInstance = instanceMapper.selectById(flwInstance.getParentInstanceId());
                 execution.setFlwInstance(parentFlwInstance);
-                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNode());
+                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
 
                 // 结束调用外部流程任务
                 taskService.endCallProcessTask(flwInstance.getProcessId(), flwInstance.getId());
@@ -300,10 +307,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter) {
         FlwTask flwTask = queryService.getTask(taskId);
         FlwExtInstance flwExtInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
-        final String appendTaskName = flwTask.getTaskName();
+        final String appendTaskKey = flwTask.getTaskKey();
 
         ProcessModel processModel = flwExtInstance.model();
-        NodeModel selectNode = processModel.getNode(appendTaskName);
+        NodeModel selectNode = processModel.getNode(appendTaskKey);
         if (beforeAfter) {
             // 前置追溯父节点
             selectNode = selectNode.getParentNode();
@@ -312,7 +319,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 如果直接跟着条件节点，找到分支作为父节点
             for (ConditionNode conditionNode : selectNode.getConditionNodes()) {
                 NodeModel conditionChildNode = conditionNode.getChildNode();
-                if (Objects.equals(conditionChildNode.getNodeName(), appendTaskName)) {
+                if (Objects.equals(conditionChildNode.getNodeKey(), appendTaskKey)) {
                     nodeModel.setChildNode(conditionChildNode);
                     conditionNode.setChildNode(nodeModel);
                     break;

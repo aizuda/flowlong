@@ -55,11 +55,11 @@ public class TestModel extends MysqlTest {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         processModel.buildParentNode(processModel.getNodeConfig());
-        List<String> previousNodeNames = ModelHelper.getAllPreviousNodeNames(processModel.getNode("条件内部审核"));
+        List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
         Assertions.assertEquals(previousNodeNames.size(), 4);
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
-        Assertions.assertFalse(ModelHelper.checkDuplicateNodeNames(rootNodeModel));
+        Assertions.assertFalse(ModelHelper.checkDuplicateNodeKeys(rootNodeModel));
         Assertions.assertEquals(ModelHelper.checkConditionNode(rootNodeModel), 0);
     }
 
@@ -69,7 +69,7 @@ public class TestModel extends MysqlTest {
     @Test
     public void testCheckDuplicateNodeNames() {
         ProcessModel processModel = getProcessModel("test/duplicateNodeNames.json");
-        Assertions.assertTrue(ModelHelper.checkDuplicateNodeNames(processModel.getNodeConfig()));
+        Assertions.assertTrue(ModelHelper.checkDuplicateNodeKeys(processModel.getNodeConfig()));
     }
 
     /**
@@ -78,8 +78,8 @@ public class TestModel extends MysqlTest {
     @Test
     public void testDynamicAssignee() {
         processId = this.deployByResource("test/purchase.json", testCreator);
-        String nodeName = "抄送主管";
-        String nodeName2 = "领导审批";
+        String nodeName = "k002"; // 抄送主管
+        String nodeName2 = "k003"; // 领导审批
         List<NodeAssignee> assigneeList = Arrays.asList(
                 // 动态抄送给：用户01、用户02、用户03
                 NodeAssignee.ofFlowCreator(testCreator),
@@ -118,14 +118,14 @@ public class TestModel extends MysqlTest {
 
             // 测试会签审批人001【审批】，执行前置加签
             this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
-                    getNodeModel("前置加签", test3Creator), testCreator, true));
+                    getNodeModel("前置加签", "qzjq01", test3Creator), testCreator, true));
 
             // 执行前加签
             this.executeTask(instance.getId(), test3Creator);
 
             // 测试会签审批人003【审批】，执行后置加签
             this.executeTask(instance.getId(), test3Creator, flwTask -> flowLongEngine.executeAppendNodeModel(flwTask.getId(),
-                    getNodeModel("后置加签", test2Creator), test3Creator, false));
+                    getNodeModel("后置加签", "hzjq01", test2Creator), test3Creator, false));
 
             // 会签审批人001【审批】，执行转办、任务交给 test2 处理
             this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
@@ -156,9 +156,10 @@ public class TestModel extends MysqlTest {
     /**
      * 构建加签节点
      */
-    public NodeModel getNodeModel(String nodeName, FlowCreator flowCreator) {
+    public NodeModel getNodeModel(String nodeName, String nodeKey, FlowCreator flowCreator) {
         NodeModel nodeModel = new NodeModel();
         nodeModel.setNodeName(nodeName);
+        nodeModel.setNodeKey(nodeKey);
         nodeModel.setType(1);
         nodeModel.setSetType(1);
         nodeModel.setExamineMode(1);

@@ -65,7 +65,8 @@ public class FlwHisInstance extends FlwInstance {
         his.instanceNo = flwInstance.getInstanceNo();
         his.businessKey = flwInstance.getBusinessKey();
         his.variable = flwInstance.getVariable();
-        his.currentNode = flwInstance.getCurrentNode();
+        his.currentNodeName = flwInstance.getCurrentNodeName();
+        his.currentNodeKey = flwInstance.getCurrentNodeKey();
         his.expireTime = flwInstance.getExpireTime();
         his.lastUpdateBy = flwInstance.getLastUpdateBy();
         his.lastUpdateTime = flwInstance.getLastUpdateTime();

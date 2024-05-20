@@ -44,9 +44,9 @@ public class FlwTask extends FlowEntity {
      */
     protected String taskName;
     /**
-     * 任务显示名称
+     * 任务 key 唯一标识
      */
-    protected String displayName;
+    protected String taskKey;
     /**
      * 任务类型 {@link TaskType}
      */
@@ -168,7 +168,7 @@ public class FlwTask extends FlowEntity {
         newFlwTask.setInstanceId(instanceId);
         newFlwTask.setParentTaskId(parentTaskId);
         newFlwTask.setTaskName(taskName);
-        newFlwTask.setDisplayName(displayName);
+        newFlwTask.setTaskKey(taskKey);
         newFlwTask.setTaskType(taskType);
         newFlwTask.setPerformType(performType);
         newFlwTask.setActionUrl(actionUrl);

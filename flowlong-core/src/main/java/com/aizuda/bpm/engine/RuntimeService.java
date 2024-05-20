@@ -31,11 +31,11 @@ public interface RuntimeService {
      * @param process     流程定义对象
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
-     * @param currentNode 当前所在节点
+     * @param nodeModel   当前所在节点
      * @param supplier    初始化流程实例提供者
      * @return 活动流程实例对象
      */
-    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, String currentNode, Supplier<FlwInstance> supplier);
+    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier);
 
     /**
      * 根据流程实例ID获取流程实例模型
@@ -58,9 +58,10 @@ public interface RuntimeService {
      *
      * @param execution  {@link Execution}
      * @param instanceId 流程实例ID
+     * @param endNode    结束节点
      * @return true 成功 false 失败
      */
-    boolean complete(Execution execution, Long instanceId, String currentNode);
+    boolean complete(Execution execution, Long instanceId, NodeModel endNode);
 
     /**
      * 保存流程实例

@@ -3,14 +3,17 @@
   "name": "11",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeRoleList": [],
     "childNode": {
       "nodeName": "条件路由",
+      "nodeKey": "k002",
       "type": 4,
       "conditionNodes": [
         {
           "nodeName": "条件1",
+          "nodeKey": "k003",
           "type": 3,
           "priorityLevel": 1,
           "conditionMode": 1,
@@ -27,6 +30,7 @@
           ],
           "childNode": {
             "nodeName": "审核人",
+            "nodeKey": "k004",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -58,6 +62,7 @@
         },
         {
           "nodeName": "条件2",
+          "nodeKey": "k005",
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
@@ -74,6 +79,7 @@
           ],
           "childNode": {
             "nodeName": "审核人2",
+            "nodeKey": "k006",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -105,12 +111,14 @@
         },
         {
           "nodeName": "条件3",
+          "nodeKey": "k007",
           "type": 3,
           "priorityLevel": 3,
           "conditionMode": 1,
           "conditionList": [],
           "childNode": {
             "nodeName": "审核人3",
+            "nodeKey": "k008",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -143,10 +151,12 @@
       ],
       "childNode": {
         "nodeName": "条件路由",
+        "nodeKey": "k009",
         "type": 4,
         "conditionNodes": [
           {
             "nodeName": "条件1",
+            "nodeKey": "k010",
             "type": 3,
             "priorityLevel": 1,
             "conditionMode": 1,
@@ -163,10 +173,12 @@
             ],
             "childNode": {
               "nodeName": "条件路由",
+              "nodeKey": "k011",
               "type": 4,
               "conditionNodes": [
                 {
                   "nodeName": "条件1",
+                  "nodeKey": "k012",
                   "type": 3,
                   "priorityLevel": 1,
                   "conditionMode": 1,
@@ -183,6 +195,7 @@
                   ],
                   "childNode": {
                     "nodeName": "审核人5",
+                    "nodeKey": "k013",
                     "type": 1,
                     "setType": 1,
                     "nodeAssigneeList": [
@@ -214,6 +227,7 @@
                 },
                 {
                   "nodeName": "条件2",
+                  "nodeKey": "k014",
                   "type": 3,
                   "priorityLevel": 2,
                   "conditionMode": 1,
@@ -224,12 +238,14 @@
           },
           {
             "nodeName": "条件2",
+            "nodeKey": "k015",
             "type": 3,
             "priorityLevel": 2,
             "conditionMode": 1,
             "conditionList": [],
             "childNode": {
               "nodeName": "审核人4",
+              "nodeKey": "k016",
               "type": 1,
               "setType": 1,
               "nodeAssigneeList": [
@@ -253,6 +269,7 @@
         ],
         "childNode": {
           "nodeName": "抄送人",
+          "nodeKey": "k017",
           "type": 2,
           "allowSelection": true,
           "nodeAssigneeList": [

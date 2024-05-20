@@ -40,13 +40,13 @@ public class ProcessModel implements Serializable {
     private NodeModel nodeConfig;
 
     /**
-     * 获取process定义的指定节点名称的节点模型
+     * 获取process定义的指定节点key的节点模型
      *
-     * @param nodeName 节点名称
+     * @param nodeKey 节点key
      * @return {@link NodeModel}
      */
-    public NodeModel getNode(String nodeName) {
-        return null == nodeConfig ? null : nodeConfig.getNode(nodeName);
+    public NodeModel getNode(String nodeKey) {
+        return null == nodeConfig ? null : nodeConfig.getNode(nodeKey);
     }
 
     /**
@@ -63,6 +63,13 @@ public class ProcessModel implements Serializable {
                     conditionChildNode.setParentNode(rootNode);
                     this.buildParentNode(conditionChildNode);
                 }
+            }
+        }
+        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
+        if (null != parallelNodes) {
+            for (NodeModel nodeModel : parallelNodes) {
+                nodeModel.setParentNode(rootNode);
+                this.buildParentNode(nodeModel);
             }
         }
         NodeModel childNode = rootNode.getChildNode();

@@ -3,10 +3,12 @@
   "name": "报销审批（按顺序依次审批）",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "抄送主管",
+      "nodeKey": "k002",
       "type": 2,
       "userSelectFlag": true,
       "nodeAssigneeList": [
@@ -17,6 +19,7 @@
       ],
       "childNode": {
         "nodeName": "领导审批",
+        "nodeKey": "k003",
         "type": 1,
         "setType": 1,
         "nodeAssigneeList": [
@@ -39,6 +42,7 @@
         "directorMode": 0,
         "childNode": {
           "nodeName": "抄送人力资源",
+          "nodeKey": "k004",
           "type": 2,
           "userSelectFlag": true,
           "nodeAssigneeList": [

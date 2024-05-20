@@ -82,7 +82,12 @@ public enum TaskType {
     /**
      * 被代理人自己完成任务
      */
-    agentOwn(16);
+    agentOwn(16),
+
+    /**
+     * 并行分支
+     */
+    parallelBranch(8);
 
     private final int value;
 

@@ -3,6 +3,7 @@
   "name": "连续主管审批顺签",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [{
       "id": "360000197302144442",
@@ -10,10 +11,12 @@
     }],
     "childNode": {
       "nodeName": "条件路由",
+      "nodeKey": "k002",
       "type": 4,
       "conditionNodes": [
         {
           "nodeName": "长期",
+          "nodeKey": "k003",
           "type": 3,
           "priorityLevel": 1,
           "conditionMode": 1,
@@ -29,6 +32,7 @@
           ],
           "childNode": {
             "nodeName": "领导审批",
+            "nodeKey": "k004",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -49,12 +53,14 @@
         },
         {
           "nodeName": "短期",
+          "nodeKey": "k005",
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
           "conditionList": [],
           "childNode": {
             "nodeName": "连续主管审批",
+            "nodeKey": "k006",
             "type": 1,
             "setType": 7,
             "nodeAssigneeList": [],
@@ -71,6 +77,7 @@
       ],
       "childNode": {
         "nodeName": "抄送人",
+        "nodeKey": "k007",
         "type": 2,
         "userSelectFlag": true,
         "nodeAssigneeList": [

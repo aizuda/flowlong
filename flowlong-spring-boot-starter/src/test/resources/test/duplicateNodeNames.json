@@ -3,10 +3,12 @@
   "name": "检测校验重复节点名称",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "领导审批",
+      "nodeKey": "k002",
       "type": 1,
       "setType": 1,
       "nodeAssigneeList": [
@@ -25,6 +27,7 @@
       "directorMode": 0,
       "childNode": {
         "nodeName": "抄送人",
+        "nodeKey": "k003",
         "type": 2,
         "userSelectFlag": true,
         "nodeAssigneeList": [
@@ -35,6 +38,7 @@
         ],
         "childNode": {
           "nodeName": "领导审批",
+          "nodeKey": "k002",
           "type": 1,
           "setType": 2,
           "nodeAssigneeList": [],
@@ -48,6 +52,7 @@
           "directorMode": 0,
           "childNode": {
             "nodeName": "抄送人",
+            "nodeKey": "k005",
             "type": 2,
             "userSelectFlag": true,
             "nodeAssigneeList": [

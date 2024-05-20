@@ -3,10 +3,12 @@
   "name": "抄送节点跟条件分支",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "抄送人1",
+      "nodeKey": "k002",
       "type": 2,
       "userSelectFlag": true,
       "nodeAssigneeList": [
@@ -17,10 +19,12 @@
       ],
       "childNode": {
         "nodeName": "条件路由",
+        "nodeKey": "k003",
         "type": 4,
         "conditionNodes": [
           {
             "nodeName": "长期",
+            "nodeKey": "k004",
             "type": 3,
             "priorityLevel": 1,
             "conditionMode": 1,
@@ -36,6 +40,7 @@
             ],
             "childNode": {
               "nodeName": "领导审批",
+              "nodeKey": "k005",
               "type": 1,
               "setType": 1,
               "nodeAssigneeList": [
@@ -56,12 +61,14 @@
           },
           {
             "nodeName": "短期",
+            "nodeKey": "k006",
             "type": 3,
             "priorityLevel": 2,
             "conditionMode": 1,
             "conditionList": [],
             "childNode": {
               "nodeName": "直接主管审批",
+              "nodeKey": "k007",
               "type": 1,
               "setType": 2,
               "nodeAssigneeList": [],
@@ -78,6 +85,7 @@
         ],
         "childNode": {
           "nodeName": "抄送人",
+          "nodeKey": "k008",
           "type": 2,
           "userSelectFlag": true,
           "nodeAssigneeList": [

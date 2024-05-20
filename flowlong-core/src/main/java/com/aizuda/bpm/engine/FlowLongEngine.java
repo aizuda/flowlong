@@ -175,15 +175,15 @@ public interface FlowLongEngine {
      * </p>
      *
      * @param taskId      任务ID
-     * @param nodeName    跳转的节点名称
+     * @param nodeKey     跳转的节点key
      * @param flowCreator 任务创建者
      * @param args        任务参数
      * @return true 成功 false 失败
      */
-    boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator, Map<String, Object> args);
+    boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
 
-    default boolean executeJumpTask(Long taskId, String nodeName, FlowCreator flowCreator) {
-        return executeJumpTask(taskId, nodeName, flowCreator, null);
+    default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator) {
+        return executeJumpTask(taskId, nodeKey, flowCreator, null);
     }
 
     /**

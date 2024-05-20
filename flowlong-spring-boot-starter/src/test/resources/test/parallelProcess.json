@@ -1,0 +1,71 @@
+{
+  "id": 10,
+  "key": "parallelNodes",
+  "name": "请假审批",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "并行路由",
+      "type": 8,
+      "nodeKey": "k002",
+      "conditionNodes": [],
+      "parallelNodes": [
+        {
+          "nodeName": "领导审批",
+          "type": 1,
+          "setType": 1,
+          "nodeKey": "k003",
+          "nodeAssigneeList": [
+            {
+              "id": "test002",
+              "name": "测试2"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "directorMode": 0
+        },
+        {
+          "nodeName": "第二审批",
+          "type": 1,
+          "setType": 1,
+          "nodeKey": "k004",
+          "nodeAssigneeList": [
+            {
+              "id": "test003",
+              "name": "测试3"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "directorMode": 0
+        }
+      ],
+      "childNode": {
+        "nodeName": "抄送人",
+        "type": 2,
+        "nodeKey": "k005",
+        "userSelectFlag": true,
+        "nodeAssigneeList": [
+          {
+            "id": "220000200908305857",
+            "name": "何秀英"
+          }
+        ]
+      }
+    }
+  }
+}

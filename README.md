@@ -22,7 +22,7 @@ FlowLong🐉飞龙工作流
 
 <p>
   <a href="http://boot.aizuda.com/?from=mp" target="_blank">
-   <img alt="AiZuDa-Logo" src="https://baomidou.com/img/azd01.png" width="220px" height="80px">
+   <img alt="AiZuDa-Logo" src="https://foruda.gitee.com/images/1715955628416785121/954c16ef_12260.png" width="220px" height="80px">
   </a>
 </p>
 

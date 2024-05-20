@@ -3,14 +3,17 @@
   "name": "简单流程（测试）",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "k001",
     "type": 0,
     "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "条件路由",
+      "nodeKey": "k002",
       "type": 4,
       "conditionNodes": [
         {
           "nodeName": "7天长期",
+          "nodeKey": "k003",
           "type": 3,
           "priorityLevel": 1,
           "conditionMode": 1,
@@ -26,6 +29,7 @@
           ],
           "childNode": {
             "nodeName": "7天领导审批",
+            "nodeKey": "k004",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -48,10 +52,12 @@
             "directorMode": 0,
             "childNode": {
               "nodeName": "条件路由",
+              "nodeKey": "k005",
               "type": 4,
               "conditionNodes": [
                 {
                   "nodeName": "年龄等于18",
+                  "nodeKey": "k006",
                   "type": 3,
                   "priorityLevel": 1,
                   "conditionMode": 1,
@@ -67,6 +73,7 @@
                   ],
                   "childNode": {
                     "nodeName": "年龄审批",
+                    "nodeKey": "k007",
                     "type": 1,
                     "setType": 1,
                     "nodeAssigneeList": [
@@ -85,6 +92,7 @@
                     "directorMode": 0,
                     "childNode": {
                       "nodeName": "抄送人",
+                      "nodeKey": "k008",
                       "type": 2,
                       "userSelectFlag": true,
                       "nodeAssigneeList": [
@@ -98,12 +106,14 @@
                 },
                 {
                   "nodeName": "其它年龄",
+                  "nodeKey": "k009",
                   "type": 3,
                   "priorityLevel": 2,
                   "conditionMode": 1,
                   "conditionList": [],
                   "childNode": {
                     "nodeName": "其它年龄审批",
+                    "nodeKey": "k010",
                     "type": 1,
                     "setType": 2,
                     "nodeAssigneeList": [
@@ -125,6 +135,7 @@
               ],
               "childNode": {
                 "nodeName": "抄送人2",
+                "nodeKey": "k011",
                 "type": 2,
                 "userSelectFlag": true,
                 "nodeAssigneeList": [
@@ -135,6 +146,7 @@
                 ],
                 "childNode": {
                   "nodeName": "条件内部审核",
+                  "nodeKey": "k012",
                   "type": 1,
                   "setType": 1,
                   "nodeAssigneeList": [
@@ -158,12 +170,14 @@
         },
         {
           "nodeName": "短期",
+          "nodeKey": "k013",
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
           "conditionList": [],
           "childNode": {
             "nodeName": "默认主管审批",
+            "nodeKey": "k014",
             "type": 1,
             "setType": 1,
             "nodeAssigneeList": [
@@ -185,6 +199,7 @@
       ],
       "childNode": {
         "nodeName": "抄送人3",
+        "nodeKey": "k015",
         "type": 2,
         "userSelectFlag": true,
         "nodeAssigneeList": [
@@ -195,6 +210,7 @@
         ],
         "childNode": {
           "nodeName": "条件路由子审批",
+          "nodeKey": "k016",
           "type": 1,
           "setType": 1,
           "nodeAssigneeList": [

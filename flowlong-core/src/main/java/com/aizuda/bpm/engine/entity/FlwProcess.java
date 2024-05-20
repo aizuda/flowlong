@@ -118,7 +118,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
             NodeModel nodeModel = this.model().getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             Assert.isFalse(flowLongContext.getTaskActorProvider().isAllowed(nodeModel, flowCreator), "No permission to execute");
-            Assert.isTrue(ModelHelper.checkDuplicateNodeNames(nodeModel), "There are duplicate node names present");
+            Assert.isTrue(ModelHelper.checkDuplicateNodeKeys(nodeModel), "There are duplicate node keys present");
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
             // 创建首个审批任务

@@ -39,7 +39,7 @@ CREATE TABLE "public"."flw_his_task" (
     "call_process_id" int8,
     "call_instance_id" int8,
     "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
+    "task_key"  varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "task_type" int2 NOT NULL,
     "perform_type" int2,
     "action_url" varchar(200) COLLATE "pg_catalog"."default",
@@ -65,7 +65,7 @@ COMMENT ON COLUMN "public"."flw_his_task"."parent_task_id" IS '父任务ID';
 COMMENT ON COLUMN "public"."flw_his_task"."call_process_id" IS '调用外部流程定义ID';
 COMMENT ON COLUMN "public"."flw_his_task"."call_instance_id" IS '调用外部流程实例ID';
 COMMENT ON COLUMN "public"."flw_his_task"."task_name" IS '任务名称';
-COMMENT ON COLUMN "public"."flw_his_task"."display_name" IS '任务显示名称';
+COMMENT ON COLUMN "public"."flw_his_task"."task_key" IS '任务 key 唯一标识';
 COMMENT ON COLUMN "public"."flw_his_task"."task_type" IS '任务类型';
 COMMENT ON COLUMN "public"."flw_his_task"."perform_type" IS '参与类型';
 COMMENT ON COLUMN "public"."flw_his_task"."action_url" IS '任务处理的url';
@@ -119,7 +119,7 @@ CREATE TABLE "public"."flw_task" (
     "instance_id" int8 NOT NULL,
     "parent_task_id" int8,
     "task_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-    "display_name" varchar(200) COLLATE "pg_catalog"."default" NOT NULL,
+    "task_key"  varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "task_type" int2 NOT NULL,
     "perform_type" int2,
     "action_url" varchar(200) COLLATE "pg_catalog"."default",
@@ -140,7 +140,7 @@ COMMENT ON COLUMN "public"."flw_task"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."flw_task"."instance_id" IS '流程实例ID';
 COMMENT ON COLUMN "public"."flw_task"."parent_task_id" IS '父任务ID';
 COMMENT ON COLUMN "public"."flw_task"."task_name" IS '任务名称';
-COMMENT ON COLUMN "public"."flw_task"."display_name" IS '任务显示名称';
+COMMENT ON COLUMN "public"."flw_task"."task_key" IS '任务 key 唯一标识';
 COMMENT ON COLUMN "public"."flw_task"."task_type" IS '任务类型';
 COMMENT ON COLUMN "public"."flw_task"."perform_type" IS '参与类型';
 COMMENT ON COLUMN "public"."flw_task"."action_url" IS '任务处理的url';
@@ -186,7 +186,8 @@ CREATE TABLE "public"."flw_his_instance" (
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
-    "current_node" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
     "last_update_time" timestamp(6),
@@ -206,7 +207,8 @@ COMMENT ON COLUMN "public"."flw_his_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_his_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_his_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "public"."flw_his_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "public"."flw_his_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "public"."flw_his_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "public"."flw_his_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "public"."flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_his_instance"."last_update_time" IS '上次更新时间';
@@ -231,7 +233,8 @@ CREATE TABLE "public"."flw_instance" (
     "instance_no" varchar(50) COLLATE "pg_catalog"."default",
     "business_key" varchar(100) COLLATE "pg_catalog"."default",
     "variable" text COLLATE "pg_catalog"."default",
-    "current_node" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "current_node_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
     "last_update_time" timestamp(6)
@@ -248,7 +251,8 @@ COMMENT ON COLUMN "public"."flw_instance"."priority" IS '优先级';
 COMMENT ON COLUMN "public"."flw_instance"."instance_no" IS '流程实例编号';
 COMMENT ON COLUMN "public"."flw_instance"."business_key" IS '业务KEY';
 COMMENT ON COLUMN "public"."flw_instance"."variable" IS '变量json';
-COMMENT ON COLUMN "public"."flw_instance"."current_node" IS '当前所在节点';
+COMMENT ON COLUMN "public"."flw_instance"."current_node_name" IS '当前所在节点名称';
+COMMENT ON COLUMN "public"."flw_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "public"."flw_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "public"."flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "public"."flw_instance"."last_update_time" IS '上次更新时间';
