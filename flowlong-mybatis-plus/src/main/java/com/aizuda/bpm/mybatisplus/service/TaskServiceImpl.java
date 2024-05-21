@@ -471,7 +471,11 @@ public class TaskServiceImpl implements TaskService {
         Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<FlwTask> flwTaskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             Assert.isEmpty(flwTaskList, "No approval tasks found");
-            Assert.isFalse(Objects.equals(flwTaskList.get(0).getParentTaskId(), taskId), "Do not allow cross level reclaim task");
+            FlwTask existFlwTask = flwTaskList.get(0);
+            if (!PerformType.countersign.eq(existFlwTask.getPerformType())) {
+                // 非会签情况
+                Assert.isFalse(Objects.equals(existFlwTask.getParentTaskId(), taskId), "Do not allow cross level reclaim task");
+            }
             flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
         });
 
