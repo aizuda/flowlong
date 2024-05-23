@@ -582,32 +582,43 @@ public class TaskServiceImpl implements TaskService {
             taskMapper.insert(flwTask);
             taskActorMapper.insert(FlwTaskActor.ofFlwTask(flwTask));
         } else {
-            List<FlwHisTask> hisTasks = new ArrayList<>();
             if (PerformType.countersign.eq(hisTask.getPerformType())) {
                 // 会签任务需要撤回所有子任务
-                hisTasks.addAll(hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery().eq(FlwHisTask::getParentTaskId, hisTask.getParentTaskId())));
-            } else {
-                hisTasks.add(hisTask);
-            }
-            // 恢复任务参与者
-            hisTasks.forEach(ht -> {
-                FlwTask flwTask = ht.undoTask();
-                taskMapper.insert(flwTask);
+                List<FlwHisTask> hisTasks = hisTaskMapper.selectList(Wrappers.<FlwHisTask>lambdaQuery()
+                        .eq(FlwHisTask::getParentTaskId, hisTask.getParentTaskId()));
+
                 // 撤回任务参与者
-                List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(ht.getId());
+                List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskIds(hisTasks.stream()
+                        .map(FlwHisTask::getId).collect(Collectors.toList()));
                 if (null != hisTaskActors) {
-                    hisTaskActors.forEach(t -> {
-                        FlwTaskActor flwTaskActor = new FlwTaskActor();
-                        flwTaskActor.setTenantId(t.getTenantId());
-                        flwTaskActor.setInstanceId(t.getInstanceId());
-                        flwTaskActor.setTaskId(flwTask.getId());
-                        flwTaskActor.setActorType(t.getActorType());
-                        flwTaskActor.setActorId(t.getActorId());
-                        flwTaskActor.setActorName(t.getActorName());
-                        taskActorMapper.insert(flwTaskActor);
-                    });
+                    Map<String, FlwHisTaskActor> taskActorMap = new HashMap<>();
+                    for (FlwHisTaskActor t : hisTaskActors) {
+                        FlwHisTaskActor t1 = taskActorMap.get(t.getActorId());
+                        if (null == t1 || t.getTaskId() > t1.getTaskId()) {
+                            // 同一个任务参与者，获取最新的任务
+                            taskActorMap.put(t.getActorId(), t);
+                        }
+                    }
+
+                    // 恢复最新历史任务
+                    taskActorMap.forEach((k, v) -> hisTasks.stream().filter(t -> Objects.equals(t.getId(), v.getTaskId()))
+                            .findFirst().ifPresent(t -> {
+                                FlwTask flwTask = t.undoTask();
+                                taskMapper.insert(flwTask);
+                                taskActorMapper.insert(FlwTaskActor.of(flwTask.getId(), v));
+                            }));
                 }
-            });
+            } else {
+                // 恢复历史任务
+                FlwTask flwTask = hisTask.undoTask();
+                taskMapper.insert(flwTask);
+
+                // 撤回任务参与者
+                List<FlwHisTaskActor> hisTaskActors = hisTaskActorMapper.selectListByTaskId(hisTask.getId());
+                if (null != hisTaskActors) {
+                    hisTaskActors.forEach(t -> taskActorMapper.insert(FlwTaskActor.of(flwTask.getId(), t)));
+                }
+            }
         }
 
         // 更新当前执行节点信息
