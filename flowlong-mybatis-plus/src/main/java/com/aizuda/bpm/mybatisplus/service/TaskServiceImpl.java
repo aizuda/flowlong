@@ -245,6 +245,26 @@ public class TaskServiceImpl implements TaskService {
             hisTask.setTaskType(TaskType.agentAssist);
         }
 
+        // 会签情况处理其它任务
+        if (PerformType.countersign.eq(flwTask.getPerformType())) {
+            List<FlwTask> flwTaskList = taskMapper.selectListByParentTaskId(flwTask.getParentTaskId());
+            flwTaskList.forEach(t -> {
+                FlwHisTask ht = FlwHisTask.of(t);
+                ht.setTaskState(taskState);
+                ht.setFlowCreator(flowCreator);
+                ht.calculateDuration();
+                ht.setTaskType(hisTask.getTaskType());
+                hisTaskMapper.insert(ht);
+            });
+            List<Long> taskIds = flwTaskList.stream().map(FlwTask::getId).collect(Collectors.toList());
+
+            // 迁移任务参与者
+            this.moveToHisTaskActor(taskActorMapper.selectListByTaskIds(taskIds));
+
+            // 删除会签任务
+            return taskMapper.deleteBatchIds(taskIds) > 0;
+        }
+
         // 迁移任务至历史表
         Assert.isFalse(hisTaskMapper.insert(hisTask) > 0, "Migration to FlwHisTask table failed");
 
