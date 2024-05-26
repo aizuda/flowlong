@@ -128,6 +128,13 @@ public class FlwTaskActor implements Serializable {
         return of(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
     }
 
+    public static FlwTaskActor of(Long taskId, FlwHisTaskActor t) {
+        FlwTaskActor flwTaskActor = of(t.getTenantId(), t.getActorId(), t.getActorName(), t.getActorType(), t.getWeight());
+        flwTaskActor.setTaskId(taskId);
+        flwTaskActor.setInstanceId(t.getInstanceId());
+        return flwTaskActor;
+    }
+
     protected static FlwTaskActor of(String tenantId, String actorId, String actorName, Integer actorType, Integer weight) {
         FlwTaskActor taskActor = new FlwTaskActor();
         taskActor.setTenantId(tenantId);

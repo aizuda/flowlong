@@ -31,6 +31,15 @@ public interface FlwTaskActorMapper extends BaseMapper<FlwTaskActor> {
     }
 
     /**
+     * 通过任务ID列表获取参与者列表
+     *
+     * @param taskIds 任务ID列表
+     */
+    default List<FlwTaskActor> selectListByTaskIds(List<Long> taskIds) {
+        return this.selectList(Wrappers.<FlwTaskActor>lambdaQuery().in(FlwTaskActor::getTaskId, taskIds));
+    }
+
+    /**
      * 通过流程实例ID获取参与者列表
      *
      * @param instanceId 流程实例ID

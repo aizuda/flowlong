@@ -6,6 +6,10 @@
 - 支持并行分支执行节点
 - 新增唯一节点 nodeKey 允许节点名称重复
 - 调整任务实例表结构优化
+```
+1，模型新增 nodeKey 替代 nodeName 唯一条件，任务 displayName 修改为 taskKey
+2，流程实例 currentNode 分为 currentNodeName  currentNodeKey
+```
 - 增加枚举参与者类型
 - 优化换成允许过期时间设置
 - 优化任务节点审批人列表
