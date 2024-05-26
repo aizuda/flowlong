@@ -173,6 +173,7 @@ public class NodeModel implements ModelInstance, Serializable {
             for (NodeModel parallelNode : parallelNodes) {
                 parallelNode.execute(flowLongContext, execution);
             }
+            return true;
         }
 
         if (ObjectUtils.isNotEmpty(conditionNodes)) {
