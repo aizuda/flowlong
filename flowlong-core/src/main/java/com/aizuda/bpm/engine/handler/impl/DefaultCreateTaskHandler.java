@@ -3,7 +3,6 @@
  */
 package com.aizuda.bpm.engine.handler.impl;
 
-import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.entity.FlwTask;
@@ -48,7 +47,7 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             return true;
         } catch (Exception e) {
             log.error("DefaultCreateTaskHandler createTask failed. {}", e.getMessage());
-            throw Assert.throwable(e);
+            throw e;
         }
     }
 }
