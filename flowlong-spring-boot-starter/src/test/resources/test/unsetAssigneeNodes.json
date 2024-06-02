@@ -1,0 +1,31 @@
+{
+  "key": "duplicateNodeNames.json",
+  "name": "检测校验重复节点名称",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "领导审批",
+      "nodeKey": "k002",
+      "type": 1,
+      "setType": 1,
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0,
+      "childNode": {
+        "nodeName": "抄送人",
+        "nodeKey": "k003",
+        "type": 2,
+        "userSelectFlag": true,
+        "nodeAssigneeList": []
+      }
+    }
+  }
+}

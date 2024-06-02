@@ -27,7 +27,7 @@ public class ModelHelper {
      * @param nodeModel 当前节点
      * @return 流程节点模型
      */
-    public static NodeModel findNextNode(NodeModel nodeModel,List<String> currentTask) {
+    public static NodeModel findNextNode(NodeModel nodeModel, List<String> currentTask) {
         NodeModel parentNode = nodeModel.getParentNode();
         if (null == parentNode || Objects.equals(0, parentNode.getType())) {
             // 递归至发起节点，流程结束
@@ -158,10 +158,22 @@ public class ModelHelper {
     }
 
     /**
-     * 获取根节点下的所有节点类型【 注意，只对根节点查找有效！】
+     * 获取所有未设置处理人员节点
      *
      * @param rootNodeModel 根节点模型
      * @return 所有节点名称
+     */
+    public static List<NodeModel> getUnsetAssigneeNodes(NodeModel rootNodeModel) {
+        List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
+        // 过滤发起和结束节点
+        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && t.getType() > 0).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取根节点下的所有节点类型【 注意，只对根节点查找有效！】
+     *
+     * @param rootNodeModel 根节点模型
+     * @return 所有节点信息
      */
     private static List<NodeModel> getRootNodeAllChildNodes(NodeModel rootNodeModel) {
         List<NodeModel> nodeModels = new ArrayList<>();

@@ -73,6 +73,16 @@ public class TestModel extends MysqlTest {
     }
 
     /**
+     * 测试获取所有未设置处理人员节点
+     */
+    @Test
+    public void testGetUnsetAssigneeNodeKeys() {
+        ProcessModel processModel = getProcessModel("test/unsetAssigneeNodes.json");
+        List<NodeModel> NodeModels = ModelHelper.getUnsetAssigneeNodes(processModel.getNodeConfig());
+        Assertions.assertEquals(NodeModels.size(), 2);
+    }
+
+    /**
      * 测试动态追加处理人
      */
     @Test
