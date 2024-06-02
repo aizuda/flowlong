@@ -27,6 +27,10 @@ public class ConditionNode implements Serializable {
      */
     private String nodeName;
     /**
+     * 节点 key
+     */
+    private String nodeKey;
+    /**
      * 节点类型
      */
     private Integer type;
