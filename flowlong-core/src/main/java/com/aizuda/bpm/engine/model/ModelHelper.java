@@ -158,7 +158,7 @@ public class ModelHelper {
     }
 
     /**
-     * 获取所有未设置处理人员节点
+     * 获取所有未设置处理人员节点【只包含 1，审批 2，抄送 节点】
      *
      * @param rootNodeModel 根节点模型
      * @return 所有节点名称
@@ -166,7 +166,8 @@ public class ModelHelper {
     public static List<NodeModel> getUnsetAssigneeNodes(NodeModel rootNodeModel) {
         List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
         // 过滤发起和结束节点
-        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && t.getType() > 0).collect(Collectors.toList());
+        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) &&
+                (TaskType.approval.eq(t.getType()) || TaskType.cc.eq(t.getType()))).collect(Collectors.toList());
     }
 
     /**
