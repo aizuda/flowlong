@@ -73,15 +73,16 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 启动流程实例
+     * 根据流程对象启动流程实例
      *
      * @param process     流程定义对象
      * @param flowCreator 流程创建者
      * @param args        执行参数
      * @param supplier    初始化流程实例提供者
-     * @return 流程实例
+     * @return {@link FlwInstance} 流程实例
      */
-    protected Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    @Override
+    public Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
         // 执行启动模型
         return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
             FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, supplier);

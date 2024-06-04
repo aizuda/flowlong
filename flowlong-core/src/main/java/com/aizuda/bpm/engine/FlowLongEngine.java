@@ -9,6 +9,7 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -16,7 +17,6 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -126,6 +126,17 @@ public interface FlowLongEngine {
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator) {
         return this.startInstanceByProcessKey(processKey, null, flowCreator);
     }
+
+    /**
+     * 根据流程对象启动流程实例
+     *
+     * @param process     {@link FlwProcess}
+     * @param flowCreator 流程实例任务创建者
+     * @param args        参数列表
+     * @param supplier    初始化流程实例提供者
+     * @return {@link FlwInstance} 流程实例
+     */
+    Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier);
 
     /**
      * 重启流程实例（从当前所在节点currentNode位置开始）

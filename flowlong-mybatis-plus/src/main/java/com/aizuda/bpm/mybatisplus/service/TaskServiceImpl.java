@@ -3,10 +3,7 @@
  */
 package com.aizuda.bpm.mybatisplus.service;
 
-import com.aizuda.bpm.engine.TaskAccessStrategy;
-import com.aizuda.bpm.engine.TaskReminder;
-import com.aizuda.bpm.engine.TaskService;
-import com.aizuda.bpm.engine.TaskTrigger;
+import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -778,7 +775,20 @@ public class TaskServiceImpl implements TaskService {
              * 5，办理子流程
              */
             FlowCreator flowCreator = execution.getFlowCreator();
-            execution.getEngine().startInstanceByProcessKey(nodeModel.getCallProcessKey(), null, flowCreator, null, () -> {
+            String callProcess = nodeModel.getCallProcess();
+            Assert.isEmpty(callProcess, "The execution parameter callProcess does not exist");
+            String[] callProcessArr = callProcess.split(":");
+            ProcessService processService = execution.getEngine().processService();
+            FlwProcess flwProcess;
+            if (Objects.equals(2, callProcessArr.length)) {
+                flwProcess = processService.getProcessById(Long.valueOf(callProcessArr[0]));
+            } else {
+                flwProcess = processService.getProcessByKey(callProcessArr[0]);
+            }
+            if (null == flwProcess) {
+                Assert.illegal("No found flwProcess, callProcess=" + callProcess);
+            }
+            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 flwInstance.setParentInstanceId(flwTask.getInstanceId());
                 return flwInstance;

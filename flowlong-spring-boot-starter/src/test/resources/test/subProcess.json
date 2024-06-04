@@ -82,7 +82,7 @@
           "nodeName": "工作交接",
           "nodeKey": "k007",
           "type": 5,
-          "callProcessKey": "workHandover",
+          "callProcess": "workHandover",
           "childNode": {
             "nodeName": "抄送人",
             "nodeKey": "k008",

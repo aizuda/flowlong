@@ -41,9 +41,15 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String nodeKey;
     /**
-     * 调用外部流程定义 key 唯一标识 {@link FlwProcess}
+     * 调用外部流程 {@link FlwProcess}
+     * <p>
+     * 实际业务存储格式 processId:processName 流程ID名称冒号拼接内容
+     * </p>
+     * <p>
+     * 不存在冒号为 processKey 内容用于测试等场景
+     * </p>
      */
-    private String callProcessKey;
+    private String callProcess;
     /**
      * 任务关联的表单url
      */
