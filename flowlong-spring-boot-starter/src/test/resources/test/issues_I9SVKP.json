@@ -1,0 +1,30 @@
+{
+  "key": "issues_I9O8GV",
+  "name": "请假审批",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flw001",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "领导审批",
+      "nodeKey": "flw002",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "何敏"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0
+    }
+  }
+}

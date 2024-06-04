@@ -220,7 +220,7 @@ public class TestIssue extends MysqlTest {
         final ProcessService processService = flowLongEngine.processService();
 
         // 部署流程
-        Long processId = processService.deployByResource("test/issuses_#I9O8GV.json", testCreator, false);
+        Long processId = processService.deployByResource("test/issues_I9O8GV.json", testCreator, false);
 
         // 启动流程
         final Map<String, Object> args = new HashMap<>();
@@ -230,6 +230,40 @@ public class TestIssue extends MysqlTest {
             // 部门经理
             FlowCreator shiYong = FlowCreator.of("410000199512025445", "魏磊");
             this.executeTask(flwInstance.getId(), shiYong, flwTask -> flowLongEngine.executeTask(flwTask.getId(), shiYong));
+        });
+    }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/I9SVKP">关于委派转办后向前加签问题</a>
+     */
+    @Test
+    public void test_I9SVKP() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_I9SVKP.json", testCreator, false);
+
+        // 启动流程
+        final Map<String, Object> args = new HashMap<>();
+        args.put("day", 3);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(flwInstance -> {
+
+            // 执行转办、任务交给 test2 处理
+            this.executeTask(flwInstance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
+                    .transferTask(flwTask.getId(), testCreator, test2Creator));
+
+            // 转办人（前置加签）
+            flowLongEngine.queryService().getActiveTasksByInstanceId(flwInstance.getId()).flatMap(flwTasks -> flwTasks.stream()
+                    .filter(t -> Objects.equals("领导审批", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
+                NodeModel nodeModel = new NodeModel();
+                nodeModel.setNodeName("前置加签");
+                nodeModel.setNodeKey("flk0001");
+                nodeModel.setType(1);
+                nodeModel.setSetType(1);
+                nodeModel.setExamineMode(1);
+                nodeModel.setNodeAssigneeList(Collections.singletonList(NodeAssignee.ofFlowCreator(test3Creator)));
+                flowLongEngine.executeAppendNodeModel(flwTask.getId(), nodeModel, test2Creator, true);
+            });
         });
     }
 
