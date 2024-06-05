@@ -16,8 +16,6 @@ jobs:
         with:
           java-version: '11'
           distribution: 'temurin'
-          gpg-private-key: ${{ secrets.GPG_SECRET }}
-          gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -33,3 +31,5 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+          GPG_SECRET: ${{ secrets.GPG_SECRET }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
