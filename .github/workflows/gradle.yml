@@ -18,14 +18,18 @@ jobs:
           distribution: 'temurin'
           gpg-private-key: ${{ secrets.GPG_SECRET }}
           gpg-passphrase: ${{ secrets.GPG_PASSWORD }}
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
       - name: Build without tests
         run: ./gradlew build -x test
+
       - name: Publish
         run: ./gradlew publish
         env:
-          REPO_USER: ${{ secrets.REPO_USER }}
-          REPO_PASSWORD: ${{ secrets.REPO_PASSWORD }}
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
