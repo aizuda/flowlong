@@ -144,6 +144,11 @@ subprojects {
         }
     }
 
+    signing {
+        useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
+        sign configurations.archives
+    }
+
     publishing {
         repositories {
             maven {
@@ -209,9 +214,8 @@ subprojects {
         }
     }
 
-    signing {
-        useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
-        sign configurations.archives
+    tasks.withType(Sign) {
+        onlyIf { gradle.taskGraph.hasTask("publish") }
     }
 
 
