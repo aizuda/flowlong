@@ -152,8 +152,8 @@ subprojects {
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
                 credentials {
-                    username System.getenv("OSSRH_USERNAME")
-                    password System.getenv("OSSRH_PASSWORD")
+                    username System.getenv("REPO_USER")
+                    password System.getenv("REPO_PASSWORD")
                 }
             }
         }
