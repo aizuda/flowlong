@@ -146,7 +146,7 @@ subprojects {
 
     signing {
         useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
-        sign configurations.archives
+        sign publishing.publications.mavenJava
     }
 
     publishing {
