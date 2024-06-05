@@ -150,8 +150,12 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 扩展配置，用于存储表单权限、操作权限 等控制参数配置
      * <p>
-     * 定时器任务：自定义参数 time 触发时间<br/>
-     * 例如：一小时后触发 {"time": "1:h"} 单位【 d 天 h 时 m 分 】<br/>
+     * 定时器任务：自定义参数 time 触发时间
+     * </p>
+     * <p>
+     * 例如：一小时后触发 {"time": "1:h"} 单位【 d 天 h 时 m 分 】
+     * </p>
+     * <p>
      * 发起后一小时三十分后触发 {"time": "01:30:00"}
      * </p>
      */
