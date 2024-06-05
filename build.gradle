@@ -27,7 +27,7 @@ description = "FlowLong BPM"
 // 项目配置
 allprojects {
     group "com.aizuda"
-    version "0.0.6"
+    version "0.0.7"
 }
 
 
