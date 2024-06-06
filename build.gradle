@@ -145,6 +145,11 @@ subprojects {
         }
     }
 
+    signing {
+        useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
+        sign publishing.publications
+    }
+
     publishing {
         repositories {
             maven {
@@ -195,11 +200,6 @@ subprojects {
                 }
             }
         }
-    }
-
-    signing {
-        useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
-        sign publishing.publications.mavenJava
     }
 
     // 编译任务忽略案例模块
