@@ -1,37 +1,37 @@
 {
-    "groups": [
-        {
-            "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
-            "name": "flowlong",
-            "type": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties"
-        },
-        {
-            "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
-            "name": "flowlong.remind",
-            "sourceMethod": "getRemind()",
-            "type": "com.aizuda.bpm.engine.scheduling.RemindParam"
-        },
-        {
-            "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
-            "name": "flowlong.eventing",
-            "sourceMethod": "getEventing()",
-            "type": "com.aizuda.bpm.spring.autoconfigure.EventingParam"
-        }
-    ],
-    "properties": [
-        {
-            "sourceType": "com.aizuda.bpm.engine.scheduling.RemindParam",
-            "name":  "flowlong.remind.cron",
-            "defaultValue": "*/5 * * * * ?",
-            "description": "remind cron.",
-            "type": "java.lang.String"
-        },
-        {
-            "sourceType": "com.aizuda.bpm.spring.autoconfigure.EventingParam",
-            "name":  "flowlong.eventing.task",
-            "defaultValue": false,
-            "description": "task event listener property.",
-            "type": "java.lang.Boolean"
-        }
-    ]
+  "groups": [
+    {
+      "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
+      "name": "flowlong",
+      "type": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties"
+    },
+    {
+      "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
+      "name": "flowlong.remind",
+      "sourceMethod": "getRemind()",
+      "type": "com.aizuda.bpm.engine.scheduling.RemindParam"
+    },
+    {
+      "sourceType": "com.aizuda.bpm.spring.autoconfigure.FlowLongProperties",
+      "name": "flowlong.eventing",
+      "sourceMethod": "getEventing()",
+      "type": "com.aizuda.bpm.spring.autoconfigure.EventingParam"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.aizuda.bpm.engine.scheduling.RemindParam",
+      "name": "flowlong.remind.cron",
+      "defaultValue": "*/5 * * * * ?",
+      "description": "remind cron.",
+      "type": "java.lang.String"
+    },
+    {
+      "sourceType": "com.aizuda.bpm.spring.autoconfigure.EventingParam",
+      "name": "flowlong.eventing.task",
+      "defaultValue": false,
+      "description": "task event listener property.",
+      "type": "java.lang.Boolean"
+    }
+  ]
 }

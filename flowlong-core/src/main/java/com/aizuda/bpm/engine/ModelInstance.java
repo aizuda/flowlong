@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
 package com.aizuda.bpm.engine;
@@ -23,6 +23,7 @@ public interface ModelInstance {
      *
      * @param flowLongContext 流程引擎上下文
      * @param execution       执行对象
+     * @return 执行结果 true 成功 false 失败
      */
     boolean execute(FlowLongContext flowLongContext, Execution execution);
 }

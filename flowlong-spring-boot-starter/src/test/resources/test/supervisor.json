@@ -5,10 +5,12 @@
     "nodeName": "发起人",
     "nodeKey": "k001",
     "type": 0,
-    "nodeAssigneeList": [{
-      "id": "360000197302144442",
-      "name": "何敏"
-    }],
+    "nodeAssigneeList": [
+      {
+        "id": "360000197302144442",
+        "name": "何敏"
+      }
+    ],
     "childNode": {
       "nodeName": "条件路由",
       "nodeKey": "k002",

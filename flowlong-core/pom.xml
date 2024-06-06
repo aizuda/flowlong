@@ -14,10 +14,6 @@
     <description>flowlong core</description>
     <packaging>jar</packaging>
 
-    <properties>
-<!--        <spring-boot.version>2.7.0</spring-boot.version>-->
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>

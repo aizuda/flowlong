@@ -209,7 +209,7 @@ public interface FlowLongEngine {
      * @param performType 参与类型
      * @param flowCreator 任务创建者
      * @param args        任务参数
-     * @return List<Task> 创建任务集合
+     * @return 创建任务集合
      */
     List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
                                 FlowCreator flowCreator, Map<String, Object> args);

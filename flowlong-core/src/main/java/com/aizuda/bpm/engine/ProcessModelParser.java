@@ -37,6 +37,8 @@ public interface ProcessModelParser {
 
     /**
      * 流程缓存实现类
+     *
+     * @return 流程缓存
      */
     FlowCache getFlowCache();
 }

@@ -53,6 +53,8 @@ public class ObjectUtils {
 
     /**
      * 判断 Map 是否未 Collections$SingletonMap 对象
+     *
+     * @return true 是 false 否
      */
     public static boolean isSingletonMap(Map<?, ?> mapObj) {
         return Objects.equals(mapObj.getClass().getName(), "java.util.Collections$SingletonMap");
@@ -60,6 +62,9 @@ public class ObjectUtils {
 
     /**
      * 使用反射机制创建类的实例
+     *
+     * @param clazz 带创建实例的类
+     * @return 创建对象
      */
     public static Object newInstance(Class<?> clazz) throws ReflectiveOperationException {
         Constructor<?> constructor = clazz.getDeclaredConstructor();

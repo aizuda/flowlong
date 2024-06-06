@@ -68,7 +68,7 @@ public interface TaskService {
      * @param taskId            任务ID
      * @param flowCreator       任务创建者
      * @param args              任务参数
-     * @param nodeKey          跳转至目标节点key
+     * @param nodeKey           跳转至目标节点key
      * @param executionFunction 执行函数
      * @return 当前 flowCreator 所在的任务
      */
@@ -81,7 +81,8 @@ public interface TaskService {
     /**
      * 完成指定实例ID活动任务
      *
-     * @param instanceId 实例ID
+     * @param instanceId  实例ID
+     * @param flowCreator 处理人员
      * @return true 成功 false 失败
      */
     boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator);
@@ -226,7 +227,7 @@ public interface TaskService {
      *
      * @param taskModel 任务模型
      * @param execution 执行对象
-     * @return List<Task> 创建任务集合
+     * @return 创建任务集合
      */
     List<FlwTask> createTask(NodeModel taskModel, Execution execution);
 
@@ -242,7 +243,7 @@ public interface TaskService {
      * @param performType       参与类型
      * @param flowCreator       任务创建者
      * @param executionFunction 执行函数
-     * @return List<Task> 创建任务集合
+     * @return 创建任务集合
      */
     List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
                                 FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
@@ -250,7 +251,7 @@ public interface TaskService {
     /**
      * 获取超时或者提醒的任务
      *
-     * @return List<Task> 任务列表
+     * @return 任务列表
      */
     List<FlwTask> getTimeoutOrRemindTasks();
 
@@ -269,6 +270,7 @@ public interface TaskService {
      * @param performType   参与类型 {@link PerformType}
      * @param flwTaskActors 参与者列表
      * @param flowCreator   执行操作人员
+     * @return true 成功 false 失败
      */
     boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors, FlowCreator flowCreator);
 
@@ -282,6 +284,7 @@ public interface TaskService {
      * @param taskId      任务ID
      * @param actorIds    参与者ID列表
      * @param flowCreator 执行操作人员
+     * @return true 成功 false 失败
      */
     boolean removeTaskActor(Long taskId, List<String> actorIds, FlowCreator flowCreator);
 

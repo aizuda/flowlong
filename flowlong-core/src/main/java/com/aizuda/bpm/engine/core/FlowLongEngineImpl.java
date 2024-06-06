@@ -212,7 +212,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID，创建人，参数列表完成任务，并且构造执行对象
+     * 根据 任务ID，创建人，参数列表完成任务，并且构造执行对象
+     *
+     * @param taskId          任务ID
+     * @param flowCreator     创建人
+     * @param args            参数列表
+     * @param executeNextStep 执行下一步函数方法
+     * @return 执行结果 true 成功 false 失败
      */
     protected boolean execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Function<Execution, Boolean> executeNextStep) {
         if (args == null) {

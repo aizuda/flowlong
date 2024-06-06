@@ -38,6 +38,7 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
      * 根据流程实例ID获取任务列表
      *
      * @param instanceId 流程实例ID
+     * @return 任务列表
      */
     default List<FlwTask> selectListByInstanceId(Long instanceId) {
         return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getInstanceId, instanceId));
@@ -47,6 +48,7 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
      * 根据父任务ID获取任务列表
      *
      * @param parentTaskId 父任务ID
+     * @return 任务列表
      */
     default List<FlwTask> selectListByParentTaskId(Long parentTaskId) {
         return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getParentTaskId, parentTaskId));

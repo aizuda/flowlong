@@ -62,9 +62,10 @@ public class FlowDataTransfer {
     /**
      * 获取传递参数
      *
-     * @param param 传递参数
+     * @param 传递参数
      * @return 传递参数 MAP 对象
      */
+    @SuppressWarnings({"all"})
     public static <T> T get(String param) {
         Map<String, Object> dataMap = getAll();
         if (null != dataMap && !dataMap.isEmpty()) {

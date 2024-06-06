@@ -143,6 +143,7 @@ public class Execution implements Serializable {
      *
      * @param flowLongContext 流程引擎上下文
      * @param nodeKey         节点key
+     * @return 执行节点模型结果 true 成功 false 失败
      */
     public boolean executeNodeModel(FlowLongContext flowLongContext, String nodeKey) {
         ProcessModel processModel = this.getProcessModel();
@@ -175,6 +176,7 @@ public class Execution implements Serializable {
     /**
      * 执行结束当前流程实例
      *
+     * @param endNode 结束节点
      * @return true 执行成功  false 执行失败
      */
     public boolean endInstance(NodeModel endNode) {

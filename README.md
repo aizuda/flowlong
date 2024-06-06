@@ -1,7 +1,7 @@
-
 <img src="https://foruda.gitee.com/images/1693470775312764207/27440c57_12260.png" alt="flowlong" width="100px" height="113px">
 
 # 项目介绍
+
 FlowLong🐉飞龙工作流
 
 - 项目说明  `flowlong` 中文名 `飞龙` 在天美好愿景！
@@ -10,7 +10,7 @@ FlowLong🐉飞龙工作流
 
 > 使用必须遵守国家法律法规，⛔不允许非法项目使用，后果自负❗
 
-[使用源码登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5) 
+[使用源码登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5)
 
 [打开官方开发文档](https://doc.flowlong.com)
 
@@ -60,7 +60,6 @@ FlowLong🐉飞龙工作流
 | 动态构建 | 根据当前任务动态构建执行新任务，并且不体现在流程图中                                              | ✅    |
 | 超时审批 | 根据设置的超时审批时间，超时后自动审批【自动通过或拒绝】                                            | ✅    |                                                             | ✅    |
 | 自动提醒 | 根据设置的提醒时间，提醒审批人审批【可设定提醒次数】实现接口任意方式提醒【短信，邮件，微信，钉钉等】                      | ✅    |
-
 
 # 贡献力量
 

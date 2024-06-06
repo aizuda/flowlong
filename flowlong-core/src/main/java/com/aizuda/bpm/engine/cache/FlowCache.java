@@ -18,8 +18,8 @@ public interface FlowCache {
     /**
      * 根据关键字缓存对象
      *
-     * @param key      缓存关键字
-     * @param value    缓存对象
+     * @param key   缓存关键字
+     * @param value 缓存对象
      */
     void put(String key, Object value);
 

@@ -77,7 +77,7 @@ public class FlwInstance extends FlowEntity {
         return flwInstance;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"all"})
     public Map<String, Object> variableToMap() {
         Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
         if (map == null) return Collections.emptyMap();

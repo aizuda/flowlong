@@ -111,6 +111,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      * @param flowLongContext 流程引擎上下文
      * @param flowCreator     流程实例任务创建者
      * @param function        流程执行对象处理函数
+     * @return 流程实例
      */
     public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, Function<NodeModel, Execution> function) {
         FlwInstance flwInstance = null;
@@ -131,6 +132,8 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
 
     /**
      * 流程状态验证
+     *
+     * @return 流程定义实体
      */
     public FlwProcess checkState() {
         if (Objects.equals(0, this.processState)) {
@@ -141,11 +144,20 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
 
     /**
      * 格式化 JSON 模型内容
+     *
+     * @param modelContent JSON 模型内容
+     * @return 流程定义实体
      */
     public FlwProcess formatModelContent(String modelContent) {
         return setModelContent2Json(FlowLongContext.fromJson(modelContent, ProcessModel.class));
     }
 
+    /**
+     * 设置 JSON 模型内容
+     *
+     * @param processModel 模型内容
+     * @return 流程定义实体
+     */
     public FlwProcess setModelContent2Json(ProcessModel processModel) {
         this.modelContent = FlowLongContext.toJson(processModel);
         return this;
@@ -153,6 +165,8 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
 
     /**
      * 下一个流程版本
+     *
+     * @return 下一个流程版本
      */
     public int nextProcessVersion() {
         return processVersion + 1;

@@ -39,6 +39,10 @@ public class DateUtils {
 
     /**
      * 日期判断
+     *
+     * @param arg0 开始时间
+     * @param arg1 结束时间
+     * @return true 开始时间大于结束时间 false 开始时间小于结束时间
      */
     public static boolean after(Date arg0, Date arg1) {
         return null != arg0 && null != arg1 && arg0.after(arg1);
@@ -48,6 +52,7 @@ public class DateUtils {
      * 日期 LocalDateTime 转为 Date
      *
      * @param localDateTime {@link LocalDateTime}
+     * @return {@link Date}
      */
     public static Date toDate(LocalDateTime localDateTime) {
         if (null == localDateTime) {

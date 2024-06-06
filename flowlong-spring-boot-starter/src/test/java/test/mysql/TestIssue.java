@@ -113,7 +113,7 @@ public class TestIssue extends MysqlTest {
         // 启动发起
         flowLongEngine.startInstanceById(processId, test3Creator).ifPresent(instance -> executeActiveTasks(instance.getId(),
                 flwTask -> flowLongEngine.taskService().rejectTask(flwTask, test2Creator,
-                Collections.singletonMap("rejectReason", "不同意"))));
+                        Collections.singletonMap("rejectReason", "不同意"))));
     }
 
     /**

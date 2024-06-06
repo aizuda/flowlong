@@ -81,6 +81,8 @@ public class ProcessModel implements Serializable {
 
     /**
      * 清理父节点关系
+     *
+     * @param rootNode 根节点
      */
     public void cleanParentNode(NodeModel rootNode) {
         rootNode.setParentNode(null);

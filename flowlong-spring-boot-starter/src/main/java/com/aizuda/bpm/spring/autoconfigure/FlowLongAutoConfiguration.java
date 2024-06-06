@@ -151,6 +151,7 @@ public class FlowLongAutoConfiguration {
      * 注入自定义 TaskListener 实现该方法不再生效
      *
      * @param eventPublisher {@link ApplicationEventPublisher}
+     * @return {@link EventTaskListener}
      */
     @Bean
     @ConditionalOnMissingBean
@@ -163,6 +164,7 @@ public class FlowLongAutoConfiguration {
      * 注入自定义 InstanceListener 实现该方法不再生效
      *
      * @param eventPublisher {@link ApplicationEventPublisher}
+     * @return {@link EventInstanceListener}
      */
     @Bean
     @ConditionalOnMissingBean

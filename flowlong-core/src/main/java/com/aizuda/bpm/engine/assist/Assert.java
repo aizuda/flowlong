@@ -92,7 +92,7 @@ public abstract class Assert {
     /**
      * 断言给定的object对象为空
      *
-     * @param object  待检测对象
+     * @param object 待检测对象
      */
     public static void isEmpty(Object object) {
         isEmpty(object, "[Assertion failed] - this argument must not be null or empty");

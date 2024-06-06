@@ -21,16 +21,22 @@ public interface ProcessModelCache {
 
     /**
      * 流程模型缓存KEY
+     *
+     * @return 缓存 KEY
      */
     String modelCacheKey();
 
     /**
      * 流程模型内容
+     *
+     * @return 缓存内容
      */
     String getModelContent();
 
     /**
      * JSON BPM 模型
+     *
+     * @return JSON BPM 模型
      */
     default ProcessModel model() {
         String modelContent = this.getModelContent();

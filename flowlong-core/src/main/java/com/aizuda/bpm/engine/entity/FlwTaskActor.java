@@ -67,6 +67,8 @@ public class FlwTaskActor implements Serializable {
 
     /**
      * 是否为代理人
+     *
+     * @return true 是 false 否
      */
     public boolean agentActor() {
         return Objects.equals(1, this.weight);

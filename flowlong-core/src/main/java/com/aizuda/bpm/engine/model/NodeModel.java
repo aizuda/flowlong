@@ -174,6 +174,13 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private List<NodeModel> parallelNodes;
 
+    /**
+     * 执行节点
+     *
+     * @param flowLongContext 流程引擎上下文
+     * @param execution       执行对象
+     * @return 执行结果 true 成功 false 失败
+     */
     @Override
     public boolean execute(FlowLongContext flowLongContext, Execution execution) {
         if (ObjectUtils.isNotEmpty(parallelNodes)) {
@@ -260,7 +267,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 获取process定义的指定节点key的节点模型
      *
      * @param nodeKey 节点key
-     * @return {@link NodeModel}
+     * @return 模型节点
      */
     public NodeModel getNode(String nodeKey) {
         if (Objects.equals(this.nodeKey, nodeKey)) {
@@ -289,7 +296,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 从并行节点获取key
      *
      * @param nodeKey 节点 key
-     * @return {@link NodeModel}
+     * @return 模型节点
      */
     private NodeModel getFromParallelNode(String nodeKey) {
         for (NodeModel parallelNode : parallelNodes) {
@@ -305,7 +312,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 从条件节点中获取节点
      *
      * @param nodeKey 节点 key
-     * @return {@link NodeModel}
+     * @return 模型节点
      */
     private NodeModel getFromConditionNodes(String nodeKey) {
         for (ConditionNode conditionNode : conditionNodes) {
@@ -322,6 +329,8 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 下一个执行节点
+     *
+     * @return 模型节点
      */
     public Optional<NodeModel> nextNode() {
         return nextNode(null);
@@ -329,6 +338,9 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 下一个执行节点
+     *
+     * @param currentTask 当前任务
+     * @return 模型节点
      */
     public Optional<NodeModel> nextNode(List<String> currentTask) {
         NodeModel nextNode = this.getChildNode();
@@ -341,6 +353,8 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 判断是否为条件节点
+     *
+     * @return true 是 false 否
      */
     public boolean conditionNode() {
         return TaskType.conditionNode.eq(type) || TaskType.conditionBranch.eq(type);
@@ -348,6 +362,8 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 判断是否为抄送节点
+     *
+     * @return true 是 false 否
      */
     public boolean ccNode() {
         return TaskType.cc.eq(type);
@@ -355,6 +371,8 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 判断是否为并行节点
+     *
+     * @return true 是 false 否
      */
     public boolean parallelNode() {
         return TaskType.parallelBranch.eq(type);

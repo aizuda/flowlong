@@ -31,7 +31,6 @@ allprojects {
 }
 
 
-
 // 子模块配置
 subprojects {
     apply plugin: 'java-library'
@@ -39,7 +38,8 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: "io.spring.dependency-management"
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:-serial"
         options.encoding = 'UTF-8'
         options.warnings = false
     }
@@ -100,18 +100,19 @@ subprojects {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
         options.warnings = false
         options.deprecation = true
         options.compilerArgs += ["-parameters"]
     }
 
-    tasks.withType(GenerateModuleMetadata) {
+    tasks.withType(GenerateModuleMetadata).configureEach {
         enabled = false
     }
 
-    task sourcesJar(type: Jar, dependsOn: classes) {
+    tasks.register('sourcesJar', Jar) {
+        dependsOn classes
         archiveClassifier = 'sources'
         from sourceSets.main.allSource
     }
@@ -123,22 +124,22 @@ subprojects {
             author true
             version true
             failOnError false
-            links "http://docs.oracle.com/javase/8/docs/api"
+            links "https://docs.oracle.com/javase/8/docs/api"
         }
     }
 
-    tasks.withType(MavenPublication) {
+    tasks.withType(MavenPublication).configureEach {
         doFirst {
             options.skipCertificateChecks = true
         }
     }
 
-    task javadocJar(type: Jar) {
+    tasks.register('javadocJar', Jar) {
         archiveClassifier = 'javadoc'
         from javadoc
     }
 
-    tasks.whenTaskAdded { task ->
+    tasks.configureEach { task ->
         if (task.name.contains('signMavenJavaPublication')) {
             task.enabled = new File(project.property('signing.secretKeyRingFile') as String).isFile()
         }
@@ -153,8 +154,8 @@ subprojects {
                 url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
                 credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
+                    username = "andto"
+                    password = "243194995"
                 }
             }
         }
@@ -191,22 +192,10 @@ subprojects {
                             email = 'jobob@qq.com'
                         }
                     }
-
-                    withXml {
-                        def root = asNode()
-                        root.dependencies.'*'.findAll {
-                            def d = it
-                            d.scope.text() == 'runtime' && project.configurations.findByName("implementation").allDependencies.find { dep ->
-                                dep.name == it.artifactId.text()
-                            }.each() {
-                                d.scope*.value = 'compile'
-                                d.appendNode('optional', true)
-                            }
-                        }
-                    }
                 }
             }
         }
+    }
 
         signing {
             useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))

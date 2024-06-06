@@ -433,6 +433,7 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param taskId      任务ID
      * @param flowCreator 任务参与者
+     * @return 任务参与者
      */
     protected FlwTaskActor getAllowedFlwTaskActor(Long taskId, FlowCreator flowCreator) {
         List<FlwTaskActor> taskActors = taskActorMapper.selectList(Wrappers.<FlwTaskActor>lambdaQuery().eq(FlwTaskActor::getTaskId, taskId)
@@ -585,6 +586,7 @@ public class TaskServiceImpl implements TaskService {
      * @param hisTaskId       历史任务ID
      * @param flowCreator     任务创建者
      * @param hisTaskConsumer 历史任务业务处理
+     * @return 任务参与者
      */
     protected Optional<FlwTask> undoHisTask(Long hisTaskId, FlowCreator flowCreator, Consumer<FlwHisTask> hisTaskConsumer) {
         FlwHisTask hisTask = hisTaskMapper.getCheckById(hisTaskId);
@@ -679,7 +681,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 获取超时或者提醒的任务
      *
-     * @return List<Task> 任务列表
+     * @return 任务列表
      */
     @Override
     public List<FlwTask> getTimeoutOrRemindTasks() {
@@ -691,7 +693,7 @@ public class TaskServiceImpl implements TaskService {
      * 获取任务模型
      *
      * @param taskId 任务ID
-     * @return TaskModel
+     * @return 节点模型
      */
     @Override
     public NodeModel getTaskModel(Long taskId) {
@@ -884,8 +886,10 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 保存任务及参与者信息
      *
-     * @param flwTask    流程任务对象
-     * @param taskActors 参与者ID集合
+     * @param flwTask     流程任务对象
+     * @param performType 参与类型 {@link PerformType}
+     * @param taskActors  参与者ID集合
+     * @param execution   流程执行处理类 {@link Execution}
      * @return 流程任务列表
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution) {

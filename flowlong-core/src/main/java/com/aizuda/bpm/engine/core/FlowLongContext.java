@@ -89,6 +89,9 @@ public class FlowLongContext {
 
     /**
      * 注入默认流程模型解析器
+     *
+     * @param flowCache          流程缓存
+     * @param processModelParser 流程模型解析器
      */
     public FlowLongContext(FlowCache flowCache, ProcessModelParser processModelParser) {
         if (null == processModelParser) {
@@ -163,6 +166,7 @@ public class FlowLongContext {
     /**
      * 默认初始化流程引擎上下文
      *
+     * @param configEngine 流程配置引擎
      * @return {@link FlowLongEngine}
      */
     public FlowLongContext build(FlowLongEngine configEngine) {

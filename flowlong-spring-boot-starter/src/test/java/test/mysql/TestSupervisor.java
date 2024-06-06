@@ -38,7 +38,7 @@ public class TestSupervisor extends MysqlTest {
 
                     @Override
                     public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
-                        if(nodeModel.getType() == 0) {
+                        if (nodeModel.getType() == 0) {
                             // 发起人审批，经过 isAllowed 验证合法，直接返回当前执行人
                             return Collections.singletonList(FlwTaskActor.ofFlowCreator(execution.getFlowCreator()));
                         }

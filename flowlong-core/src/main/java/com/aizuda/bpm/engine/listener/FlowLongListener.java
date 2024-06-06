@@ -26,6 +26,7 @@ public interface FlowLongListener<T> {
      * @param eventType   事件类型
      * @param supplier    监听实体提供者
      * @param flowCreator 处理人员
+     * @return 通知结果 true 成功 false 失败
      */
     boolean notify(EventType eventType, Supplier<T> supplier, FlowCreator flowCreator);
 
