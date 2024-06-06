@@ -144,11 +144,6 @@ subprojects {
         }
     }
 
-    signing {
-        useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
-        sign publishing.publications.mavenJava
-    }
-
     publishing {
         repositories {
             maven {
@@ -212,12 +207,12 @@ subprojects {
                 }
             }
         }
-    }
 
-    tasks.withType(Sign) {
-        onlyIf { gradle.taskGraph.hasTask("publish") }
+        signing {
+            useInMemoryPgpKeys(System.getenv('GPG_SECRET'), System.getenv('GPG_PASSWORD'))
+            sign publishing.publications.mavenJava
+        }
     }
-
 
     // 编译任务忽略案例模块
     afterEvaluate { project ->
