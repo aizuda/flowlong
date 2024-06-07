@@ -182,7 +182,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
         if (null != instanceListener) {
-            instanceListener.notify(eventType, supplier, flowCreator);
+            instanceListener.notify(eventType, supplier,null, flowCreator);
         }
     }
 
