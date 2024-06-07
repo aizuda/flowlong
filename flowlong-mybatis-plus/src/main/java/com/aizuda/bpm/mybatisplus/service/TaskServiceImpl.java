@@ -242,8 +242,8 @@ public class TaskServiceImpl implements TaskService {
             hisTask.setTaskType(TaskType.agentAssist);
         }
 
-        // 会签情况处理其它任务
-        if (PerformType.countersign.eq(flwTask.getPerformType())) {
+        // 会签情况处理其它任务 排除完成情况
+        if (PerformType.countersign.eq(flwTask.getPerformType()) && TaskState.complete.neEq(taskState.getValue())) {
             List<FlwTask> flwTaskList = taskMapper.selectListByParentTaskId(flwTask.getParentTaskId());
             flwTaskList.forEach(t -> {
                 FlwHisTask ht = FlwHisTask.of(t);

@@ -66,6 +66,14 @@ public enum TaskState {
         this.value = value;
     }
 
+    public boolean eq(int value) {
+        return this.value == value;
+    }
+
+    public boolean neEq(int value) {
+        return this.value != value;
+    }
+
     public static TaskState get(int value) {
         return Arrays.stream(TaskState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
