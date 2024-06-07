@@ -290,7 +290,7 @@ public class TaskServiceImpl implements TaskService {
 
     protected void taskNotify(EventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         if (null != taskListener) {
-            taskListener.notify(eventType, supplier,nodeModel, flowCreator);
+            taskListener.notify(eventType, supplier, nodeModel, flowCreator);
         }
     }
 
@@ -738,7 +738,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
              */
-            flwTasks.addAll(this.saveTask(flwTask, PerformType.start, taskActors, execution,nodeModel));
+            flwTasks.addAll(this.saveTask(flwTask, PerformType.start, taskActors, execution, nodeModel));
 
             /*
              * 执行进入下一个节点
@@ -917,7 +917,7 @@ public class TaskServiceImpl implements TaskService {
                 flwTasks.add(flwTask);
 
                 // 创建任务监听
-                this.taskNotify(EventType.start, () -> flwTask,nodeModel, flowCreator);
+                this.taskNotify(EventType.start, () -> flwTask, nodeModel, flowCreator);
             }
             return flwTasks;
         }

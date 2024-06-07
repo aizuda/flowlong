@@ -8,7 +8,6 @@ import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
-import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

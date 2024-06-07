@@ -22,7 +22,6 @@ import com.aizuda.bpm.engine.model.ProcessModel;
 import com.aizuda.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
 import com.aizuda.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.aizuda.bpm.mybatisplus.mapper.FlwInstanceMapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
@@ -182,7 +181,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
         if (null != instanceListener) {
-            instanceListener.notify(eventType, supplier,null, flowCreator);
+            instanceListener.notify(eventType, supplier, null, flowCreator);
         }
     }
 
