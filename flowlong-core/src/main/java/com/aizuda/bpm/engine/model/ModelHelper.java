@@ -168,7 +168,7 @@ public class ModelHelper {
     public static List<NodeModel> getUnsetAssigneeNodes(NodeModel rootNodeModel) {
         List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
         // 过滤发起和结束节点
-        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && !NodeSetType.initiatorThemselves.eq(t.getSetType())
+        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && NodeSetType.initiatorThemselves.ne(t.getSetType())
                 && (TaskType.approval.eq(t.getType()) || TaskType.cc.eq(t.getType()))).collect(Collectors.toList());
     }
 

@@ -58,7 +58,11 @@ public enum TaskState {
     /**
      * 自动驳回
      */
-    autoReject(9);
+    autoReject(9),
+    /**
+     * 自动跳转
+     */
+    autoJump(10);
 
     private final int value;
 

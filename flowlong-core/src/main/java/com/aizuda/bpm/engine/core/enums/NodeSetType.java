@@ -50,6 +50,10 @@ public enum NodeSetType {
         this.value = value;
     }
 
+    public boolean ne(Integer value) {
+        return !eq(value);
+    }
+
     public boolean eq(Integer value) {
         return null != value && this.value == value;
     }

@@ -1,3 +1,6 @@
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
+ */
 package com.aizuda.bpm.engine.core.enums;
 
 /**
@@ -87,6 +90,10 @@ public enum EventType {
      * 跳转
      */
     jump,
+    /**
+     * 自动跳转
+     */
+    autoJump,
     /**
      * 自动审批完成
      */
