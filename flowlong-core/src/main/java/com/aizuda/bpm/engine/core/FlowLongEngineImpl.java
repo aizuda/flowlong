@@ -111,9 +111,33 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
         // 完成任务，并且构造执行对象
-        return this.execute(taskId, flowCreator, args, execution ->
+        FlwTask flwTask = taskService().complete(taskId, flowCreator, ObjectUtils.getArgs(args));
+        if (log.isDebugEnabled()) {
+            log.debug("Execute complete taskId={}", taskId);
+        }
+        return afterDoneTask(flowCreator, flwTask, args, execution ->
                 // 执行节点模型
                 execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey()));
+    }
+
+    /**
+     * 自动跳转任务
+     */
+    @Override
+    public boolean autoJumpTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator) {
+        return executeTask(taskId, flowCreator, args, TaskState.autoJump, EventType.autoJump);
+    }
+
+    protected boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
+        FlwTask flwTask = taskService().executeTask(taskId, flowCreator, ObjectUtils.getArgs(args), taskState, eventType);
+        if (log.isDebugEnabled()) {
+            log.debug("Auto execute taskId={}", taskId);
+        }
+        // 完成任务后续逻辑
+        return afterDoneTask(flowCreator, flwTask, args, execution -> {
+            // 执行节点模型
+            return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey());
+        });
     }
 
     /**
@@ -121,17 +145,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoCompleteTask(Long taskId) {
-        FlowCreator flowCreator = FlowCreator.ADMIN;
-        Map<String, Object> args = new HashMap<>();
-        FlwTask flwTask = taskService().executeTask(taskId, flowCreator, args, TaskState.autoComplete, EventType.autoComplete);
-        if (log.isDebugEnabled()) {
-            log.debug("Auto complete taskId={}", taskId);
-        }
-        // 完成任务后续逻辑
-        return afterDoneTask(flowCreator, flwTask, args, execution -> {
-            // 执行节点模型
-            return execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey());
-        });
+        return executeTask(taskId, FlowCreator.ADMIN, null, TaskState.autoComplete, EventType.autoComplete);
     }
 
     /**
@@ -209,30 +223,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
         runtimeService().updateInstance(flwInstance);
         return flwInstance;
-    }
-
-    /**
-     * 根据 任务ID，创建人，参数列表完成任务，并且构造执行对象
-     *
-     * @param taskId          任务ID
-     * @param flowCreator     创建人
-     * @param args            参数列表
-     * @param executeNextStep 执行下一步函数方法
-     * @return 执行结果 true 成功 false 失败
-     */
-    protected boolean execute(Long taskId, FlowCreator flowCreator, Map<String, Object> args, Function<Execution, Boolean> executeNextStep) {
-        if (args == null) {
-            args = new HashMap<>();
-        } else if (ObjectUtils.isSingletonMap(args)) {
-            // 兼容 Collections.SingletonMap(k, v)
-            args = new HashMap<>(args);
-        }
-        FlwTask flwTask = taskService().complete(taskId, flowCreator, args);
-        if (log.isDebugEnabled()) {
-            log.debug("Execute complete taskId={}", taskId);
-        }
-
-        return afterDoneTask(flowCreator, flwTask, args, executeNextStep);
     }
 
     /**

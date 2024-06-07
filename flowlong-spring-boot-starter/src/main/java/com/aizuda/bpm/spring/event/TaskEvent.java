@@ -6,6 +6,7 @@ package com.aizuda.bpm.spring.event;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +27,7 @@ import java.io.Serializable;
 public class TaskEvent implements Serializable {
     private EventType eventType;
     private FlwTask flwTask;
+    private NodeModel nodeModel;
     private FlowCreator flowCreator;
 
 }

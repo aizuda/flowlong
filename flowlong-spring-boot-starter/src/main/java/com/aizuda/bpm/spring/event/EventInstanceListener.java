@@ -34,6 +34,7 @@ public class EventInstanceListener implements InstanceListener {
         InstanceEvent instanceEvent = new InstanceEvent();
         instanceEvent.setEventType(eventType);
         instanceEvent.setFlwInstance(supplier.get());
+        instanceEvent.setNodeModel(nodeModel);
         instanceEvent.setFlowCreator(flowCreator);
         eventPublisher.publishEvent(instanceEvent);
         return true;

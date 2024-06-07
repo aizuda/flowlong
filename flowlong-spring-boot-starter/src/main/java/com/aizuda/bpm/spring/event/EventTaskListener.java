@@ -34,6 +34,7 @@ public class EventTaskListener implements TaskListener {
         TaskEvent taskEvent = new TaskEvent();
         taskEvent.setEventType(eventType);
         taskEvent.setFlwTask(supplier.get());
+        taskEvent.setNodeModel(nodeModel);
         taskEvent.setFlowCreator(flowCreator);
         eventPublisher.publishEvent(taskEvent);
         return true;

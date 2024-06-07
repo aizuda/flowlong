@@ -6,6 +6,7 @@ package com.aizuda.bpm.spring.event;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +33,7 @@ public class InstanceEvent implements Serializable {
      * </p>
      */
     private FlwInstance flwInstance;
+    private NodeModel nodeModel;
     private FlowCreator flowCreator;
 
 }

@@ -5,6 +5,7 @@ package com.aizuda.bpm.engine.assist;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -69,5 +70,15 @@ public class ObjectUtils {
     public static Object newInstance(Class<?> clazz) throws ReflectiveOperationException {
         Constructor<?> constructor = clazz.getDeclaredConstructor();
         return constructor.newInstance();
+    }
+
+    public static Map<String, Object> getArgs(Map<String, Object> args) {
+        if (args == null) {
+            args = new HashMap<>();
+        } else if (ObjectUtils.isSingletonMap(args)) {
+            // 兼容 Collections.SingletonMap(k, v)
+            args = new HashMap<>(args);
+        }
+        return args;
     }
 }

@@ -162,6 +162,16 @@ public interface FlowLongEngine {
     }
 
     /**
+     * 自动跳转任务
+     *
+     * @param taskId      任务ID
+     * @param args        任务参数
+     * @param flowCreator 任务创建者
+     * @return true 成功 false 失败
+     */
+    boolean autoJumpTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator);
+
+    /**
      * 自动完成任务
      *
      * @param taskId 任务ID
