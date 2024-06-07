@@ -70,7 +70,7 @@ public enum TaskState {
         return this.value == value;
     }
 
-    public boolean neEq(int value) {
+    public boolean ne(int value) {
         return this.value != value;
     }
 
