@@ -88,10 +88,6 @@ public class FlwTask extends FlowEntity {
      * 已阅 0，否 1，是
      */
     protected Integer viewed;
-    /**
-     * 当前任务节点 JSON BPM
-     */
-    protected NodeModel nodeModel;
 
     public boolean major() {
         return Objects.equals(this.taskType, TaskType.major.getValue());
