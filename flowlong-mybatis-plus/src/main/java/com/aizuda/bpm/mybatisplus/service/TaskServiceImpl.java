@@ -722,6 +722,9 @@ public class TaskServiceImpl implements TaskService {
         // 构建任务
         FlwTask flwTask = this.createTaskBase(nodeModel, execution);
 
+        //设置当前任务节点 JSON BPM
+        flwTask.setNodeModel(nodeModel);
+
         // 模型中获取参与者信息
         List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
         List<FlwTask> flwTasks = new ArrayList<>();
