@@ -22,7 +22,10 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -144,7 +147,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 自动完成任务
      */
     @Override
-    public boolean autoCompleteTask(Long taskId) {
+    public boolean autoCompleteTask(Long taskId, Map<String, Object> args) {
         return executeTask(taskId, FlowCreator.ADMIN, null, TaskState.autoComplete, EventType.autoComplete);
     }
 
@@ -152,9 +155,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 自动拒绝任务
      */
     @Override
-    public boolean autoRejectTask(Long taskId) {
-        Map<String, Object> args = new HashMap<>();
-        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, args, TaskState.autoComplete, EventType.autoComplete);
+    public boolean autoRejectTask(Long taskId, Map<String, Object> args) {
+        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, ObjectUtils.getArgs(args), TaskState.autoComplete, EventType.autoComplete);
         if (log.isDebugEnabled()) {
             log.debug("Auto reject taskId={}", taskId);
         }

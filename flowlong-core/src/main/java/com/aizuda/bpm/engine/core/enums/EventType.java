@@ -101,5 +101,13 @@ public enum EventType {
     /**
      * 自动审批拒绝
      */
-    autoReject
+    autoReject;
+
+    public boolean eq(EventType eventType) {
+        return this == eventType;
+    }
+
+    public boolean ne(EventType eventType) {
+        return this != eventType;
+    }
 }

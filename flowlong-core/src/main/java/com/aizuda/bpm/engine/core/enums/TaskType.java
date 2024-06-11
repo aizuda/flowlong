@@ -56,6 +56,10 @@ public enum TaskType {
      */
     trigger(7),
     /**
+     * 并行分支
+     */
+    parallelBranch(8),
+    /**
      * 转办、代理人办理完任务直接进入下一个节点
      */
     transfer(10),
@@ -82,12 +86,7 @@ public enum TaskType {
     /**
      * 被代理人自己完成任务
      */
-    agentOwn(16),
-
-    /**
-     * 并行分支
-     */
-    parallelBranch(8);
+    agentOwn(16);
 
     private final int value;
 

@@ -171,21 +171,35 @@ public interface FlowLongEngine {
      */
     boolean autoJumpTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator);
 
+    default boolean autoJumpTask(Long taskId, FlowCreator flowCreator) {
+        return this.autoJumpTask(taskId, null, flowCreator);
+    }
+
     /**
      * 自动完成任务
      *
      * @param taskId 任务ID
+     * @param args   任务参数
      * @return true 成功 false 失败
      */
-    boolean autoCompleteTask(Long taskId);
+    boolean autoCompleteTask(Long taskId, Map<String, Object> args);
+
+    default boolean autoCompleteTask(Long taskId) {
+        return this.autoCompleteTask(taskId, null);
+    }
 
     /**
      * 自动拒绝任务
      *
      * @param taskId 任务ID
+     * @param args   任务参数
      * @return true 成功 false 失败
      */
-    boolean autoRejectTask(Long taskId);
+    boolean autoRejectTask(Long taskId, Map<String, Object> args);
+
+    default boolean autoRejectTask(Long taskId) {
+        return this.autoRejectTask(taskId, null);
+    }
 
 
     /**
