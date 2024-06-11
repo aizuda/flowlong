@@ -26,8 +26,7 @@ public enum NodeApproveSelf {
     /**
      * 转交给部门负责人审批
      */
-    TransferDepartmentHead(3),
-    ;
+    TransferDepartmentHead(3);
 
     private final int value;
 
