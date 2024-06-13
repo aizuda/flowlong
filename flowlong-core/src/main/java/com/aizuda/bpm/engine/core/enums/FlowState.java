@@ -17,7 +17,11 @@ public enum FlowState {
     /**
      * 未启用
      */
-    inactive(0);
+    inactive(0),
+    /**
+     * 历史版本
+     */
+    history(2);
 
     private final int value;
 

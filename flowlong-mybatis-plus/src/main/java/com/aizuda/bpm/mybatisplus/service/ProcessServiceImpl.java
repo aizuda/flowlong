@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * 流程定义业务类
@@ -84,10 +85,11 @@ public class ProcessServiceImpl implements ProcessService {
      * @param jsonString  流程定义json字符串
      * @param flowCreator 流程任务部署者
      * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
+     * @param processSave 保存流程定义消费者函数
      * @return 流程ID
      */
     @Override
-    public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat) {
+    public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave) {
         Assert.isNull(jsonString);
         try {
             ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, null, false);
@@ -104,18 +106,25 @@ public class ProcessServiceImpl implements ProcessService {
                 if (!repeat) {
                     return processId;
                 }
-                // 更新当前版本
+                // 更新当前版本 +1
                 Assert.isFalse(this.redeploy(processId, jsonString, process.nextProcessVersion()), "Redeploy failed");
 
                 // 保留历史版本
                 process.setId(null);
+                process.setFlowState(FlowState.history);
+                if (null != processSave) {
+                    processSave.accept(process);
+                }
                 processMapper.insert(process);
                 return processId;
             }
             /*
-             * 当前版本 +1 添加一条新的流程记录
+             * 添加一条新的流程记录
              */
             FlwProcess process = FlwProcess.of(flowCreator, processModel, jsonString);
+            if (null != processSave) {
+                processSave.accept(process);
+            }
             Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
