@@ -294,7 +294,7 @@ COMMENT ON COLUMN "public"."flw_process"."process_version" IS '流程版本，�
 COMMENT ON COLUMN "public"."flw_process"."instance_url" IS '实例地址';
 COMMENT ON COLUMN "public"."flw_process"."remark" IS '备注说明';
 COMMENT ON COLUMN "public"."flw_process"."use_scope" IS '使用范围 0，全员 1，指定人员（业务关联） 2，均不可提交';
-COMMENT ON COLUMN "public"."flw_process"."process_state" IS '流程状态 0，不可用 1，可用';
+COMMENT ON COLUMN "public"."flw_process"."process_state" IS '流程状态 0，不可用 1，可用 2，历史版本';
 COMMENT ON COLUMN "public"."flw_process"."model_content" IS '流程模型定义JSON内容';
 COMMENT ON COLUMN "public"."flw_process"."sort" IS '排序';
 COMMENT ON TABLE "public"."flw_process" IS '流程定义表';
