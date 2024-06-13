@@ -70,7 +70,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      */
     protected Integer useScope;
     /**
-     * 流程状态 0，不可用 1，可用
+     * 流程状态 0，不可用 1，可用 2，历史版本
      */
     protected Integer processState;
     /**
