@@ -5,6 +5,10 @@ package com.aizuda.bpm.mybatisplus.mapper;
 
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
+import java.util.List;
 
 /**
  * 流程定义 Mapper
@@ -18,4 +22,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface FlwProcessMapper extends BaseMapper<FlwProcess> {
 
+    default List<FlwProcess> selectListByProcessKey(String tenantId, String processKey) {
+        return this.selectList(Wrappers.<FlwProcess>lambdaQuery()
+                .eq(FlwProcess::getProcessKey, processKey)
+                .eq(StringUtils.isNotBlank(tenantId), FlwProcess::getTenantId, tenantId)
+                .orderByDesc(FlwProcess::getProcessVersion));
+    }
 }

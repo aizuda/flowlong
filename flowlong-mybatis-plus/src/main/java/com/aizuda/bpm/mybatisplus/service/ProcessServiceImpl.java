@@ -13,7 +13,6 @@ import com.aizuda.bpm.engine.core.enums.FlowState;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,10 +99,7 @@ public class ProcessServiceImpl implements ProcessService {
                 /*
                  * 查询流程信息获取最后版本号
                  */
-                List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
-                        .eq(FlwProcess::getProcessKey, processModel.getKey())
-                        .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
-                        .orderByDesc(FlwProcess::getProcessVersion));
+                List<FlwProcess> processList = processMapper.selectListByProcessKey(flowCreator.getTenantId(), processModel.getKey());
                 if (ObjectUtils.isNotEmpty(processList)) {
                     dbProcess = processList.get(0);
                 }
