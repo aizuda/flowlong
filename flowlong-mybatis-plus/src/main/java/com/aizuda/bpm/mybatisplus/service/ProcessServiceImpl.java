@@ -119,6 +119,9 @@ public class ProcessServiceImpl implements ProcessService {
                     return dbProcess.getId();
                 }
 
+                // 不允许历史状态部署
+                Assert.isTrue(FlowState.history.eq(dbProcess.getProcessState()), "Not allowed status");
+
                 /*
                  * 设置为历史流程
                  */
