@@ -18,6 +18,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -82,6 +83,7 @@ public class ProcessServiceImpl implements ProcessService {
     /**
      * 根据流程定义json字符串，部署流程定义
      *
+     * @param processId   流程定义ID
      * @param jsonString  流程定义json字符串
      * @param flowCreator 流程任务部署者
      * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
@@ -89,39 +91,57 @@ public class ProcessServiceImpl implements ProcessService {
      * @return 流程ID
      */
     @Override
-    public Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave) {
+    public Long deploy(Long processId, String jsonString, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave) {
         Assert.isNull(jsonString);
         try {
             ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, null, false);
-            /*
-             * 查询流程信息获取最后版本号
-             */
-            List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
-                    .eq(FlwProcess::getProcessKey, processModel.getKey())
-                    .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
-                    .orderByDesc(FlwProcess::getProcessVersion));
-            if (ObjectUtils.isNotEmpty(processList)) {
-                FlwProcess process = processList.get(0);
-                Long processId = process.getId();
-                if (!repeat) {
-                    return processId;
+            FlwProcess dbProcess = null;
+            if (null == processId) {
+                /*
+                 * 查询流程信息获取最后版本号
+                 */
+                List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
+                        .eq(FlwProcess::getProcessKey, processModel.getKey())
+                        .eq(StringUtils.isNotBlank(flowCreator.getTenantId()), FlwProcess::getTenantId, flowCreator.getTenantId())
+                        .orderByDesc(FlwProcess::getProcessVersion));
+                if (ObjectUtils.isNotEmpty(processList)) {
+                    dbProcess = processList.get(0);
                 }
-                // 更新当前版本 +1
-                Assert.isFalse(this.redeploy(processId, jsonString, process.nextProcessVersion()), "Redeploy failed");
-
-                // 保留历史版本
-                process.setId(null);
-                process.setFlowState(FlowState.history);
-                if (null != processSave) {
-                    processSave.accept(process);
-                }
-                processMapper.insert(process);
-                return processId;
+            } else {
+                dbProcess = processMapper.selectById(processId);
             }
+
+            int processVersion = 1;
+            if (null != dbProcess) {
+
+                // 不允许重复部署，直接返回当前流程定义ID
+                if (!repeat) {
+                    return dbProcess.getId();
+                }
+
+                /*
+                 * 设置为历史流程
+                 */
+                int rows;
+                FlwProcess his = new FlwProcess();
+                his.setFlowState(FlowState.history);
+                if (Objects.equals(processModel.getKey(), dbProcess.getProcessKey())) {
+                    // 流程定义KEY被修改历史KEY修改为最新KEY并重置为历史状态
+                    his.setProcessKey(processModel.getKey());
+                    rows = processMapper.update(his, Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, dbProcess.getProcessKey()));
+                } else {
+                    // 流程定义key未发生改变直接修改为历史即可
+                    his.setId(dbProcess.getId());
+                    rows = processMapper.updateById(his);
+                }
+                Assert.illegal(rows < 1, "Set as historical process failed");
+                processVersion = dbProcess.nextProcessVersion();
+            }
+
             /*
              * 添加一条新的流程记录
              */
-            FlwProcess process = FlwProcess.of(flowCreator, processModel, jsonString);
+            FlwProcess process = FlwProcess.of(flowCreator, processModel, processVersion, jsonString);
             if (null != processSave) {
                 processSave.accept(process);
             }
@@ -131,25 +151,6 @@ public class ProcessServiceImpl implements ProcessService {
             log.error(e.getMessage());
             throw Assert.throwable(e);
         }
-    }
-
-    /**
-     * 根据 流程定义jsonString 重新部署流程定义
-     *
-     * @param id             流程定义id
-     * @param jsonString     流程定义json字符串
-     * @param processVersion 流程版本
-     * @return true 成功 false 失败
-     */
-    public boolean redeploy(Long id, String jsonString, int processVersion) {
-        FlwProcess process = processMapper.selectById(id);
-        Assert.isNull(process);
-        ProcessModel processModel = FlowLongContext.parseProcessModel(jsonString, process.modelCacheKey(), true);
-        process.setProcessVersion(processVersion);
-        process.setProcessKey(processModel.getKey());
-        process.setProcessName(processModel.getName());
-        process.setInstanceUrl(processModel.getInstanceUrl());
-        return processMapper.updateById(process.formatModelContent(jsonString)) > 0;
     }
 
     /**

@@ -104,19 +104,20 @@ public interface ProcessService {
      * @return 流程定义ID
      */
     default Long deploy(InputStream input, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave) {
-        return StreamUtils.readBytes(input, t -> this.deploy(t, flowCreator, repeat, processSave));
+        return StreamUtils.readBytes(input, t -> this.deploy(null, t, flowCreator, repeat, processSave));
     }
 
     /**
      * 根据 流程定义jsonString 部署流程定义
      *
+     * @param processId   流程定义ID
      * @param jsonString  流程定义json字符串
      * @param flowCreator 流程任务部署者
      * @param repeat      是否重复部署 true 存在版本+1新增一条记录 false 存在流程直接返回
      * @param processSave 保存流程定义消费者函数
      * @return 流程定义ID
      */
-    Long deploy(String jsonString, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave);
+    Long deploy(Long processId, String jsonString, FlowCreator flowCreator, boolean repeat, Consumer<FlwProcess> processSave);
 
     /**
      * 卸载指定的定义流程，更新为未启用状态

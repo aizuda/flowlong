@@ -91,9 +91,9 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
         return FlowConstants.processCacheKey + this.id;
     }
 
-    public static FlwProcess of(FlowCreator flowCreator, ProcessModel processModel, String jsonString) {
+    public static FlwProcess of(FlowCreator flowCreator, ProcessModel processModel, int processVersion, String jsonString) {
         FlwProcess process = new FlwProcess();
-        process.setProcessVersion(1);
+        process.setProcessVersion(processVersion);
         process.setFlowState(FlowState.active);
         process.setProcessKey(processModel.getKey());
         process.setProcessName(processModel.getName());
