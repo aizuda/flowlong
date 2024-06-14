@@ -227,7 +227,7 @@ public class ModelHelper {
      * 检查条件节点
      *
      * @param nodeModel {@link NodeModel}
-     * @return 0，合法情况 1，存在多个条件表达式为空 2，存在多个子节点为空
+     * @return 0，合法情况 1，存在多个条件表达式为空 2，存在多个条件子节点为空 3，存在条件节点KEY重复
      */
     public static int checkConditionNode(NodeModel nodeModel) {
         if (null != nodeModel) {
@@ -237,7 +237,12 @@ public class ModelHelper {
             }
             int i = 0;
             int j = 0;
+            Set<String> nodeKeys = new HashSet<>();
             for (ConditionNode conditionNode : conditionNodes) {
+                if (!nodeKeys.add(conditionNode.getNodeKey())) {
+                    // 存在节点KEY重复
+                    return 3;
+                }
                 List<List<NodeExpression>> conditionList = conditionNode.getConditionList();
                 if (ObjectUtils.isEmpty(conditionList)) {
                     i++;

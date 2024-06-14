@@ -126,15 +126,15 @@ public class ProcessServiceImpl implements ProcessService {
                 FlwProcess his = new FlwProcess();
                 his.setFlowState(FlowState.history);
                 if (Objects.equals(processModel.getKey(), dbProcess.getProcessKey())) {
-                    // 流程定义KEY被修改历史KEY修改为最新KEY并重置为历史状态
-                    his.setProcessKey(processModel.getKey());
-                    rows = processMapper.update(his, Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, dbProcess.getProcessKey()));
-                } else {
                     // 流程定义key未发生改变直接修改为历史即可
                     his.setId(dbProcess.getId());
                     rows = processMapper.updateById(his);
+                } else {
+                    // 流程定义KEY被修改历史KEY修改为最新KEY并重置为历史状态
+                    his.setProcessKey(processModel.getKey());
+                    rows = processMapper.update(his, Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, dbProcess.getProcessKey()));
                 }
-                Assert.illegal(rows < 1, "Set as historical process failed");
+                Assert.isZero(rows, "Set as historical process failed");
                 processVersion = dbProcess.nextProcessVersion();
             }
 

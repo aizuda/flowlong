@@ -890,7 +890,7 @@ public class TaskServiceImpl implements TaskService {
      * @param performType 参与类型 {@link PerformType}
      * @param taskActors  参与者ID集合
      * @param execution   流程执行处理类 {@link Execution}
-     * @param nodeModel
+     * @param nodeModel   流程节点模型对象 {@link NodeModel}
      * @return 流程任务列表
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution, NodeModel nodeModel) {
