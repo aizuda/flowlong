@@ -114,6 +114,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer directorMode;
     /**
+     * 审批类型 1，人工审批 2，自动通过 3，自动拒绝
+     */
+    private Integer typeOfApprove;
+    /**
      * 通过权重（ 所有分配任务权重之和大于该值即通过，默认 50 ）
      */
     private Integer passWeight;
