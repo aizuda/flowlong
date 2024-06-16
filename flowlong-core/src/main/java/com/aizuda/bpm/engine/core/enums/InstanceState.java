@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.core.enums;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 流程状态
@@ -50,8 +51,15 @@ public enum InstanceState {
         this.value = value;
     }
 
+    public boolean ne(Integer value) {
+        return !eq(value);
+    }
+
+    public boolean eq(Integer value) {
+        return Objects.equals(this.value, value);
+    }
+
     public static InstanceState get(int value) {
         return Arrays.stream(InstanceState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
     }
-
 }

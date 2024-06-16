@@ -3,6 +3,8 @@
  */
 package com.aizuda.bpm.engine.core.enums;
 
+import java.util.Objects;
+
 /**
  * 模型节点设置类型
  *
@@ -55,7 +57,7 @@ public enum NodeSetType {
     }
 
     public boolean eq(Integer value) {
-        return null != value && this.value == value;
+        return Objects.equals(this.value, value);
     }
 
 }

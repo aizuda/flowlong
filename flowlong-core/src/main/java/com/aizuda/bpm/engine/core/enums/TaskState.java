@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.core.enums;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * 流程状态
@@ -70,12 +71,12 @@ public enum TaskState {
         this.value = value;
     }
 
-    public boolean eq(int value) {
-        return this.value == value;
+    public boolean ne(Integer value) {
+        return !eq(value);
     }
 
-    public boolean ne(int value) {
-        return this.value != value;
+    public boolean eq(Integer value) {
+        return Objects.equals(this.value, value);
     }
 
     public static TaskState get(int value) {

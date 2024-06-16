@@ -5,6 +5,8 @@ package com.aizuda.bpm.engine.core.enums;
 
 import lombok.Getter;
 
+import java.util.Objects;
+
 /**
  * 参与者类型
  *
@@ -36,4 +38,11 @@ public enum ActorType {
         this.value = value;
     }
 
+    public boolean ne(Integer value) {
+        return !eq(value);
+    }
+
+    public boolean eq(Integer value) {
+        return Objects.equals(this.value, value);
+    }
 }
