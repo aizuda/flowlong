@@ -180,6 +180,13 @@ public class NodeModel implements ModelInstance, Serializable {
     private List<NodeModel> parallelNodes;
 
     /**
+     * 延时处理类型 1固定时长 2自动计算
+     * 固定时长 "time": "1:m"
+     * 自动计算 "time": "17:02:53"
+     */
+    private String delayType;
+
+    /**
      * 执行节点
      *
      * @param flowLongContext 流程引擎上下文
