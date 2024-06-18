@@ -83,6 +83,10 @@ public enum EventType {
      */
     delete,
     /**
+     * 调用外部流程任务【办理子流程】
+     */
+    callProcess,
+    /**
      * 超时
      */
     timeout,

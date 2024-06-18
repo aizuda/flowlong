@@ -180,9 +180,13 @@ public class NodeModel implements ModelInstance, Serializable {
     private List<NodeModel> parallelNodes;
 
     /**
-     * 延时处理类型 1固定时长 2自动计算
+     * 延时处理类型 1，固定时长 2，自动计算
+     * <p>
      * 固定时长 "time": "1:m"
+     * </p>
+     * <p>
      * 自动计算 "time": "17:02:53"
+     * </p>
      */
     private String delayType;
 
