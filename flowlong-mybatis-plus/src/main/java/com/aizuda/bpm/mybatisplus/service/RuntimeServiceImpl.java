@@ -244,25 +244,43 @@ public class RuntimeServiceImpl implements RuntimeService {
     protected void forceComplete(Long instanceId, FlowCreator flowCreator,
                                  InstanceState instanceState, EventType eventType) {
         FlwInstance flwInstance = instanceMapper.selectById(instanceId);
-        if (null != flwInstance) {
-            // 实例相关任务强制完成
-            queryService.getActiveTasksByInstanceId(instanceId).ifPresent(tasks -> {
-                for (FlwTask flwTask : tasks) {
-                    taskService.executeTask(flwTask.getId(), flowCreator, null,
-                            TaskState.of(instanceState), eventType);
-                }
-            });
-
-            // 更新历史实例设置状态为终止
-            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
-            hisInstanceMapper.updateById(flwHisInstance);
-
-            // 删除实例
-            instanceMapper.deleteById(instanceId);
-
-            // 流程实例监听器通知
-            this.instanceNotify(eventType, () -> flwHisInstance, flowCreator);
+        if (null == flwInstance) {
+            return;
         }
+
+        final Long parentInstanceId = flwInstance.getParentInstanceId();
+        if (null != parentInstanceId) {
+            // 找到主流程去执行完成逻辑
+            this.forceComplete(parentInstanceId, flowCreator, instanceState, eventType);
+        } else {
+            // 结束所有子流程实例
+            instanceMapper.listByParentInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t->
+                    this.forceCompleteAll(t, flowCreator, instanceState, eventType)));
+        }
+
+        // 结束当前流程实例
+        this.forceCompleteAll(flwInstance, flowCreator, instanceState, eventType);
+    }
+
+    /**
+     * 强制完成流程所有实例
+     */
+    protected void forceCompleteAll(FlwInstance flwInstance, FlowCreator flowCreator,
+                                    InstanceState instanceState, EventType eventType) {
+
+        // 实例相关任务强制完成
+        queryService.getActiveTasksByInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t ->
+                taskService.executeTask(t.getId(), flowCreator, null, TaskState.of(instanceState), eventType)));
+
+        // 更新历史实例设置状态为终止
+        FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
+        hisInstanceMapper.updateById(flwHisInstance);
+
+        // 删除实例
+        instanceMapper.deleteById(flwInstance.getId());
+
+        // 流程实例监听器通知
+        this.instanceNotify(eventType, () -> flwHisInstance, flowCreator);
     }
 
     /**
