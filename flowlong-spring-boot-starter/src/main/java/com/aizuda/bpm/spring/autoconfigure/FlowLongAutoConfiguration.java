@@ -7,7 +7,7 @@ import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
-import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
+import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
 import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
@@ -120,7 +120,7 @@ public class FlowLongAutoConfiguration {
                                            @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
-                                           @Autowired(required = false) ConditionArgsHandler conditionArgsHandler,
+                                           @Autowired(required = false) ConditionNodeHandler conditionNodeHandler,
                                            @Autowired(required = false) TaskCreateInterceptor taskCreateInterceptor,
                                            @Autowired(required = false) CreateTaskHandler createTaskHandler,
                                            @Autowired(required = false) TaskReminder taskReminder,
@@ -139,7 +139,7 @@ public class FlowLongAutoConfiguration {
         flc.setExpression(expression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
-        flc.setConditionArgsHandler(conditionArgsHandler);
+        flc.setConditionNodeHandler(conditionNodeHandler);
         flc.setTaskCreateInterceptor(taskCreateInterceptor);
         flc.setCreateTaskHandler(createTaskHandler);
         flc.setTaskReminder(taskReminder);

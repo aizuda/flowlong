@@ -6,11 +6,11 @@ package com.aizuda.bpm.engine.core;
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.cache.FlowCache;
-import com.aizuda.bpm.engine.handler.ConditionArgsHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
+import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
-import com.aizuda.bpm.engine.handler.impl.DefaultConditionArgsHandler;
-import com.aizuda.bpm.engine.handler.impl.DefaultCreateTaskHandler;
+import com.aizuda.bpm.engine.handler.impl.SimpleCreateTaskHandler;
+import com.aizuda.bpm.engine.handler.impl.SimpleConditionNodeHandler;
 import com.aizuda.bpm.engine.impl.DefaultProcessModelParser;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
@@ -44,9 +44,9 @@ public class FlowLongContext {
     private CreateTaskHandler createTaskHandler;
 
     /**
-     * 流程执行条件参数处理器
+     * 流程执行条件处理器
      */
-    private ConditionArgsHandler conditionArgsHandler;
+    private ConditionNodeHandler conditionNodeHandler;
 
     /**
      * 流程任务创建拦截器
@@ -128,7 +128,7 @@ public class FlowLongContext {
      * @return {@link CreateTaskHandler}
      */
     public CreateTaskHandler getCreateTaskHandler() {
-        return null != createTaskHandler ? createTaskHandler : DefaultCreateTaskHandler.getInstance();
+        return null != createTaskHandler ? createTaskHandler : SimpleCreateTaskHandler.getInstance();
     }
 
     /**
@@ -136,8 +136,8 @@ public class FlowLongContext {
      *
      * @return {@link CreateTaskHandler}
      */
-    public ConditionArgsHandler getConditionArgsHandler() {
-        return null != conditionArgsHandler ? conditionArgsHandler : DefaultConditionArgsHandler.getInstance();
+    public ConditionNodeHandler getFlowConditionHandler() {
+        return null != conditionNodeHandler ? conditionNodeHandler : SimpleConditionNodeHandler.getInstance();
     }
 
     /**

@@ -60,6 +60,15 @@ public class FlowDataTransfer {
     }
 
     /**
+     * 指定选择条件节点 KEY
+     *
+     * @param conditionNodeKey 条件节点 KEY
+     */
+    public static void specifyConditionNodeKey(String conditionNodeKey) {
+        put(FlowConstants.processSpecifyConditionNodeKey, conditionNodeKey);
+    }
+
+    /**
      * 获取传递参数
      *
      * @param key 传递参数

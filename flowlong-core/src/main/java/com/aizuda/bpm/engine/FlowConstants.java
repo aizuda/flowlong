@@ -16,7 +16,7 @@ package com.aizuda.bpm.engine;
 public interface FlowConstants {
 
     /**
-     * 流程定义缓存KEY
+     * 流程定义缓存 KEY
      */
     String processCacheKey = "flwProcessModel#";
 
@@ -29,5 +29,10 @@ public interface FlowConstants {
      * 流程节点动态分配节点处理人或角色
      */
     String processDynamicAssignee = "flwProcessDynamicAssignee";
+
+    /**
+     * 流程指定条件节点 KEY
+     */
+    String processSpecifyConditionNodeKey = "flwProcessSpecifyConditionNodeKey";
 
 }

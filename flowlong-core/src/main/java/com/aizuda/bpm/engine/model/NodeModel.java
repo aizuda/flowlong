@@ -3,9 +3,7 @@
  */
 package com.aizuda.bpm.engine.model;
 
-import com.aizuda.bpm.engine.Expression;
 import com.aizuda.bpm.engine.ModelInstance;
-import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -17,7 +15,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * JSON BPM 节点
@@ -213,20 +214,8 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行条件分支
              */
-            Map<String, Object> args = flowLongContext.getConditionArgsHandler()
-                    .handle(flowLongContext, execution, this);
-            Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
-            Expression expression = flowLongContext.getExpression();
-            Assert.isNull(expression, "Interface Expression not implemented");
-            Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream()
-                    .sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
-                    .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
-            if (!conditionNodeOptional.isPresent()) {
-                // 未发现满足条件分支，使用无条件分支
-                conditionNodeOptional = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
-                Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
-            }
-
+            Optional<ConditionNode> conditionNodeOptional = flowLongContext.getFlowConditionHandler()
+                    .getConditionNode(flowLongContext, execution, this);
             /*
              * 执行创建条件任务
              */

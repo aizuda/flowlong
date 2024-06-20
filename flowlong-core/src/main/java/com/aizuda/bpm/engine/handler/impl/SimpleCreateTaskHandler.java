@@ -23,16 +23,16 @@ import java.util.List;
  * @since 1.0
  */
 @Slf4j
-public class DefaultCreateTaskHandler implements CreateTaskHandler {
-    private static DefaultCreateTaskHandler defaultCreateTaskHandler;
+public class SimpleCreateTaskHandler implements CreateTaskHandler {
+    private static SimpleCreateTaskHandler createTaskHandler;
 
-    public static DefaultCreateTaskHandler getInstance() {
-        if (null == defaultCreateTaskHandler) {
-            synchronized (DefaultCreateTaskHandler.class) {
-                defaultCreateTaskHandler = new DefaultCreateTaskHandler();
+    public static SimpleCreateTaskHandler getInstance() {
+        if (null == createTaskHandler) {
+            synchronized (SimpleCreateTaskHandler.class) {
+                createTaskHandler = new SimpleCreateTaskHandler();
             }
         }
-        return defaultCreateTaskHandler;
+        return createTaskHandler;
     }
 
     /**
@@ -46,7 +46,7 @@ public class DefaultCreateTaskHandler implements CreateTaskHandler {
             }
             return true;
         } catch (Exception e) {
-            log.error("DefaultCreateTaskHandler createTask failed. {}", e.getMessage());
+            log.error("SimpleCreateTaskHandler createTask failed. {}", e.getMessage());
             throw e;
         }
     }
