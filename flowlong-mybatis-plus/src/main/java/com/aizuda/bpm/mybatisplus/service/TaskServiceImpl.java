@@ -790,13 +790,21 @@ public class TaskServiceImpl implements TaskService {
             if (null == flwProcess) {
                 Assert.illegal("No found flwProcess, callProcess=" + callProcess);
             }
-            this.taskNotify(EventType.callProcess, () -> flwTask, nodeModel, flowCreator);
             // 启动子流程，任务归档历史
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 flwInstance.setParentInstanceId(flwTask.getInstanceId());
                 return flwInstance;
-            }).ifPresent(instance -> hisTaskMapper.insert(FlwHisTask.ofCallInstance(nodeModel, instance)));
+            }).ifPresent(instance -> {
+                // 归档历史
+                FlwHisTask flwHisTask = FlwHisTask.ofCallInstance(nodeModel, instance);
+                if (hisTaskMapper.insert(flwHisTask) > 0) {
+                    // 追加子流程实例ID
+                    nodeModel.setCallProcess(nodeModel.getCallProcess() + ":" + instance.getId());
+                    // 主流程监听
+                    this.taskNotify(EventType.callProcess, () -> flwHisTask, nodeModel, flowCreator);
+                }
+            });
         } else if (TaskType.timer.eq(nodeType)) {
             /*
              * 6，定时器任务
