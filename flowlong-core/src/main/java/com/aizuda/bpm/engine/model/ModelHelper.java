@@ -286,7 +286,7 @@ public class ModelHelper {
      *
      * @return 节点KEY
      */
-    public String generateNodeKey() {
+    public static String generateNodeKey() {
         return "flk" + System.currentTimeMillis();
     }
 }
