@@ -178,7 +178,7 @@ public class ModelHelper {
      * @param rootNodeModel 根节点模型
      * @return 所有节点信息
      */
-    private static List<NodeModel> getRootNodeAllChildNodes(NodeModel rootNodeModel) {
+    public static List<NodeModel> getRootNodeAllChildNodes(NodeModel rootNodeModel) {
         List<NodeModel> nodeModels = new ArrayList<>();
         if (null != rootNodeModel) {
             if (rootNodeModel.conditionNode()) {
@@ -279,5 +279,14 @@ public class ModelHelper {
     public static boolean checkExistApprovalNode(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
         return allNextNodes.stream().anyMatch(t -> TaskType.approval.eq(t.getType()));
+    }
+
+    /**
+     * 生成节点KEY规则（flk + 时间戳）
+     *
+     * @return 节点KEY
+     */
+    public String generateNodeKey() {
+        return "flk" + System.currentTimeMillis();
     }
 }
