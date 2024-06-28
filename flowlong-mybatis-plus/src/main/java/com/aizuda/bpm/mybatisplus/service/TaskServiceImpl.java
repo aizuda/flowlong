@@ -486,6 +486,10 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator) {
+        // 当前任务子任务已经执行完成不允许撤回
+        Assert.isTrue(taskMapper.selectCountByParentTaskId(taskId) == 0, "Do not allow reclaim task");
+
+        // 下面执行撤回逻辑
         Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, hisTask -> {
             List<FlwTask> flwTaskList = taskMapper.selectListByInstanceId(hisTask.getInstanceId());
             Assert.isEmpty(flwTaskList, "No approval tasks found");

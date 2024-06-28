@@ -54,4 +54,14 @@ public interface FlwTaskMapper extends BaseMapper<FlwTask> {
         return this.selectList(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getParentTaskId, parentTaskId));
     }
 
+    /**
+     * 根据父任务ID获取任务数量
+     *
+     * @param parentTaskId 父任务ID
+     * @return 任务数量
+     */
+    default Long selectCountByParentTaskId(Long parentTaskId) {
+        return this.selectCount(Wrappers.<FlwTask>lambdaQuery().eq(FlwTask::getParentTaskId, parentTaskId));
+    }
+
 }
