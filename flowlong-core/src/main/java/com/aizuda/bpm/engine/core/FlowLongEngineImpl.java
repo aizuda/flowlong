@@ -275,7 +275,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
 
         // 构建执行对象
-        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
+        Map<String, Object> objectMap = ObjectUtils.getArgs(args);
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, objectMap);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
