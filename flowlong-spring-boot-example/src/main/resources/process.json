@@ -3,14 +3,17 @@
   "name": "请假审批",
   "nodeConfig": {
     "nodeName": "发起人",
+    "nodeKey": "001",
     "type": 0,
     "nodeRoleList": [],
     "childNode": {
       "nodeName": "条件路由",
+      "nodeKey": "002",
       "type": 4,
       "conditionNodes": [
         {
           "nodeName": "长期",
+          "nodeKey": "0021",
           "type": 3,
           "priorityLevel": 1,
           "conditionMode": 1,
@@ -26,9 +29,10 @@
           ],
           "childNode": {
             "nodeName": "领导审批",
+            "nodeKey": "0022",
             "type": 1,
             "setType": 1,
-            "nodeUserList": [
+            "nodeAssigneeList": [
               {
                 "id": "test001",
                 "name": "何敏"
@@ -47,15 +51,17 @@
         },
         {
           "nodeName": "短期",
+          "nodeKey": "0031",
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
           "conditionList": [],
           "childNode": {
             "nodeName": "直接主管审批",
+            "nodeKey": "0032",
             "type": 1,
             "setType": 2,
-            "nodeUserList": [
+            "nodeAssigneeList": [
               {
                 "id": "zg0001",
                 "name": "张三"
@@ -75,9 +81,10 @@
       ],
       "childNode": {
         "nodeName": "抄送人",
+        "nodeKey": "005",
         "type": 2,
         "userSelectFlag": true,
-        "nodeUserList": [
+        "nodeAssigneeList": [
           {
             "id": "test002",
             "name": "何秀英"
