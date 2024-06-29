@@ -35,6 +35,10 @@ public enum EventType {
      */
     assignment,
     /**
+     * 委派任务解决
+     */
+    delegateResolve,
+    /**
      * 任务加签
      */
     addTaskActor,

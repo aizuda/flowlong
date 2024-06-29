@@ -77,6 +77,13 @@ public class TestCountersign extends MysqlTest {
                     }})
             );
 
+            // 会签审批 001 继续驳回
+            this.executeTask(instance.getId(), testCreator, flwTask ->
+                    taskService.rejectTask(flwTask, testCreator, new HashMap<String, Object>() {{
+                        put("reason", "不符合要求（001驳回）");
+                    }})
+            );
+
             // 这里驳回到发起人
             queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
                     Assertions.assertEquals(1, flwTaskActors.size()));

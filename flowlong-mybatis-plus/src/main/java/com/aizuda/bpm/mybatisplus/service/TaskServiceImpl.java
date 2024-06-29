@@ -403,15 +403,15 @@ public class TaskServiceImpl implements TaskService {
             // 分配代理人可见代理任务
             assigneeFlowCreators.forEach(t -> taskActorMapper.insert(FlwTaskActor.of(t, dbFlwTask, 1)));
         } else {
-            // 非代理情况只有一个处理人员
-            FlowCreator afc = assigneeFlowCreators.get(0);
-            flwTask.setAssignorId(afc.getCreateId());
-            flwTask.setAssignor(afc.getCreateBy());
+            // 设置委托人信息
+            flwTask.setAssignorId(flowCreator.getCreateId());
+            flwTask.setAssignor(flowCreator.getCreateBy());
 
             // 删除任务历史参与者
             taskActorMapper.deleteById(flwTaskActor.getId());
 
             // 分配任务给办理人
+            FlowCreator afc = assigneeFlowCreators.get(0);
             this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(afc));
         }
 
@@ -471,7 +471,7 @@ public class TaskServiceImpl implements TaskService {
             Assert.isFalse(taskMapper.updateById(temp) > 0, "resolveTask failed");
 
             // 任务监听器通知
-            this.taskNotify(EventType.assignment, () -> {
+            this.taskNotify(EventType.delegateResolve, () -> {
                 flwTask.setTaskType(temp.getTaskType());
                 flwTask.setAssignorId(temp.getCreateId());
                 flwTask.setAssignor(temp.getCreateBy());
