@@ -1,7 +1,7 @@
 /*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
-package com.aizuda.bpm.mybatisplus.service;
+package com.aizuda.bpm.engine.impl;
 
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -13,16 +13,15 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.core.enums.TaskState;
+import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
+import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
+import com.aizuda.bpm.engine.dao.FlwInstanceDao;
 import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.model.ConditionNode;
 import com.aizuda.bpm.engine.model.DynamicAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
-import com.aizuda.bpm.mybatisplus.mapper.FlwExtInstanceMapper;
-import com.aizuda.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
-import com.aizuda.bpm.mybatisplus.mapper.FlwInstanceMapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
 import java.util.Map;
@@ -44,18 +43,18 @@ public class RuntimeServiceImpl implements RuntimeService {
     private final InstanceListener instanceListener;
     private final QueryService queryService;
     private final TaskService taskService;
-    private final FlwInstanceMapper instanceMapper;
-    private final FlwHisInstanceMapper hisInstanceMapper;
-    private final FlwExtInstanceMapper extInstanceMapper;
+    private final FlwInstanceDao instanceDao;
+    private final FlwHisInstanceDao hisInstanceDao;
+    private final FlwExtInstanceDao extInstanceDao;
 
     public RuntimeServiceImpl(InstanceListener instanceListener, QueryService queryService, TaskService taskService,
-                              FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper, FlwExtInstanceMapper extInstanceMapper) {
+                              FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao) {
         this.instanceListener = instanceListener;
         this.queryService = queryService;
         this.taskService = taskService;
-        this.instanceMapper = instanceMapper;
-        this.hisInstanceMapper = hisInstanceMapper;
-        this.extInstanceMapper = extInstanceMapper;
+        this.instanceDao = instanceDao;
+        this.hisInstanceDao = hisInstanceDao;
+        this.extInstanceDao = extInstanceDao;
     }
 
     /**
@@ -113,7 +112,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public ProcessModel getProcessModelByInstanceId(Long instanceId) {
-        FlwExtInstance flwExtInstance = extInstanceMapper.selectById(instanceId);
+        FlwExtInstance flwExtInstance = extInstanceDao.selectById(instanceId);
         Assert.isNull(flwExtInstance, "The process instance model does not exist.");
         return flwExtInstance.model();
     }
@@ -126,13 +125,13 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void addVariable(Long instanceId, Map<String, Object> args) {
-        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
         Map<String, Object> data = flwInstance.variableToMap();
         data.putAll(args);
         FlwInstance temp = new FlwInstance();
         temp.setId(instanceId);
         temp.setMapVariable(data);
-        instanceMapper.updateById(temp);
+        instanceDao.updateById(temp);
     }
 
 
@@ -141,7 +140,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public boolean complete(Execution execution, Long instanceId, NodeModel endNode) {
-        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null != flwInstance) {
             FlwHisInstance his = new FlwHisInstance();
             his.setId(instanceId);
@@ -158,17 +157,17 @@ public class RuntimeServiceImpl implements RuntimeService {
             his.setLastUpdateBy(flwInstance.getLastUpdateBy());
             his.setLastUpdateTime(flwInstance.getLastUpdateTime());
             his.calculateDuration();
-            instanceMapper.deleteById(instanceId);
-            hisInstanceMapper.updateById(his);
+            instanceDao.deleteById(instanceId);
+            hisInstanceDao.updateById(his);
             // 流程实例监听器通知
-            this.instanceNotify(EventType.complete, () -> hisInstanceMapper.selectById(instanceId), execution.getFlowCreator());
+            this.instanceNotify(EventType.complete, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
             /*
              * 实例为子流程，重启动父流程任务
              */
             if (null != flwInstance.getParentInstanceId()) {
                 // 重启父流程实例
-                FlwInstance parentFlwInstance = instanceMapper.selectById(flwInstance.getParentInstanceId());
+                FlwInstance parentFlwInstance = instanceDao.selectById(flwInstance.getParentInstanceId());
                 execution.setFlwInstance(parentFlwInstance);
                 execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
 
@@ -194,14 +193,14 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(FlwInstance flwInstance, String modelContent, FlowCreator flowCreator) {
         // 保存流程实例
-        instanceMapper.insert(flwInstance);
+        instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
         FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.active);
-        hisInstanceMapper.insert(flwHisInstance);
+        hisInstanceDao.insert(flwHisInstance);
 
         // 保存扩展流程实例
-        extInstanceMapper.insert(FlwExtInstance.of(flwInstance, modelContent));
+        extInstanceDao.insert(FlwExtInstance.of(flwInstance, modelContent));
 
         // 流程实例监听器通知
         this.instanceNotify(EventType.create, () -> flwHisInstance, flowCreator);
@@ -243,7 +242,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     protected void forceComplete(Long instanceId, FlowCreator flowCreator,
                                  InstanceState instanceState, EventType eventType) {
-        FlwInstance flwInstance = instanceMapper.selectById(instanceId);
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
             return;
         }
@@ -254,7 +253,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             this.forceComplete(parentInstanceId, flowCreator, instanceState, eventType);
         } else {
             // 结束所有子流程实例
-            instanceMapper.listByParentInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t->
+            instanceDao.selectListByParentInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t ->
                     this.forceCompleteAll(t, flowCreator, instanceState, eventType)));
         }
 
@@ -274,10 +273,10 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 更新历史实例设置状态为终止
         FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
-        hisInstanceMapper.updateById(flwHisInstance);
+        hisInstanceDao.updateById(flwHisInstance);
 
         // 删除实例
-        instanceMapper.deleteById(flwInstance.getId());
+        instanceDao.deleteById(flwInstance.getId());
 
         // 流程实例监听器通知
         this.instanceNotify(eventType, () -> flwHisInstance, flowCreator);
@@ -290,7 +289,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void updateInstance(FlwInstance flwInstance) {
         Assert.illegal(null == flwInstance || null == flwInstance.getId(),
                 "instance id cannot be empty");
-        instanceMapper.updateById(flwInstance);
+        instanceDao.updateById(flwInstance);
     }
 
     /**
@@ -303,27 +302,26 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void cascadeRemoveByProcessId(Long processId) {
-        List<FlwHisInstance> flwHisInstances = hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
-                .eq(FlwHisInstance::getProcessId, processId));
+        List<FlwHisInstance> flwHisInstances = hisInstanceDao.selectListByProcessId(processId);
         if (ObjectUtils.isNotEmpty(flwHisInstances)) {
             // 删除活动任务相关信息
             taskService.cascadeRemoveByInstanceIds(flwHisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
             // 删除扩展实例
-            extInstanceMapper.delete(Wrappers.<FlwExtInstance>lambdaQuery().eq(FlwExtInstance::getProcessId, processId));
+            extInstanceDao.deleteByProcessId(processId);
 
             // 删除历史实例
-            hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery().eq(FlwHisInstance::getProcessId, processId));
+            hisInstanceDao.deleteByProcessId(processId);
 
             // 删除实例
-            instanceMapper.delete(Wrappers.<FlwInstance>lambdaQuery().eq(FlwInstance::getProcessId, processId));
+            instanceDao.deleteByProcessId(processId);
         }
     }
 
     @Override
     public void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter) {
         FlwTask flwTask = queryService.getTask(taskId);
-        FlwExtInstance flwExtInstance = extInstanceMapper.selectById(flwTask.getInstanceId());
+        FlwExtInstance flwExtInstance = extInstanceDao.selectById(flwTask.getInstanceId());
         final String appendTaskKey = flwTask.getTaskKey();
 
         ProcessModel processModel = flwExtInstance.model();
@@ -355,7 +353,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         FlwExtInstance temp = new FlwExtInstance();
         temp.setId(flwExtInstance.getId());
         temp.setModelContent(FlowLongContext.toJson(processModel));
-        Assert.isTrue(extInstanceMapper.updateById(temp) != 1, "Update FlwExtInstance Failed");
+        Assert.isTrue(extInstanceDao.updateById(temp), "Update FlwExtInstance Failed");
 
         // 使缓存失效
         FlowLongContext.invalidateProcessModel(flwExtInstance.modelCacheKey());

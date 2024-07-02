@@ -7,25 +7,19 @@ import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
+import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
-import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
-import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
+import com.aizuda.bpm.engine.impl.*;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.mybatisplus.mapper.*;
-import com.aizuda.bpm.mybatisplus.service.ProcessServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.QueryServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.RuntimeServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.TaskServiceImpl;
 import com.aizuda.bpm.spring.adaptive.FlowJacksonHandler;
 import com.aizuda.bpm.spring.adaptive.SpelExpression;
 import com.aizuda.bpm.spring.event.EventInstanceListener;
 import com.aizuda.bpm.spring.event.EventTaskListener;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,6 +27,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * spring boot starter 启动自动配置处理类
@@ -45,40 +40,40 @@ import org.springframework.context.annotation.Configuration;
  * @since 1.0
  */
 @Configuration
-@MapperScan("com.aizuda.bpm.mybatisplus.mapper")
+@Import(FlowLongMybatisPlusConfiguration.class)
 @EnableConfigurationProperties(FlowLongProperties.class)
 public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
     public TaskService taskService(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
-                                   @Autowired(required = false) TaskTrigger taskTrigger, FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper,
-                                   FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
-                                   FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, instanceMapper, extInstanceMapper, hisInstanceMapper,
-                taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+                                   @Autowired(required = false) TaskTrigger taskTrigger, FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao,
+                                   FlwHisInstanceDao hisInstanceDao, FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                                   FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, instanceDao, extInstanceDao, hisInstanceDao,
+                taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public QueryService queryService(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
-                                     FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
-                                     FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new QueryServiceImpl(instanceMapper, hisInstanceMapper, taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+    public QueryService queryService(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
+                                     FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                                     FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        return new QueryServiceImpl(instanceDao, hisInstanceDao, taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener, QueryService queryService,
-                                         TaskService taskService, FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
-                                         FlwExtInstanceMapper extInstanceMapper) {
-        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper, extInstanceMapper);
+                                         TaskService taskService, FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
+                                         FlwExtInstanceDao extInstanceDao) {
+        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ProcessService processService(RuntimeService runtimeService, FlwProcessMapper processMapper) {
-        return new ProcessServiceImpl(runtimeService, processMapper);
+    public ProcessService processService(RuntimeService runtimeService, FlwProcessDao processDao) {
+        return new ProcessServiceImpl(runtimeService, processDao);
     }
 
     @Bean

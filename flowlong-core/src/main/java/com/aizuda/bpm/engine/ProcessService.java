@@ -41,20 +41,22 @@ public interface ProcessService {
     /**
      * 根据流程定义KEY或版本号查找流程定义对象
      *
+     * @param tenantId   租户ID
      * @param processKey 流程定义key
      * @param version    版本号
      * @return {@link FlwProcess}
      */
-    FlwProcess getProcessByVersion(String processKey, Integer version);
+    FlwProcess getProcessByVersion(String tenantId, String processKey, Integer version);
 
     /**
      * 根据流程定义KEY查找流程定义对象
      *
+     * @param tenantId   租户ID
      * @param processKey 流程定义key
      * @return {@link FlwProcess}
      */
-    default FlwProcess getProcessByKey(String processKey) {
-        return getProcessByVersion(processKey, null);
+    default FlwProcess getProcessByKey(String tenantId, String processKey) {
+        return getProcessByVersion(tenantId, processKey, null);
     }
 
     /**

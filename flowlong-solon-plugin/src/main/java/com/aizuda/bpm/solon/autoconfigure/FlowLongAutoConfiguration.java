@@ -7,20 +7,15 @@ import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
+import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
-import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
-import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
+import com.aizuda.bpm.engine.impl.*;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.mybatisplus.mapper.*;
-import com.aizuda.bpm.mybatisplus.service.ProcessServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.QueryServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.RuntimeServiceImpl;
-import com.aizuda.bpm.mybatisplus.service.TaskServiceImpl;
 import com.aizuda.bpm.solon.adaptive.SolonExpression;
 import com.aizuda.bpm.solon.adaptive.SolonFlowJsonHandler;
 import com.aizuda.bpm.solon.adaptive.SolonScheduler;
@@ -48,33 +43,33 @@ public class FlowLongAutoConfiguration {
     @Bean
     @Condition(onMissingBean = TaskService.class)
     public TaskService taskService(@Inject(required = false) TaskAccessStrategy taskAccessStrategy, @Inject(required = false) TaskListener taskListener,
-                                   @Inject(required = false) TaskTrigger taskTrigger, FlwInstanceMapper instanceMapper, FlwExtInstanceMapper extInstanceMapper,
-                                   FlwHisInstanceMapper hisInstanceMapper, FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
-                                   FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, instanceMapper, extInstanceMapper, hisInstanceMapper,
-                taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+                                   @Inject(required = false) TaskTrigger taskTrigger, FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao,
+                                   FlwHisInstanceDao hisInstanceDao, FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                                   FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, instanceDao, extInstanceDao, hisInstanceDao,
+                taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
     @Bean
     @Condition(onMissingBean = QueryService.class)
-    public QueryService queryService(FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
-                                     FlwTaskMapper taskMapper, FlwTaskActorMapper taskActorMapper,
-                                     FlwHisTaskMapper hisTaskMapper, FlwHisTaskActorMapper hisTaskActorMapper) {
-        return new QueryServiceImpl(instanceMapper, hisInstanceMapper, taskMapper, taskActorMapper, hisTaskMapper, hisTaskActorMapper);
+    public QueryService queryService(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
+                                     FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                                     FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        return new QueryServiceImpl(instanceDao, hisInstanceDao, taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
     @Bean
     @Condition(onMissingBean = RuntimeService.class)
     public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener, QueryService queryService,
-                                         TaskService taskService, FlwInstanceMapper instanceMapper, FlwHisInstanceMapper hisInstanceMapper,
-                                         FlwExtInstanceMapper extInstanceMapper) {
-        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceMapper, hisInstanceMapper, extInstanceMapper);
+                                         TaskService taskService, FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
+                                         FlwExtInstanceDao extInstanceDao) {
+        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
     }
 
     @Bean
     @Condition(onMissingBean = ProcessService.class)
-    public ProcessService processService(RuntimeService runtimeService, FlwProcessMapper processMapper) {
-        return new ProcessServiceImpl(runtimeService, processMapper);
+    public ProcessService processService(RuntimeService runtimeService, FlwProcessDao processDao) {
+        return new ProcessServiceImpl(runtimeService, processDao);
     }
 
     @Bean

@@ -1,0 +1,102 @@
+/*
+ * Copyright 2023-2025 Licensed under the AGPL License
+ */
+package com.aizuda.bpm.engine.impl;
+
+import com.aizuda.bpm.engine.QueryService;
+import com.aizuda.bpm.engine.dao.*;
+import com.aizuda.bpm.engine.entity.*;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * 查询服务实现类
+ *
+ * <p>
+ * 尊重知识产权，不允许非法使用，后果自负，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @since 1.0
+ */
+public class QueryServiceImpl implements QueryService {
+    private final FlwInstanceDao instanceDao;
+    private final FlwHisInstanceDao hisInstanceDao;
+    private final FlwTaskDao taskDao;
+    private final FlwTaskActorDao taskActorDao;
+    private final FlwHisTaskDao hisTaskDao;
+    private final FlwHisTaskActorDao hisTaskActorDao;
+
+    public QueryServiceImpl(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
+                            FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                            FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        this.instanceDao = instanceDao;
+        this.hisInstanceDao = hisInstanceDao;
+        this.taskDao = taskDao;
+        this.taskActorDao = taskActorDao;
+        this.hisTaskDao = hisTaskDao;
+        this.hisTaskActorDao = hisTaskActorDao;
+    }
+
+    @Override
+    public FlwInstance getInstance(Long instanceId) {
+        return instanceDao.selectById(instanceId);
+    }
+
+    @Override
+    public FlwTask getTask(Long taskId) {
+        return taskDao.selectById(taskId);
+    }
+
+    @Override
+    public FlwHisInstance getHistInstance(Long instanceId) {
+        return hisInstanceDao.selectById(instanceId);
+    }
+
+    @Override
+    public FlwHisTask getHistTask(Long taskId) {
+        return hisTaskDao.selectById(taskId);
+    }
+
+    @Override
+    public Optional<List<FlwHisTask>> getHisTasksByName(Long instanceId, String taskName) {
+        return Optional.ofNullable(hisTaskDao.selectListByInstanceIdAndTaskName(instanceId, taskName));
+    }
+
+    @Override
+    public List<FlwTask> getTasksByInstanceId(Long instanceId) {
+        return taskDao.selectListByInstanceId(instanceId);
+    }
+
+    @Override
+    public List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
+        return taskDao.selectListByInstanceIdAndTaskName(instanceId, taskName);
+    }
+
+    @Override
+    public Optional<List<FlwTaskActor>> getActiveTaskActorsByInstanceId(Long instanceId) {
+        return Optional.ofNullable(taskActorDao.selectListByInstanceId(instanceId));
+    }
+
+    @Override
+    public List<FlwTaskActor> getTaskActorsByTaskId(Long taskId) {
+        return taskActorDao.selectListByTaskId(taskId);
+    }
+
+    @Override
+    public List<FlwHisTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
+        return hisTaskActorDao.selectListByTaskId(taskId);
+    }
+
+    @Override
+    public List<FlwTask> getActiveTasks(Long instanceId, List<String> taskNames) {
+        return taskDao.selectListByInstanceIdAndTaskNames(instanceId, taskNames);
+    }
+
+    @Override
+    public Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId) {
+        return hisTaskDao.selectListByInstanceId(instanceId);
+    }
+
+}

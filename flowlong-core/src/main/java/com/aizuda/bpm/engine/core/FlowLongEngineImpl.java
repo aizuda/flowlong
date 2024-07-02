@@ -71,7 +71,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
-        FlwProcess process = processService().getProcessByVersion(processKey, version);
+        FlwProcess process = processService().getProcessByVersion(flowCreator.getTenantId(), processKey, version);
         return this.startProcessInstance(process, flowCreator, args, supplier);
     }
 

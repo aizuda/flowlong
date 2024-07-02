@@ -81,7 +81,9 @@ public interface QueryService {
      * @param instanceId 流程实例ID
      * @return 当前活动任务列表
      */
-    Optional<List<FlwTask>> getActiveTasksByInstanceId(Long instanceId);
+    default Optional<List<FlwTask>> getActiveTasksByInstanceId(Long instanceId) {
+        return Optional.ofNullable(this.getTasksByInstanceId(instanceId));
+    }
 
     /**
      * 根据 流程实例ID 获取当前活动任务列表

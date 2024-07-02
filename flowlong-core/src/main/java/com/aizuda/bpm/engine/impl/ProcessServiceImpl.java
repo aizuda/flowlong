@@ -1,7 +1,7 @@
 /*
  * Copyright 2023-2025 Licensed under the AGPL License
  */
-package com.aizuda.bpm.mybatisplus.service;
+package com.aizuda.bpm.engine.impl;
 
 import com.aizuda.bpm.engine.ProcessService;
 import com.aizuda.bpm.engine.RuntimeService;
@@ -10,10 +10,9 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.FlowState;
+import com.aizuda.bpm.engine.dao.FlwProcessDao;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.model.ProcessModel;
-import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -32,11 +31,11 @@ import java.util.function.Consumer;
  */
 @Slf4j
 public class ProcessServiceImpl implements ProcessService {
-    private final FlwProcessMapper processMapper;
+    private final FlwProcessDao processDao;
     private final RuntimeService runtimeService;
 
-    public ProcessServiceImpl(RuntimeService runtimeService, FlwProcessMapper processMapper) {
-        this.processMapper = processMapper;
+    public ProcessServiceImpl(RuntimeService runtimeService, FlwProcessDao processDao) {
+        this.processDao = processDao;
         this.runtimeService = runtimeService;
     }
 
@@ -48,7 +47,7 @@ public class ProcessServiceImpl implements ProcessService {
         FlwProcess process = new FlwProcess();
         process.setId(id);
         process.setProcessType(processType);
-        processMapper.updateById(process);
+        processDao.updateById(process);
     }
 
     /**
@@ -57,7 +56,7 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public FlwProcess getProcessById(Long id) {
-        FlwProcess process = processMapper.selectById(id);
+        FlwProcess process = processDao.selectById(id);
         Assert.isTrue(ObjectUtils.isEmpty(process), "process id [" + id + "] does not exist");
         return process;
     }
@@ -70,11 +69,9 @@ public class ProcessServiceImpl implements ProcessService {
      * @return {@link Process}
      */
     @Override
-    public FlwProcess getProcessByVersion(String processKey, Integer version) {
+    public FlwProcess getProcessByVersion(String tenantId, String processKey, Integer version) {
         Assert.isEmpty(processKey);
-        List<FlwProcess> processList = processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, processKey)
-                .eq(null != version, FlwProcess::getProcessVersion, version)
-                .orderByDesc(FlwProcess::getProcessVersion));
+        List<FlwProcess> processList = processDao.selectListByProcessKeyAndVersion(tenantId, processKey, version);
         Assert.isTrue(ObjectUtils.isEmpty(processList), "process key [" + processKey + "] does not exist");
         return processList.get(0);
     }
@@ -99,12 +96,12 @@ public class ProcessServiceImpl implements ProcessService {
                 /*
                  * 查询流程信息获取最后版本号
                  */
-                List<FlwProcess> processList = processMapper.selectListByProcessKey(flowCreator.getTenantId(), processModel.getKey());
+                List<FlwProcess> processList = processDao.selectListByProcessKey(flowCreator.getTenantId(), processModel.getKey());
                 if (ObjectUtils.isNotEmpty(processList)) {
                     dbProcess = processList.get(0);
                 }
             } else {
-                dbProcess = processMapper.selectById(processId);
+                dbProcess = processDao.selectById(processId);
             }
 
             int processVersion = 1;
@@ -121,19 +118,19 @@ public class ProcessServiceImpl implements ProcessService {
                 /*
                  * 设置为历史流程
                  */
-                int rows;
+                boolean rows;
                 FlwProcess his = new FlwProcess();
                 his.setFlowState(FlowState.history);
                 if (Objects.equals(processModel.getKey(), dbProcess.getProcessKey())) {
                     // 流程定义key未发生改变直接修改为历史即可
                     his.setId(dbProcess.getId());
-                    rows = processMapper.updateById(his);
+                    rows = processDao.updateById(his);
                 } else {
                     // 流程定义KEY被修改历史KEY修改为最新KEY并重置为历史状态
                     his.setProcessKey(processModel.getKey());
-                    rows = processMapper.update(his, Wrappers.<FlwProcess>lambdaQuery().eq(FlwProcess::getProcessKey, dbProcess.getProcessKey()));
+                    rows = processDao.updateByProcessKey(his, dbProcess.getTenantId(), dbProcess.getProcessKey());
                 }
-                Assert.isZero(rows, "Set as historical process failed");
+                Assert.isFalse(rows, "Set as historical process failed");
                 processVersion = dbProcess.nextProcessVersion();
             }
 
@@ -144,7 +141,7 @@ public class ProcessServiceImpl implements ProcessService {
             if (null != processSave) {
                 processSave.accept(process);
             }
-            Assert.isZero(processMapper.insert(process), "Failed to save the deployment process");
+            Assert.isFalse(processDao.insert(process), "Failed to save the deployment process");
             return process.getId();
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -163,7 +160,7 @@ public class ProcessServiceImpl implements ProcessService {
         FlwProcess process = new FlwProcess();
         process.setId(id);
         process.setFlowState(FlowState.inactive);
-        return processMapper.updateById(process) > 0;
+        return processDao.updateById(process);
     }
 
     /**
@@ -175,6 +172,6 @@ public class ProcessServiceImpl implements ProcessService {
         runtimeService.cascadeRemoveByProcessId(id);
 
         // 删除部署流程流程信息
-        processMapper.deleteById(id);
+        processDao.deleteById(id);
     }
 }
