@@ -1065,7 +1065,9 @@ public class TaskServiceImpl implements TaskService {
              * 会签多任务情况
              */
             List<FlwTaskActor> taskActorList = taskActorDao.selectListByInstanceId(flwTask.getInstanceId());
-            Assert.isTrue(taskActorList.size() >= actorIds.size(), "cannot all be deleted");
+            if (ObjectUtils.isEmpty(taskActorList)) {
+                return false;
+            }
             taskActorList.forEach(t -> {
                 if (actorIds.contains(t.getActorId())) {
                     // 删除参与者表
@@ -1076,13 +1078,11 @@ public class TaskServiceImpl implements TaskService {
             });
         } else {
             /*
-             * 单一任务多处理人员情况
+             * 单一任务多处理人员情况，删除参与者表，任务关联关系
              */
-            List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
-            Assert.isTrue(taskActorList.size() >= actorIds.size(), "cannot all be deleted");
-
-            // 删除参与者表，任务关联关系
-            taskActorDao.deleteByTaskIdAndActorIds(taskId, actorIds);
+            if (!taskActorDao.deleteByTaskIdAndActorIds(taskId, actorIds)) {
+                return false;
+            }
         }
 
         // 创建任务监听
