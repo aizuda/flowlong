@@ -4,6 +4,8 @@
 package com.aizuda.bpm.engine.model;
 
 import com.aizuda.bpm.engine.ModelInstance;
+import com.aizuda.bpm.engine.TaskTrigger;
+import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -19,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * JSON BPM 节点
@@ -381,5 +384,34 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean parallelNode() {
         return TaskType.parallelBranch.eq(type);
+    }
+
+    /**
+     * 执行触发器
+     *
+     * @param execution  {@link Execution}
+     * @param function 执行默认触发器执行函数
+     */
+    public void executeTrigger(Execution execution, Function<Exception, Boolean> function) {
+        boolean flag = false;
+        Map<String, Object> extendConfig = this.getExtendConfig();
+        if (null != extendConfig) {
+            Object _trigger = extendConfig.get("trigger");
+            if (null != _trigger) {
+                try {
+                    Class<?> triggerClass = Class.forName((String) _trigger);
+                    if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
+                        TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
+                        flag = taskTrigger.execute(this, execution);
+                    }
+                } catch (Exception e) {
+                    // 使用默认触发器
+                    if (null != function) {
+                        flag = function.apply(e);
+                    }
+                }
+            }
+        }
+        Assert.isFalse(flag, "trigger execute error");
     }
 }

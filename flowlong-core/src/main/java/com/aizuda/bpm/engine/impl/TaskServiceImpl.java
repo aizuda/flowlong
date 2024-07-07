@@ -812,7 +812,8 @@ public class TaskServiceImpl implements TaskService {
             if (null == flwTask.getExpireTime()) {
                 // 立即触发器，直接执行
                 execution.setFlwTask(flwTask);
-                Assert.isFalse(taskTrigger.execute(nodeModel, execution), "task trigger execute failed");
+                // 使用默认触发器
+                nodeModel.executeTrigger(execution, (e) -> taskTrigger.execute(nodeModel, execution));
                 // 执行成功，任务归档
                 FlwHisTask hisTask = FlwHisTask.of(flwTask);
                 hisTask.setTaskState(TaskState.complete);
