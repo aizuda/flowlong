@@ -945,12 +945,12 @@ public class TaskServiceImpl implements TaskService {
 
         if (performType == PerformType.sort) {
             /*
-             * 按顺序依次审批，一个任务按顺序多个参与者依次添加
+             * 按顺序依次审批，一个任务执行完，按顺序多个参与者依次执行
              */
             taskDao.insert(flwTask);
             flwTasks.add(flwTask);
 
-            // 分配一个参与者
+            // 分配下一个参与者
             FlwTaskActor nextFlwTaskActor = execution.getNextFlwTaskActor();
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
 
