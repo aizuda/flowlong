@@ -66,6 +66,6 @@ public class FlwProcessDaoImpl implements FlwProcessDao {
         return processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
                 .eq(null != tenantId, FlwProcess::getTenantId, tenantId)
                 .eq(FlwProcess::getProcessKey, processKey)
-                .eq(FlwProcess::getProcessVersion, version));
+                .eq(null != version, FlwProcess::getProcessVersion, version));
     }
 }

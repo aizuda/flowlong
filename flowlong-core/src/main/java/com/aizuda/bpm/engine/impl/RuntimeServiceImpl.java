@@ -353,7 +353,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         FlwExtInstance temp = new FlwExtInstance();
         temp.setId(flwExtInstance.getId());
         temp.setModelContent(FlowLongContext.toJson(processModel));
-        Assert.isTrue(extInstanceDao.updateById(temp), "Update FlwExtInstance Failed");
+        Assert.isFalse(extInstanceDao.updateById(temp), "Update FlwExtInstance Failed");
 
         // 使缓存失效
         FlowLongContext.invalidateProcessModel(flwExtInstance.modelCacheKey());
