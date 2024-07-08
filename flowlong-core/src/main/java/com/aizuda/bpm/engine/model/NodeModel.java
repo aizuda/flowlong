@@ -195,6 +195,11 @@ public class NodeModel implements ModelInstance, Serializable {
     private String delayType;
 
     /**
+     * 触发器类型 1，立即执行 2，延迟执行
+     */
+    private String triggerType;
+
+    /**
      * 执行节点
      *
      * @param flowLongContext 流程引擎上下文
