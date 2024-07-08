@@ -876,10 +876,11 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
         // 触发器 父任务ID flwTask 不为 null 但 getFlwTask().getId() == null
-        if(execution.getFlwTask() == null){
+        FlwTask executionTask = execution.getFlwTask();
+        if (null == executionTask || null == executionTask.getId()) {
             flwTask.setParentTaskId(0L);
-        }else{
-            flwTask.setParentTaskId(execution.getFlwTask().getId() == null ? 0L : execution.getFlwTask().getId());
+        } else {
+            flwTask.setParentTaskId(executionTask.getId());
         }
         Map<String, Object> args = execution.getArgs();
         // 审批期限非空，设置期望任务完成时间
