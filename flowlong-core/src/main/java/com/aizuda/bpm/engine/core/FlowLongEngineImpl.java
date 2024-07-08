@@ -337,15 +337,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 执行触发器任务
          */
         if (performType == PerformType.trigger) {
-            NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
-            nodeModel.executeTrigger(execution, (e) -> {
-                // 使用默认触发器
-                TaskTrigger taskTrigger = flowLongContext.getTaskTrigger();
-                if (null == taskTrigger) {
-                    return false;
-                }
-                return taskTrigger.execute(nodeModel, execution);
-            });
+            taskService().executeTaskTrigger(execution, flwTask);
         }
 
         // 执行回调逻辑

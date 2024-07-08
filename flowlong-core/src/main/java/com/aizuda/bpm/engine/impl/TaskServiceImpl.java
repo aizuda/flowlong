@@ -292,6 +292,23 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public boolean executeTaskTrigger(Execution execution, FlwTask flwTask) {
+        NodeModel nodeModel = execution.getProcessModel().getNode(flwTask.getTaskKey());
+        nodeModel.executeTrigger(execution, (e) -> {
+            // 使用默认触发器
+            TaskTrigger taskTrigger = execution.getEngine().getContext().getTaskTrigger();
+            if (null == taskTrigger) {
+                return false;
+            }
+            return taskTrigger.execute(nodeModel, execution);
+        });
+
+        // 任务监听器通知
+        this.taskNotify(EventType.trigger, () -> flwTask, nodeModel, execution.getFlowCreator());
+        return true;
+    }
+
     /**
      * 完成指定实例ID活动任务
      *
@@ -820,6 +837,9 @@ public class TaskServiceImpl implements TaskService {
                 hisTask.setFlowCreator(execution.getFlowCreator());
                 hisTask.calculateDuration();
                 hisTaskDao.insert(hisTask);
+
+                // 任务监听器通知
+                this.taskNotify(EventType.trigger, () -> hisTask, nodeModel, execution.getFlowCreator());
 
                 /*
                  * 可能存在子节点

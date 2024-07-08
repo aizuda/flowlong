@@ -79,6 +79,15 @@ public interface TaskService {
     }
 
     /**
+     * 执行触发器任务
+     *
+     * @param execution   {@link Execution}
+     * @param flwTask     触发器任务
+     * @return true 成功 false 失败
+     */
+    boolean executeTaskTrigger(Execution execution, FlwTask flwTask);
+
+    /**
      * 完成指定实例ID活动任务
      *
      * @param instanceId  实例ID

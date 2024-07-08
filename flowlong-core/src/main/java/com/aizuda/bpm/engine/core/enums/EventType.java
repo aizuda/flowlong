@@ -109,7 +109,11 @@ public enum EventType {
     /**
      * 自动审批拒绝
      */
-    autoReject;
+    autoReject,
+    /**
+     * 触发器任务
+     */
+    trigger;
 
     public boolean eq(EventType eventType) {
         return this == eventType;
