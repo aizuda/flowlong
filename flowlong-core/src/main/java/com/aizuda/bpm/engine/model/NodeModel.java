@@ -410,11 +410,10 @@ public class NodeModel implements ModelInstance, Serializable {
                         flag = taskTrigger.execute(this, execution);
                     }
                 } catch (Exception e) {
-                    Assert.isFalse(flag, e.getMessage());
                     // 使用默认触发器
-//                    if (null != function) {
-//                        flag = function.apply(e);
-//                    }
+                    if (null != function) {
+                        flag = function.apply(e);
+                    }
                 }
             }
         }
