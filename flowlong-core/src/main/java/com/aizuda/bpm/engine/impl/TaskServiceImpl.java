@@ -820,6 +820,11 @@ public class TaskServiceImpl implements TaskService {
                 hisTask.setFlowCreator(execution.getFlowCreator());
                 hisTask.calculateDuration();
                 hisTaskDao.insert(hisTask);
+
+                /*
+                 * 可能存在子节点
+                 */
+                nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
             } else {
                 // 定时触发器，等待执行
                 flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
@@ -870,7 +875,12 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskName(nodeModel.getNodeName());
         flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
-        flwTask.setParentTaskId(execution.getFlwTask() == null ? 0L : execution.getFlwTask().getId());
+        // 触发器 父任务ID flwTask 不为 null 但 getFlwTask().getId() == null
+        if(execution.getFlwTask() == null){
+            flwTask.setParentTaskId(0L);
+        }else{
+            flwTask.setParentTaskId(execution.getFlwTask().getId() == null ? 0L : execution.getFlwTask().getId());
+        }
         Map<String, Object> args = execution.getArgs();
         // 审批期限非空，设置期望任务完成时间
         Integer term = nodeModel.getTerm();
