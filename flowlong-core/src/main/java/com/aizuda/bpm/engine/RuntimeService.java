@@ -28,14 +28,14 @@ public interface RuntimeService {
     /**
      * 根据流程、创建人员、父流程实例ID创建流程实例
      *
-     * @param process     流程定义对象
+     * @param flwProcess  流程定义对象
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @param nodeModel   当前所在节点
      * @param supplier    初始化流程实例提供者
      * @return 活动流程实例对象
      */
-    FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier);
+    FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier);
 
     /**
      * 根据流程实例ID获取流程实例模型
@@ -66,11 +66,11 @@ public interface RuntimeService {
     /**
      * 保存流程实例
      *
-     * @param flwInstance  流程实例对象
-     * @param modelContent 流程定义模型内容
-     * @param flowCreator  处理人员
+     * @param flwInstance 流程实例对象
+     * @param flwProcess  流程定义对象
+     * @param flowCreator 处理人员
      */
-    void saveInstance(FlwInstance flwInstance, String modelContent, FlowCreator flowCreator);
+    void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator);
 
     /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）

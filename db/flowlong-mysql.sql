@@ -204,6 +204,7 @@ CREATE TABLE `flw_ext_instance`
     `id`            bigint NOT NULL COMMENT '主键ID',
     `tenant_id`     varchar(50) COMMENT '租户ID',
     `process_id`    bigint NOT NULL COMMENT '流程定义ID',
+    `process_type`  varchar(100) COMMENT '流程类型',
     `model_content` text COMMENT '流程模型定义JSON内容',
     PRIMARY KEY (`id`) USING BTREE,
     CONSTRAINT `fk_ext_instance_id` FOREIGN KEY (`id`) REFERENCES `flw_his_instance` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT

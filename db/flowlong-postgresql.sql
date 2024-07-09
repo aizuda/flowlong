@@ -158,15 +158,17 @@ COMMENT ON TABLE "public"."flw_task" IS '任务表';
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."flw_ext_instance";
 CREATE TABLE "public"."flw_ext_instance" (
-                                             "id" int8 NOT NULL,
-                                             "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
-                                             "process_id" int8 NOT NULL,
-                                             "model_content" text COLLATE "pg_catalog"."default"
+     "id" int8 NOT NULL,
+     "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
+     "process_id" int8 NOT NULL,
+     "process_type" varchar(100) COLLATE "pg_catalog"."default",
+     "model_content" text COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."flw_ext_instance"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_ext_instance"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_ext_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "public"."flw_ext_instance"."process_type" IS '流程类型';
 COMMENT ON COLUMN "public"."flw_ext_instance"."model_content" IS '流程模型定义JSON内容';
 COMMENT ON TABLE "public"."flw_ext_instance" IS '扩展流程实例表';
 

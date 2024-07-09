@@ -61,7 +61,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier) {
+    public FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier) {
         FlwInstance flwInstance = null;
         if (null != supplier) {
             flwInstance = supplier.get();
@@ -75,7 +75,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
-        flwInstance.setProcessId(process.getId());
+        flwInstance.setProcessId(flwProcess.getId());
         flwInstance.setMapVariable(args);
 
         /*
@@ -83,7 +83,7 @@ public class RuntimeServiceImpl implements RuntimeService {
          */
         Map<String, Object> modelData = FlowDataTransfer.get(FlowConstants.processDynamicAssignee);
         if (ObjectUtils.isNotEmpty(modelData)) {
-            ProcessModel processModel = process.model();
+            ProcessModel processModel = flwProcess.model();
             modelData.forEach((key, value) -> {
                 if (value instanceof DynamicAssignee) {
                     NodeModel thisNodeModel = processModel.getNode(key);
@@ -96,11 +96,11 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 清理父节点
             processModel.cleanParentNode(processModel.getNodeConfig());
             // 更新模型
-            process.setModelContent2Json(processModel);
+            flwProcess.setModelContent2Json(processModel);
         }
 
         // 保存实例
-        this.saveInstance(flwInstance, process.getModelContent(), flowCreator);
+        this.saveInstance(flwInstance, flwProcess, flowCreator);
         return flwInstance;
     }
 
@@ -187,11 +187,12 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 流程实例数据会保存至活动实例表、历史实例表
      *
-     * @param flwInstance  流程实例对象
-     * @param modelContent 流程定义模型内容
+     * @param flwInstance 流程实例对象
+     * @param flwProcess  流程定义对象
+     * @param flowCreator 处理人员
      */
     @Override
-    public void saveInstance(FlwInstance flwInstance, String modelContent, FlowCreator flowCreator) {
+    public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator) {
         // 保存流程实例
         instanceDao.insert(flwInstance);
 
@@ -200,7 +201,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         hisInstanceDao.insert(flwHisInstance);
 
         // 保存扩展流程实例
-        extInstanceDao.insert(FlwExtInstance.of(flwInstance, modelContent));
+        extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
 
         // 流程实例监听器通知
         this.instanceNotify(EventType.create, () -> flwHisInstance, flowCreator);

@@ -77,7 +77,7 @@ public class FlowDataTransfer {
     @SuppressWarnings({"all"})
     public static <T> T get(String key) {
         Map<String, Object> dataMap = getAll();
-        if (null != dataMap && !dataMap.isEmpty()) {
+        if (null != dataMap) {
             return (T) dataMap.get(key);
         }
         return null;
