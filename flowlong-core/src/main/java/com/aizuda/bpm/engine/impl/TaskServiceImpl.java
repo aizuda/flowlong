@@ -306,6 +306,11 @@ public class TaskServiceImpl implements TaskService {
 
         // 任务监听器通知
         this.taskNotify(EventType.trigger, () -> flwTask, nodeModel, execution.getFlowCreator());
+
+        /*
+         * 可能存在子节点
+         */
+        nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         return true;
     }
 
