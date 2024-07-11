@@ -35,5 +35,11 @@ public class NodeExpression {
      * 内容
      */
     private String value;
+    /**
+     * 条件类型
+     * 自定义条件字段 custom
+     * 表单条件字段 form
+     */
+    private String type;
 
 }
