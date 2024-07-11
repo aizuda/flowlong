@@ -11,7 +11,7 @@
       "nodeKey": "k002",
       "type": 6,
       "extendConfig": {
-        "time": "7:d"
+        "time": "1:m"
       },
       "childNode": {
         "nodeName": "人事审批",
@@ -28,12 +28,43 @@
         "examineLevel": 1,
         "directorLevel": 1,
         "selectMode": 1,
-        "termAuto": false,
-        "term": 0,
-        "termMode": 1,
+        "termAuto": true,
+        "term": 1,
+        "termMode": 0,
         "examineMode": 1,
-        "directorMode": 0
-      }
+        "directorMode": 0,
+        "extendConfig": {
+          "formConfig": []
+        },
+        "typeOfApprove": 1,
+        "childNode": {
+          "nodeName": "经理审批",
+          "nodeKey": "k557",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "test001",
+              "name": "测试001"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": true,
+          "remind": false,
+          "term": 1,
+          "termMode": 0,
+          "examineMode": 1,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "extendConfig": {
+            "formConfig": []
+          }
+        }
+      },
+      "delayType": "1"
     }
   }
 }
