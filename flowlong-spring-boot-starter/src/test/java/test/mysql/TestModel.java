@@ -44,7 +44,10 @@ public class TestModel extends MysqlTest {
     public void testProcessModel() {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
-        Assertions.assertEquals(processModel.getNodeConfig().getNodeName(), "发起人");
+        NodeModel rootNode = processModel.getNodeConfig();
+        Assertions.assertEquals(rootNode.getNodeName(), "发起人");
+        List<NodeAssignee> nodeAssigneeList = rootNode.getNodeAssigneeList();
+        Assertions.assertEquals(2, nodeAssigneeList.size());
     }
 
     /**

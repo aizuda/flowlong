@@ -5,7 +5,16 @@
     "nodeName": "发起人",
     "nodeKey": "k001",
     "type": 0,
-    "nodeAssigneeList": [],
+    "nodeAssigneeList": [
+      {
+        "id": "1000",
+        "name": "技术总监"
+      },
+      {
+        "id": "1001",
+        "name": "开发人员"
+      }
+    ],
     "childNode": {
       "nodeName": "条件路由",
       "nodeKey": "k002",
