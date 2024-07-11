@@ -16,23 +16,17 @@ public enum ConditionType {
     /**
      * 自定义条件字段
      */
-    custom("custom"),
+    custom,
     /**
      * 表单条件字段
      */
-    form("form");
+    form;
 
-    private final String value;
-
-    ConditionType(String value) {
-        this.value = value;
+    public boolean ne(String type) {
+        return !eq(type);
     }
 
-    public boolean ne(String value) {
-        return !this.eq(value);
-    }
-
-    public boolean eq(String value) {
-        return Objects.equals(this.value, value);
+    public boolean eq(String type) {
+        return Objects.equals(this.name(), type);
     }
 }
