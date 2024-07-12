@@ -4,7 +4,7 @@ dependencies {
     implementation project(":flowlong-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-jdbc")
-    implementation("com.baomidou:mybatis-plus-boot-starter")
+    implementation("com.baomidou:mybatis-plus-spring-boot3-starter")
     implementation("mysql:mysql-connector-java")
 
 }
