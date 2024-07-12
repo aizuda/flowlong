@@ -29,7 +29,5 @@ public interface FlwProcessDao {
 
     FlwProcess selectById(Long id);
 
-    List<FlwProcess> selectListByProcessKey(String tenantId, String processKey);
-
     List<FlwProcess> selectListByProcessKeyAndVersion(String tenantId, String processKey, Integer version);
 }

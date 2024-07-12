@@ -6,6 +6,7 @@ package com.aizuda.bpm.mybatisplus.impl;
 import com.aizuda.bpm.engine.dao.FlwProcessDao;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
@@ -55,18 +56,15 @@ public class FlwProcessDaoImpl implements FlwProcessDao {
     }
 
     @Override
-    public List<FlwProcess> selectListByProcessKey(String tenantId, String processKey) {
-        return processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
-                .eq(null != tenantId, FlwProcess::getTenantId, tenantId)
-                .eq(FlwProcess::getProcessKey, processKey));
-    }
-
-    @Override
     public List<FlwProcess> selectListByProcessKeyAndVersion(String tenantId, String processKey, Integer version) {
-        return processMapper.selectList(Wrappers.<FlwProcess>lambdaQuery()
-                .eq(null != tenantId, FlwProcess::getTenantId, tenantId)
-                .eq(FlwProcess::getProcessKey, processKey)
-                .eq(null != version, FlwProcess::getProcessVersion, version)
-                .orderByDesc(FlwProcess::getProcessVersion));
+        LambdaQueryWrapper<FlwProcess> lqw = Wrappers.lambdaQuery();
+        lqw.eq(null != tenantId, FlwProcess::getTenantId, tenantId);
+        lqw.eq(FlwProcess::getProcessKey, processKey);
+        if (null != version) {
+            lqw.eq(FlwProcess::getProcessVersion, version);
+        } else {
+            lqw.orderByDesc(FlwProcess::getProcessVersion);
+        }
+        return processMapper.selectList(lqw);
     }
 }

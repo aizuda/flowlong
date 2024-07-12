@@ -96,7 +96,7 @@ public class ProcessServiceImpl implements ProcessService {
                 /*
                  * 查询流程信息获取最后版本号
                  */
-                List<FlwProcess> processList = processDao.selectListByProcessKey(flowCreator.getTenantId(), processModel.getKey());
+                List<FlwProcess> processList = processDao.selectListByProcessKeyAndVersion(flowCreator.getTenantId(), processModel.getKey(),null);
                 if (ObjectUtils.isNotEmpty(processList)) {
                     dbProcess = processList.get(0);
                 }
