@@ -194,17 +194,19 @@ public class TaskServiceImpl implements TaskService {
 
             // 当前处理人为代理人员
             if (taskActors.stream().anyMatch(t -> t.agentActor() && t.eqActorId(flowCreator.getCreateId()))) {
+                FlwTaskActor flwTaskActor = FlwTaskActor.of(flowCreator, flwTask, 1);
 
                 // 设置历史代理任务状态为【代理人协办完成的任务】设置被代理人信息
                 hisTask.setTaskType(TaskType.agentAssist);
                 taskActors.stream().filter(t -> !t.agentActor()).findFirst().ifPresent(t -> {
                     hisTask.setAssignorId(t.getActorId());
                     hisTask.setAssignor(t.getActorName());
+                    flwTaskActor.setId(t.getId());
                 });
                 hisTaskDao.insert(hisTask);
 
                 // 迁移任务当前代理人员，清理其它代理人
-                this.moveToHisTaskActor(Collections.singletonList(FlwTaskActor.of(flowCreator, flwTask, 1)));
+                this.moveToHisTaskActor(Collections.singletonList(flwTaskActor));
                 taskActorDao.deleteByTaskIdAndWeight(flwTask.getId(), 1);
 
                 // 代理人完成任务，当前任务设置为代理人归还任务，代理人信息变更
