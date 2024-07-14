@@ -4,19 +4,11 @@
 package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowLongEngine;
-import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
-import com.aizuda.bpm.engine.core.enums.EventType;
-import com.aizuda.bpm.engine.core.enums.PerformType;
-import com.aizuda.bpm.engine.core.enums.TaskState;
-import com.aizuda.bpm.engine.core.enums.TaskType;
-import com.aizuda.bpm.engine.entity.FlwInstance;
-import com.aizuda.bpm.engine.entity.FlwProcess;
-import com.aizuda.bpm.engine.entity.FlwTask;
-import com.aizuda.bpm.engine.entity.FlwTaskActor;
-import com.aizuda.bpm.engine.exception.FlowLongException;
+import com.aizuda.bpm.engine.core.enums.*;
+import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
@@ -285,13 +277,19 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
-            List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
+            List<NodeAssignee> nodeAssigneeList = nodeModel.getNodeAssigneeList();
             // 当前任务实际办理人
             String assigneeId = flowCreator.getCreateId();
-            if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
+            if (NodeSetType.role.eq(nodeModel.getSetType()) || NodeSetType.department.eq(nodeModel.getSetType())) {
+                // 角色、部门 任务参与者
+                List<FlwHisTaskActor> htaList = flowLongContext.getQueryService().getHisTaskActorsByTaskIdAndActorId(flwTask.getId(), flowCreator.getCreateId());
+                if (ObjectUtils.isNotEmpty(htaList)) {
+                    assigneeId = htaList.get(0).getAgentId();
+                }
+            } else if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
                 assigneeId = flwTask.getAssignorId();
             }
-            if (ObjectUtils.isEmpty(nodeUserList)) {
+            if (ObjectUtils.isEmpty(nodeAssigneeList)) {
                 /*
                  * 模型未设置处理人，那么需要获取自定义参与者
                  */
@@ -314,7 +312,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 /*
                  * 模型中去找下一个执行者
                  */
-                for (NodeAssignee nodeAssignee : nodeUserList) {
+                for (NodeAssignee nodeAssignee : nodeAssigneeList) {
                     if (findTaskActor) {
                         // 找到下一个执行人
                         nextNodeAssignee = nodeAssignee;

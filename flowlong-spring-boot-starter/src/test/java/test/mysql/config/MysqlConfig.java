@@ -62,4 +62,9 @@ public class MysqlConfig extends FlowLongAutoConfiguration {
         return environment.getProperty("spring.dao.exceptiontranslation.enabled", Boolean.class, Boolean.TRUE)
                 ? new JdbcTransactionManager(dataSource) : new DataSourceTransactionManager(dataSource);
     }
+
+    @Bean
+    public TestTaskAccessStrategy taskAccessStrategy() {
+        return new TestTaskAccessStrategy();
+    }
 }

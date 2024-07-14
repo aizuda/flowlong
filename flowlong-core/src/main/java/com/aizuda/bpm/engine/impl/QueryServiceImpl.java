@@ -85,8 +85,18 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<FlwHisTaskActor> getHistoryTaskActorsByTaskId(Long taskId) {
+    public List<FlwTaskActor> getTaskActorsByTaskIdAndActorId(Long taskId, String actorId) {
+        return taskActorDao.selectListByTaskIdAndActorId(taskId, actorId);
+    }
+
+    @Override
+    public List<FlwHisTaskActor> getHisTaskActorsByTaskId(Long taskId) {
         return hisTaskActorDao.selectListByTaskId(taskId);
+    }
+
+    @Override
+    public List<FlwHisTaskActor> getHisTaskActorsByTaskIdAndActorId(Long taskId, String actorId) {
+        return hisTaskActorDao.selectListByTaskIdAndActorId(taskId, actorId);
     }
 
     @Override

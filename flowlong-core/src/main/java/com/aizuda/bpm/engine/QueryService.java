@@ -106,12 +106,30 @@ public interface QueryService {
     }
 
     /**
+     * 根据任务ID获取活动任务参与者数组
+     *
+     * @param taskId  任务ID
+     * @param actorId 任务参与者ID
+     * @return 当前活动任务参与者列表
+     */
+    List<FlwTaskActor> getTaskActorsByTaskIdAndActorId(Long taskId, String actorId);
+
+    /**
      * 根据任务ID获取历史任务参与者数组
      *
      * @param taskId 历史任务ID
-     * @return String[] 历史参与者ID数组
+     * @return 当前活动任务参与者列表
      */
-    List<FlwHisTaskActor> getHistoryTaskActorsByTaskId(Long taskId);
+    List<FlwHisTaskActor> getHisTaskActorsByTaskId(Long taskId);
+
+    /**
+     * 根据任务ID获取历史任务参与者数组
+     *
+     * @param taskId  历史任务ID
+     * @param actorId 任务参与者ID
+     * @return 当前活动任务参与者列表
+     */
+    List<FlwHisTaskActor> getHisTaskActorsByTaskIdAndActorId(Long taskId, String actorId);
 
     /**
      * 根据实例ID和任务节点名称获取当前节点激活的任务

@@ -30,10 +30,10 @@ public interface TaskAccessStrategy {
      * 根据创建人ID、参与者集合判断是否允许访问所属任务
      *
      * @param userId     用户ID
-     * @param taskActors 参与者列表 传递至该接口的实现类中的参与者都是为非空
-     * @return boolean 是否允许访问
+     * @param taskActors 参与者列表
+     * @return 被允许参与者 {@link FlwTaskActor}
      */
-    boolean isAllowed(String userId, List<FlwTaskActor> taskActors);
+    FlwTaskActor isAllowed(String userId, List<FlwTaskActor> taskActors);
 
     /**
      * 获取指定合法参与者对象

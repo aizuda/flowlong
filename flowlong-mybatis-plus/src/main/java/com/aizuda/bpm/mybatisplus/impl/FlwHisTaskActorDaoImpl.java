@@ -5,6 +5,7 @@ package com.aizuda.bpm.mybatisplus.impl;
 
 import com.aizuda.bpm.engine.dao.FlwHisTaskActorDao;
 import com.aizuda.bpm.engine.entity.FlwHisTaskActor;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.mybatisplus.mapper.FlwHisTaskActorMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
@@ -54,5 +55,12 @@ public class FlwHisTaskActorDaoImpl implements FlwHisTaskActorDao {
     public List<FlwHisTaskActor> selectListByTaskIds(List<Long> taskIds) {
         return hisTaskActorMapper.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery()
                 .in(FlwHisTaskActor::getTaskId, taskIds));
+    }
+
+    @Override
+    public List<FlwHisTaskActor> selectListByTaskIdAndActorId(Long taskId, String actorId) {
+        return hisTaskActorMapper.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery()
+                .eq(FlwHisTaskActor::getTaskId, taskId)
+                .eq(FlwTaskActor::getActorId, actorId));
     }
 }

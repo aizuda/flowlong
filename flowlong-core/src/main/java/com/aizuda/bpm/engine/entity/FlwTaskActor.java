@@ -4,6 +4,7 @@
 package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,6 +65,18 @@ public class FlwTaskActor implements Serializable {
      * </p>
      */
     protected Integer weight;
+    /**
+     * 代理人ID
+     */
+    protected String agentId;
+    /**
+     * 代理人类型 0，代理 1，被代理
+     */
+    protected Integer agentType;
+    /**
+     * 扩展json
+     */
+    protected String extend;
 
     /**
      * 是否为代理人
@@ -147,4 +160,7 @@ public class FlwTaskActor implements Serializable {
         return taskActor;
     }
 
+    public void setExtendOf(Object object) {
+        this.extend = FlowLongContext.toJson(object);
+    }
 }

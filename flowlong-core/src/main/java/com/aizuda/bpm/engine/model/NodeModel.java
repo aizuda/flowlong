@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.NodeApproveSelf;
+import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwProcess;
@@ -392,10 +393,23 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 参与者类型 0，用户 1，角色 2，部门
+     */
+    public int actorType() {
+        if (NodeSetType.role.eq(setType)) {
+            return 1;
+        }
+        if (NodeSetType.department.eq(setType)) {
+            return 2;
+        }
+        return 0;
+    }
+
+    /**
      * 执行触发器
      *
-     * @param execution  {@link Execution}
-     * @param function 执行默认触发器执行函数
+     * @param execution {@link Execution}
+     * @param function  执行默认触发器执行函数
      */
     public void executeTrigger(Execution execution, Function<Exception, Boolean> function) {
         boolean flag = false;

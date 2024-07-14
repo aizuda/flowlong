@@ -27,11 +27,12 @@ public class GeneralAccessStrategy implements TaskAccessStrategy {
      * 如果创建人ID所属的组只要有一项存在于参与者集合中，则表示可访问
      */
     @Override
-    public boolean isAllowed(String userId, List<FlwTaskActor> taskActors) {
+    public FlwTaskActor isAllowed(String userId, List<FlwTaskActor> taskActors) {
         if (null == userId || ObjectUtils.isEmpty(taskActors)) {
-            return false;
+            return null;
         }
         // 参与者 ID 默认非组，作为用户ID判断是否允许执行
-        return taskActors.stream().anyMatch(t -> Objects.equals(t.getActorId(), userId));
+        return taskActors.stream().filter(t -> Objects.equals(t.getActorId(), userId))
+                .findFirst().orElse(null);
     }
 }

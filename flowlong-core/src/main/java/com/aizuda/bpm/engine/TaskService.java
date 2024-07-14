@@ -81,8 +81,8 @@ public interface TaskService {
     /**
      * 执行触发器任务
      *
-     * @param execution   {@link Execution}
-     * @param flwTask     触发器任务
+     * @param execution {@link Execution}
+     * @param flwTask   触发器任务
      * @return true 成功 false 失败
      */
     boolean executeTaskTrigger(Execution execution, FlwTask flwTask);
@@ -227,9 +227,9 @@ public interface TaskService {
      *
      * @param flwTask 任务对象
      * @param userId  用户ID
-     * @return boolean 是否允许操作
+     * @return 被允许参与者 {@link FlwTaskActor}
      */
-    boolean isAllowed(FlwTask flwTask, String userId);
+    FlwTaskActor isAllowed(FlwTask flwTask, String userId);
 
     /**
      * 根据任务模型、执行对象创建新的任务

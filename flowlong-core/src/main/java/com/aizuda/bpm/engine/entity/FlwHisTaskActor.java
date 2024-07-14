@@ -24,8 +24,7 @@ import lombok.ToString;
 @ToString
 public class FlwHisTaskActor extends FlwTaskActor {
 
-    public static FlwHisTaskActor ofNodeAssignee(NodeAssignee nodeAssignee, Long instanceId,
-                                                 Long taskId) {
+    public static FlwHisTaskActor ofNodeAssignee(NodeAssignee nodeAssignee, Long instanceId, Long taskId) {
         FlwHisTaskActor his = new FlwHisTaskActor();
         his.setTenantId(nodeAssignee.getTenantId());
         his.setInstanceId(instanceId);
@@ -57,6 +56,9 @@ public class FlwHisTaskActor extends FlwTaskActor {
         his.setActorName(taskActor.getActorName());
         his.setWeight(taskActor.getWeight());
         his.setActorType(taskActor.getActorType());
+        his.setAgentId(taskActor.getAgentId());
+        his.setAgentType(taskActor.getAgentType());
+        his.setExtend(taskActor.getExtend());
         return his;
     }
 }

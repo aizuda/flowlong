@@ -9,10 +9,7 @@ import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
-import com.aizuda.bpm.engine.core.enums.PerformType;
-import com.aizuda.bpm.engine.core.enums.TaskState;
-import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.listener.TaskListener;
@@ -166,7 +163,8 @@ public class TaskServiceImpl implements TaskService {
             flwTask.setVariable(args);
         }
         if (null == taskState || TaskState.allowedCheck(taskState)) {
-            Assert.isFalse(isAllowed(flwTask, flowCreator.getCreateId()), () -> "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
+            Assert.isNull(isAllowed(flwTask, flowCreator.getCreateId()),
+                    "当前参与者 [" + flowCreator.getCreateBy() + "]不允许执行任务[taskId=" + taskId + "]");
         }
         return flwTask;
     }
@@ -374,13 +372,22 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public FlwTask claim(Long taskId, FlowCreator flowCreator) {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
-        if (!isAllowed(flwTask, flowCreator.getCreateId())) {
-            Assert.illegal("当前执行用户ID [" + flowCreator.getCreateBy() + "] 不允许提取任务 [taskId=" + taskId + "]");
+        FlwTaskActor taskActor = this.isAllowed(flwTask, flowCreator.getCreateId());
+        if (null == taskActor) {
+            Assert.illegal("当前执行用户ID [" + flowCreator.getCreateBy() + "] 不允许认领任务 [taskId=" + taskId + "]");
         }
+
         // 删除任务参与者
-        taskActorDao.deleteByTaskId(taskId);
+        taskActorDao.deleteById(taskActor.getId());
         // 插入当前用户ID作为唯一参与者
-        taskActorDao.insert(FlwTaskActor.of(flowCreator, flwTask));
+        FlwTaskActor ta = FlwTaskActor.of(flowCreator, flwTask);
+        ta.setAgentId(taskActor.getActorId());
+        ta.setAgentType(0);
+        Map<String, Object> map = new HashMap<>();
+        map.put("actorType", taskActor.getActorType());
+        map.put("actorName", taskActor.getActorName());
+        ta.setExtendOf(map);
+        taskActorDao.insert(ta);
 
         // 任务监听器通知
         this.taskNotify(EventType.claim, () -> flwTask, null, flowCreator);
@@ -429,7 +436,7 @@ public class TaskServiceImpl implements TaskService {
 
             // 分配任务给办理人
             FlowCreator afc = assigneeFlowCreators.get(0);
-            this.assignTask(flwTaskActor.getInstanceId(), taskId, FlwTaskActor.ofFlowCreator(afc));
+            this.assignTask(flwTaskActor.getInstanceId(), taskId, flwTaskActor.getActorType(), FlwTaskActor.ofFlowCreator(afc));
         }
 
         // 更新任务
@@ -540,7 +547,7 @@ public class TaskServiceImpl implements TaskService {
         taskDao.insert(flwTask);
 
         // 分配任务
-        assignTask(flwTask.getInstanceId(), taskId, FlwTaskActor.of(flowCreator, flwTask));
+        assignTask(flwTask.getInstanceId(), taskId, 0, FlwTaskActor.of(flowCreator, flwTask));
 
         // 更新当前执行节点信息
         this.updateCurrentNode(flwTask);
@@ -668,12 +675,14 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param instanceId 实例ID
      * @param taskId     任务ID
+     * @param actorType  参与者类型 0，用户 1，角色 2，部门
      * @param taskActor  任务参与者
      */
-    protected void assignTask(Long instanceId, Long taskId, FlwTaskActor taskActor) {
+    protected void assignTask(Long instanceId, Long taskId, int actorType, FlwTaskActor taskActor) {
         taskActor.setId(null);
         taskActor.setInstanceId(instanceId);
         taskActor.setTaskId(taskId);
+        taskActor.setActorType(actorType);
         taskActorDao.insert(taskActor);
     }
 
@@ -969,12 +978,15 @@ public class TaskServiceImpl implements TaskService {
                     flwTask.getTaskKey() + ", performType = " + performType.getValue());
         }
 
+        // 参与者类型
+        int actorType = nodeModel.actorType();
+
         if (performType == PerformType.orSign) {
             /*
              * 或签一条任务多个参与者
              */
             taskDao.insert(flwTask);
-            taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), t));
+            taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), actorType, t));
             flwTasks.add(flwTask);
 
             // 创建任务监听
@@ -991,7 +1003,7 @@ public class TaskServiceImpl implements TaskService {
 
             // 分配下一个参与者
             FlwTaskActor nextFlwTaskActor = execution.getNextFlwTaskActor();
-            this.assignTask(flwTask.getInstanceId(), flwTask.getId(), null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
+            this.assignTask(flwTask.getInstanceId(), flwTask.getId(), actorType, null == nextFlwTaskActor ? taskActors.get(0) : nextFlwTaskActor);
 
             // 创建任务监听
             this.taskNotify(EventType.create, () -> flwTask, nodeModel, flowCreator);
@@ -1007,7 +1019,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(newFlwTask);
 
             // 分配参与者
-            this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), t);
+            this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), actorType, t);
 
             // 创建任务监听
             this.taskNotify(EventType.create, () -> newFlwTask, nodeModel, flowCreator);
@@ -1023,23 +1035,19 @@ public class TaskServiceImpl implements TaskService {
      * @return true 允许 false 不允许
      */
     @Override
-    public boolean isAllowed(FlwTask flwTask, String userId) {
+    public FlwTaskActor isAllowed(FlwTask flwTask, String userId) {
         // 未指定创建人情况，默认为不验证执行权限
         if (null == flwTask.getCreateId()) {
-            return true;
+            return null;
         }
 
         // 任务执行创建人不存在
         if (ObjectUtils.isEmpty(userId)) {
-            return false;
+            return null;
         }
 
         // 任务参与者列表
         List<FlwTaskActor> actors = taskActorDao.selectListByTaskId(flwTask.getId());
-        if (ObjectUtils.isEmpty(actors)) {
-            // 未设置参与者，默认返回 true
-            return true;
-        }
         return taskAccessStrategy.isAllowed(userId, actors);
     }
 
@@ -1067,12 +1075,12 @@ public class TaskServiceImpl implements TaskService {
                  */
                 FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
                 taskDao.insert(newFlwTask);
-                this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), flwTaskActor);
+                this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), 0, flwTaskActor);
             } else {
                 /*
                  * 单一任务多处理人员情况
                  */
-                this.assignTask(flwTask.getInstanceId(), taskId, flwTaskActor);
+                this.assignTask(flwTask.getInstanceId(), taskId, 0, flwTaskActor);
             }
         }
 

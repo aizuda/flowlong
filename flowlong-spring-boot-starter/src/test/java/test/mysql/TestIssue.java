@@ -272,4 +272,35 @@ public class TestIssue extends MysqlTest {
         });
     }
 
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/IAAVIR">多角色会签顺序签或签</a>
+     */
+    @Test
+    public void test_IAAVIR() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_IAAVIR.json", testCreator, false);
+
+        // 启动流程
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 执行任务认领【部门主管】
+            this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
+                    .claim(flwTask.getId(), testCreator));
+
+            // 执行认领逻辑
+            this.executeTask(instance.getId(), testCreator);
+
+            // 执行任务认领【采购经理】
+            this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
+                    .claim(flwTask.getId(), testCreator));
+
+            // 执行认领逻辑
+            this.executeTask(instance.getId(), testCreator);
+
+
+        });
+    }
+
 }

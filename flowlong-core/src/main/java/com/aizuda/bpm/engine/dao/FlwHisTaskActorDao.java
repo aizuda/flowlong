@@ -28,4 +28,6 @@ public interface FlwHisTaskActorDao {
     List<FlwHisTaskActor> selectListByTaskId(Long taskId);
 
     List<FlwHisTaskActor> selectListByTaskIds(List<Long> taskIds);
+
+    List<FlwHisTaskActor> selectListByTaskIdAndActorId(Long taskId, String actorId);
 }
