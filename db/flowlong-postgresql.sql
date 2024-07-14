@@ -11,7 +11,10 @@ CREATE TABLE "public"."flw_his_task_actor" (
     "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_type" int4 NOT NULL,
-    "weight" int4
+    "weight" int4,
+    "agent_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "agent_type" int4 NOT NULL,
+    "extend" text COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."flw_his_task_actor"."id" IS '主键 ID';
@@ -22,6 +25,9 @@ COMMENT ON COLUMN "public"."flw_his_task_actor"."actor_id" IS '参与者ID';
 COMMENT ON COLUMN "public"."flw_his_task_actor"."actor_name" IS '参与者名称';
 COMMENT ON COLUMN "public"."flw_his_task_actor"."actor_type" IS '参与者类型 0，用户 1，角色 2，部门';
 COMMENT ON COLUMN "public"."flw_his_task_actor"."weight" IS '票签权重';
+COMMENT ON COLUMN "public"."flw_his_task_actor"."agent_id" IS '代理人ID';
+COMMENT ON COLUMN "public"."flw_his_task_actor"."agent_type" IS '代理人类型 0，代理 1，被代理';
+COMMENT ON COLUMN "public"."flw_his_task_actor"."extend" IS '扩展json';
 COMMENT ON TABLE "public"."flw_his_task_actor" IS '历史任务参与者表';
 
 -- ----------------------------
@@ -93,7 +99,10 @@ CREATE TABLE "public"."flw_task_actor" (
     "actor_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_type" int4 NOT NULL,
-    "weight" int4
+    "weight" int4,
+    "agent_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+    "agent_type" int4 NOT NULL,
+    "extend" text COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."flw_task_actor"."id" IS '主键 ID';
@@ -104,6 +113,9 @@ COMMENT ON COLUMN "public"."flw_task_actor"."actor_id" IS '参与者ID';
 COMMENT ON COLUMN "public"."flw_task_actor"."actor_name" IS '参与者名称';
 COMMENT ON COLUMN "public"."flw_task_actor"."actor_type" IS '参与者类型 0，用户 1，角色 2，部门';
 COMMENT ON COLUMN "public"."flw_task_actor"."weight" IS '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人';
+COMMENT ON COLUMN "public"."flw_task_actor"."agent_id" IS '代理人ID';
+COMMENT ON COLUMN "public"."flw_task_actor"."agent_type" IS '代理人类型 0，代理 1，被代理';
+COMMENT ON COLUMN "public"."flw_task_actor"."extend" IS '扩展json';
 COMMENT ON TABLE "public"."flw_task_actor" IS '任务参与者表';
 
 -- ----------------------------

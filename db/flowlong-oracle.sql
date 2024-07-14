@@ -174,14 +174,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_his_task_actor";
 CREATE TABLE "flw_his_task_actor" (
-                                             "id" NUMBER(20,0) NOT NULL,
-                                             "tenant_id" NVARCHAR2(50),
-                                             "instance_id" NUMBER(20,0) NOT NULL,
-                                             "task_id" NUMBER(20,0) NOT NULL,
-                                             "actor_id" NVARCHAR2(100) NOT NULL,
-                                             "actor_name" NVARCHAR2(100) NOT NULL,
-                                             "actor_type" NUMBER(11,0) NOT NULL,
-                                             "weight" NUMBER(11,0)
+     "id" NUMBER(20,0) NOT NULL,
+     "tenant_id" NVARCHAR2(50),
+     "instance_id" NUMBER(20,0) NOT NULL,
+     "task_id" NUMBER(20,0) NOT NULL,
+     "actor_id" NVARCHAR2(100) NOT NULL,
+     "actor_name" NVARCHAR2(100) NOT NULL,
+     "actor_type" NUMBER(11,0) NOT NULL,
+     "weight" NUMBER(11,0),
+     "agent_id" NVARCHAR2(100) NOT NULL,
+     "agent_type" NUMBER(11,0) NOT NULL,
+     "extend" NCLOB
 )
     LOGGING
 NOCOMPRESS
@@ -202,6 +205,9 @@ COMMENT ON COLUMN "flw_his_task_actor"."actor_id" IS '参与者ID';
 COMMENT ON COLUMN "flw_his_task_actor"."actor_name" IS '参与者名称';
 COMMENT ON COLUMN "flw_his_task_actor"."actor_type" IS '参与者类型 0，用户 1，角色 2，部门';
 COMMENT ON COLUMN "flw_his_task_actor"."weight" IS '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人';
+COMMENT ON COLUMN "flw_his_task_actor"."agent_id" IS '代理人ID';
+COMMENT ON COLUMN "flw_his_task_actor"."agent_type" IS '代理人类型 0，代理 1，被代理';
+COMMENT ON COLUMN "flw_his_task_actor"."extend" IS '扩展json';
 COMMENT ON TABLE "flw_his_task_actor" IS '历史任务参与者表';
 
 -- ----------------------------
@@ -392,14 +398,17 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_task_actor";
 CREATE TABLE "flw_task_actor" (
-                                         "id" NUMBER(20,0) NOT NULL,
-                                         "tenant_id" NVARCHAR2(50),
-                                         "instance_id" NUMBER(20,0) NOT NULL,
-                                         "task_id" NUMBER(20,0) NOT NULL,
-                                         "actor_id" NVARCHAR2(100) NOT NULL,
-                                         "actor_name" NVARCHAR2(100) NOT NULL,
-                                         "actor_type" NUMBER(11,0) NOT NULL,
-                                         "weight" NUMBER(11,0)
+     "id" NUMBER(20,0) NOT NULL,
+     "tenant_id" NVARCHAR2(50),
+     "instance_id" NUMBER(20,0) NOT NULL,
+     "task_id" NUMBER(20,0) NOT NULL,
+     "actor_id" NVARCHAR2(100) NOT NULL,
+     "actor_name" NVARCHAR2(100) NOT NULL,
+     "actor_type" NUMBER(11,0) NOT NULL,
+     "weight" NUMBER(11,0),
+     "agent_id" NVARCHAR2(100) NOT NULL,
+     "agent_type" NUMBER(11,0) NOT NULL,
+     "extend" NCLOB
 )
     LOGGING
 NOCOMPRESS
@@ -420,6 +429,9 @@ COMMENT ON COLUMN "flw_task_actor"."actor_id" IS '参与者ID';
 COMMENT ON COLUMN "flw_task_actor"."actor_name" IS '参与者名称';
 COMMENT ON COLUMN "flw_task_actor"."actor_type" IS '参与者类型 0，用户 1，角色 2，部门';
 COMMENT ON COLUMN "flw_task_actor"."weight" IS '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人';
+COMMENT ON COLUMN "flw_task_actor"."agent_id" IS '代理人ID';
+COMMENT ON COLUMN "flw_task_actor"."agent_type" IS '代理人类型 0，代理 1，被代理';
+COMMENT ON COLUMN "flw_task_actor"."extend" IS '扩展json';
 COMMENT ON TABLE "flw_task_actor" IS '任务参与者表';
 
 -- ----------------------------

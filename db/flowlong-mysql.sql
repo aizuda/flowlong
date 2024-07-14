@@ -114,6 +114,9 @@ CREATE TABLE `flw_his_task_actor`
     `actor_name`  varchar(100) NOT NULL COMMENT '参与者名称',
     `actor_type`  int          NOT NULL COMMENT '参与者类型 0，用户 1，角色 2，部门',
     `weight`      int COMMENT '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人',
+    `agent_id`    varchar(100) NOT NULL COMMENT '代理人ID',
+    `agent_type`  int          NOT NULL COMMENT '代理人类型 0，代理 1，被代理',
+    `extend`      json COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX         `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
     CONSTRAINT `fk_his_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_his_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
@@ -190,6 +193,9 @@ CREATE TABLE `flw_task_actor`
     `actor_name`  varchar(100) NOT NULL COMMENT '参与者名称',
     `actor_type`  int          NOT NULL COMMENT '参与者类型 0，用户 1，角色 2，部门',
     `weight`      int COMMENT '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人',
+    `agent_id`    varchar(100) NOT NULL COMMENT '代理人ID',
+    `agent_type`  int          NOT NULL COMMENT '代理人类型 0，代理 1，被代理',
+    `extend`      json COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX         `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
     CONSTRAINT `fk_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
