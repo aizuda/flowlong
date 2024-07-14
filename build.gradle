@@ -71,7 +71,7 @@ subprojects {
             dependency("mysql:mysql-connector-java:8.0.33")
 
             // orm db
-            dependency("com.baomidou:mybatis-plus-spring-boot3-starter:${mybatisPlusVersion}")
+            dependency("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
             dependency("com.baomidou:mybatis-plus-core:${mybatisPlusVersion}")
 
         }

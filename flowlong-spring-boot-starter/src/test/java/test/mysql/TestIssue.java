@@ -244,16 +244,14 @@ public class TestIssue extends MysqlTest {
         Long processId = processService.deployByResource("test/issues_I9SVKP.json", testCreator, false);
 
         // 启动流程
-        final Map<String, Object> args = new HashMap<>();
-        args.put("day", 3);
-        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(flwInstance -> {
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
 
             // 执行转办、任务交给 test2 处理
-            this.executeTask(flwInstance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
+            this.executeTask(instance.getId(), testCreator, flwTask -> flowLongEngine.taskService()
                     .transferTask(flwTask.getId(), testCreator, test2Creator));
 
             // 转办人（前置加签）
-            flowLongEngine.queryService().getActiveTasksByInstanceId(flwInstance.getId()).flatMap(flwTasks -> flwTasks.stream()
+            flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()).flatMap(flwTasks -> flwTasks.stream()
                     .filter(t -> Objects.equals("领导审批", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
                 NodeModel nodeModel = new NodeModel();
                 nodeModel.setNodeName("前置加签");
@@ -264,6 +262,13 @@ public class TestIssue extends MysqlTest {
                 nodeModel.setNodeAssigneeList(Collections.singletonList(NodeAssignee.ofFlowCreator(test3Creator)));
                 flowLongEngine.executeAppendNodeModel(flwTask.getId(), nodeModel, test2Creator, true);
             });
+
+            // test3 执行前加签
+            this.executeTask(instance.getId(), test3Creator);
+
+            // 领导审批
+            this.executeTask(instance.getId(), testCreator);
+
         });
     }
 

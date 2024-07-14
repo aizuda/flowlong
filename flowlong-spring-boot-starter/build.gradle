@@ -3,7 +3,7 @@ description "flowLong mybatis-plus spring-boot starter"
 dependencies {
     api project(":flowlong-mybatis-plus")
 
-    implementation("com.baomidou:mybatis-plus-spring-boot3-starter")
+    implementation("com.baomidou:mybatis-plus-boot-starter")
 
     compileOnly("org.springframework.boot:spring-boot-starter-web")
     compileOnly("org.springframework.boot:spring-boot-autoconfigure")
