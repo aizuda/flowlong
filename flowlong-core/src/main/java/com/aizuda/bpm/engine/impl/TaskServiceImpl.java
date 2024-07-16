@@ -191,21 +191,29 @@ public class TaskServiceImpl implements TaskService {
         if (TaskType.agent.eq(flwTask.getTaskType())) {
 
             // 当前处理人为代理人员
-            if (taskActors.stream().anyMatch(t -> t.agentActor() && t.eqActorId(flowCreator.getCreateId()))) {
-                FlwTaskActor flwTaskActor = FlwTaskActor.of(flowCreator, flwTask, 1);
+            FlwTaskActor agentFlwTaskActor = taskActors.stream().filter(t -> t.agentActor() && t.eqActorId(flowCreator.getCreateId()))
+                    .findFirst().orElse(null);
+            if (null != agentFlwTaskActor) {
 
                 // 设置历史代理任务状态为【代理人协办完成的任务】设置被代理人信息
                 hisTask.setTaskType(TaskType.agentAssist);
-                taskActors.stream().filter(t -> !t.agentActor()).findFirst().ifPresent(t -> {
-                    hisTask.setAssignorId(t.getActorId());
-                    hisTask.setAssignor(t.getActorName());
-                    flwTaskActor.setId(t.getId());
-                });
+                taskActors.stream().filter(t -> Objects.equals(agentFlwTaskActor.getAgentId(), t.getActorId()))
+                        .findFirst().ifPresent(t -> {
+                            hisTask.setAssignorId(t.getActorId());
+                            hisTask.setAssignor(t.getActorName());
+
+                            // 更新被代理人信息
+                            FlwTaskActor flwTaskActor = FlwTaskActor.ofAgentIt(flowCreator);
+                            flwTaskActor.setId(t.getId());
+                            taskActorDao.updateById(flwTaskActor);
+                        });
                 hisTaskDao.insert(hisTask);
 
-                // 迁移任务当前代理人员，清理其它代理人
-                this.moveToHisTaskActor(Collections.singletonList(flwTaskActor));
-                taskActorDao.deleteByTaskIdAndWeight(flwTask.getId(), 1);
+                // 迁移任务当前代理人员
+                hisTaskActorDao.insert(FlwHisTaskActor.of(agentFlwTaskActor));
+
+                // 清理其它代理人
+                taskActorDao.deleteByTaskIdAndAgentType(flwTask.getId(), 0);
 
                 // 代理人完成任务，当前任务设置为代理人归还任务，代理人信息变更
                 FlwTask newFlwTask = new FlwTask();
@@ -379,15 +387,9 @@ public class TaskServiceImpl implements TaskService {
 
         // 删除任务参与者
         taskActorDao.deleteById(taskActor.getId());
+
         // 插入当前用户ID作为唯一参与者
-        FlwTaskActor ta = FlwTaskActor.of(flowCreator, flwTask);
-        ta.setAgentId(taskActor.getActorId());
-        ta.setAgentType(0);
-        Map<String, Object> map = new HashMap<>();
-        map.put("actorType", taskActor.getActorType());
-        map.put("actorName", taskActor.getActorName());
-        ta.setExtendOf(map);
-        taskActorDao.insert(ta);
+        taskActorDao.insert(FlwTaskActor.ofAgent(flowCreator, flwTask, taskActor));
 
         // 任务监听器通知
         this.taskNotify(EventType.claim, () -> flwTask, null, flowCreator);
@@ -425,7 +427,7 @@ public class TaskServiceImpl implements TaskService {
             flwTask.setAssignorId(afc.getCreateId());
             flwTask.setAssignor(assigneeFlowCreators.stream().map(FlowCreator::getCreateBy).collect(Collectors.joining(", ")));
             // 分配代理人可见代理任务
-            assigneeFlowCreators.forEach(t -> taskActorDao.insert(FlwTaskActor.of(t, dbFlwTask, 1)));
+            assigneeFlowCreators.forEach(t -> taskActorDao.insert(FlwTaskActor.ofAgent(t, dbFlwTask, flwTaskActor)));
         } else {
             // 设置委托人信息
             flwTask.setAssignorId(flowCreator.getCreateId());

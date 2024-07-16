@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -60,9 +62,6 @@ public class FlwTaskActor implements Serializable {
      * <p>
      * 票签任务时，该值为不同处理人员的分量比例
      * </p>
-     * <p>
-     * 代理任务时，该值为 1 时为代理人
-     * </p>
      */
     protected Integer weight;
     /**
@@ -84,23 +83,38 @@ public class FlwTaskActor implements Serializable {
      * @return true 是 false 否
      */
     public boolean agentActor() {
-        return Objects.equals(1, this.weight);
+        return Objects.equals(0, this.actorType);
     }
 
     public boolean eqActorId(String actorId) {
         return Objects.equals(this.actorId, actorId);
     }
 
-    public static FlwTaskActor of(FlowCreator flowCreator, FlwTask flwTask, Integer weight) {
-        FlwTaskActor flwTaskActor = of(flowCreator, flwTask);
-        flwTaskActor.setWeight(weight);
-        return flwTaskActor;
-    }
-
     public static FlwTaskActor of(FlowCreator flowCreator, FlwTask flwTask) {
         FlwTaskActor flwTaskActor = ofUser(flowCreator.getTenantId(), flowCreator.getCreateId(), flowCreator.getCreateBy());
         flwTaskActor.setInstanceId(flwTask.getInstanceId());
         flwTaskActor.setTaskId(flwTask.getId());
+        return flwTaskActor;
+    }
+
+    public static FlwTaskActor ofAgentIt(FlowCreator flowCreator) {
+        FlwTaskActor flwTaskActor = new FlwTaskActor();
+        flwTaskActor.setAgentId(flowCreator.getCreateId());
+        flwTaskActor.setAgentType(1);
+        Map<String, Object> map = new HashMap<>();
+        map.put("createBy", flowCreator.getCreateBy());
+        flwTaskActor.setExtendOf(map);
+        return flwTaskActor;
+    }
+
+    public static FlwTaskActor ofAgent(FlowCreator flowCreator, FlwTask flwTask, FlwTaskActor agentTaskActor) {
+        FlwTaskActor flwTaskActor = of(flowCreator, flwTask);
+        flwTaskActor.setAgentId(agentTaskActor.getActorId());
+        flwTaskActor.setAgentType(0);
+        Map<String, Object> map = new HashMap<>();
+        map.put("actorType", agentTaskActor.getActorType());
+        map.put("actorName", agentTaskActor.getActorName());
+        flwTaskActor.setExtendOf(map);
         return flwTaskActor;
     }
 

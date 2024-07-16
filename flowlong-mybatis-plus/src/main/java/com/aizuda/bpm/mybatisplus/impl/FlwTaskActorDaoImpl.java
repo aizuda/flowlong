@@ -55,10 +55,10 @@ public class FlwTaskActorDaoImpl implements FlwTaskActorDao {
     }
 
     @Override
-    public boolean deleteByTaskIdAndWeight(Long taskId, int weight) {
+    public boolean deleteByTaskIdAndAgentType(Long taskId, int agentType) {
         return taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery()
                 .eq(FlwTaskActor::getTaskId, taskId)
-                .eq(FlwTaskActor::getWeight, weight)) > 0;
+                .eq(FlwTaskActor::getAgentType, agentType)) > 0;
     }
 
     @Override
