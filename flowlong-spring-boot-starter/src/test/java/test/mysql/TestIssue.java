@@ -273,6 +273,7 @@ public class TestIssue extends MysqlTest {
     }
 
     /**
+     * 测试角色顺序签
      * <a href="https://gitee.com/aizuda/flowlong/issues/IAAVIR">多角色会签顺序签或签</a>
      */
     @Test
@@ -299,7 +300,79 @@ public class TestIssue extends MysqlTest {
             // 执行认领逻辑
             this.executeTask(instance.getId(), testCreator);
 
+            // 流程结束
+        });
+    }
 
+    /**
+     * 测试角色会签
+     */
+    @Test
+    public void test_IAAVIR_countersign() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_IAAVIR_countersign.json", testCreator, false);
+
+        // 启动流程
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 执行任务认领【部门主管】【采购经理】
+            this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
+                    .claim(flwTask.getId(), testCreator));
+
+            // 执行 2 次认领逻辑
+            this.executeTask(instance.getId(), testCreator);
+
+            // 流程结束
+        });
+    }
+
+    /**
+     * 测试角色或签
+     */
+    @Test
+    public void test_IAAVIR_orSign() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_IAAVIR_orSign.json", testCreator, false);
+
+        // 启动流程
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 执行任务认领【部门主管】
+            this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
+                    .claim(flwTask.getId(), testCreator));
+
+            // 执行认领逻辑
+            this.executeTask(instance.getId(), testCreator);
+
+            // 流程结束
+        });
+    }
+
+    /**
+     * 测试角色票签
+     */
+    @Test
+    public void test_IAAVIR_voteSign() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_IAAVIR_voteSign.json", testCreator, false);
+
+        // 启动流程
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 执行任务认领【部门主管】
+            this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
+                    .claim(flwTask.getId(), testCreator));
+
+            // 执行认领逻辑
+            this.executeTask(instance.getId(), testCreator);
+
+            // 超过 50% 流程结束
         });
     }
 

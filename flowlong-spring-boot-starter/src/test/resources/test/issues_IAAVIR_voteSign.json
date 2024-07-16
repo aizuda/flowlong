@@ -1,6 +1,6 @@
 {
-  "key": "issues_I9O8GV",
-  "name": "请假审批（角色顺序签）",
+  "key": "issues_IAAVIR_voteSign",
+  "name": "请假审批（角色票签）",
   "nodeConfig": {
     "nodeName": "发起人",
     "nodeKey": "flw001",
@@ -14,11 +14,13 @@
       "nodeAssigneeList": [
         {
           "id": "role001",
-          "name": "部门主管"
+          "name": "部门主管",
+          "weight": 60
         },
         {
           "id": "role002",
-          "name": "采购经理"
+          "name": "采购经理",
+          "weight": 40
         }
       ],
       "examineLevel": 1,
@@ -27,7 +29,7 @@
       "termAuto": false,
       "term": 0,
       "termMode": 1,
-      "examineMode": 1,
+      "examineMode": 4,
       "directorMode": 0
     }
   }
