@@ -289,4 +289,52 @@ public class ModelHelper {
     public static String generateNodeKey() {
         return "flk" + System.currentTimeMillis();
     }
+
+    /**
+     * 获取所有 NodeModel 节点数组
+     * @return JSON BPM 节点数组
+     */
+    public static List<NodeModel> getAllNextConditionNode(NodeModel nodeModel) {
+        List<NodeModel> nodeModels = new ArrayList<>();
+        if (null != nodeModel) {
+            if (nodeModel.conditionNode()) {
+                List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+                if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                    for (ConditionNode conditionNode : conditionNodes) {
+                        // 条件节点分支子节点
+                        nodeModels.addAll(getAllNextConditionNode(conditionNode.getChildNode()));
+                    }
+                }
+
+                // 条件节点子节点
+                nodeModels.addAll(getAllNextConditionNode(nodeModel.getChildNode()));
+            } else if (nodeModel.parallelNode()) {
+                // 并行节点
+                for (NodeModel node : nodeModel.getParallelNodes()) {
+                    nodeModels.addAll(getAllNextConditionNode(node));
+                }
+            } else {
+                nodeModels.add(nodeModel);
+                // 找子节点
+                NodeModel childNodeModel = nodeModel.getChildNode();
+                if (null != childNodeModel) {
+                    nodeModels.addAll(getAllNextConditionNode(childNodeModel));
+                }
+            }
+        }
+        return nodeModels;
+    }
+
+    /**
+     * 获取指定 flk NodeModel
+     * @return JSON BPM 节点
+     */
+    public static NodeModel getNodeMode(String flk, NodeModel nodeModel) {
+        List<NodeModel> nodeKeys = getAllNextConditionNode(nodeModel);
+        return nodeKeys.stream()
+                .filter(e -> Objects.equals(flk, e.getNodeKey()))
+                .findFirst()
+                .orElse(null);
+    }
+
 }
