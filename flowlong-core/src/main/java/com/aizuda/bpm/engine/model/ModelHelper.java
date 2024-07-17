@@ -329,7 +329,7 @@ public class ModelHelper {
      * 获取指定 flk NodeModel
      * @return JSON BPM 节点
      */
-    public static NodeModel getNodeMode(String flk, NodeModel nodeModel) {
+    public static NodeModel getNodeModel(String flk, NodeModel nodeModel) {
         List<NodeModel> nodeKeys = getAllNextConditionNode(nodeModel);
         return nodeKeys.stream()
                 .filter(e -> Objects.equals(flk, e.getNodeKey()))
