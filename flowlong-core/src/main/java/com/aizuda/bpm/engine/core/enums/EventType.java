@@ -113,7 +113,11 @@ public enum EventType {
     /**
      * 触发器任务
      */
-    trigger;
+    trigger,
+    /**
+     * 结束
+     */
+    end;
 
     public boolean eq(EventType eventType) {
         return this == eventType;
