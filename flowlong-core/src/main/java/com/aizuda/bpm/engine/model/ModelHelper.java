@@ -192,7 +192,12 @@ public class ModelHelper {
 
                 // 条件节点子节点
                 nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
-            } else {
+            } else if (rootNodeModel.parallelNode()) {
+                // 并行节点
+                for (NodeModel node : rootNodeModel.getParallelNodes()) {
+                    nodeModels.addAll(getRootNodeAllChildNodes(node));
+                }
+            }  else {
                 // 普通节点
                 nodeModels.add(rootNodeModel);
 
@@ -291,46 +296,28 @@ public class ModelHelper {
     }
 
     /**
-     * 获取所有 NodeModel 节点数组
-     * @return JSON BPM 节点数组
+     * 获取动态分配处理人员
+     * @param rootNodeModel 根节点模型
+     * @return 动态分配处理人员
      */
-    public static List<NodeModel> getAllNextConditionNode(NodeModel nodeModel) {
-        List<NodeModel> nodeModels = new ArrayList<>();
-        if (null != nodeModel) {
-            if (nodeModel.conditionNode()) {
-                List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
-                if (ObjectUtils.isNotEmpty(conditionNodes)) {
-                    for (ConditionNode conditionNode : conditionNodes) {
-                        // 条件节点分支子节点
-                        nodeModels.addAll(getAllNextConditionNode(conditionNode.getChildNode()));
-                    }
-                }
-
-                // 条件节点子节点
-                nodeModels.addAll(getAllNextConditionNode(nodeModel.getChildNode()));
-            } else if (nodeModel.parallelNode()) {
-                // 并行节点
-                for (NodeModel node : nodeModel.getParallelNodes()) {
-                    nodeModels.addAll(getAllNextConditionNode(node));
-                }
-            } else {
-                nodeModels.add(nodeModel);
-                // 找子节点
-                NodeModel childNodeModel = nodeModel.getChildNode();
-                if (null != childNodeModel) {
-                    nodeModels.addAll(getAllNextConditionNode(childNodeModel));
-                }
-            }
-        }
-        return nodeModels;
+    public static Map<String, DynamicAssignee> getAssigneeMap(NodeModel rootNodeModel) {
+        Map<String, DynamicAssignee> assigneeMap = new HashMap<>();
+        List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
+        nodeModels.forEach(n->{
+            DynamicAssignee dynamicAssignee = new DynamicAssignee();
+            dynamicAssignee.setType(n.getType());
+            dynamicAssignee.setAssigneeList(n.getNodeAssigneeList());
+            assigneeMap.put(n.getNodeKey(),dynamicAssignee);
+        });
+        return assigneeMap;
     }
 
     /**
      * 获取指定 flk NodeModel
      * @return JSON BPM 节点
      */
-    public static NodeModel getNodeModel(String flk, NodeModel nodeModel) {
-        List<NodeModel> nodeKeys = getAllNextConditionNode(nodeModel);
+    public static NodeModel getNodeModel(String flk, NodeModel rootNodeModel) {
+        List<NodeModel> nodeKeys = getRootNodeAllChildNodes(rootNodeModel);
         return nodeKeys.stream()
                 .filter(e -> Objects.equals(flk, e.getNodeKey()))
                 .findFirst()
