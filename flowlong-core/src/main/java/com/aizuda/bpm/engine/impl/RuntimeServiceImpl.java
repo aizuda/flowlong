@@ -204,7 +204,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.create, () -> flwHisInstance, flowCreator);
+        this.instanceNotify(EventType.start, () -> flwHisInstance, flowCreator);
     }
 
     @Override
