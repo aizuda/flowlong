@@ -182,8 +182,8 @@ CREATE TABLE "flw_his_task_actor" (
      "actor_name" NVARCHAR2(100) NOT NULL,
      "actor_type" NUMBER(11,0) NOT NULL,
      "weight" NUMBER(11,0),
-     "agent_id" NVARCHAR2(100) NOT NULL,
-     "agent_type" NUMBER(11,0) NOT NULL,
+     "agent_id" NVARCHAR2(100),
+     "agent_type" NUMBER(11,0),
      "extend" NCLOB
 )
     LOGGING
@@ -406,8 +406,8 @@ CREATE TABLE "flw_task_actor" (
      "actor_name" NVARCHAR2(100) NOT NULL,
      "actor_type" NUMBER(11,0) NOT NULL,
      "weight" NUMBER(11,0),
-     "agent_id" NVARCHAR2(100) NOT NULL,
-     "agent_type" NUMBER(11,0) NOT NULL,
+     "agent_id" NVARCHAR2(100),
+     "agent_type" NUMBER(11,0),
      "extend" NCLOB
 )
     LOGGING

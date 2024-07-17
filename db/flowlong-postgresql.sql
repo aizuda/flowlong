@@ -12,8 +12,8 @@ CREATE TABLE "public"."flw_his_task_actor" (
     "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_type" int4 NOT NULL,
     "weight" int4,
-    "agent_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-    "agent_type" int4 NOT NULL,
+    "agent_id" varchar(100) COLLATE "pg_catalog"."default",
+    "agent_type" int4,
     "extend" text COLLATE "pg_catalog"."default"
 )
 ;
@@ -100,8 +100,8 @@ CREATE TABLE "public"."flw_task_actor" (
     "actor_name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "actor_type" int4 NOT NULL,
     "weight" int4,
-    "agent_id" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
-    "agent_type" int4 NOT NULL,
+    "agent_id" varchar(100) COLLATE "pg_catalog"."default",
+    "agent_type" int4,
     "extend" text COLLATE "pg_catalog"."default"
 )
 ;
