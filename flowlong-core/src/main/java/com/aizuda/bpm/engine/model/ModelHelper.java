@@ -194,10 +194,10 @@ public class ModelHelper {
                 nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
             } else if (rootNodeModel.parallelNode()) {
                 // 并行节点
-                for (NodeModel node : rootNodeModel.getParallelNodes()) {
-                    nodeModels.addAll(getRootNodeAllChildNodes(node));
+                for (NodeModel nodeModel : rootNodeModel.getParallelNodes()) {
+                    nodeModels.addAll(getRootNodeAllChildNodes(nodeModel));
                 }
-            }  else {
+            } else {
                 // 普通节点
                 nodeModels.add(rootNodeModel);
 
@@ -297,29 +297,24 @@ public class ModelHelper {
 
     /**
      * 获取动态分配处理人员
+     *
      * @param rootNodeModel 根节点模型
      * @return 动态分配处理人员
      */
     public static Map<String, DynamicAssignee> getAssigneeMap(NodeModel rootNodeModel) {
-        Map<String, DynamicAssignee> assigneeMap = new HashMap<>();
-        List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
-        nodeModels.forEach(n->{
-            DynamicAssignee dynamicAssignee = new DynamicAssignee();
-            dynamicAssignee.setType(n.getType());
-            dynamicAssignee.setAssigneeList(n.getNodeAssigneeList());
-            assigneeMap.put(n.getNodeKey(),dynamicAssignee);
-        });
-        return assigneeMap;
+        return getRootNodeAllChildNodes(rootNodeModel).stream().collect(Collectors.toMap(NodeModel::getNodeKey, DynamicAssignee::ofNodeModel));
     }
 
     /**
-     * 获取指定 flk NodeModel
+     * 获取指定节点KEY模型信息
+     *
+     * @param nodeKey       节点 KEY
+     * @param rootNodeModel 根节点模型
      * @return JSON BPM 节点
      */
-    public static NodeModel getNodeModel(String flk, NodeModel rootNodeModel) {
-        List<NodeModel> nodeKeys = getRootNodeAllChildNodes(rootNodeModel);
-        return nodeKeys.stream()
-                .filter(e -> Objects.equals(flk, e.getNodeKey()))
+    public static NodeModel getNodeModel(String nodeKey, NodeModel rootNodeModel) {
+        return getRootNodeAllChildNodes(rootNodeModel).stream()
+                .filter(e -> Objects.equals(nodeKey, e.getNodeKey()))
                 .findFirst()
                 .orElse(null);
     }
