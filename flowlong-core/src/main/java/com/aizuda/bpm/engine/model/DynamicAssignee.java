@@ -40,6 +40,10 @@ public class DynamicAssignee {
         return this;
     }
 
+    public static DynamicAssignee ofNodeModel(NodeModel nodeModel) {
+        return builder().assigneeList(nodeModel.getNodeAssigneeList()).type(nodeModel.getType());
+    }
+
     public static DynamicAssignee builder() {
         return new DynamicAssignee();
     }

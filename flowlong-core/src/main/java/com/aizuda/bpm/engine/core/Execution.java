@@ -194,7 +194,7 @@ public class Execution implements Serializable {
         /*
          * 结束当前流程实例
          */
-        return engine.runtimeService().complete(this, flwInstance.getId(), endNode);
+        return engine.runtimeService().endInstance(this, flwInstance.getId(), endNode);
     }
 
     /**

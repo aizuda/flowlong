@@ -54,14 +54,14 @@ public interface RuntimeService {
     void addVariable(Long instanceId, Map<String, Object> args);
 
     /**
-     * 流程实例正常完成（审批通过）
+     * 结束流程实例（审批通过）
      *
      * @param execution  {@link Execution}
      * @param instanceId 流程实例ID
      * @param endNode    结束节点
      * @return true 成功 false 失败
      */
-    boolean complete(Execution execution, Long instanceId, NodeModel endNode);
+    boolean endInstance(Execution execution, Long instanceId, NodeModel endNode);
 
     /**
      * 保存流程实例

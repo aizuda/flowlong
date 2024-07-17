@@ -139,7 +139,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public boolean complete(Execution execution, Long instanceId, NodeModel endNode) {
+    public boolean endInstance(Execution execution, Long instanceId, NodeModel endNode) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null != flwInstance) {
             FlwHisInstance his = new FlwHisInstance();
