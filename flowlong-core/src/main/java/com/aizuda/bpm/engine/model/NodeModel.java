@@ -94,6 +94,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer selectMode;
     /**
+     * 超时自动审批
+     */
+    private Boolean termAuto;
+    /**
      * 审批期限（小时）
      */
     private Integer term;
@@ -178,13 +182,15 @@ public class NodeModel implements ModelInstance, Serializable {
      * 父节点，模型 json 不存在该属性、属于逻辑节点
      */
     private NodeModel parentNode;
-
     /**
      * 并行节点
      * <p>相当于并行网关</p>
      */
     private List<NodeModel> parallelNodes;
-
+    /**
+     * 触发器类型 1，立即执行 2，延迟执行
+     */
+    private String triggerType;
     /**
      * 包容节点
      * <p>相当于包容网关</p>
@@ -201,11 +207,6 @@ public class NodeModel implements ModelInstance, Serializable {
      * </p>
      */
     private String delayType;
-
-    /**
-     * 触发器类型 1，立即执行 2，延迟执行
-     */
-    private String triggerType;
 
     /**
      * 执行节点
