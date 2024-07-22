@@ -61,6 +61,10 @@ public enum TaskType {
      */
     parallelBranch(8),
     /**
+     * 包容分支
+     */
+    inclusiveBranch(9),
+    /**
      * 转办、代理人办理完任务直接进入下一个节点
      */
     transfer(10),

@@ -63,7 +63,7 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 节点类型
      * <p>
-     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支
+     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支
      * </p>
      */
     private Integer type;
@@ -181,8 +181,15 @@ public class NodeModel implements ModelInstance, Serializable {
 
     /**
      * 并行节点
+     * <p>相当于并行网关</p>
      */
     private List<NodeModel> parallelNodes;
+
+    /**
+     * 包容节点
+     * <p>相当于包容网关</p>
+     */
+    private List<NodeModel> inclusiveNodes;
 
     /**
      * 延时处理类型 1，固定时长 2，自动计算
@@ -390,6 +397,15 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean parallelNode() {
         return TaskType.parallelBranch.eq(type);
+    }
+
+    /**
+     * 判断是否为包容节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean inclusiveNode() {
+        return TaskType.inclusiveBranch.eq(type);
     }
 
     /**

@@ -143,6 +143,11 @@ public class ModelHelper {
                 for (NodeModel node : nodeModel.getParallelNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(node));
                 }
+            } else if (nodeModel.inclusiveNode()) {
+                // 包容节点
+                for (NodeModel node : nodeModel.getInclusiveNodes()) {
+                    nodeKeys.addAll(getAllNextConditionNodeKeys(node));
+                }
             } else {
                 if (!nodeModel.ccNode()) {
                     // 非抄送节点
@@ -195,6 +200,11 @@ public class ModelHelper {
             } else if (rootNodeModel.parallelNode()) {
                 // 并行节点
                 for (NodeModel nodeModel : rootNodeModel.getParallelNodes()) {
+                    nodeModels.addAll(getRootNodeAllChildNodes(nodeModel));
+                }
+            } else if (rootNodeModel.inclusiveNode()) {
+                // 包容节点
+                for (NodeModel nodeModel : rootNodeModel.getInclusiveNodes()) {
                     nodeModels.addAll(getRootNodeAllChildNodes(nodeModel));
                 }
             } else {
