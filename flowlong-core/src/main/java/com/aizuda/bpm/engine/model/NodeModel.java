@@ -222,7 +222,11 @@ public class NodeModel implements ModelInstance, Serializable {
              * 并行执行
              */
             for (NodeModel parallelNode : parallelNodes) {
-                parallelNode.execute(flowLongContext, execution);
+                if (TaskType.conditionNode.eq(parallelNode.getType())) {
+                    parallelNode.getChildNode().execute(flowLongContext, execution);
+                } else {
+                    parallelNode.execute(flowLongContext, execution);
+                }
             }
             return true;
         }
