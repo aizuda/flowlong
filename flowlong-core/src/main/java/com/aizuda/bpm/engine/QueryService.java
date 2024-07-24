@@ -73,9 +73,10 @@ public interface QueryService {
 
     /**
      * 通过流程实例ID和任务key获取任务列表
-     * @param instanceId
-     * @param taskKey
-     * @return
+     *
+     * @param instanceId 流程实例ID
+     * @param taskKey    任务KEY
+     * @return 任务对象列表
      */
     List<FlwTask> getTasksByInstanceIdAndTaskKey(Long instanceId, String taskKey);
 

@@ -38,8 +38,8 @@ public class FlwTaskActorDaoImpl implements FlwTaskActorDao {
     }
 
     @Override
-    public boolean deleteBatchIds(List<Long> ids) {
-        return taskActorMapper.deleteBatchIds(ids) > 0;
+    public boolean deleteByIds(List<Long> ids) {
+        return taskActorMapper.deleteByIds(ids) > 0;
     }
 
     @Override

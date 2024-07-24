@@ -265,7 +265,7 @@ public class TaskServiceImpl implements TaskService {
             this.moveToHisTaskActor(taskActorDao.selectListByTaskIds(taskIds));
 
             // 删除会签任务
-            return taskDao.deleteBatchIds(taskIds);
+            return taskDao.deleteByIds(taskIds);
         }
 
         // 迁移任务至历史表
@@ -583,9 +583,9 @@ public class TaskServiceImpl implements TaskService {
             List<Long> taskActorIds = taskActorDao.selectListByTaskIds(taskIds)
                     .stream().map(FlwTaskActor::getId).collect(Collectors.toList());
             if (ObjectUtils.isNotEmpty(taskActorIds)) {
-                taskActorDao.deleteBatchIds(taskActorIds);
+                taskActorDao.deleteByIds(taskActorIds);
             }
-            taskDao.deleteBatchIds(flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+            taskDao.deleteByIds(flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
             // 任务监听器通知
             this.taskNotify(EventType.withdraw, () -> hisTask, null, flowCreator);

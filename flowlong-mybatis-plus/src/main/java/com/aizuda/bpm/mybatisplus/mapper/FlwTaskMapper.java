@@ -23,18 +23,6 @@ import java.util.List;
 public interface FlwTaskMapper extends BaseMapper<FlwTask> {
 
     /**
-     * 获取任务并检查ID的合法性
-     *
-     * @param id 任务ID
-     * @return {@link FlwTask}
-     */
-    default FlwTask getCheckById(Long id) {
-        FlwTask flwTask = selectById(id);
-        Assert.isNull(flwTask, "The specified task [id=" + id + "] does not exist");
-        return flwTask;
-    }
-
-    /**
      * 根据流程实例ID获取任务列表
      *
      * @param instanceId 流程实例ID

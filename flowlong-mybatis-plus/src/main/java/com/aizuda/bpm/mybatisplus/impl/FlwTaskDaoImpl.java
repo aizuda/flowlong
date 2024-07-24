@@ -44,8 +44,8 @@ public class FlwTaskDaoImpl implements FlwTaskDao {
     }
 
     @Override
-    public boolean deleteBatchIds(List<Long> ids) {
-        return taskMapper.deleteBatchIds(ids) > 0;
+    public boolean deleteByIds(List<Long> ids) {
+        return taskMapper.deleteByIds(ids) > 0;
     }
 
     @Override
@@ -76,6 +76,7 @@ public class FlwTaskDaoImpl implements FlwTaskDao {
                 .eq(FlwTask::getInstanceId, instanceId)
                 .eq(FlwTask::getTaskName, taskName));
     }
+
     @Override
     public List<FlwTask> selectListByInstanceIdAndTaskKey(Long instanceId, String taskKey) {
         return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery()

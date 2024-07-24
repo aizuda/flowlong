@@ -27,7 +27,7 @@ public interface FlwTaskDao {
 
     boolean deleteByInstanceIds(List<Long> instanceIds);
 
-    boolean deleteBatchIds(List<Long> ids);
+    boolean deleteByIds(List<Long> ids);
 
     boolean updateById(FlwTask flwTask);
 
@@ -47,9 +47,10 @@ public interface FlwTaskDao {
 
     /**
      * 根据流程实例ID和任务KEY查询任务
-     * @param instanceId
-     * @param taskKey
-     * @return
+     *
+     * @param instanceId 流程实例ID
+     * @param taskKey    任务KEY
+     * @return 任务列表
      */
     List<FlwTask> selectListByInstanceIdAndTaskKey(Long instanceId, String taskKey);
 

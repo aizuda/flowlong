@@ -23,7 +23,7 @@ public interface FlwTaskActorDao {
 
     boolean deleteById(Long id);
 
-    boolean deleteBatchIds(List<Long> ids);
+    boolean deleteByIds(List<Long> ids);
 
     boolean deleteByTaskId(Long taskId);
 
