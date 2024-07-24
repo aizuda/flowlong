@@ -5,10 +5,7 @@ package com.aizuda.bpm.engine;
 
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
-import com.aizuda.bpm.engine.core.enums.PerformType;
-import com.aizuda.bpm.engine.core.enums.TaskState;
-import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -61,6 +58,17 @@ public interface TaskService {
      * @return Task 任务对象
      */
     FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType);
+
+    /**
+     * 强制完成所有任务
+     *
+     * @param instanceId    流程实例ID
+     * @param flowCreator   处理人员
+     * @param instanceState 流程实例最终状态
+     * @param eventType     监听事件类型
+     * @return true 成功 false 失败
+     */
+    boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, EventType eventType);
 
     /**
      * 执行节点跳转任务

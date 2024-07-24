@@ -106,6 +106,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * 强制完成所有任务
+     */
+    @Override
+    public boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, EventType eventType) {
+        List<FlwTask> flwTasks = taskDao.selectListByInstanceId(instanceId);
+        if (null != flwTasks) {
+            TaskState taskState = TaskState.of(instanceState);
+            flwTasks.forEach(t -> {
+                this.moveToHisTask(t, taskState, flowCreator);
+
+                // 任务监听器通知
+                this.taskNotify(eventType, () -> t, null, flowCreator);
+            });
+        }
+        return true;
+    }
+
+    /**
      * 执行节点跳转任务
      */
     @Override
@@ -178,14 +196,18 @@ public class TaskServiceImpl implements TaskService {
      * @return true 成功 false 失败
      */
     protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
+        // 获取当前所有处理人员
+        List<FlwTaskActor> taskActors = taskActorDao.selectListByTaskId(flwTask.getId());
+        if (ObjectUtils.isEmpty(taskActors)) {
+            // 不存在处理人，不再继续执行
+            return true;
+        }
+
         // 迁移 task 信息到 flw_his_task
         FlwHisTask hisTask = FlwHisTask.of(flwTask);
         hisTask.setTaskState(taskState);
         hisTask.setFlowCreator(flowCreator);
         hisTask.calculateDuration();
-
-        // 获取当前所有处理人员
-        List<FlwTaskActor> taskActors = taskActorDao.selectListByTaskId(flwTask.getId());
 
         // 代理人审批
         if (TaskType.agent.eq(flwTask.getTaskType())) {

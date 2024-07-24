@@ -12,7 +12,6 @@ import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
-import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -269,8 +268,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                                     InstanceState instanceState, EventType eventType) {
 
         // 实例相关任务强制完成
-        queryService.getActiveTasksByInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t ->
-                taskService.executeTask(t.getId(), flowCreator, null, TaskState.of(instanceState), eventType)));
+        taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType);
 
         // 更新历史实例设置状态为终止
         FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
