@@ -4,7 +4,6 @@
 package com.aizuda.bpm.engine.dao;
 
 import com.aizuda.bpm.engine.assist.Assert;
-import com.aizuda.bpm.engine.entity.FlwHisTask;
 import com.aizuda.bpm.engine.entity.FlwTask;
 
 import java.util.Date;
@@ -45,6 +44,14 @@ public interface FlwTaskDao {
     List<FlwTask> selectListByInstanceId(Long instanceId);
 
     List<FlwTask> selectListByInstanceIdAndTaskName(Long instanceId, String taskName);
+
+    /**
+     * 根据流程实例ID和任务KEY查询任务
+     * @param instanceId
+     * @param taskKey
+     * @return
+     */
+    List<FlwTask> selectListByInstanceIdAndTaskKey(Long instanceId, String taskKey);
 
     List<FlwTask> selectListByInstanceIdAndTaskNames(Long instanceId, List<String> taskNames);
 

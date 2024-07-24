@@ -235,7 +235,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             /*
              * 会签未全部完成，不继续执行节点模型
              */
-            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskName(flwInstance.getId(), flwTask.getTaskName());
+            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskKey(flwInstance.getId(), flwTask.getTaskKey());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return true;
             }

@@ -76,6 +76,12 @@ public class FlwTaskDaoImpl implements FlwTaskDao {
                 .eq(FlwTask::getInstanceId, instanceId)
                 .eq(FlwTask::getTaskName, taskName));
     }
+    @Override
+    public List<FlwTask> selectListByInstanceIdAndTaskKey(Long instanceId, String taskKey) {
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery()
+                .eq(FlwTask::getInstanceId, instanceId)
+                .eq(FlwTask::getTaskKey, taskKey));
+    }
 
     @Override
     public List<FlwTask> selectListByInstanceIdAndTaskNames(Long instanceId, List<String> taskNames) {

@@ -73,6 +73,10 @@ public class QueryServiceImpl implements QueryService {
     public List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
         return taskDao.selectListByInstanceIdAndTaskName(instanceId, taskName);
     }
+    @Override
+    public List<FlwTask> getTasksByInstanceIdAndTaskKey(Long instanceId, String taskKey) {
+        return taskDao.selectListByInstanceIdAndTaskKey(instanceId, taskKey);
+    }
 
     @Override
     public Optional<List<FlwTaskActor>> getActiveTaskActorsByInstanceId(Long instanceId) {
