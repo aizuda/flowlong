@@ -71,6 +71,14 @@ public interface QueryService {
 
     List<FlwTask> getTasksByInstanceIdAndTaskName(Long instanceId, String taskName);
 
+    /**
+     * 通过流程实例ID和任务key获取任务列表
+     * @param instanceId
+     * @param taskKey
+     * @return
+     */
+    List<FlwTask> getTasksByInstanceIdAndTaskKey(Long instanceId, String taskKey);
+
     default Optional<List<FlwTask>> getActiveTasksByInstanceIdAndTaskName(Long instanceId, String taskName) {
         return Optional.ofNullable(this.getTasksByInstanceIdAndTaskName(instanceId, taskName));
     }
