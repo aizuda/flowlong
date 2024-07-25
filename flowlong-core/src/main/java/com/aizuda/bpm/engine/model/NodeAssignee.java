@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * JSON BPM 分配到任务的人或角色
@@ -39,6 +40,10 @@ public class NodeAssignee implements Serializable {
      * 权重（ 用于票签，多个参与者合计权重 100% ）
      */
     private Integer weight;
+    /**
+     * 扩展配置，用于存储头像、等其它信息
+     */
+    private Map<String, Object> extendConfig;
 
     public static NodeAssignee of(FlwTaskActor flwTaskActor) {
         NodeAssignee nodeAssignee = new NodeAssignee();
