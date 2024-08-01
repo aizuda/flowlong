@@ -5,6 +5,7 @@ package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.core.enums.AgentType;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import lombok.Getter;
 import lombok.Setter;
@@ -69,7 +70,7 @@ public class FlwTaskActor implements Serializable {
      */
     protected String agentId;
     /**
-     * 代理人类型 0，代理 1，被代理
+     * 代理人类型 0，代理 1，被代理 2，认领角色 3，认领部门
      */
     protected Integer agentType;
     /**
@@ -107,10 +108,10 @@ public class FlwTaskActor implements Serializable {
         return flwTaskActor;
     }
 
-    public static FlwTaskActor ofAgent(FlowCreator flowCreator, FlwTask flwTask, FlwTaskActor agentTaskActor) {
+    public static FlwTaskActor ofAgent(AgentType agentType, FlowCreator flowCreator, FlwTask flwTask, FlwTaskActor agentTaskActor) {
         FlwTaskActor flwTaskActor = of(flowCreator, flwTask);
         flwTaskActor.setAgentId(agentTaskActor.getActorId());
-        flwTaskActor.setAgentType(0);
+        flwTaskActor.setAgentType(agentType.getValue());
         Map<String, Object> map = new HashMap<>();
         map.put("actorType", agentTaskActor.getActorType());
         map.put("actorName", agentTaskActor.getActorName());

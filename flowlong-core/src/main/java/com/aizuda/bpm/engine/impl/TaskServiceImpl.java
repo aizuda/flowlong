@@ -411,7 +411,7 @@ public class TaskServiceImpl implements TaskService {
         taskActorDao.deleteById(taskActor.getId());
 
         // 插入当前用户ID作为唯一参与者
-        taskActorDao.insert(FlwTaskActor.ofAgent(flowCreator, flwTask, taskActor));
+        taskActorDao.insert(FlwTaskActor.ofAgent(AgentType.claimRole, flowCreator, flwTask, taskActor));
 
         // 任务监听器通知
         this.taskNotify(EventType.claim, () -> flwTask, null, flowCreator);
@@ -449,7 +449,7 @@ public class TaskServiceImpl implements TaskService {
             flwTask.setAssignorId(afc.getCreateId());
             flwTask.setAssignor(assigneeFlowCreators.stream().map(FlowCreator::getCreateBy).collect(Collectors.joining(", ")));
             // 分配代理人可见代理任务
-            assigneeFlowCreators.forEach(t -> taskActorDao.insert(FlwTaskActor.ofAgent(t, dbFlwTask, flwTaskActor)));
+            assigneeFlowCreators.forEach(t -> taskActorDao.insert(FlwTaskActor.ofAgent(AgentType.agent, t, dbFlwTask, flwTaskActor)));
         } else {
             // 设置委托人信息
             flwTask.setAssignorId(flowCreator.getCreateId());
