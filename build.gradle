@@ -12,13 +12,12 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/spring' }
         maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://repo.spring.io/release' }
-        maven { url 'https://repo.spring.io/milestone' }
         mavenCentral()
     }
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.29.0")
     }
 }
 
@@ -26,17 +25,16 @@ description = "FlowLong BPM"
 
 // 项目配置
 allprojects {
-    group "com.aizuda"
-    version "0.0.11"
+    group APP_GROUP
+    version APP_VERSION
 }
-
 
 // 子模块配置
 subprojects {
     apply plugin: 'java-library'
-    apply plugin: 'maven-publish'
+    apply plugin: 'com.vanniktech.maven.publish'
     apply plugin: 'signing'
-    apply plugin: "io.spring.dependency-management"
+    apply plugin: 'io.spring.dependency-management'
 
     tasks.withType(JavaCompile).configureEach {
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:-serial"
@@ -54,9 +52,6 @@ subprojects {
         maven { url 'https://maven.aliyun.com/repository/central' }
         maven { url 'https://maven.aliyun.com/repository/spring' }
         maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://repo.spring.io/release' }
-        maven { url 'https://repo.spring.io/milestone' }
-        maven { url 'https://repo.spring.io/snapshot' }
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         mavenCentral()
     }
@@ -137,68 +132,6 @@ subprojects {
     tasks.register('javadocJar', Jar) {
         archiveClassifier = 'javadoc'
         from javadoc
-    }
-
-    tasks.configureEach { task ->
-        if (task.name.contains('signMavenJavaPublication')) {
-            task.enabled = new File(project.property('signing.secretKeyRingFile') as String).isFile()
-        }
-    }
-
-    signing {
-        sign publishing.publications
-    }
-
-    publishing {
-        repositories {
-            maven {
-                name = "OSSRH"
-                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-
-                credentials {
-                    username System.getenv("MAVEN_USERNAME")
-                    password System.getenv("MAVEN_PASSWORD")
-                }
-            }
-        }
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-
-                artifact sourcesJar
-                artifact javadocJar
-
-                pom {
-                    name = 'flowlong'
-                    packaging 'jar'
-                    description = 'flowlong bpm engine'
-                    url = 'https://github.com/aizuda/flowlong'
-
-                    scm {
-                        connection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
-                        developerConnection = 'scm:git@github.com:Codearte/gradle-nexus-staging-plugin.git'
-                        url = 'https://github.com/aizuda/flowlong'
-                    }
-
-                    licenses {
-                        license {
-                            name = 'The AGPL License, Version 3.0'
-                            url = 'https://www.gnu.org/licenses/agpl-3.0'
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = 'aizuda'
-                            name = '青苗'
-                            email = 'jobob@qq.com'
-                        }
-                    }
-                }
-            }
-        }
     }
 
     // 编译任务忽略案例模块
