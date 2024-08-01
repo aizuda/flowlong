@@ -1,5 +1,19 @@
 # 更新日志
 
+## [v0.0.11] 2024.08.01
+
+- 新增包容分支支持逻辑
+- 优化并行分支逻辑
+- 代理类型区分代理人还是认领角色部门
+- NodeAssignee 新增 extendConfig 扩展属性
+- 修复强制完成所有任务bug
+- 修复afterDoneTask方法，会签获取流程任务list时使用taskName获取任务列表
+- JSON BPM 节点 添加超时自动审批
+- 流程实例监听启动修改为 start 事件
+- 审批结束 流程实例监听器通知 EventType.end
+- ModelHelper 新增 getRootNodeAllChildNodes 方法合并、获取动态分配处理人
+- 调整脚本代理相关字段非必填
+
 ## [v0.0.10] 2024.07.16
 
 - 优化触发器立即执行逻辑
