@@ -299,18 +299,25 @@ public class NodeModel implements ModelInstance, Serializable {
         if (Objects.equals(this.nodeKey, nodeKey)) {
             return this;
         }
-        if (null != conditionNodes) {
-            NodeModel fromConditionNode = getFromConditionNodes(nodeKey);
-            if (fromConditionNode != null) {
-                return fromConditionNode;
-            }
+
+        // 条件分支
+        NodeModel fromConditionNode = getFromConditionNodes(nodeKey);
+        if (fromConditionNode != null) {
+            return fromConditionNode;
         }
-        if (null != parallelNodes) {
-            NodeModel fromParallelNode = getFromParallelNode(nodeKey);
-            if (fromParallelNode != null) {
-                return fromParallelNode;
-            }
+
+        // 并行分支
+        NodeModel fromParallelNode = this.getFromNodeModels(nodeKey, parallelNodes);
+        if (fromParallelNode != null) {
+            return fromParallelNode;
         }
+
+        // 包容分支
+        NodeModel fromInclusiveNode = this.getFromNodeModels(nodeKey, inclusiveNodes);
+        if (fromInclusiveNode != null) {
+            return fromInclusiveNode;
+        }
+
         // 条件节点中没有找到 那么去它的同级子节点中继续查找
         if (null != childNode) {
             return childNode.getNode(nodeKey);
@@ -319,16 +326,18 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
-     * 从并行节点获取key
+     * 从节点列表中获取指定key节点信息
      *
      * @param nodeKey 节点 key
      * @return 模型节点
      */
-    private NodeModel getFromParallelNode(String nodeKey) {
-        for (NodeModel parallelNode : parallelNodes) {
-            NodeModel nodeModel = parallelNode.getNode(nodeKey);
-            if (null != nodeModel) {
-                return nodeModel;
+    private NodeModel getFromNodeModels(String nodeKey, List<NodeModel> nodeModels) {
+        if (null != nodeModels) {
+            for (NodeModel nodeModel : nodeModels) {
+                NodeModel selectNode = nodeModel.getNode(nodeKey);
+                if (null != selectNode) {
+                    return selectNode;
+                }
             }
         }
         return null;
@@ -341,12 +350,14 @@ public class NodeModel implements ModelInstance, Serializable {
      * @return 模型节点
      */
     private NodeModel getFromConditionNodes(String nodeKey) {
-        for (ConditionNode conditionNode : conditionNodes) {
-            NodeModel conditionChildNode = conditionNode.getChildNode();
-            if (null != conditionChildNode) {
-                NodeModel nodeModel = conditionChildNode.getNode(nodeKey);
-                if (null != nodeModel) {
-                    return nodeModel;
+        if (null != conditionNodes) {
+            for (ConditionNode conditionNode : conditionNodes) {
+                NodeModel conditionChildNode = conditionNode.getChildNode();
+                if (null != conditionChildNode) {
+                    NodeModel nodeModel = conditionChildNode.getNode(nodeKey);
+                    if (null != nodeModel) {
+                        return nodeModel;
+                    }
                 }
             }
         }

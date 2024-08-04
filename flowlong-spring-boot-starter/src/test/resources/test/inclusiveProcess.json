@@ -1,0 +1,135 @@
+{
+  "nodeName": "发起人",
+  "type": 0,
+  "nodeAssigneeList": [],
+  "nodeKey": "flk1722779062185",
+  "childNode": {
+    "nodeName": "包容路由",
+    "nodeKey": "flk1722779062177",
+    "type": 9,
+    "inclusiveNodes": [
+      {
+        "nodeName": "包容条件1",
+        "nodeKey": "flk17227790621771",
+        "type": 3,
+        "priorityLevel": 1,
+        "conditionMode": 1,
+        "conditionList": [
+          [
+            {
+              "label": "age",
+              "field": "age",
+              "operator": ">",
+              "value": "7",
+              "type": "custom"
+            }
+          ]
+        ],
+        "childNode": {
+          "nodeName": "审核人",
+          "nodeKey": "flk1722779065762",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "test001",
+              "name": "李小广"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "remind": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "extendConfig": {
+            "formConfig": []
+          }
+        }
+      },
+      {
+        "nodeName": "包容条件2",
+        "nodeKey": "flk17227790621772",
+        "type": 3,
+        "priorityLevel": 2,
+        "conditionMode": 1,
+        "conditionList": [
+          [
+            {
+              "label": "age",
+              "field": "age",
+              "operator": ">",
+              "value": "5",
+              "type": "custom"
+            }
+          ]
+        ],
+        "childNode": {
+          "nodeName": "审核人",
+          "nodeKey": "flk1722779074379",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "test002",
+              "name": "陈小超"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "remind": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "extendConfig": {
+            "formConfig": []
+          }
+        }
+      },
+      {
+        "nodeName": "包容条件3",
+        "nodeKey": "flk1722779072408",
+        "type": 3,
+        "priorityLevel": 3,
+        "conditionMode": 1,
+        "conditionList": []
+      }
+    ],
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "flk1722779157896",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test003",
+          "name": "李小广"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "remind": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "approveSelf": 0,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "extendConfig": {
+        "formConfig": []
+      }
+    }
+  }
+}

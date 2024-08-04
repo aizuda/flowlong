@@ -4,6 +4,9 @@ import com.aizuda.bpm.engine.assist.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/**
+ * 并行分支测试
+ */
 public class TestParallelNode extends MysqlTest {
 
     @Test
