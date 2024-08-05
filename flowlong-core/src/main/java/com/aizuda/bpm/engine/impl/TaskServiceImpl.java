@@ -198,8 +198,9 @@ public class TaskServiceImpl implements TaskService {
     protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
         // 获取当前所有处理人员
         List<FlwTaskActor> taskActors = taskActorDao.selectListByTaskId(flwTask.getId());
-        if (ObjectUtils.isEmpty(taskActors)) {
-            // 不存在处理人，不再继续执行
+        if (taskState != TaskState.autoComplete && taskState != TaskState.autoReject
+                && taskState != TaskState.autoJump && ObjectUtils.isEmpty(taskActors)) {
+            // 非自动处理，不存在处理人，不再继续执行
             return true;
         }
 
@@ -262,7 +263,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 领导审批，代理人归还任务，回收代理人查看权限
-        if (TaskType.agentReturn.eq(flwTask.getTaskType())) {
+        else if (TaskType.agentReturn.eq(flwTask.getTaskType())) {
             hisTaskActorDao.deleteByTaskId(flwTask.getId());
             hisTaskDao.deleteById(flwTask.getId());
 
