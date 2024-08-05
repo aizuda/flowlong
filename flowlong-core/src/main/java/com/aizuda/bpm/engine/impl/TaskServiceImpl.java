@@ -97,6 +97,12 @@ public class TaskServiceImpl implements TaskService {
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args, taskState);
 
+        // 触发器情况直接移除任务
+        if (PerformType.trigger.eq(flwTask.getPerformType())) {
+            taskDao.deleteById(flwTask.getId());
+            return flwTask;
+        }
+
         // 迁移任务至历史表
         this.moveToHisTask(flwTask, taskState, flowCreator);
 
