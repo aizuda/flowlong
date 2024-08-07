@@ -996,6 +996,7 @@ public class TaskServiceImpl implements TaskService {
                 execution.setFlwTask(flwHisTask);
                 // 记录发起人
                 hisTaskActorDao.insert(FlwHisTaskActor.ofFlwHisTask(flwHisTask));
+                flwTask.setId(flwHisTask.getId());
                 flwTasks.add(flwTask);
 
                 // 创建任务监听
