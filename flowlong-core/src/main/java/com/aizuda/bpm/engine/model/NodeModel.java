@@ -219,7 +219,7 @@ public class NodeModel implements ModelInstance, Serializable {
     public boolean execute(FlowLongContext flowLongContext, Execution execution) {
         if (ObjectUtils.isNotEmpty(parallelNodes)) {
             /*
-             * 并行执行
+             * 执行并行分支
              */
             for (NodeModel parallelNode : parallelNodes) {
                 if (TaskType.conditionNode.eq(parallelNode.getType())) {
@@ -227,6 +227,18 @@ public class NodeModel implements ModelInstance, Serializable {
                 } else {
                     parallelNode.execute(flowLongContext, execution);
                 }
+            }
+            return true;
+        }
+
+        if (ObjectUtils.isNotEmpty(inclusiveNodes)) {
+            /*
+             * 执行包容分支
+             */
+            Optional<List<NodeModel>> nodeModelsOptional = flowLongContext.getFlowConditionHandler()
+                    .getInclusiveNodes(flowLongContext, execution, this);
+            if (nodeModelsOptional.isPresent()) {
+                // TODO
             }
             return true;
         }

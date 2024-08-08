@@ -68,4 +68,10 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
         return args;
     }
+
+    @Override
+    public Optional<List<NodeModel>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
+        // TODO
+        return Optional.empty();
+    }
 }

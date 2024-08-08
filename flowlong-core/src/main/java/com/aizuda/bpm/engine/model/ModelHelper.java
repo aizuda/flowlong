@@ -45,15 +45,15 @@ public class ModelHelper {
             }
         }
 
-        //判断当前节点是不是并行分支，需要判断当前并行是否走完
+        // 判断当前节点是不是并行分支，需要判断当前并行是否走完
         if (parentNode.parallelNode()) {
-            //找到另外的分支，看是否列表有执行，有就不能返回childNode
+            // 找到另外的分支，看是否列表有执行，有就不能返回childNode
             if (null != currentTask && Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
-                //都执行完了
+                // 都执行完了
                 return parentNode.getChildNode();
             }
 
-            //有没执行完的
+            // 有没执行完的
             return null;
         }
 
