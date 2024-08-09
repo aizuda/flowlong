@@ -135,6 +135,16 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private List<ConditionNode> conditionNodes;
     /**
+     * 并行节点
+     * <p>相当于并行网关</p>
+     */
+    private List<NodeModel> parallelNodes;
+    /**
+     * 包容节点
+     * <p>相当于包容网关</p>
+     */
+    private List<ConditionNode> inclusiveNodes;
+    /**
      * 审批提醒
      */
     private Boolean remind;
@@ -183,20 +193,9 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private NodeModel parentNode;
     /**
-     * 并行节点
-     * <p>相当于并行网关</p>
-     */
-    private List<NodeModel> parallelNodes;
-    /**
      * 触发器类型 1，立即执行 2，延迟执行
      */
     private String triggerType;
-    /**
-     * 包容节点
-     * <p>相当于包容网关</p>
-     */
-    private List<NodeModel> inclusiveNodes;
-
     /**
      * 延时处理类型 1，固定时长 2，自动计算
      * <p>
@@ -235,11 +234,9 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行包容分支
              */
-            Optional<List<NodeModel>> nodeModelsOptional = flowLongContext.getFlowConditionHandler()
-                    .getInclusiveNodes(flowLongContext, execution, this);
-            if (nodeModelsOptional.isPresent()) {
-                // TODO
-            }
+            flowLongContext.getFlowConditionHandler()
+                    .getInclusiveNodes(flowLongContext, execution, this)
+                    .ifPresent(t -> t.forEach(s -> this.executeConditionNode(flowLongContext, execution, s)));
             return true;
         }
 
@@ -247,30 +244,10 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行条件分支
              */
-            Optional<ConditionNode> conditionNodeOptional = flowLongContext.getFlowConditionHandler()
-                    .getConditionNode(flowLongContext, execution, this);
-            /*
-             * 执行创建条件任务
-             */
-            if (conditionNodeOptional.isPresent()) {
-                NodeModel childNode = conditionNodeOptional.get().getChildNode();
-                if (null == childNode) {
-                    // 当前条件节点无执行节点，进入当前执行条件节点的下一个节点
-                    childNode = this.getChildNode();
-                }
-                if (null != childNode) {
-                    childNode.execute(flowLongContext, execution);
-                } else {
-                    // 查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
-                    if (nextNode().isPresent()) {
-                        nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
-                    } else {
-                        // 不存在任何子节点结束流程
-                        execution.endInstance(this);
-                    }
-                    return true;
-                }
-            }
+            flowLongContext.getFlowConditionHandler()
+                    .getConditionNode(flowLongContext, execution, this)
+                    .ifPresent(t -> this.executeConditionNode(flowLongContext, execution, t));
+            return true;
         }
 
         /*
@@ -302,6 +279,32 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 执行条件节点分支
+     *
+     * @param flowLongContext {@link FlowLongContext}
+     * @param execution       {@link Execution}
+     * @param conditionNode   {@link ConditionNode}
+     */
+    public void executeConditionNode(FlowLongContext flowLongContext, Execution execution, ConditionNode conditionNode) {
+        NodeModel childNode = conditionNode.getChildNode();
+        if (null == childNode) {
+            // 当前条件节点无执行节点，进入当前执行条件节点的下一个节点
+            childNode = this.getChildNode();
+        }
+        if (null != childNode) {
+            childNode.execute(flowLongContext, execution);
+        } else {
+            // 查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
+            if (nextNode().isPresent()) {
+                nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
+            } else {
+                // 不存在任何子节点结束流程
+                execution.endInstance(this);
+            }
+        }
+    }
+
+    /**
      * 获取process定义的指定节点key的节点模型
      *
      * @param nodeKey 节点key
@@ -313,7 +316,7 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         // 条件分支
-        NodeModel fromConditionNode = getFromConditionNodes(nodeKey);
+        NodeModel fromConditionNode = this.getFromConditionNodes(nodeKey, conditionNodes);
         if (fromConditionNode != null) {
             return fromConditionNode;
         }
@@ -325,7 +328,7 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         // 包容分支
-        NodeModel fromInclusiveNode = this.getFromNodeModels(nodeKey, inclusiveNodes);
+        NodeModel fromInclusiveNode = this.getFromConditionNodes(nodeKey, inclusiveNodes);
         if (fromInclusiveNode != null) {
             return fromInclusiveNode;
         }
@@ -340,7 +343,8 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 从节点列表中获取指定key节点信息
      *
-     * @param nodeKey 节点 key
+     * @param nodeKey    节点 key
+     * @param nodeModels 节点模型列表
      * @return 模型节点
      */
     private NodeModel getFromNodeModels(String nodeKey, List<NodeModel> nodeModels) {
@@ -358,10 +362,11 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 从条件节点中获取节点
      *
-     * @param nodeKey 节点 key
+     * @param nodeKey        节点 key
+     * @param conditionNodes 条件节点模型列表
      * @return 模型节点
      */
-    private NodeModel getFromConditionNodes(String nodeKey) {
+    private NodeModel getFromConditionNodes(String nodeKey, List<ConditionNode> conditionNodes) {
         if (null != conditionNodes) {
             for (ConditionNode conditionNode : conditionNodes) {
                 NodeModel conditionChildNode = conditionNode.getChildNode();

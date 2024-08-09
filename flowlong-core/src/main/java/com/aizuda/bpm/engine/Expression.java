@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * EL 表达式
+ * 条件表达式
  *
  * <p>
  * 尊重知识产权，不允许非法使用，后果自负

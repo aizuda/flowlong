@@ -145,8 +145,8 @@ public class ModelHelper {
                 }
             } else if (nodeModel.inclusiveNode()) {
                 // 包容节点
-                for (NodeModel node : nodeModel.getInclusiveNodes()) {
-                    nodeKeys.addAll(getAllNextConditionNodeKeys(node));
+                for (ConditionNode conditionNode : nodeModel.getInclusiveNodes()) {
+                    nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
             } else {
                 if (!nodeModel.ccNode()) {
@@ -204,8 +204,8 @@ public class ModelHelper {
                 }
             } else if (rootNodeModel.inclusiveNode()) {
                 // 包容节点
-                for (NodeModel nodeModel : rootNodeModel.getInclusiveNodes()) {
-                    nodeModels.addAll(getRootNodeAllChildNodes(nodeModel));
+                for (ConditionNode conditionNode : rootNodeModel.getInclusiveNodes()) {
+                    nodeModels.addAll(getRootNodeAllChildNodes(conditionNode.getChildNode()));
                 }
             } else {
                 // 普通节点

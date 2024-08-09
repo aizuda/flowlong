@@ -51,5 +51,5 @@ public interface ConditionNodeHandler {
      * @param nodeModel       节点模型
      * @return true 成功 false 失败
      */
-    Optional<List<NodeModel>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel);
+    Optional<List<ConditionNode>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel);
 }

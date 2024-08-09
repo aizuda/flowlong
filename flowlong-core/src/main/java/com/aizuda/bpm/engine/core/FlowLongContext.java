@@ -101,6 +101,13 @@ public class FlowLongContext {
         }
     }
 
+    /**
+     * 检查并返回条件表达式
+     */
+    public Expression checkExpression() {
+        Assert.isNull(expression, "Interface Expression not implemented");
+        return this.expression;
+    }
 
     /**
      * 流程 JSON 处理器，默认 jackson 实现

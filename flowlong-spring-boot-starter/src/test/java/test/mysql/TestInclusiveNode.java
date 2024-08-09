@@ -15,7 +15,7 @@ public class TestInclusiveNode extends MysqlTest {
         processId = this.deployByResource("test/inclusiveProcess.json", testCreator);
         // 启动指定流程定义ID启动流程实例
         Map<String, Object> args = new HashMap<>();
-        args.put("day", 8);
+        args.put("age", 8);
         flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
         });

@@ -15,6 +15,7 @@ import com.aizuda.bpm.engine.model.ConditionNode;
 import com.aizuda.bpm.engine.model.NodeModel;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 默认流程执行条件处理器
@@ -50,17 +51,16 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
         // 根据正则条件节点选择
         Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
-        Expression expression = flowLongContext.getExpression();
-        Assert.isNull(expression, "Interface Expression not implemented");
+        Expression expression = flowLongContext.checkExpression();
         Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream()
                 .sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                 .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
-        if (!conditionNodeOptional.isPresent()) {
-            // 未发现满足条件分支，使用无条件分支
-            conditionNodeOptional = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
-            Assert.isFalse(conditionNodeOptional.isPresent(), "Not found executable ConditionNode");
+        if (conditionNodeOptional.isPresent()) {
+            return conditionNodeOptional;
         }
-        return conditionNodeOptional;
+
+        // 未发现满足条件分支，使用无条件分支
+        return defaultConditionNode(conditionNodes);
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
@@ -69,9 +69,23 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         return args;
     }
 
+    public Optional<ConditionNode> defaultConditionNode(List<ConditionNode> conditionNodes) {
+        Optional<ConditionNode> cnOpt = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
+        Assert.isFalse(cnOpt.isPresent(), "Not found executable ConditionNode");
+        return cnOpt;
+    }
+
     @Override
-    public Optional<List<NodeModel>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        // TODO
-        return Optional.empty();
+    public Optional<List<ConditionNode>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
+        List<ConditionNode> inclusiveNodes = nodeModel.getInclusiveNodes();
+
+        // 根据正则条件节点选择
+        Expression expression = flowLongContext.checkExpression();
+        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+        List<ConditionNode> cnsOpt = inclusiveNodes.stream().filter(t -> expression.eval(t.getConditionList(), args)).collect(Collectors.toList());
+        if (ObjectUtils.isEmpty(cnsOpt)) {
+            cnsOpt = Collections.singletonList(defaultConditionNode(inclusiveNodes).get());
+        }
+        return Optional.of(cnsOpt);
     }
 }
