@@ -216,6 +216,17 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     @Override
     public boolean execute(FlowLongContext flowLongContext, Execution execution) {
+
+        if (ObjectUtils.isNotEmpty(conditionNodes)) {
+            /*
+             * 执行条件分支
+             */
+            flowLongContext.getFlowConditionHandler()
+                    .getConditionNode(flowLongContext, execution, this)
+                    .ifPresent(t -> this.executeConditionNode(flowLongContext, execution, t));
+            return true;
+        }
+
         if (ObjectUtils.isNotEmpty(parallelNodes)) {
             /*
              * 执行并行分支
@@ -237,16 +248,6 @@ public class NodeModel implements ModelInstance, Serializable {
             flowLongContext.getFlowConditionHandler()
                     .getInclusiveNodes(flowLongContext, execution, this)
                     .ifPresent(t -> t.forEach(s -> this.executeConditionNode(flowLongContext, execution, s)));
-            return true;
-        }
-
-        if (ObjectUtils.isNotEmpty(conditionNodes)) {
-            /*
-             * 执行条件分支
-             */
-            flowLongContext.getFlowConditionHandler()
-                    .getConditionNode(flowLongContext, execution, this)
-                    .ifPresent(t -> this.executeConditionNode(flowLongContext, execution, t));
             return true;
         }
 
