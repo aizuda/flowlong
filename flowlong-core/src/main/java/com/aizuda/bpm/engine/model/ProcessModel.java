@@ -55,7 +55,36 @@ public class ProcessModel implements Serializable {
      * @param rootNode 根节点
      */
     public void buildParentNode(NodeModel rootNode) {
-        List<ConditionNode> conditionNodes = rootNode.getConditionNodes();
+        // 条件分支
+        this.buildParentConditionNodes(rootNode, rootNode.getConditionNodes());
+
+        // 并行分支
+        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
+        if (null != parallelNodes) {
+            for (NodeModel nodeModel : parallelNodes) {
+                nodeModel.setParentNode(rootNode);
+                this.buildParentNode(nodeModel);
+            }
+        }
+
+        // 包容分支
+        this.buildParentConditionNodes(rootNode, rootNode.getInclusiveNodes());
+
+        // 子节点
+        NodeModel childNode = rootNode.getChildNode();
+        if (null != childNode) {
+            childNode.setParentNode(rootNode);
+            this.buildParentNode(childNode);
+        }
+    }
+
+    /**
+     * 构建条件节点的父节点
+     *
+     * @param rootNode       根节点
+     * @param conditionNodes 条件节点
+     */
+    private void buildParentConditionNodes(NodeModel rootNode, List<ConditionNode> conditionNodes) {
         if (null != conditionNodes) {
             for (ConditionNode conditionNode : conditionNodes) {
                 NodeModel conditionChildNode = conditionNode.getChildNode();
@@ -64,18 +93,6 @@ public class ProcessModel implements Serializable {
                     this.buildParentNode(conditionChildNode);
                 }
             }
-        }
-        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
-        if (null != parallelNodes) {
-            for (NodeModel nodeModel : parallelNodes) {
-                nodeModel.setParentNode(rootNode);
-                this.buildParentNode(nodeModel);
-            }
-        }
-        NodeModel childNode = rootNode.getChildNode();
-        if (null != childNode) {
-            childNode.setParentNode(rootNode);
-            this.buildParentNode(childNode);
         }
     }
 

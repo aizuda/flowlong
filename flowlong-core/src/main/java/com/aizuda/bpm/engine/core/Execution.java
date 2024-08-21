@@ -16,12 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
@@ -149,13 +144,15 @@ public class Execution implements Serializable {
         ProcessModel processModel = this.getProcessModel();
         Assert.isNull(processModel, "Process model content cannot be empty");
         NodeModel nodeModel = processModel.getNode(nodeKey);
+        Assert.isNull(nodeModel, "Not found in the process model, process nodeKey=" + nodeKey);
+
+        // 获取当前任务列表，检查并行分支执行情况
         List<String> nodeKeys = new LinkedList<>();
         flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId()).ifPresent(flwTasks -> {
             for (FlwTask ft : flwTasks) {
                 nodeKeys.add(ft.getTaskKey());
             }
         });
-        Assert.isNull(nodeModel, "Not found in the process model, process nodeKey=" + nodeKey);
         Optional<NodeModel> executeNodeOptional = nodeModel.nextNode(nodeKeys);
         if (executeNodeOptional.isPresent()) {
             // 执行流程节点
