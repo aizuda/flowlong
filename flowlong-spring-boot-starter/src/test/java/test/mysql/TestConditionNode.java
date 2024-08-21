@@ -41,6 +41,9 @@ public class TestConditionNode extends MysqlTest {
             Map<String, Object> args = new HashMap<>();
             args.put("day", 8);
 
+            // 移除testKey测试方法中指定选择短期条件节点参数
+            FlowDataTransfer.remove();
+
             // 人事审批
             this.executeActiveTasks(instance.getId(), test2Creator, args);
 
