@@ -579,14 +579,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 历史任务参与者恢复
         List<FlwHisTaskActor> hisTaskActors = hisTaskActorDao.selectListByTaskId(taskId);
-        hisTaskActors.forEach(t -> {
-            FlwHisTaskActor his = t.cloneTask();
-            his.setTaskId(flwTask.getId());
-            taskActorDao.insert((FlwTaskActor) his);
-        });
-
-        // 分配任务
-//        assignTask(flwTask.getInstanceId(), taskId, 0, FlwTaskActor.of(flowCreator, flwTask));
+        hisTaskActors.forEach(t -> taskActorDao.insert(FlwTaskActor.ofFlwHisTaskActor(flwTask.getId(), t)));
 
         // 更新当前执行节点信息
         this.updateCurrentNode(flwTask);

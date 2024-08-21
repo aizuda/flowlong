@@ -175,6 +175,21 @@ public class FlwTaskActor implements Serializable {
         return taskActor;
     }
 
+    public static FlwTaskActor ofFlwHisTaskActor(Long taskId, FlwHisTaskActor hta) {
+        FlwTaskActor taskActor = new FlwTaskActor();
+        taskActor.setTenantId(hta.getTenantId());
+        taskActor.setInstanceId(hta.getInstanceId());
+        taskActor.setTaskId(taskId);
+        taskActor.setActorId(hta.getActorId());
+        taskActor.setActorName(hta.getActorName());
+        taskActor.setActorType(hta.getActorType());
+        taskActor.setWeight(hta.getWeight());
+        taskActor.setAgentId(hta.getAgentId());
+        taskActor.setAgentType(hta.getAgentType());
+        taskActor.setExtend(hta.getExtend());
+        return taskActor;
+    }
+
     public void setExtendOf(Object object) {
         this.extend = FlowLongContext.toJson(object);
     }

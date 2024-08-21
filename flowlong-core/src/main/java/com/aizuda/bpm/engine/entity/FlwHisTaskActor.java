@@ -61,19 +61,4 @@ public class FlwHisTaskActor extends FlwTaskActor {
         his.setExtend(taskActor.getExtend());
         return his;
     }
-
-    public FlwHisTaskActor cloneTask() {
-        FlwHisTaskActor his = new FlwHisTaskActor();
-        his.setTenantId(this.getTenantId());
-        his.setInstanceId(this.getInstanceId());
-        his.setTaskId(this.getTaskId());
-        his.setActorId(this.getActorId());
-        his.setActorName(this.getActorName());
-        his.setWeight(this.getWeight());
-        his.setActorType(this.getActorType());
-        his.setAgentId(this.getAgentId());
-        his.setAgentType(this.getAgentType());
-        his.setExtend(this.getExtend());
-        return his;
-    }
 }
