@@ -540,11 +540,19 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator) {
-        // 当前任务子任务已经执行完成不允许撤回
-        Assert.isTrue(taskDao.selectCountByParentTaskId(taskId) == 0, "Do not allow reclaim task");
 
         // 下面执行撤回逻辑
         Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, hisTask -> {
+            boolean checkReclaim = true;
+            // 顺序签或会签情况，判断存在未执行并行任务不检查允许拿回
+            if (PerformType.sort.eq(hisTask.getPerformType()) || PerformType.countersign.eq(hisTask.getPerformType())) {
+                checkReclaim = taskDao.selectCountByParentTaskId(hisTask.getParentTaskId()) < 1;
+            }
+            if (checkReclaim) {
+                // 当前任务子任务已经执行完成不允许撤回
+                Assert.isTrue(taskDao.selectCountByParentTaskId(taskId) == 0, "Do not allow reclaim task");
+            }
+
             List<FlwTask> flwTaskList = taskDao.selectListByInstanceId(hisTask.getInstanceId());
             Assert.isEmpty(flwTaskList, "No approval tasks found");
             FlwTask existFlwTask = flwTaskList.get(0);
