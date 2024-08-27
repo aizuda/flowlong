@@ -942,7 +942,7 @@ public class TaskServiceImpl implements TaskService {
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
 
-            // 抄送人员
+            // 历史任务参与者数据入库
             for (NodeAssignee nodeUser : nodeUserList) {
                 hisTaskActorDao.insert(FlwHisTaskActor.ofNodeAssignee(nodeUser, flwHisTask.getInstanceId(), flwHisTask.getId()));
             }
