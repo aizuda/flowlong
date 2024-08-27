@@ -930,6 +930,7 @@ public class TaskServiceImpl implements TaskService {
             // 任务监听器通知
             this.taskNotify(EventType.cc, () -> flwHisTask, nodeModel, flowCreator);
 
+            // 历史任务参与者数据入库
             for (NodeAssignee nodeUser : nodeUserList) {
                 hisTaskActorDao.insert(FlwHisTaskActor.ofNodeAssignee(nodeUser, flwHisTask.getInstanceId(), flwHisTask.getId()));
             }
