@@ -927,12 +927,13 @@ public class TaskServiceImpl implements TaskService {
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
 
-            // 任务监听器通知
-            this.taskNotify(EventType.cc, () -> flwHisTask, nodeModel, flowCreator);
-
+            // 抄送人员
             for (NodeAssignee nodeUser : nodeUserList) {
                 hisTaskActorDao.insert(FlwHisTaskActor.ofNodeAssignee(nodeUser, flwHisTask.getInstanceId(), flwHisTask.getId()));
             }
+
+            // 任务监听器通知
+            this.taskNotify(EventType.cc, () -> flwHisTask, nodeModel, flowCreator);
         }
     }
 
