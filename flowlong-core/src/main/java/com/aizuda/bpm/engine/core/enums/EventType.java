@@ -51,9 +51,13 @@ public enum EventType {
      */
     reject,
     /**
-     * 认领
+     * 角色认领
      */
-    claim,
+    claimRole,
+    /**
+     * 部门认领
+     */
+    claimDepartment,
     /**
      * 拿回未执行任务
      */

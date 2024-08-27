@@ -403,11 +403,26 @@ public class TaskServiceImpl implements TaskService {
         return false;
     }
 
+    @Override
+    public FlwTask claimRole(Long taskId, FlowCreator flowCreator) {
+        return claim(taskId, AgentType.claimRole, EventType.claimRole, flowCreator);
+    }
+
+    @Override
+    public FlwTask claimDepartment(Long taskId, FlowCreator flowCreator) {
+        return claim(taskId, AgentType.claimDepartment, EventType.claimDepartment, flowCreator);
+    }
+
     /**
      * 根据 任务ID 认领任务，删除其它任务参与者
+     *
+     * @param taskId      任务ID
+     * @param agentType   代理人类型
+     * @param eventType   流程引擎监听类型
+     * @param flowCreator 任务认领者
+     * @return Task 任务对象
      */
-    @Override
-    public FlwTask claim(Long taskId, FlowCreator flowCreator) {
+    protected FlwTask claim(Long taskId, AgentType agentType, EventType eventType, FlowCreator flowCreator) {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         FlwTaskActor taskActor = this.isAllowed(flwTask, flowCreator.getCreateId());
         if (null == taskActor) {
@@ -418,10 +433,10 @@ public class TaskServiceImpl implements TaskService {
         taskActorDao.deleteById(taskActor.getId());
 
         // 插入当前用户ID作为唯一参与者
-        taskActorDao.insert(FlwTaskActor.ofAgent(AgentType.claimRole, flowCreator, flwTask, taskActor));
+        taskActorDao.insert(FlwTaskActor.ofAgent(agentType, flowCreator, flwTask, taskActor));
 
         // 任务监听器通知
-        this.taskNotify(EventType.claim, () -> flwTask, null, flowCreator);
+        this.taskNotify(eventType, () -> flwTask, null, flowCreator);
         return flwTask;
     }
 

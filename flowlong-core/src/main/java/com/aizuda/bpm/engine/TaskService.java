@@ -122,13 +122,22 @@ public interface TaskService {
     boolean viewTask(Long taskId, FlwTaskActor taskActor);
 
     /**
-     * 根据 任务ID 认领任务，删除其它任务参与者
+     * 角色根据 任务ID 认领任务，删除其它任务参与者
      *
      * @param taskId      任务ID
      * @param flowCreator 任务认领者
      * @return Task 任务对象
      */
-    FlwTask claim(Long taskId, FlowCreator flowCreator);
+    FlwTask claimRole(Long taskId, FlowCreator flowCreator);
+
+    /**
+     * 部门根据 任务ID 认领任务，删除其它任务参与者
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务认领者
+     * @return Task 任务对象
+     */
+    FlwTask claimDepartment(Long taskId, FlowCreator flowCreator);
 
     /**
      * 根据 任务ID 指定代理人
