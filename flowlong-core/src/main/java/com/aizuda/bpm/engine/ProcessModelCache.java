@@ -39,8 +39,18 @@ public interface ProcessModelCache {
      * @return JSON BPM 模型
      */
     default ProcessModel model() {
+        return this.model(false);
+    }
+
+    /**
+     * JSON BPM 模型
+     *
+     * @param redeploy 重新部署 true 是 false 否
+     * @return JSON BPM 模型
+     */
+    default ProcessModel model(boolean redeploy) {
         String modelContent = this.getModelContent();
         Assert.isEmpty(modelContent, "The process modelContent is Empty.");
-        return FlowLongContext.parseProcessModel(modelContent, this.modelCacheKey(), false);
+        return FlowLongContext.parseProcessModel(modelContent, this.modelCacheKey(), redeploy);
     }
 }

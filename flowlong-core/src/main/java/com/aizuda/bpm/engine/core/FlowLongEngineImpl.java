@@ -84,7 +84,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (log.isDebugEnabled()) {
                 log.debug("start process instanceId={}", flwInstance.getId());
             }
-            return new Execution(this, process.model(), flowCreator, flwInstance, args);
+            return new Execution(this, process.model(true), flowCreator, flwInstance, args);
         });
     }
 

@@ -67,33 +67,38 @@
             "conditionMode": 1,
             "conditionList": [],
             "childNode": {
-              "nodeName": "直接主管审批",
+              "nodeName": "短期不用审核但要抄送",
               "nodeKey": "k007",
-              "type": 1,
-              "setType": 2,
-              "nodeAssigneeList": [],
-              "examineLevel": 1,
-              "directorLevel": 1,
-              "selectMode": 1,
-              "termAuto": false,
-              "term": 0,
-              "termMode": 1,
-              "examineMode": 1,
-              "directorMode": 0
+              "type": 2,
+              "userSelectFlag": true,
+              "nodeAssigneeList": [
+                {
+                  "id": "test004",
+                  "name": "李四"
+                }
+              ]
             }
           }
         ],
         "childNode": {
-          "nodeName": "抄送人",
+          "nodeName": "最后的审批",
           "nodeKey": "k008",
-          "type": 2,
-          "userSelectFlag": true,
+          "type": 1,
+          "setType": 1,
           "nodeAssigneeList": [
             {
               "id": "test002",
               "name": "何秀英"
             }
-          ]
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "directorMode": 0
         }
       }
     }
