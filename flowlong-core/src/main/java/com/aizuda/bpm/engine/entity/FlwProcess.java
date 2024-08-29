@@ -122,6 +122,8 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
             Assert.isTrue(ModelHelper.checkDuplicateNodeKeys(nodeModel), "There are duplicate node keys present");
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
+            // 重新渲染逻辑节点
+            nodeModel = execution.getProcessModel().getNodeConfig();
             // 创建首个审批任务
             flowLongContext.createTask(execution, nodeModel);
             // 当前执行实例
