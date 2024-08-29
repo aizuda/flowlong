@@ -288,14 +288,14 @@ public class TestIssue extends MysqlTest {
 
             // 执行任务认领【部门主管】
             this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
-                    .claim(flwTask.getId(), testCreator));
+                    .claimRole(flwTask.getId(), testCreator));
 
             // 执行认领逻辑
             this.executeTask(instance.getId(), testCreator);
 
             // 执行任务认领【采购经理】
             this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
-                    .claim(flwTask.getId(), testCreator));
+                    .claimRole(flwTask.getId(), testCreator));
 
             // 执行认领逻辑
             this.executeTask(instance.getId(), testCreator);
@@ -319,7 +319,7 @@ public class TestIssue extends MysqlTest {
 
             // 执行任务认领【部门主管】【采购经理】
             this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
-                    .claim(flwTask.getId(), testCreator));
+                    .claimRole(flwTask.getId(), testCreator));
 
             // 执行 2 次认领逻辑
             this.executeTask(instance.getId(), testCreator);
@@ -343,7 +343,7 @@ public class TestIssue extends MysqlTest {
 
             // 执行任务认领【部门主管】
             this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
-                    .claim(flwTask.getId(), testCreator));
+                    .claimRole(flwTask.getId(), testCreator));
 
             // 执行认领逻辑
             this.executeTask(instance.getId(), testCreator);
@@ -367,7 +367,7 @@ public class TestIssue extends MysqlTest {
 
             // 执行任务认领【部门主管】
             this.executeActiveTasks(instance.getId(), flwTask -> flowLongEngine.taskService()
-                    .claim(flwTask.getId(), testCreator));
+                    .claimRole(flwTask.getId(), testCreator));
 
             // 执行认领逻辑
             this.executeTask(instance.getId(), testCreator);
