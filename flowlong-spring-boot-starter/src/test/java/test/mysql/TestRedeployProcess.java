@@ -51,14 +51,14 @@ public class TestRedeployProcess extends MysqlTest {
         // test3 领导审批同意
         this.executeActiveTasks(instance.getId(), test3Creator);
         // 抄送人力资源，流程自动结束
-        FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
-        Assertions.assertEquals(1, histInstance.getInstanceState());
+        FlwHisInstance hisInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
+        Assertions.assertEquals(1, hisInstance.getInstanceState());
 
         // V2: test3 领导审批同意
         this.executeActiveTasks(instanceV2.getId(), testCreator);
 
-        FlwHisInstance histInstanceV2 = flowLongEngine.queryService().getHistInstance(instanceV2.getId());
-        Assertions.assertEquals(1, histInstanceV2.getInstanceState());
+        FlwHisInstance hisInstanceV2 = flowLongEngine.queryService().getHistInstance(instanceV2.getId());
+        Assertions.assertEquals(1, hisInstanceV2.getInstanceState());
 
     }
 

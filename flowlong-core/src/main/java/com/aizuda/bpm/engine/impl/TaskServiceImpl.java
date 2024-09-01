@@ -277,8 +277,9 @@ public class TaskServiceImpl implements TaskService {
             hisTask.setTaskType(TaskType.agentAssist);
         }
 
-        // 会签情况处理其它任务 排除完成情况
-        if (PerformType.countersign.eq(flwTask.getPerformType()) && TaskState.complete.ne(taskState.getValue())) {
+        // 会签情况处理其它任务 排除完成及自动跳过情况，自动跳过是当前任务归档非所有任务归档
+        if (PerformType.countersign.eq(flwTask.getPerformType()) && TaskState.complete.ne(taskState.getValue())
+                && TaskState.autoJump.ne(taskState.getValue())) {
             List<FlwTask> flwTaskList = taskDao.selectListByParentTaskId(flwTask.getParentTaskId());
             flwTaskList.forEach(t -> {
                 FlwHisTask ht = FlwHisTask.of(t);
@@ -1077,10 +1078,12 @@ public class TaskServiceImpl implements TaskService {
 
             // 分配参与者
             this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), actorType, t);
-
-            // 创建任务监听
-            this.taskNotify(EventType.create, () -> newFlwTask, nodeModel, flowCreator);
         });
+
+        // 所有任务创建后，创建任务监听，避免后续任务因为监听逻辑导致未创建情况
+        flwTasks.forEach(t -> this.taskNotify(EventType.create, () -> t, nodeModel, flowCreator));
+
+        // 返回创建的任务列表
         return flwTasks;
     }
 

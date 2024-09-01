@@ -3,6 +3,7 @@
  */
 package test.mysql.config;
 
+import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.spring.autoconfigure.FlowLongAutoConfiguration;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
@@ -66,5 +67,15 @@ public class MysqlConfig extends FlowLongAutoConfiguration {
     @Bean
     public TestTaskAccessStrategy taskAccessStrategy() {
         return new TestTaskAccessStrategy();
+    }
+
+    @Bean
+    public TestTaskActorProvider testTaskActorProvider() {
+        return new TestTaskActorProvider();
+    }
+
+    @Bean
+    public TestTaskListener testTaskListener(FlowLongEngine flowLongEngine) {
+        return new TestTaskListener(flowLongEngine);
     }
 }

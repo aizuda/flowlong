@@ -27,8 +27,8 @@ public class TestConditionNode extends MysqlTest {
             // 人事审批
             this.executeActiveTasks(instance.getId(), test2Creator);
 
-            FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
-            Assertions.assertEquals("条件路由", histInstance.getCurrentNodeName());
+            FlwHisInstance hisInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
+            Assertions.assertEquals("条件路由", hisInstance.getCurrentNodeName());
         });
     }
 
@@ -50,8 +50,8 @@ public class TestConditionNode extends MysqlTest {
             // 领导审批
             this.executeActiveTasks(instance.getId(), testCreator, args);
 
-            FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
-            Assertions.assertEquals("领导审批结束", histInstance.getCurrentNodeName());
+            FlwHisInstance hisInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
+            Assertions.assertEquals("领导审批结束", hisInstance.getCurrentNodeName());
         });
     }
 }

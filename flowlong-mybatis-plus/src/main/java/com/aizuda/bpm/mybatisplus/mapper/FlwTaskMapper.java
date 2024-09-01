@@ -3,7 +3,6 @@
  */
 package com.aizuda.bpm.mybatisplus.mapper;
 
-import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;

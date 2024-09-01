@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.solon.adaptive;
 
+import com.aizuda.bpm.engine.TaskReminder;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -10,7 +11,6 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.RemindParam;
-import com.aizuda.bpm.engine.TaskReminder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

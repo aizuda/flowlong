@@ -98,8 +98,8 @@ public class TestIssue extends MysqlTest {
 
             this.executeActiveTasks(instance.getId(), testCreator, args);
 
-            FlwHisInstance histInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
-            Assertions.assertEquals("领导审批结束", histInstance.getCurrentNodeName());
+            FlwHisInstance hisInstance = flowLongEngine.queryService().getHistInstance(instance.getId());
+            Assertions.assertEquals("领导审批结束", hisInstance.getCurrentNodeName());
         });
     }
 
