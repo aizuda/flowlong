@@ -121,6 +121,15 @@ public interface RuntimeService {
     void updateInstance(FlwInstance flwInstance);
 
     /**
+     * 根据 流程实例ID 更新流程实例模型内容
+     *
+     * @param id           流程实例ID
+     * @param processModel 流程模型
+     * @return true 成功 false 失败
+     */
+    boolean updateInstanceModelById(Long id, ProcessModel processModel);
+
+    /**
      * 级联删除指定流程实例的所有数据
      *
      * @param processId 流程ID

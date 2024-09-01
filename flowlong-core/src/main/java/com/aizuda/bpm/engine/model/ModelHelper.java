@@ -3,11 +3,14 @@
  */
 package com.aizuda.bpm.engine.model;
 
+import com.aizuda.bpm.engine.FlowConstants;
+import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -335,4 +338,32 @@ public class ModelHelper {
                 .orElse(null);
     }
 
+    /**
+     * 重新加载流程模型
+     *
+     * @param processModel 流程模型
+     * @param consumer     流程模型消费
+     */
+    public static void reloadProcessModel(ProcessModel processModel, Consumer<ProcessModel> consumer) {
+        Map<String, Object> modelData = FlowDataTransfer.get(FlowConstants.processDynamicAssignee);
+        if (ObjectUtils.isNotEmpty(modelData)) {
+
+            // 追加动态分配处理人员
+            modelData.forEach((key, value) -> {
+                if (value instanceof DynamicAssignee) {
+                    NodeModel thisNodeModel = processModel.getNode(key);
+                    if (null != thisNodeModel) {
+                        DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
+                        thisNodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
+                    }
+                }
+            });
+
+            // 清理父节点
+            processModel.cleanParentNode(processModel.getNodeConfig());
+
+            // 更新模型
+            consumer.accept(processModel);
+        }
+    }
 }
