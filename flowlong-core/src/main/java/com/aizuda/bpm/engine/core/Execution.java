@@ -191,6 +191,16 @@ public class Execution implements Serializable {
      * @return true 执行成功  false 执行失败
      */
     public boolean endInstance(NodeModel endNode) {
+        if (engine.queryService().existActiveSubProcess(flwInstance.getId())) {
+            /*
+             * 存在执行中的子流程，不允许结束
+             */
+            return true;
+        }
+
+        /*
+         * 执行完成任务
+         */
         List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
         for (FlwTask flwTask : flwTasks) {
             Assert.illegal(flwTask.major(), "There are unfinished major tasks");

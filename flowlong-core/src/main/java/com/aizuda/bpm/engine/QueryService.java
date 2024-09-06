@@ -37,6 +37,14 @@ public interface QueryService {
     FlwHisInstance getHistInstance(Long instanceId);
 
     /**
+     * 判断流程实例下是否存在活跃子流程实例
+     *
+     * @param instanceId 流程实例ID
+     * @return true 存在 false 不存在
+     */
+    boolean existActiveSubProcess(Long instanceId);
+
+    /**
      * 根据任务ID获取任务对象
      *
      * @param taskId 任务ID

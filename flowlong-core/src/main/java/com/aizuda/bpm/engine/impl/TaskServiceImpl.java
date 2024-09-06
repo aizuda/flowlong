@@ -875,6 +875,7 @@ public class TaskServiceImpl implements TaskService {
             // 启动子流程，任务归档历史
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
                 FlwInstance flwInstance = new FlwInstance();
+                flwInstance.setBusinessKey(nodeModel.getNodeKey());
                 flwInstance.setParentInstanceId(flwTask.getInstanceId());
                 return flwInstance;
             }).ifPresent(instance -> {

@@ -1,0 +1,37 @@
+{
+  "key": "subProcessEnd",
+  "name": "请假审批",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "人事审批",
+      "nodeKey": "k002",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "tenantId": "1000",
+          "id": "test001",
+          "name": "魏磊"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0,
+      "childNode": {
+        "nodeName": "工作交接",
+        "nodeKey": "k007",
+        "type": 5,
+        "callProcess": "workHandover"
+      }
+    }
+  }
+}

@@ -44,6 +44,10 @@ public class FlwInstance extends FlowEntity {
     protected String instanceNo;
     /**
      * 业务KEY（用于关联业务逻辑实现预留）
+     *
+     * <p>
+     * 子流程情况，该字段用于存放父流程所在节点KEY
+     * </p>
      */
     protected String businessKey;
     /**

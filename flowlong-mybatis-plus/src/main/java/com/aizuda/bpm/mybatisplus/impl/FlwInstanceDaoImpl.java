@@ -50,6 +50,11 @@ public class FlwInstanceDaoImpl implements FlwInstanceDao {
     }
 
     @Override
+    public Long selectCountByParentInstanceId(Long parentInstanceId) {
+        return instanceMapper.selectCount(Wrappers.<FlwInstance>lambdaQuery().eq(FlwInstance::getParentInstanceId, parentInstanceId));
+    }
+
+    @Override
     public FlwInstance selectById(Long id) {
         return instanceMapper.selectById(id);
     }

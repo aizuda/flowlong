@@ -28,6 +28,8 @@ public interface FlwInstanceDao {
 
     boolean updateById(FlwInstance instance);
 
+    Long selectCountByParentInstanceId(Long parentInstanceId);
+
     FlwInstance selectById(Long id);
 
     Optional<List<FlwInstance>> selectListByParentInstanceId(Long parentInstanceId);
