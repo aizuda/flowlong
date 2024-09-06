@@ -36,16 +36,6 @@ subprojects {
     apply plugin: 'signing'
     apply plugin: 'io.spring.dependency-management'
 
-    tasks.withType(JavaCompile).configureEach {
-        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:-serial"
-        options.encoding = 'UTF-8'
-        options.warnings = false
-    }
-
-    tasks.named('test') {
-        useJUnitPlatform()
-    }
-
     // 仓库配置
     repositories {
         mavenLocal()
@@ -87,15 +77,16 @@ subprojects {
         testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     }
 
-    tasks.named('test') {
-        useJUnitPlatform()
-    }
-
     // 编译环境 JDK-1.8+
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+
     tasks.withType(JavaCompile).configureEach {
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:-serial"
         options.encoding = 'UTF-8'
         options.warnings = false
         options.deprecation = true
