@@ -939,6 +939,7 @@ public class TaskServiceImpl implements TaskService {
         if (ObjectUtils.isNotEmpty(nodeUserList)) {
             // 抄送任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
+            flwHisTask.setId(null);
             flwHisTask.setTaskType(TaskType.cc);
             flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
@@ -1015,8 +1016,9 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (performType == PerformType.start) {
-            // 发起任务
+            // 发起任务，创建历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
+            flwHisTask.setId(null);
             flwHisTask.calculateDuration();
             if (hisTaskDao.insert(flwHisTask)) {
                 // 设置为执行任务
