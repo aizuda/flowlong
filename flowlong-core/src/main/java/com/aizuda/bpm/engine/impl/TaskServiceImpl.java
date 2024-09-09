@@ -277,7 +277,7 @@ public class TaskServiceImpl implements TaskService {
             hisTask.setTaskType(TaskType.agentAssist);
         }
 
-        // 会签情况处理其它任务 排除完成及自动跳过情况，自动跳过是当前任务归档非所有任务归档
+        // 会签情况处理其它任务 排除完成及自动跳过情况，自动跳过是当前任务归档非所有任务
         if (PerformType.countersign.eq(flwTask.getPerformType()) && TaskState.complete.ne(taskState.getValue())
                 && TaskState.autoJump.ne(taskState.getValue())) {
             List<FlwTask> flwTaskList = taskDao.selectListByParentTaskId(flwTask.getParentTaskId());
@@ -938,12 +938,17 @@ public class TaskServiceImpl implements TaskService {
         List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
         if (ObjectUtils.isNotEmpty(nodeUserList)) {
             // 抄送任务
+            taskDao.insert(flwTask);
+
+            // 抄送历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
-            flwHisTask.setId(null);
             flwHisTask.setTaskType(TaskType.cc);
             flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
+
+            // 即刻归档，确保自增ID情况一致性
+            taskDao.deleteById(flwTask.getId());
 
             // 历史任务参与者数据入库
             for (NodeAssignee nodeUser : nodeUserList) {
@@ -1016,13 +1021,16 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (performType == PerformType.start) {
-            // 发起任务，创建历史任务
+            // 发起任务
+            taskDao.insert(flwTask);
+            // 创建历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
-            flwHisTask.setId(null);
             flwHisTask.calculateDuration();
             if (hisTaskDao.insert(flwHisTask)) {
                 // 设置为执行任务
                 execution.setFlwTask(flwHisTask);
+                // 即可归档，确保自增ID情况一致性
+                taskDao.deleteById(flwTask.getId());
                 // 记录发起人
                 hisTaskActorDao.insert(FlwHisTaskActor.ofFlwHisTask(flwHisTask));
                 flwTask.setId(flwHisTask.getId());
