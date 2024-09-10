@@ -118,4 +118,9 @@ public class QueryServiceImpl implements QueryService {
         return hisTaskDao.selectListByInstanceId(instanceId);
     }
 
+    @Override
+    public Optional<List<FlwInstance>> getSubProcessByInstanceId(Long instanceId) {
+        return instanceDao.selectListByParentInstanceId(instanceId);
+    }
+
 }

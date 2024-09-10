@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskActorProvider;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.entity.FlwInstance;
+import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.ModelHelper;
@@ -18,6 +19,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
@@ -162,12 +164,32 @@ public class Execution implements Serializable {
 
         // 获取当前任务列表，检查并行分支执行情况
         List<String> nodeKeys = new LinkedList<>();
+        List<String> otherProcessKeys = new LinkedList<>();
         flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId()).ifPresent(flwTasks -> {
             for (FlwTask ft : flwTasks) {
                 nodeKeys.add(ft.getTaskKey());
             }
         });
-        Optional<NodeModel> executeNodeOptional = nodeModel.nextNode(nodeKeys);
+
+        //查找流程关联的子流程
+        Optional<List<FlwInstance>> subProcessList = flowLongContext.getQueryService().getSubProcessByInstanceId(flwTask.getInstanceId());
+        subProcessList.ifPresent(subProcesses -> subProcesses.forEach(process ->{
+            ProcessModel otherModel = flowLongContext.getRuntimeService().getProcessModelByInstanceId(process.getId());
+            otherProcessKeys.addAll(new ArrayList<>(ModelHelper.getRootNodeAllChildNodes(otherModel.getNodeConfig()).stream().map(NodeModel::getNodeKey).collect(Collectors.toList())));
+            flowLongContext.getQueryService().getActiveTasksByInstanceId(process.getId()).ifPresent(flwTasks -> {
+                //其他的key
+                for (FlwTask ft : flwTasks) {
+                    nodeKeys.add(ft.getTaskKey());
+                }
+            });
+        }));
+
+        Optional<NodeModel> executeNodeOptional = Optional.empty();
+        //如果有额外的流程，先判断当前的task是否在流程里面，如果不在直找下一个节点
+        if (!(!otherProcessKeys.isEmpty() && !nodeKeys.isEmpty() && !Collections.disjoint(nodeKeys, otherProcessKeys))){
+            executeNodeOptional = nodeModel.nextNode(nodeKeys);
+        }
+
         if (executeNodeOptional.isPresent()) {
             // 执行流程节点
             NodeModel executeNode = executeNodeOptional.get();
@@ -180,7 +202,6 @@ public class Execution implements Serializable {
         if (nodeKeys.isEmpty()) {
             return this.endInstance(nodeModel);
         }
-
         return true;
     }
 
