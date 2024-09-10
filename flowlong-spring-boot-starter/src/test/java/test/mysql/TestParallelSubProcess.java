@@ -4,22 +4,18 @@
 package test.mysql;
 
 import com.aizuda.bpm.engine.ProcessService;
-import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 测试子流程
  *
  * @author xdg
  */
-public class TestParalleSubProcess extends MysqlTest {
+public class TestParallelSubProcess extends MysqlTest {
 
     @BeforeEach
     public void before() {
@@ -41,9 +37,6 @@ public class TestParalleSubProcess extends MysqlTest {
         }
 
         // 启动指定流程定义ID启动流程实例
-        FlowCreator flowCreator = this.getFlowCreator();
-        // 发起，执行条件路由
-        // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
             this.executeTaskByKey(instance.getId(), test2Creator, "k003");
             // 找到子流程并执行【接收工作任务】完成启动父流程执行结束
@@ -52,11 +45,8 @@ public class TestParalleSubProcess extends MysqlTest {
                     this.executeActiveTasks(flwHisTask.getCallInstanceId(), test3Creator);
                 }
             }));
-            this.executeTaskByKey(instance.getId(), test2Creator,"k005");
+            this.executeTaskByKey(instance.getId(), test2Creator, "k005");
         });
-
-        // 卸载指定的定义流程
-        // Assertions.assertTrue(processService.undeploy(processId));
     }
 
 

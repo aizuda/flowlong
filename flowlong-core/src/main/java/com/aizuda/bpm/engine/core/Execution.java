@@ -164,20 +164,19 @@ public class Execution implements Serializable {
 
         // 获取当前任务列表，检查并行分支执行情况
         List<String> nodeKeys = new LinkedList<>();
-        List<String> otherProcessKeys = new LinkedList<>();
         flowLongContext.getQueryService().getActiveTasksByInstanceId(flwTask.getInstanceId()).ifPresent(flwTasks -> {
             for (FlwTask ft : flwTasks) {
                 nodeKeys.add(ft.getTaskKey());
             }
         });
 
-        //查找流程关联的子流程
+        // 查找流程关联的子流程
+        List<String> otherProcessKeys = new LinkedList<>();
         Optional<List<FlwInstance>> subProcessList = flowLongContext.getQueryService().getSubProcessByInstanceId(flwTask.getInstanceId());
-        subProcessList.ifPresent(subProcesses -> subProcesses.forEach(process ->{
+        subProcessList.ifPresent(subProcesses -> subProcesses.forEach(process -> {
             ProcessModel otherModel = flowLongContext.getRuntimeService().getProcessModelByInstanceId(process.getId());
             otherProcessKeys.addAll(new ArrayList<>(ModelHelper.getRootNodeAllChildNodes(otherModel.getNodeConfig()).stream().map(NodeModel::getNodeKey).collect(Collectors.toList())));
             flowLongContext.getQueryService().getActiveTasksByInstanceId(process.getId()).ifPresent(flwTasks -> {
-                //其他的key
                 for (FlwTask ft : flwTasks) {
                     nodeKeys.add(ft.getTaskKey());
                 }
@@ -185,8 +184,9 @@ public class Execution implements Serializable {
         }));
 
         Optional<NodeModel> executeNodeOptional = Optional.empty();
-        //如果有额外的流程，先判断当前的task是否在流程里面，如果不在直找下一个节点
-        if (!(!otherProcessKeys.isEmpty() && !nodeKeys.isEmpty() && !Collections.disjoint(nodeKeys, otherProcessKeys))){
+
+        // 如果有额外的流程，先判断当前的task是否在流程里面，如果不在直找下一个节点
+        if (!(!otherProcessKeys.isEmpty() && !nodeKeys.isEmpty() && !Collections.disjoint(nodeKeys, otherProcessKeys))) {
             executeNodeOptional = nodeModel.nextNode(nodeKeys);
         }
 

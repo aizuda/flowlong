@@ -50,8 +50,8 @@ public class ModelHelper {
 
         // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
         if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
-            //只是找下一个节点
-            if (null == currentTask){
+            // 只是找下一个节点
+            if (null == currentTask) {
                 return parentNode.getChildNode();
             }
             // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
@@ -185,8 +185,7 @@ public class ModelHelper {
     public static List<NodeModel> getUnsetAssigneeNodes(NodeModel rootNodeModel) {
         List<NodeModel> nodeModels = getRootNodeAllChildNodes(rootNodeModel);
         // 过滤发起和结束节点
-        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && NodeSetType.initiatorThemselves.ne(t.getSetType())
-                && (TaskType.approval.eq(t.getType()) || TaskType.cc.eq(t.getType()))).collect(Collectors.toList());
+        return nodeModels.stream().filter(t -> ObjectUtils.isEmpty(t.getNodeAssigneeList()) && NodeSetType.initiatorThemselves.ne(t.getSetType()) && (TaskType.approval.eq(t.getType()) || TaskType.cc.eq(t.getType()))).collect(Collectors.toList());
     }
 
     /**
@@ -335,10 +334,7 @@ public class ModelHelper {
      * @return JSON BPM 节点
      */
     public static NodeModel getNodeModel(String nodeKey, NodeModel rootNodeModel) {
-        return getRootNodeAllChildNodes(rootNodeModel).stream()
-                .filter(e -> Objects.equals(nodeKey, e.getNodeKey()))
-                .findFirst()
-                .orElse(null);
+        return getRootNodeAllChildNodes(rootNodeModel).stream().filter(e -> Objects.equals(nodeKey, e.getNodeKey())).findFirst().orElse(null);
     }
 
     /**

@@ -1029,7 +1029,7 @@ public class TaskServiceImpl implements TaskService {
             if (hisTaskDao.insert(flwHisTask)) {
                 // 设置为执行任务
                 execution.setFlwTask(flwHisTask);
-                // 即可归档，确保自增ID情况一致性
+                // 即刻归档，确保自增ID情况一致性
                 taskDao.deleteById(flwTask.getId());
                 // 记录发起人
                 hisTaskActorDao.insert(FlwHisTaskActor.ofFlwHisTask(flwHisTask));
