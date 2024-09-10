@@ -168,4 +168,14 @@ public interface QueryService {
      * @return 历史任务列表
      */
     Optional<List<FlwHisTask>> getHisTasksByInstanceId(Long instanceId);
+
+    /**
+     * 根据实例ID获取所有子流程
+     *
+     *
+     * @param instanceId 实例ID
+     * @return 所有子流程
+     */
+    Optional<List<FlwInstance>> getSubProcessByInstanceId(Long instanceId);
+
 }

@@ -50,14 +50,17 @@ public class ModelHelper {
 
         // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
         if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
+            //只是找下一个节点
+            if (null == currentTask){
+                return parentNode.getChildNode();
+            }
             // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
-            if (null != currentTask && Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
+            if (Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
                 NodeModel childNode = parentNode.getChildNode();
                 if (null != childNode && Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
                     // 父节点的子节点是当前节点，执行结束
                     return null;
                 }
-
                 // 分支执行结束，执行子节点
                 return childNode;
             }
