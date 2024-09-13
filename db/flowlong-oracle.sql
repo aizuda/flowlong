@@ -6,6 +6,7 @@ CREATE TABLE "flw_ext_instance" (
    "id" NUMBER(20,0) NOT NULL,
    "tenant_id" NVARCHAR2(50),
    "process_id" NUMBER(20,0) NOT NULL,
+   "process_name" NVARCHAR2(100),
    "process_type" NVARCHAR2(100),
    "model_content" NCLOB
 )
@@ -23,6 +24,7 @@ DISABLE ROW MOVEMENT
 COMMENT ON COLUMN "flw_ext_instance"."id" IS '主键ID';
 COMMENT ON COLUMN "flw_ext_instance"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "flw_ext_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "flw_ext_instance"."process_name" IS '流程名称';
 COMMENT ON COLUMN "flw_ext_instance"."process_type" IS '流程类型';
 COMMENT ON COLUMN "flw_ext_instance"."model_content" IS '流程模型定义JSON内容';
 COMMENT ON TABLE "flw_ext_instance" IS '扩展流程实例表';

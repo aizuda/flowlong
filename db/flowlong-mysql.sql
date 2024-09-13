@@ -210,6 +210,7 @@ CREATE TABLE `flw_ext_instance`
     `id`            bigint NOT NULL COMMENT '主键ID',
     `tenant_id`     varchar(50) COMMENT '租户ID',
     `process_id`    bigint NOT NULL COMMENT '流程定义ID',
+    `process_name`  varchar(100) COMMENT '流程名称',
     `process_type`  varchar(100) COMMENT '流程类型',
     `model_content` text COMMENT '流程模型定义JSON内容',
     PRIMARY KEY (`id`) USING BTREE,

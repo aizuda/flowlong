@@ -38,6 +38,10 @@ public class FlwExtInstance implements ProcessModelCache, Serializable {
      */
     private Long processId;
     /**
+     * 流程定义名称（冗余业务直接可用）
+     */
+    protected String processName;
+    /**
      * 流程定义类型（冗余业务直接可用）
      */
     protected String processType;
@@ -54,6 +58,7 @@ public class FlwExtInstance implements ProcessModelCache, Serializable {
         ext.id = flwInstance.getId();
         ext.tenantId = flwInstance.getTenantId();
         ext.processId = flwInstance.getProcessId();
+        ext.processName = flwProcess.getProcessName();
         ext.processType = flwProcess.getProcessType();
         ext.modelContent = flwProcess.getModelContent();
         return ext;

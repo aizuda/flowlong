@@ -173,6 +173,7 @@ CREATE TABLE "public"."flw_ext_instance" (
      "id" int8 NOT NULL,
      "tenant_id" varchar(50) COLLATE "pg_catalog"."default",
      "process_id" int8 NOT NULL,
+     "process_name" varchar(100) COLLATE "pg_catalog"."default",
      "process_type" varchar(100) COLLATE "pg_catalog"."default",
      "model_content" text COLLATE "pg_catalog"."default"
 )
@@ -180,6 +181,7 @@ CREATE TABLE "public"."flw_ext_instance" (
 COMMENT ON COLUMN "public"."flw_ext_instance"."id" IS '主键ID';
 COMMENT ON COLUMN "public"."flw_ext_instance"."tenant_id" IS '租户ID';
 COMMENT ON COLUMN "public"."flw_ext_instance"."process_id" IS '流程定义ID';
+COMMENT ON COLUMN "public"."flw_ext_instance"."process_name" IS '流程名称';
 COMMENT ON COLUMN "public"."flw_ext_instance"."process_type" IS '流程类型';
 COMMENT ON COLUMN "public"."flw_ext_instance"."model_content" IS '流程模型定义JSON内容';
 COMMENT ON TABLE "public"."flw_ext_instance" IS '扩展流程实例表';
