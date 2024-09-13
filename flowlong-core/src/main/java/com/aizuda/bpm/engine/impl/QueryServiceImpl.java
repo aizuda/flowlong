@@ -23,16 +23,18 @@ import java.util.Optional;
 public class QueryServiceImpl implements QueryService {
     private final FlwInstanceDao instanceDao;
     private final FlwHisInstanceDao hisInstanceDao;
+    private final FlwExtInstanceDao extInstanceDao;
     private final FlwTaskDao taskDao;
     private final FlwTaskActorDao taskActorDao;
     private final FlwHisTaskDao hisTaskDao;
     private final FlwHisTaskActorDao hisTaskActorDao;
 
     public QueryServiceImpl(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
-                            FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
+                            FlwExtInstanceDao extInstanceDao, FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
                             FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
         this.instanceDao = instanceDao;
         this.hisInstanceDao = hisInstanceDao;
+        this.extInstanceDao = extInstanceDao;
         this.taskDao = taskDao;
         this.taskActorDao = taskActorDao;
         this.hisTaskDao = hisTaskDao;
@@ -52,6 +54,11 @@ public class QueryServiceImpl implements QueryService {
     @Override
     public FlwHisInstance getHistInstance(Long instanceId) {
         return hisInstanceDao.selectById(instanceId);
+    }
+
+    @Override
+    public FlwExtInstance getExtInstance(Long instanceId) {
+        return extInstanceDao.selectById(instanceId);
     }
 
     @Override

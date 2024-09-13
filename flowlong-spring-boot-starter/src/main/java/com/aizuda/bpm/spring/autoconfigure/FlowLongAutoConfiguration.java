@@ -56,10 +56,9 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public QueryService queryService(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
-                                     FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
-                                     FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
-        return new QueryServiceImpl(instanceDao, hisInstanceDao, taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
+    public QueryService queryService(FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao,
+                                     FlwTaskDao taskDao, FlwTaskActorDao taskActorDao, FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
+        return new QueryServiceImpl(instanceDao, hisInstanceDao, extInstanceDao, taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
     @Bean
