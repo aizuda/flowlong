@@ -558,7 +558,7 @@ public class TaskServiceImpl implements TaskService {
     public Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator) {
 
         // 下面执行撤回逻辑
-        Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, hisTask -> {
+        Optional<FlwTask> flwTaskOptional = this.undoHisTask(taskId, flowCreator, TaskType.reclaim, hisTask -> {
             boolean checkReclaim = true;
             // 顺序签或会签情况，判断存在未执行并行任务不检查允许拿回
             if (PerformType.sort.eq(hisTask.getPerformType()) || PerformType.countersign.eq(hisTask.getPerformType())) {
@@ -618,7 +618,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<FlwTask> withdrawTask(Long taskId, FlowCreator flowCreator) {
-        return this.undoHisTask(taskId, flowCreator, hisTask -> {
+        return this.undoHisTask(taskId, flowCreator, TaskType.withdraw, hisTask -> {
             List<FlwTask> flwTasks = null;
             PerformType performType = PerformType.get(hisTask.getPerformType());
             if (performType == PerformType.countersign) {
@@ -655,7 +655,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 撤回至上一级任务
         Long parentTaskId = currentFlwTask.getParentTaskId();
-        Optional<FlwTask> flwTaskOptional = this.undoHisTask(parentTaskId, flowCreator, null);
+        Optional<FlwTask> flwTaskOptional = this.undoHisTask(parentTaskId, flowCreator, TaskType.reject, null);
 
         // 任务监听器通知
         flwTaskOptional.ifPresent(flwTask -> this.taskNotify(EventType.recreate, () -> flwTask, null, flowCreator));
@@ -667,10 +667,12 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param hisTaskId       历史任务ID
      * @param flowCreator     任务创建者
+     * @param taskType        任务类型
      * @param hisTaskConsumer 历史任务业务处理
      * @return 任务参与者
      */
-    protected Optional<FlwTask> undoHisTask(Long hisTaskId, FlowCreator flowCreator, Consumer<FlwHisTask> hisTaskConsumer) {
+    protected Optional<FlwTask> undoHisTask(Long hisTaskId, FlowCreator flowCreator, TaskType taskType,
+                                            Consumer<FlwHisTask> hisTaskConsumer) {
         FlwHisTask hisTask = hisTaskDao.selectCheckById(hisTaskId);
         if (null != hisTaskConsumer) {
             hisTaskConsumer.accept(hisTask);
@@ -679,7 +681,7 @@ public class TaskServiceImpl implements TaskService {
         // 撤回历史任务
         if (hisTask.startNode()) {
             // 如果直接撤回到发起人，构建发起人关联信息
-            FlwTask flwTask = hisTask.undoTask();
+            FlwTask flwTask = hisTask.undoTask(taskType);
             taskDao.insert(flwTask);
             taskActorDao.insert(FlwTaskActor.ofFlwTask(flwTask));
         } else {
@@ -703,14 +705,14 @@ public class TaskServiceImpl implements TaskService {
                     // 恢复最新历史任务
                     taskActorMap.forEach((k, v) -> hisTasks.stream().filter(t -> Objects.equals(t.getId(), v.getTaskId()))
                             .findFirst().ifPresent(t -> {
-                                FlwTask flwTask = t.undoTask();
+                                FlwTask flwTask = t.undoTask(taskType);
                                 taskDao.insert(flwTask);
                                 taskActorDao.insert(FlwTaskActor.of(flwTask.getId(), v));
                             }));
                 }
             } else {
                 // 恢复历史任务
-                FlwTask flwTask = hisTask.undoTask();
+                FlwTask flwTask = hisTask.undoTask(taskType);
                 taskDao.insert(flwTask);
 
                 // 撤回任务参与者

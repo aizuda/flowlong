@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.entity;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.enums.TaskState;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
@@ -110,8 +111,10 @@ public class FlwHisTask extends FlwTask {
      *
      * @return 任务对象
      */
-    public FlwTask undoTask() {
-        return cloneTask(this.createId, this.createBy);
+    public FlwTask undoTask(TaskType taskType) {
+        FlwTask flwTask = this.cloneTask(this.createId, this.createBy);
+        flwTask.setTaskType(taskType);
+        return flwTask;
     }
 
     /**
