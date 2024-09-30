@@ -834,11 +834,6 @@ public class TaskServiceImpl implements TaskService {
              */
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(flwTask, performType, taskActors, execution, nodeModel));
-            // 审批提醒
-            TaskReminder taskReminder = execution.getEngine().getContext().getTaskReminder();
-            if (null != taskReminder) {
-                flwTasks.forEach(s -> taskReminder.remind(execution.getEngine().getContext(), s.getInstanceId(), s));
-            }
         } else if (TaskType.cc.eq(nodeType)) {
             /*
              * 2，抄送任务
