@@ -91,7 +91,19 @@ public enum TaskType {
     /**
      * 被代理人自己完成任务
      */
-    agentOwn(16);
+    agentOwn(16),
+    /**
+     * 拿回任务
+     */
+    reclaim(17),
+    /**
+     * 待撤回历史任务
+     */
+    withdraw(18),
+    /**
+     * 拒绝任务
+     */
+    reject(19);
 
     private final int value;
 
