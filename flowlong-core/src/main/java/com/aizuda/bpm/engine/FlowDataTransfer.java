@@ -98,4 +98,14 @@ public class FlowDataTransfer {
     public static void remove() {
         flowData.remove();
     }
+
+    /**
+     * 移除指定key传递参数
+     */
+    public static void removeByKey(String key) {
+        Map<String, Object> dataMap = getAll();
+        if (null != dataMap) {
+            dataMap.remove(key);
+        }
+    }
 }
