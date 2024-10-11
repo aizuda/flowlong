@@ -12,7 +12,7 @@ FlowLong🐉飞龙工作流
 
 [使用源码登记入口](https://gitee.com/aizuda/flowlong/issues/I7XGP5)
 
-[企业版💎特演示地址](https://boot.aizuda.com)
+[企业版💎特演示地址](https://aizuda.com)
 
 [打开官方开发文档](https://doc.flowlong.com)
 
