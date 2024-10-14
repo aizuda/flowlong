@@ -1,0 +1,33 @@
+{
+  "key": "testAutoClaimRole",
+  "name": "测试自动认领角色审批",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1725161262899",
+    "type": 0,
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "flk1724860316169",
+      "callProcess": null,
+      "type": 1,
+      "setType": 3,
+      "nodeAssigneeList": [
+        {
+          "id": "100200",
+          "name": "项目经理"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 2,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "remind": false,
+      "approveSelf": 1
+    }
+  }
+}
