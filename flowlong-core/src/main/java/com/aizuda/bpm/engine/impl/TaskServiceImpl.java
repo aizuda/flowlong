@@ -153,18 +153,27 @@ public class TaskServiceImpl implements TaskService {
         }
         Assert.isNull(nodeModel, "根据节点key[" + nodeKey + "]无法找到节点模型");
 
+        // 非发起节点和审批节点不允许跳转
+        TaskType taskType = TaskType.get(nodeModel.getType());
+        Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
+
         // 获取当前执行实例的所有正在执行的任务，强制终止执行并跳到指定节点
         taskDao.selectListByInstanceId(flwTask.getInstanceId()).forEach(t -> this.moveToHisTask(t, TaskState.jump, flowCreator));
 
-        if (0 == nodeModel.getType()) {
+        // 设置任务类型为跳转
+        FlwTask createTask = this.createTaskBase(nodeModel, execution);
+        createTask.setTaskType(TaskType.jump);
+        if (TaskType.major == taskType) {
             // 发起节点，创建发起任务，分配发起人
-            FlwTask initiationTask = this.createTaskBase(nodeModel, execution);
-            initiationTask.setPerformType(PerformType.start);
-            Assert.isFalse(taskDao.insert(initiationTask), "Failed to create initiation task");
-            taskActorDao.insert(FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), initiationTask.getId()));
+            createTask.setPerformType(PerformType.start);
+            Assert.isFalse(taskDao.insert(createTask), "Failed to create initiation task");
+            taskActorDao.insert(FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), createTask.getId()));
         } else {
-            // 其它节点创建
-            this.createTask(nodeModel, execution);
+            // 模型中获取参与者信息
+            List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
+            // 创建审批人
+            PerformType performType = PerformType.get(nodeModel.getExamineMode());
+            this.saveTask(createTask, performType, taskActors, execution, nodeModel);
         }
 
         // 任务监听器通知
@@ -972,6 +981,7 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskName(nodeModel.getNodeName());
         flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
+        flwTask.setPerformType(nodeModel.getExamineMode());
         // 触发器 父任务ID flwTask 不为 null 但 getFlwTask().getId() == null
         FlwTask executionTask = execution.getFlwTask();
         if (null == executionTask || null == executionTask.getId()) {

@@ -111,7 +111,8 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 多人审批时审批方式 {@link PerformType}
      * <p>
-     * 1，按顺序依次审批 2，会签 (可同时审批，每个人必须审批通过) 3，或签 (有一人审批通过即可) 4，票签 (总权重大于 50% 表示通过)
+     * 0，发起 1，按顺序依次审批 2，会签 (可同时审批，每个人必须审批通过) 3，或签 (有一人审批通过即可) 4，票签 (总权重大于 50% 表示通过) <br/>
+     * 5， 6，定时器 7，触发器 8， 9，抄送
      * </p>
      */
     private Integer examineMode;

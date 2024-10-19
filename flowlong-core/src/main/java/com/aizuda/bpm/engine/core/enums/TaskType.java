@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.engine.core.enums;
 
+import com.aizuda.bpm.engine.entity.FlwTask;
 import lombok.Getter;
 
 import java.util.Arrays;
@@ -103,7 +104,11 @@ public enum TaskType {
     /**
      * 拒绝任务
      */
-    reject(19);
+    reject(19),
+    /**
+     * 跳转任务，从上个任务 {@link FlwTask#getParentTaskId()} 跳转过来的
+     */
+    jump(20);
 
     private final int value;
 
