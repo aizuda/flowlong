@@ -1,7 +1,7 @@
 package com.aizuda.bpm.spring.example.config;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 public class TestTaskListener implements TaskListener {
 
     @Override
-    public boolean notify(EventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
+    public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         System.err.println("当前执行任务 = " + supplier.get().getTaskName() +
                 " ，执行事件 = " + eventType.name() + "，创建人=" + flowCreator.getCreateBy());
         return true;

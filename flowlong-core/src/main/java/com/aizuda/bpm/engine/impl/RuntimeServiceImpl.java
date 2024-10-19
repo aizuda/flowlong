@@ -13,7 +13,8 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
+import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
@@ -144,7 +145,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceDao.deleteById(instanceId);
             hisInstanceDao.updateById(his);
             // 流程实例监听器通知
-            this.instanceNotify(EventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
+            this.instanceNotify(InstanceEventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
             /*
              * 实例为子流程，重启动父流程任务
@@ -167,7 +168,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         return true;
     }
 
-    protected void instanceNotify(EventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
+    protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
         if (null != instanceListener) {
             instanceListener.notify(eventType, supplier, null, flowCreator);
         }
@@ -193,22 +194,22 @@ public class RuntimeServiceImpl implements RuntimeService {
         extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
 
         // 流程实例监听器通知
-        this.instanceNotify(EventType.start, () -> flwHisInstance, flowCreator);
+        this.instanceNotify(InstanceEventType.start, () -> flwHisInstance, flowCreator);
     }
 
     @Override
     public void reject(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.reject, EventType.reject);
+        this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
     }
 
     @Override
     public void revoke(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.revoke, EventType.revoke);
+        this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
     }
 
     @Override
     public void timeout(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.timeout, EventType.timeout);
+        this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
     }
 
     /**
@@ -219,7 +220,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void terminate(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.terminate, EventType.terminate);
+        this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
     }
 
     /**
@@ -231,7 +232,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param eventType     监听事件类型
      */
     protected void forceComplete(Long instanceId, FlowCreator flowCreator,
-                                 InstanceState instanceState, EventType eventType) {
+                                 InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
             return;
@@ -255,7 +256,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 强制完成流程所有实例
      */
     protected void forceCompleteAll(FlwInstance flwInstance, FlowCreator flowCreator,
-                                    InstanceState instanceState, EventType eventType) {
+                                    InstanceState instanceState, TaskEventType eventType) {
 
         // 实例相关任务强制完成
         taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType);
@@ -268,7 +269,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         instanceDao.deleteById(flwInstance.getId());
 
         // 流程实例监听器通知
-        this.instanceNotify(eventType, () -> flwHisInstance, flowCreator);
+        this.instanceNotify(InstanceEventType.forceComplete, () -> flwHisInstance, flowCreator);
     }
 
     /**

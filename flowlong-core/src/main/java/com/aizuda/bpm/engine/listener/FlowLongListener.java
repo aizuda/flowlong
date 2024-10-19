@@ -4,7 +4,6 @@
 package com.aizuda.bpm.engine.listener;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
 import com.aizuda.bpm.engine.model.NodeModel;
 
 import java.util.function.Supplier;
@@ -19,7 +18,7 @@ import java.util.function.Supplier;
  * @author hubin
  * @since 1.0
  */
-public interface FlowLongListener<T> {
+public interface FlowLongListener<E, T> {
 
     /**
      * 流程引擎监听通知
@@ -30,6 +29,6 @@ public interface FlowLongListener<T> {
      * @param flowCreator 处理人员
      * @return 通知结果 true 成功 false 失败
      */
-    boolean notify(EventType eventType, Supplier<T> supplier, NodeModel nodeModel, FlowCreator flowCreator);
+    boolean notify(E eventType, Supplier<T> supplier, NodeModel nodeModel, FlowCreator flowCreator);
 
 }

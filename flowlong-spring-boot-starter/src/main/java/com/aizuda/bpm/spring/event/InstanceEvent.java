@@ -4,7 +4,7 @@
 package com.aizuda.bpm.spring.event;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
@@ -25,7 +25,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class InstanceEvent implements Serializable {
-    private EventType eventType;
+    private InstanceEventType eventType;
     /**
      * EventType.complete 完成时，实例对象实际为子类 FlwHisInstance 对象
      * <p>

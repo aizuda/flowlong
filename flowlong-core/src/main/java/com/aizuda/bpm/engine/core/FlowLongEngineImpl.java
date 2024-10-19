@@ -127,10 +127,10 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoJumpTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator) {
-        return executeTask(taskId, flowCreator, args, TaskState.autoJump, EventType.autoJump);
+        return executeTask(taskId, flowCreator, args, TaskState.autoJump, TaskEventType.autoJump);
     }
 
-    protected boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType) {
+    protected boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType) {
         FlwTask flwTask = taskService().executeTask(taskId, flowCreator, ObjectUtils.getArgs(args), taskState, eventType);
         if (log.isDebugEnabled()) {
             log.debug("Auto execute taskId={}", taskId);
@@ -147,7 +147,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoCompleteTask(Long taskId, Map<String, Object> args) {
-        return executeTask(taskId, FlowCreator.ADMIN, null, TaskState.autoComplete, EventType.autoComplete);
+        return executeTask(taskId, FlowCreator.ADMIN, null, TaskState.autoComplete, TaskEventType.autoComplete);
     }
 
     /**
@@ -155,7 +155,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoRejectTask(Long taskId, Map<String, Object> args) {
-        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, ObjectUtils.getArgs(args), TaskState.autoComplete, EventType.autoComplete);
+        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, ObjectUtils.getArgs(args), TaskState.autoComplete, TaskEventType.autoComplete);
         if (log.isDebugEnabled()) {
             log.debug("Auto reject taskId={}", taskId);
         }

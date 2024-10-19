@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.engine.listener;
 
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
 
 /**
@@ -15,6 +16,6 @@ import com.aizuda.bpm.engine.entity.FlwTask;
  * @author hubin
  * @since 1.0
  */
-public interface TaskListener extends FlowLongListener<FlwTask> {
+public interface TaskListener extends FlowLongListener<TaskEventType, FlwTask> {
 
 }
