@@ -1050,8 +1050,11 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (ObjectUtils.isEmpty(taskActors)) {
-            Assert.illegal("taskActors cannot be empty. taskName = " + flwTask.getTaskName() + ", taskKey = " +
-                    flwTask.getTaskKey() + ", performType = " + performType.getValue());
+            // 非正常创建任务处理逻辑
+            if (execution.getTaskActorProvider().abnormal(flwTask, performType, taskActors, execution, nodeModel)) {
+                // 返回 true 继续执行
+                return flwTasks;
+            }
         }
 
         // 参与者类型

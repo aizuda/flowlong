@@ -8,7 +8,9 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
+import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -59,4 +61,20 @@ public interface TaskActorProvider {
      * @return 参与者数组
      */
     List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution);
+
+    /**
+     * 非正常创建任务处理逻辑，默认抛出异常
+     *
+     * @param flwTask     当前任务
+     * @param performType 任务参与类型 {@link PerformType}
+     * @param taskActors  任务参与者
+     * @param execution   执行对象 {@link Execution}
+     * @param nodeModel   模型节点 {@link NodeModel}
+     * @return 返回 true 不再创建任务，返回 false 解决异常补充回写 taskActors 信息
+     */
+    default boolean abnormal(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution, NodeModel nodeModel) {
+        Assert.illegal("taskActors cannot be empty. taskName = " + flwTask.getTaskName() + ", taskKey = " +
+                flwTask.getTaskKey() + ", performType = " + performType.getValue());
+        return true;
+    }
 }
