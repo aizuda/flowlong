@@ -30,7 +30,7 @@ public class SolonExpression implements Expression {
             if (expr.startsWith("#{")) {
                 expr = expr.substring(2, expr.length() - 2);
             } else if (expr.startsWith("#")) {
-                expr = expr.substring(1, expr.length() - 2);
+                expr = expr.substring(1);
             }
             return (Boolean) AviatorEvaluator.execute(expr, args);
         });
