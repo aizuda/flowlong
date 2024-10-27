@@ -3,6 +3,7 @@
  */
 package com.aizuda.bpm.engine.listener;
 
+import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.entity.FlwHisInstance;
 
 /**
@@ -15,6 +16,6 @@ import com.aizuda.bpm.engine.entity.FlwHisInstance;
  * @author hubin
  * @since 1.0
  */
-public interface InstanceListener extends FlowLongListener<FlwHisInstance> {
+public interface InstanceListener extends FlowLongListener<InstanceEventType, FlwHisInstance> {
 
 }

@@ -1,0 +1,9 @@
+description "flowlong spring boot example"
+
+dependencies {
+    implementation project(":flowlong-spring-boot-starter")
+    implementation("com.baomidou:mybatis-plus-boot-starter")
+    implementation("org.noear:solon-web:3.0.1")
+    implementation("org.noear:solon-scheduling-simple:3.0.1")
+
+}

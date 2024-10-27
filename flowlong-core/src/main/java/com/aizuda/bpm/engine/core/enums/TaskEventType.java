@@ -13,7 +13,7 @@ package com.aizuda.bpm.engine.core.enums;
  * @author lizhongyuan
  * @since 1.0
  */
-public enum EventType {
+public enum TaskEventType {
     /**
      * 发起
      */
@@ -123,11 +123,11 @@ public enum EventType {
      */
     end;
 
-    public boolean eq(EventType eventType) {
+    public boolean eq(TaskEventType eventType) {
         return this == eventType;
     }
 
-    public boolean ne(EventType eventType) {
+    public boolean ne(TaskEventType eventType) {
         return this != eventType;
     }
 }

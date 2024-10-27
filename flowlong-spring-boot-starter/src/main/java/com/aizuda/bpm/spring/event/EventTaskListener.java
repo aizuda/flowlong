@@ -4,7 +4,7 @@
 package com.aizuda.bpm.spring.event;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -30,7 +30,7 @@ public class EventTaskListener implements TaskListener {
     }
 
     @Override
-    public boolean notify(EventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
+    public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         TaskEvent taskEvent = new TaskEvent();
         taskEvent.setEventType(eventType);
         taskEvent.setFlwTask(supplier.get());

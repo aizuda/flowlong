@@ -2,7 +2,7 @@ package test.mysql.config;
 
 import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.core.enums.NodeApproveSelf;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.entity.FlwTask;
@@ -23,9 +23,9 @@ public class TestTaskListener implements TaskListener {
     private FlowLongEngine flowLongEngine;
 
     @Override
-    public boolean notify(EventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel,
+    public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel,
                           FlowCreator flowCreator) {
-        if (EventType.create.eq(eventType)) {
+        if (TaskEventType.create.eq(eventType)) {
             // 创建任务时候，判断是否自动审批通过
             Integer approveSelf = nodeModel.getApproveSelf();
             if (NodeApproveSelf.AutoSkip.eq(approveSelf)) {

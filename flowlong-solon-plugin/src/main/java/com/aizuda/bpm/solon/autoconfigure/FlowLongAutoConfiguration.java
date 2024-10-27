@@ -3,22 +3,45 @@
  */
 package com.aizuda.bpm.solon.autoconfigure;
 
-import com.aizuda.bpm.engine.*;
+import com.aizuda.bpm.engine.Expression;
+import com.aizuda.bpm.engine.FlowLongEngine;
+import com.aizuda.bpm.engine.FlowLongScheduler;
+import com.aizuda.bpm.engine.ProcessModelParser;
+import com.aizuda.bpm.engine.ProcessService;
+import com.aizuda.bpm.engine.QueryService;
+import com.aizuda.bpm.engine.RuntimeService;
+import com.aizuda.bpm.engine.TaskAccessStrategy;
+import com.aizuda.bpm.engine.TaskActorProvider;
+import com.aizuda.bpm.engine.TaskCreateInterceptor;
+import com.aizuda.bpm.engine.TaskReminder;
+import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
-import com.aizuda.bpm.engine.dao.*;
+import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
+import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
+import com.aizuda.bpm.engine.dao.FlwHisTaskActorDao;
+import com.aizuda.bpm.engine.dao.FlwHisTaskDao;
+import com.aizuda.bpm.engine.dao.FlwInstanceDao;
+import com.aizuda.bpm.engine.dao.FlwProcessDao;
+import com.aizuda.bpm.engine.dao.FlwTaskActorDao;
+import com.aizuda.bpm.engine.dao.FlwTaskDao;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
-import com.aizuda.bpm.engine.impl.*;
+import com.aizuda.bpm.engine.impl.GeneralAccessStrategy;
+import com.aizuda.bpm.engine.impl.GeneralTaskActorProvider;
+import com.aizuda.bpm.engine.impl.ProcessServiceImpl;
+import com.aizuda.bpm.engine.impl.QueryServiceImpl;
+import com.aizuda.bpm.engine.impl.RuntimeServiceImpl;
+import com.aizuda.bpm.engine.impl.TaskServiceImpl;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
 import com.aizuda.bpm.solon.adaptive.SolonExpression;
 import com.aizuda.bpm.solon.adaptive.SolonFlowJsonHandler;
-import com.aizuda.bpm.solon.adaptive.SolonScheduler;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
@@ -144,7 +167,7 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    public void scheduler(FlowLongContext flowLongContext,
+    public void scheduler(FlowLongEngine flowLongEngine,
                           FlowLongProperties properties,
                           @Inject(required = false) TaskReminder taskReminder,
                           JobLock jobLock,
@@ -152,17 +175,15 @@ public class FlowLongAutoConfiguration {
         if (taskReminder == null) {
             return;
         }
-
-        SolonScheduler scheduler = new SolonScheduler();
-        scheduler.setContext(flowLongContext);
-        scheduler.setRemindParam(properties.getRemind());
-        scheduler.setTaskReminder(taskReminder);
-        scheduler.setJobLock(jobLock);
-
+        FlowLongScheduler flowLongScheduler = new FlowLongScheduler() {
+        };
+        flowLongScheduler.setFlowLongEngine(flowLongEngine);
+        flowLongScheduler.setRemindParam(properties.getRemind());
+        flowLongScheduler.setJobLock(jobLock);
         //注册 job（不再需要返回了）
         jobManager.jobAdd("flowlong",
-                new ScheduledAnno().cron(scheduler.getRemindParam().getCron()), ctx -> {
-                    scheduler.remind();
+                new ScheduledAnno().cron(flowLongScheduler.getRemindParam().getCron()), ctx -> {
+                    flowLongScheduler.remind();
                 });
 
     }

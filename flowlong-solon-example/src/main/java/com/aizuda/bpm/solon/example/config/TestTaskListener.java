@@ -1,10 +1,11 @@
-package com.aizuda.bpm.spring.example.config;
+package com.aizuda.bpm.solon.example.config;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.model.NodeModel;
+import org.noear.solon.annotation.Component;
 
 import java.util.function.Supplier;
 
@@ -14,6 +15,7 @@ import java.util.function.Supplier;
  * 不可以 EventTaskListener 同时使用
  * </p>
  */
+@Component
 public class TestTaskListener implements TaskListener {
 
     @Override

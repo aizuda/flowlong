@@ -46,6 +46,10 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         // 根据指定条件节点选择
         String conditionNodeKey = FlowDataTransfer.get(FlowConstants.processSpecifyConditionNodeKey);
         if (null != conditionNodeKey) {
+            // 清理指定节点参数
+            FlowDataTransfer.removeByKey(FlowConstants.processSpecifyConditionNodeKey);
+
+            // 找到指定条件节点
             Optional<ConditionNode> conditionNodeKeyOptional = conditionNodes.stream().filter(t -> Objects.equals(t.getNodeKey(), conditionNodeKey)).findFirst();
             if (conditionNodeKeyOptional.isPresent()) {
                 return conditionNodeKeyOptional;

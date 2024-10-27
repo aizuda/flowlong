@@ -4,7 +4,7 @@
 package com.aizuda.bpm.spring.event;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.core.enums.EventType;
+import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.entity.FlwHisInstance;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -30,7 +30,7 @@ public class EventInstanceListener implements InstanceListener {
     }
 
     @Override
-    public boolean notify(EventType eventType, Supplier<FlwHisInstance> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
+    public boolean notify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         InstanceEvent instanceEvent = new InstanceEvent();
         instanceEvent.setEventType(eventType);
         instanceEvent.setFlwInstance(supplier.get());

@@ -3,7 +3,7 @@ buildscript {
     ext {
         springBootVersion = "2.7.0"
         mybatisPlusVersion = "3.5.7"
-        solonVersion = "2.7.2"
+        solonVersion = "3.0.1"
     }
 
     // 仓库配置
@@ -127,7 +127,7 @@ subprojects {
 
     // 编译任务忽略案例模块
     afterEvaluate { project ->
-        if (project.name == 'flowlong-spring-boot-example') {
+        if (project.name == 'flowlong-spring-boot-example' || project.name == 'flowlong-solon-example') {
             project.tasks.all {
                 it.enabled = false
             }

@@ -1,0 +1,57 @@
+server.port: 8000
+server.request.maxBodySize: 1024mb
+# 设定最大的上传文件大小
+server.request.maxFileSize: 1024mb
+
+solon.app:
+  name: flowlong-solon
+
+# 参数注解校验时，true 对每个参数都进行校验，false 只要有一个参数校验失败就返回
+solon:
+  validation:
+    validateAll: true
+
+# 日志公共配置
+solon.logging.appender:
+  console:
+    level: INFO # appender 设置为 TRACE 级别，后面的 logger 设置为 INFO 级别，这样就可以只输出 INFO 级别以上的日志，才能实现动态调整日志级别功能
+    pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %magenta(${PID:-}) --- %-15([%15.15thread]) %-56(%cyan(%-40.40logger{39}%L)) : %msg%n"
+  file:
+    name: "/home/logs/${solon.app.name}/${solon.app.name}.log"
+    level: INFO
+    pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level ${PID:-} --- %-15([%15.15thread]) %-44(%-40.40logger{39}%L) : %msg%n"
+    maxFileSize: "20 MB" # 单个日志文件最大大小
+    maxHistory: "30" # 日志文件最大保留天数
+  cloud:
+    level: INFO
+
+# 序列化公共配置
+solon.serialization.json:
+  dateAsFormat: 'yyyy-MM-dd HH:mm:ss' #配置日期格式（默认输出为时间戳）
+  dateAsTimeZone: 'GMT+8' #配置时区
+  dateAsTicks: false #将date转为毫秒数（和 dateAsFormat 二选一）
+  longAsString: true #将long型转为字符串输出 （默认为false）
+  boolAsInt: false   #将bool型转为字符串输出 （默认为false）
+  nullStringAsEmpty: false
+  nullBoolAsFalse: false
+  nullNumberAsZero: false
+  nullArrayAsEmpty: false
+  nullAsWriteable: true #输出所有null值
+  enumAsName: true #枚举使用名字（v2.2.1 后支持）
+
+solon.dataSources:
+  flowlong!: #数据源（!结尾表示 typed=true）
+    class: "com.zaxxer.hikari.HikariDataSource"
+    maxPoolSize: 60
+    schema: public
+    jdbcUrl: jdbc:postgresql://127.0.0.1:5436/flowlong
+    driverClassName: org.postgresql.Driver
+    username: postgres
+    password: qwer963.
+
+# FlowLong Config
+flowlong:
+  remind:
+    cron: "*/5 * * * * ?"
+  eventing:
+    task: true

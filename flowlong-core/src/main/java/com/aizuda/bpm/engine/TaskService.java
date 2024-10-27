@@ -40,7 +40,7 @@ public interface TaskService {
      * @return Task 任务对象
      */
     default FlwTask complete(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        return this.executeTask(taskId, flowCreator, args, TaskState.complete, EventType.complete);
+        return this.executeTask(taskId, flowCreator, args, TaskState.complete, TaskEventType.complete);
     }
 
     default FlwTask complete(Long taskId, FlowCreator flowCreator) {
@@ -57,7 +57,7 @@ public interface TaskService {
      * @param eventType   任务执行事件类型
      * @return Task 任务对象
      */
-    FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, EventType eventType);
+    FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType);
 
     /**
      * 强制完成所有任务
@@ -68,7 +68,7 @@ public interface TaskService {
      * @param eventType     监听事件类型
      * @return true 成功 false 失败
      */
-    boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, EventType eventType);
+    boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
 
     /**
      * 执行节点跳转任务
