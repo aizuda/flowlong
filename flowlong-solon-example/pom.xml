@@ -5,11 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.noear</groupId>
-        <artifactId>solon-parent</artifactId>
-        <version>3.0.1</version>
-        <relativePath/>
+        <groupId>com.aizuda</groupId>
+        <artifactId>flowlong</artifactId>
+        <version>${revision}</version>
     </parent>
+
+    <properties>
+        <solonVersion>3.0.1</solonVersion>
+    </properties>
 
     <artifactId>flowlong-solon-example</artifactId>
 
@@ -17,7 +20,6 @@
         <dependency>
             <groupId>com.aizuda</groupId>
             <artifactId>flowlong-solon-plugin</artifactId>
-            <version>1.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -27,28 +29,22 @@
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-web</artifactId>
+            <version>${solonVersion}</version>
         </dependency>
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.1</version>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-scheduling-simple</artifactId>
+            <version>${solonVersion}</version>
         </dependency>
         <!-- solon的logback日志实现 -->
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-logging-logback</artifactId>
+            <version>${solonVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon-scheduling-simple</artifactId>
         </dependency>
     </dependencies>
 
