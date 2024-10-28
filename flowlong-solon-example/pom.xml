@@ -12,9 +12,22 @@
 
     <properties>
         <solonVersion>3.0.1</solonVersion>
+        <solonMpVersion>3.5.9</solonMpVersion>
     </properties>
 
     <artifactId>flowlong-solon-example</artifactId>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.noear</groupId>
+                <artifactId>solon-parent</artifactId>
+                <version>${solonVersion}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -24,42 +37,36 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-solon-plugin</artifactId>
-            <version>3.5.9</version>
+            <version>${solonMpVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-web</artifactId>
-            <version>${solonVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon</artifactId>
-            <version>${solonVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-scheduling-simple</artifactId>
-            <version>${solonVersion}</version>
-        </dependency>
-        <!-- solon的logback日志实现 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.16</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>2.0.16</version>
         </dependency>
         <dependency>
             <groupId>org.noear</groupId>
-            <artifactId>solon-logging-simple</artifactId>
-            <version>${solonVersion}</version>
+            <artifactId>solon-logging-logback</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
         </dependency>
     </dependencies>
 
