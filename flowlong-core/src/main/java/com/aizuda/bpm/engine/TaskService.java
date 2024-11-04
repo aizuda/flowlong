@@ -331,5 +331,5 @@ public interface TaskService {
      *
      * @param instanceIds 流程实例ID列表
      */
-    void cascadeRemoveByInstanceIds(List<Long> instanceIds);
+    boolean cascadeRemoveByInstanceIds(List<Long> instanceIds);
 }

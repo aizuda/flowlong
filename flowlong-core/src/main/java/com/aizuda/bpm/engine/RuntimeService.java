@@ -137,6 +137,13 @@ public interface RuntimeService {
     void cascadeRemoveByProcessId(Long processId);
 
     /**
+     * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_instance, flw_his_instance
+     *
+     * @param instanceId 流程实例ID
+     */
+    void cascadeRemoveByInstanceId(Long instanceId);
+
+    /**
      * 追加节点模型（不执行任务跳转）
      * <p>
      * 执行追加节点模型调用 {@link FlowLongEngine#executeAppendNodeModel(Long, NodeModel, FlowCreator, boolean)}

@@ -1254,7 +1254,7 @@ public class TaskServiceImpl implements TaskService {
      * @param instanceIds 流程实例ID列表
      */
     @Override
-    public void cascadeRemoveByInstanceIds(List<Long> instanceIds) {
+    public boolean cascadeRemoveByInstanceIds(List<Long> instanceIds) {
         // 删除历史任务及参与者
         hisTaskActorDao.deleteByInstanceIds(instanceIds);
         hisTaskDao.deleteByInstanceIds(instanceIds);
@@ -1262,6 +1262,7 @@ public class TaskServiceImpl implements TaskService {
         // 删除任务及参与者
         taskActorDao.deleteByInstanceIds(instanceIds);
         taskDao.deleteByInstanceIds(instanceIds);
+        return true;
     }
 
 }

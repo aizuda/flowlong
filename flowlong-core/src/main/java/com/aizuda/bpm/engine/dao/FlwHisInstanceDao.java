@@ -21,6 +21,8 @@ public interface FlwHisInstanceDao {
 
     boolean insert(FlwHisInstance hisInstance);
 
+    boolean deleteById(Long id);
+
     boolean deleteByProcessId(Long processId);
 
     boolean updateById(FlwHisInstance hisInstance);

@@ -33,6 +33,11 @@ public class FlwHisInstanceDaoImpl implements FlwHisInstanceDao {
     }
 
     @Override
+    public boolean deleteById(Long id) {
+        return hisInstanceMapper.deleteById(id) > 0;
+    }
+
+    @Override
     public boolean deleteByProcessId(Long processId) {
         return hisInstanceMapper.delete(Wrappers.<FlwHisInstance>lambdaQuery()
                 .eq(FlwHisInstance::getProcessId, processId)) > 0;

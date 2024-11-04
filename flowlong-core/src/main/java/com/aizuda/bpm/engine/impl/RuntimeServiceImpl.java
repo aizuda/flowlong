@@ -26,6 +26,7 @@ import com.aizuda.bpm.engine.model.ModelHelper;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -232,7 +233,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param eventType     监听事件类型
      */
     protected boolean forceComplete(Long instanceId, FlowCreator flowCreator,
-                                 InstanceState instanceState, TaskEventType eventType) {
+                                    InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
             return false;
@@ -318,6 +319,17 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 删除实例
             instanceDao.deleteByProcessId(processId);
+        }
+    }
+
+    @Override
+    public void cascadeRemoveByInstanceId(Long instanceId) {
+        if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
+            // 删除实例
+            instanceDao.deleteById(instanceId);
+
+            // 删除历史实例
+            hisInstanceDao.deleteById(instanceId);
         }
     }
 
