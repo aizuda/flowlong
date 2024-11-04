@@ -5,6 +5,7 @@ package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
+import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -41,7 +42,7 @@ public class FlwHisTask extends FlwTask {
      */
     protected Date finishTime;
     /**
-     * 任务状态 0，活动 1，跳转 2，完成 3，拒绝 4，撤销审批  5，超时 6，终止 7，驳回终止
+     * 任务状态 0，活动 1，跳转 2，完成 3，拒绝 更多查看 {@link TaskState}
      */
     protected Integer taskState;
     /**

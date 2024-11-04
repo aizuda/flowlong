@@ -78,7 +78,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void reject(Long instanceId, FlowCreator flowCreator);
+    boolean reject(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
@@ -86,7 +86,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void revoke(Long instanceId, FlowCreator flowCreator);
+    boolean revoke(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例超时（设定审批时间超时，自动结束）
@@ -94,7 +94,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void timeout(Long instanceId, FlowCreator flowCreator);
+    boolean timeout(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例超时（忽略操作权限）
@@ -111,7 +111,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void terminate(Long instanceId, FlowCreator flowCreator);
+    boolean terminate(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 更新流程实例

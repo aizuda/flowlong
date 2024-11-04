@@ -13,9 +13,9 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -198,18 +198,18 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void reject(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
+    public boolean reject(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
     }
 
     @Override
-    public void revoke(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
+    public boolean revoke(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
     }
 
     @Override
-    public void timeout(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
+    public boolean timeout(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
     }
 
     /**
@@ -219,8 +219,8 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param flowCreator 处理人员
      */
     @Override
-    public void terminate(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
+    public boolean terminate(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
     }
 
     /**
@@ -231,11 +231,11 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param instanceState 流程实例最终状态
      * @param eventType     监听事件类型
      */
-    protected void forceComplete(Long instanceId, FlowCreator flowCreator,
+    protected boolean forceComplete(Long instanceId, FlowCreator flowCreator,
                                  InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
-            return;
+            return false;
         }
 
         final Long parentInstanceId = flwInstance.getParentInstanceId();
@@ -250,6 +250,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 结束当前流程实例
         this.forceCompleteAll(flwInstance, flowCreator, instanceState, eventType);
+        return true;
     }
 
     /**

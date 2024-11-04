@@ -603,7 +603,22 @@ public class TaskServiceImpl implements TaskService {
                 "当前参与者[" + flowCreator.getCreateBy() + "]不允许唤醒历史任务[taskId=" + taskId + "]");
 
         // 流程实例结束情况恢复流程实例
-        FlwInstance flwInstance = instanceDao.selectById(histTask.getInstanceId());
+        final Long instanceId = histTask.getInstanceId();
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
+        if (null == flwInstance) {
+            // 唤醒历史实例
+            FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
+            if (null != fhi) {
+                // 恢复当前实例
+                if (instanceDao.insert(fhi.toFlwInstance())) {
+                    // 重置历史实例为激活状态
+                    FlwHisInstance temp = new FlwHisInstance();
+                    temp.setId(instanceId);
+                    temp.setInstanceState(InstanceState.active);
+                    hisInstanceDao.updateById(temp);
+                }
+            }
+        }
         Assert.isNull(flwInstance, "已结束流程任务不支持唤醒");
 
         // 历史任务恢复
