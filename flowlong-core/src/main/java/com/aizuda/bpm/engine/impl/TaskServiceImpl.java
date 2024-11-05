@@ -3,7 +3,10 @@
  */
 package com.aizuda.bpm.engine.impl;
 
-import com.aizuda.bpm.engine.*;
+import com.aizuda.bpm.engine.ProcessService;
+import com.aizuda.bpm.engine.TaskAccessStrategy;
+import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -619,7 +622,6 @@ public class TaskServiceImpl implements TaskService {
                 }
             }
         }
-        Assert.isNull(flwInstance, "已结束流程任务不支持唤醒");
 
         // 历史任务恢复
         FlwTask flwTask = histTask.cloneTask(null);
