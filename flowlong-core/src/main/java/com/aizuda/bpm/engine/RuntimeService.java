@@ -49,15 +49,17 @@ public interface RuntimeService {
     /**
      * 根据 流程实例ID 更新流程实例全局变量
      *
-     * @param args     流程实例参数
-     * @param function 待更新实例回调处理函数
+     * @param instanceId 流程实例ID
+     * @param args       流程实例参数
+     * @param function   待更新实例回调处理函数
      */
     boolean addVariable(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function);
 
     /**
      * 根据 流程实例ID 更新流程实例全局变量
      *
-     * @param args 流程实例参数
+     * @param instanceId 流程实例ID
+     * @param args       流程实例参数
      */
     default boolean addVariable(Long instanceId, Map<String, Object> args) {
         return this.addVariable(instanceId, args, t -> new FlwInstance());
