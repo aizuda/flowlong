@@ -47,12 +47,21 @@ public interface RuntimeService {
     ProcessModel getProcessModelByInstanceId(Long instanceId);
 
     /**
-     * 向指定实例id添加全局变量数据
+     * 根据 流程实例ID 更新流程实例全局变量
      *
-     * @param instanceId 实例id
-     * @param args       变量数据
+     * @param args     流程实例参数
+     * @param function 待更新实例回调处理函数
      */
-    void addVariable(Long instanceId, Map<String, Object> args);
+    boolean addVariable(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function);
+
+    /**
+     * 根据 流程实例ID 更新流程实例全局变量
+     *
+     * @param args 流程实例参数
+     */
+    default boolean addVariable(Long instanceId, Map<String, Object> args) {
+        return this.addVariable(instanceId, args, t -> new FlwInstance());
+    }
 
     /**
      * 结束流程实例（审批通过）
@@ -120,23 +129,6 @@ public interface RuntimeService {
      * @param flwInstance 流程实例对象
      */
     void updateInstance(FlwInstance flwInstance);
-
-    /**
-     * 根据 流程实例ID 更新流程实例全局变量
-     *
-     * @param args     流程实例参数
-     * @param function 待更新实例回调处理函数
-     */
-    boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function);
-
-    /**
-     * 根据 流程实例ID 更新流程实例全局变量
-     *
-     * @param args 流程实例参数
-     */
-    default boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args) {
-        return this.updateInstanceVariableById(instanceId, args, t -> new FlwInstance());
-    }
 
     /**
      * 根据 流程实例ID 更新流程实例模型内容

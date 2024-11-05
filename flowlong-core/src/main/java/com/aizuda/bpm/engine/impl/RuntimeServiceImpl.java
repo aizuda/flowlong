@@ -104,23 +104,17 @@ public class RuntimeServiceImpl implements RuntimeService {
         return flwExtInstance.model();
     }
 
-    /**
-     * 向活动实例临时添加全局变量数据
-     *
-     * @param instanceId 实例id
-     * @param args       变量数据
-     */
     @Override
-    public void addVariable(Long instanceId, Map<String, Object> args) {
+    public boolean addVariable(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
+        Assert.isNull(flwInstance, "not found instance");
+        FlwInstance fi = function.apply(flwInstance);
+        fi.setId(instanceId);
         Map<String, Object> data = flwInstance.variableToMap();
         data.putAll(args);
-        FlwInstance temp = new FlwInstance();
-        temp.setId(instanceId);
-        temp.setMapVariable(data);
-        instanceDao.updateById(temp);
+        fi.setMapVariable(data);
+        return instanceDao.updateById(fi);
     }
-
 
     /**
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
@@ -283,18 +277,6 @@ public class RuntimeServiceImpl implements RuntimeService {
         Assert.illegal(null == flwInstance || null == flwInstance.getId(),
                 "instance id cannot be empty");
         instanceDao.updateById(flwInstance);
-    }
-
-    @Override
-    public boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function) {
-        FlwInstance flwInstance = instanceDao.selectById(instanceId);
-        Assert.isNull(flwInstance, "not found instance");
-        FlwInstance fi = function.apply(flwInstance);
-        fi.setId(instanceId);
-        Map<String, Object> var = flwInstance.variableToMap();
-        var.putAll(args);
-        fi.setMapVariable(var);
-        return instanceDao.updateById(fi);
     }
 
     @Override
