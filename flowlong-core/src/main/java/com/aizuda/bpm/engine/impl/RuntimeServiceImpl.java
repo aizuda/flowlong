@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -285,13 +286,25 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public boolean updateInstanceModelById(Long id, ProcessModel processModel) {
+    public boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function) {
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
+        Assert.isNull(flwInstance, "not found instance");
+        FlwInstance fi = function.apply(flwInstance);
+        fi.setId(instanceId);
+        Map<String, Object> var = flwInstance.variableToMap();
+        var.putAll(args);
+        fi.setMapVariable(var);
+        return instanceDao.updateById(fi);
+    }
+
+    @Override
+    public boolean updateInstanceModelById(Long instanceId, ProcessModel processModel) {
         // 使缓存失效
-        FlowLongContext.invalidateProcessModel(FlowConstants.processInstanceCacheKey + id);
+        FlowLongContext.invalidateProcessModel(FlowConstants.processInstanceCacheKey + instanceId);
 
         // 更新流程实例模型
         FlwExtInstance extInstance = new FlwExtInstance();
-        extInstance.setId(id);
+        extInstance.setId(instanceId);
         extInstance.setModelContent(FlowLongContext.toJson(processModel));
         return extInstanceDao.updateById(extInstance);
     }

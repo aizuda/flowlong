@@ -11,6 +11,7 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -121,13 +122,30 @@ public interface RuntimeService {
     void updateInstance(FlwInstance flwInstance);
 
     /**
+     * 根据 流程实例ID 更新流程实例全局变量
+     *
+     * @param args     流程实例参数
+     * @param function 待更新实例回调处理函数
+     */
+    boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function);
+
+    /**
+     * 根据 流程实例ID 更新流程实例全局变量
+     *
+     * @param args 流程实例参数
+     */
+    default boolean updateInstanceVariableById(Long instanceId, Map<String, Object> args) {
+        return this.updateInstanceVariableById(instanceId, args, t -> new FlwInstance());
+    }
+
+    /**
      * 根据 流程实例ID 更新流程实例模型内容
      *
-     * @param id           流程实例ID
+     * @param instanceId   流程实例ID
      * @param processModel 流程模型
      * @return true 成功 false 失败
      */
-    boolean updateInstanceModelById(Long id, ProcessModel processModel);
+    boolean updateInstanceModelById(Long instanceId, ProcessModel processModel);
 
     /**
      * 级联删除指定流程实例的所有数据
