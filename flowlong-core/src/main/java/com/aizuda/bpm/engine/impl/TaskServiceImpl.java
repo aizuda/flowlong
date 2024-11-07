@@ -828,9 +828,14 @@ public class TaskServiceImpl implements TaskService {
      * @return 任务列表
      */
     @Override
-    public List<FlwTask> createTask(NodeModel nodeModel, Execution execution) {
+    public List<FlwTask> createTask(NodeModel nodeModel, Execution execution, Function<FlwTask, FlwTask> taskFunction) {
         // 构建任务
         FlwTask flwTask = this.createTaskBase(nodeModel, execution);
+
+        // 任务处理函数
+        if (null != taskFunction) {
+            flwTask = taskFunction.apply(flwTask);
+        }
 
         // 模型中获取参与者信息
         List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
@@ -896,10 +901,11 @@ public class TaskServiceImpl implements TaskService {
                 Assert.illegal("No found flwProcess, callProcess=" + callProcess);
             }
             // 启动子流程，任务归档历史
+            final long instanceId = flwTask.getInstanceId();
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 flwInstance.setBusinessKey(nodeModel.getNodeKey());
-                flwInstance.setParentInstanceId(flwTask.getInstanceId());
+                flwInstance.setParentInstanceId(instanceId);
                 return flwInstance;
             }).ifPresent(instance -> {
                 // 归档历史

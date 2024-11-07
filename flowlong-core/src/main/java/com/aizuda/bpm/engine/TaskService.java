@@ -251,11 +251,16 @@ public interface TaskService {
     /**
      * 根据任务模型、执行对象创建新的任务
      *
-     * @param taskModel 任务模型
-     * @param execution 执行对象
+     * @param taskModel    任务模型
+     * @param execution    执行对象
+     * @param taskFunction 任务处理函数，如果自定义 CreateTaskHandler 可用于控制任务创建属性设置
      * @return 创建任务集合
      */
-    List<FlwTask> createTask(NodeModel taskModel, Execution execution);
+    List<FlwTask> createTask(NodeModel taskModel, Execution execution, Function<FlwTask, FlwTask> taskFunction);
+
+    default List<FlwTask> createTask(NodeModel taskModel, Execution execution) {
+        return createTask(taskModel, execution, null);
+    }
 
     /**
      * 根据已有任务、参与者创建新的任务
