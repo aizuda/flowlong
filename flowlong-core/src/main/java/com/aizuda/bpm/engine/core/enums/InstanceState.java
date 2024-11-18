@@ -60,6 +60,6 @@ public enum InstanceState {
     }
 
     public static InstanceState get(int value) {
-        return Arrays.stream(InstanceState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
+        return Arrays.stream(InstanceState.values()).filter(s -> s.getValue() == value).findFirst().orElse(null);
     }
 }
