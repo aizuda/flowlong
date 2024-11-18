@@ -80,7 +80,7 @@ public enum TaskState {
     }
 
     public static TaskState get(int value) {
-        return Arrays.stream(TaskState.values()).filter(s -> s.getValue() == value).findFirst().orElseGet(null);
+        return Arrays.stream(TaskState.values()).filter(s -> s.getValue() == value).findFirst().orElse(null);
     }
 
     public static TaskState of(InstanceState instanceState) {
