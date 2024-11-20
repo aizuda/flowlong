@@ -2,7 +2,7 @@
 buildscript {
     ext {
         springBootVersion = "2.7.0"
-        mybatisPlusVersion = "3.5.9"
+        mybatisPlusVersion = "3.5.8"
         solonVersion = "3.0.1"
     }
 

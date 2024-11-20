@@ -5,6 +5,7 @@ package test.mysql;
 
 import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.assist.StreamUtils;
+import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.model.*;
@@ -192,5 +193,28 @@ public class TestModel extends MysqlTest {
         Assertions.assertTrue(ModelHelper.checkExistApprovalNode(processModel.getNodeConfig()));
         ProcessModel errorModel01 = getProcessModel("test/errorModel01.json");
         Assertions.assertFalse(ModelHelper.checkExistApprovalNode(errorModel01.getNodeConfig()));
+    }
+
+    /**
+     * 测试获取当前已使用的节点key列表
+     */
+    @Test
+    public void testCurrentUsedNodeKeys() {
+        ProcessModel processModel = getProcessModel("test/ccToCondition.json");
+
+        Assertions.assertEquals(2, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, null),
+                processModel.getNodeConfig(), "k002").size());
+
+        Assertions.assertEquals(4, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+            put("day", 3);
+        }}), processModel.getNodeConfig(), "k007").size());
+
+        Assertions.assertEquals(4, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+            put("day", 8);
+        }}), processModel.getNodeConfig(), "k005").size());
+
+        Assertions.assertEquals(5, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+            put("day", 8);
+        }}), processModel.getNodeConfig(), "k008").size());
     }
 }

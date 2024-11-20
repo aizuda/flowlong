@@ -6,6 +6,8 @@ package com.aizuda.bpm.engine.model;
 import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
+import com.aizuda.bpm.engine.core.Execution;
+import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 
@@ -366,6 +368,63 @@ public class ModelHelper {
 
             // 删除动态分配处理人员参数
             FlowDataTransfer.removeByKey(FlowConstants.processDynamicAssignee);
+        }
+    }
+
+    /**
+     * 获取当前已使用的节点key列表
+     *
+     * @param flowLongContext 流程上下文 {@link FlowLongContext}
+     * @param execution       流程执行对象 {@link Execution}
+     * @param rootNodeModel   模型根节点 {@link NodeModel}
+     * @param currentNodeKey  当前所在节点
+     * @return 当前已使用的节点key列表
+     */
+    public static List<String> getAllUsedNodeKeys(FlowLongContext flowLongContext, Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
+        List<String> currentUsedNodeKeys = new ArrayList<>();
+        if (null != rootNodeModel) {
+            String nodeKey = rootNodeModel.getNodeKey();
+            if (Objects.equals(currentNodeKey, nodeKey)) {
+                // 找到执行最后一个节点直接结束
+                currentUsedNodeKeys.add(nodeKey);
+            } else {
+                // 处理完成节点
+                if (rootNodeModel.conditionNode()) {
+                    // 条件节点
+                    List<ConditionNode> conditionNodes = rootNodeModel.getConditionNodes();
+                    if (ObjectUtils.isNotEmpty(conditionNodes)) {
+                        // 找到对应节点
+                        flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, rootNodeModel).ifPresent(t -> {
+                            // 添加执行条件节点
+                            currentUsedNodeKeys.add(t.getNodeKey());
+
+                            // 条件节点分支子节点
+                            getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, t.getChildNode(), currentNodeKey);
+                        });
+                    }
+
+                    // 条件节点子节点
+                    getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
+                } else {
+
+                    // 普通节点
+                    currentUsedNodeKeys.add(nodeKey);
+
+                    // 找子节点
+                    NodeModel childNodeModel = rootNodeModel.getChildNode();
+                    if (null != childNodeModel) {
+                        getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, childNodeModel, currentNodeKey);
+                    }
+                }
+            }
+        }
+        return currentUsedNodeKeys;
+    }
+
+    public static void getChildAllUsedNodeKeys(List<String> currentUsedNodeKeys, FlowLongContext flowLongContext,
+                                                       Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
+        if (!currentUsedNodeKeys.contains(currentNodeKey)) {
+            currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel, currentNodeKey));
         }
     }
 }

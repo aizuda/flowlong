@@ -8,7 +8,6 @@ import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskActorProvider;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.entity.FlwInstance;
-import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.ModelHelper;
@@ -121,6 +120,14 @@ public class Execution implements Serializable {
         this.processModel = processModel;
         this.flowCreator = flowCreator;
         this.flwInstance = flwInstance;
+        this.args = args;
+    }
+
+    /**
+     * 构造函数，仅适用于模型条件节点查找
+     */
+    public Execution(FlowCreator flowCreator, Map<String, Object> args) {
+        this.flowCreator = flowCreator;
         this.args = args;
     }
 
