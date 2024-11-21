@@ -95,18 +95,23 @@ public abstract class FlowLongScheduler {
                         ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
                         NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
                         Integer termMode = nodeModel.getTermMode();
-                        if (null == termMode) {
+
+                        // 超时自动审批
+                        Boolean termAuto = nodeModel.getTermAuto();
+                        if(termAuto != null && termAuto){
+                             if (null == termMode) {
                             // 执行超时
                             context.getRuntimeService().timeout(flwTask.getInstanceId());
-                        } else if (Objects.equals(termMode, 0)) {
-                            // 自动通过
-                            if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
-                                log.info("Scheduling failed to execute autoCompleteTask");
-                            }
-                        } else if (Objects.equals(termMode, 1)) {
-                            // 自动拒绝
-                            if (!flowLongEngine.autoRejectTask(flwTask.getId())) {
-                                log.info("Scheduling failed to execute autoRejectTask");
+                            } else if (Objects.equals(termMode, 0)) {
+                                // 自动通过
+                                if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                                    log.info("Scheduling failed to execute autoCompleteTask");
+                                }
+                            } else if (Objects.equals(termMode, 1)) {
+                                // 自动拒绝
+                                if (!flowLongEngine.autoRejectTask(flwTask.getId())) {
+                                    log.info("Scheduling failed to execute autoRejectTask");
+                                }
                             }
                         }
                     }
