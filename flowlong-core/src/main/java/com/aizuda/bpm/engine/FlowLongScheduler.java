@@ -94,14 +94,14 @@ public abstract class FlowLongScheduler {
                         // 获取当前执行模型节点
                         ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
                         NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
-                        Integer termMode = nodeModel.getTermMode();
 
                         // 超时自动审批
                         Boolean termAuto = nodeModel.getTermAuto();
-                        if(termAuto != null && termAuto){
-                             if (null == termMode) {
-                            // 执行超时
-                            context.getRuntimeService().timeout(flwTask.getInstanceId());
+                        if (termAuto != null && termAuto) {
+                            Integer termMode = nodeModel.getTermMode();
+                            if (null == termMode) {
+                                // 执行超时
+                                context.getRuntimeService().timeout(flwTask.getInstanceId());
                             } else if (Objects.equals(termMode, 0)) {
                                 // 自动通过
                                 if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
