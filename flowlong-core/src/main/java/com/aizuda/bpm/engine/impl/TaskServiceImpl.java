@@ -460,18 +460,18 @@ public class TaskServiceImpl implements TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
-     * @param forceAssign          强制分配
+     * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, boolean forceAssign) {
+    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Function<FlwTask, Boolean> check) {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
         // 不允许重复分配
         FlwTask dbFlwTask = taskDao.selectById(taskId);
-        if (!forceAssign && ObjectUtils.isNotEmpty(dbFlwTask.getAssignorId())) {
-            Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
+        if (null != check && !check.apply(dbFlwTask)) {
+            return false;
         }
 
         // 设置任务为委派任务或者为转办任务

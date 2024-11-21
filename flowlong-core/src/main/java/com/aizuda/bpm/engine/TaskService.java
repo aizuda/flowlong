@@ -3,6 +3,8 @@
  */
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.*;
@@ -148,7 +150,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators) {
-        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators, true);
+        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators, null);
     }
 
     /**
@@ -160,7 +162,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), true);
+        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), null);
     }
 
     /**
@@ -172,7 +174,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), true);
+        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), null);
     }
 
     /**
@@ -182,10 +184,21 @@ public interface TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
-     * @param forceAssign          强制分配
+     * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, boolean forceAssign);
+    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Function<FlwTask, Boolean> check);
+
+    default boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
+
+        // 校验存在重复分配抛出异常
+        return this.assigneeTask(taskId, taskType, flowCreator, assigneeFlowCreators, t -> {
+            if (ObjectUtils.isNotEmpty(t.getAssignorId())) {
+                Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
+            }
+            return true;
+        });
+    }
 
     /**
      * 根据 任务ID 解决委派任务
