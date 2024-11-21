@@ -132,6 +132,14 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer passWeight;
     /**
+     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点
+     */
+    private Integer rejectStrategy;
+    /**
+     * 驳回重新审批策略 1，继续往下执行 2，回到上一个节点
+     */
+    private Integer rejectStart;
+    /**
      * 条件节点列表
      */
     private List<ConditionNode> conditionNodes;
