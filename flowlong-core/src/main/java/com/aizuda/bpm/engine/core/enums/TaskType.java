@@ -108,7 +108,11 @@ public enum TaskType {
     /**
      * 跳转任务，从上个任务 {@link FlwTask#getParentTaskId()} 跳转过来的
      */
-    jump(20);
+    jump(20),
+    /**
+     * 路由分支
+     */
+    routeBranch(21);
 
     private final int value;
 
