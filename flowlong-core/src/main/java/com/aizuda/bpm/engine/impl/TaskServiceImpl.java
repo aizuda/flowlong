@@ -460,16 +460,17 @@ public class TaskServiceImpl implements TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
+     * @param forceAssign          强制分配
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
+    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, boolean forceAssign) {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
         // 不允许重复分配
         FlwTask dbFlwTask = taskDao.selectById(taskId);
-        if (ObjectUtils.isNotEmpty(dbFlwTask.getAssignorId())) {
+        if (!forceAssign && ObjectUtils.isNotEmpty(dbFlwTask.getAssignorId())) {
             Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
         }
 
@@ -1138,7 +1139,7 @@ public class TaskServiceImpl implements TaskService {
      * 优先使用数据库参与者类型
      */
     protected int assignActorType(int actorType, Integer dbActorType) {
-        return null == dbActorType ? actorType : dbActorType ;
+        return null == dbActorType ? actorType : dbActorType;
     }
 
     /**

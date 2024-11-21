@@ -148,7 +148,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators) {
-        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators);
+        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators, true);
     }
 
     /**
@@ -160,7 +160,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator));
+        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), true);
     }
 
     /**
@@ -172,7 +172,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator));
+        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), true);
     }
 
     /**
@@ -182,9 +182,10 @@ public interface TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
+     * @param forceAssign          强制分配
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators);
+    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, boolean forceAssign);
 
     /**
      * 根据 任务ID 解决委派任务
