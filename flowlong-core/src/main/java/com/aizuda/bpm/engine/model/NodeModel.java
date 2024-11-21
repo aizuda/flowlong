@@ -79,6 +79,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private List<NodeAssignee> nodeAssigneeList;
     /**
+     * 节点候选人或角色等
+     */
+    private NodeCandidate nodeCandidate;
+    /**
      * 指定主管层级
      */
     private Integer examineLevel;
