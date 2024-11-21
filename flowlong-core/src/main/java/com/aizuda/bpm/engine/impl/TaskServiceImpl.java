@@ -1080,12 +1080,15 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
+        // 参与者类型
+        int actorType = nodeModel.actorType();
+
         if (performType == PerformType.orSign) {
             /*
              * 或签一条任务多个参与者
              */
             taskDao.insert(flwTask);
-            taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), t.getActorType(), t));
+            taskActors.forEach(t -> this.assignTask(flwTask.getInstanceId(), flwTask.getId(), assignActorType(actorType, t.getActorType()), t));
             flwTasks.add(flwTask);
 
             // 创建任务监听
@@ -1105,7 +1108,7 @@ public class TaskServiceImpl implements TaskService {
             if (null == nextFlwTaskActor) {
                 nextFlwTaskActor = taskActors.get(0);
             }
-            this.assignTask(flwTask.getInstanceId(), flwTask.getId(), nextFlwTaskActor.getActorType(), nextFlwTaskActor);
+            this.assignTask(flwTask.getInstanceId(), flwTask.getId(), assignActorType(actorType, nextFlwTaskActor.getActorType()), nextFlwTaskActor);
 
             // 创建任务监听
             this.taskNotify(TaskEventType.create, () -> flwTask, nodeModel, flowCreator);
@@ -1121,7 +1124,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(newFlwTask);
 
             // 分配参与者
-            this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), t.getActorType(), t);
+            this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), assignActorType(actorType, t.getActorType()), t);
         });
 
         // 所有任务创建后，创建任务监听，避免后续任务因为监听逻辑导致未创建情况
@@ -1129,6 +1132,13 @@ public class TaskServiceImpl implements TaskService {
 
         // 返回创建的任务列表
         return flwTasks;
+    }
+
+    /**
+     * 优先使用数据库参与者类型
+     */
+    protected int assignActorType(int actorType, Integer dbActorType) {
+        return null == dbActorType ? actorType : dbActorType ;
     }
 
     /**
