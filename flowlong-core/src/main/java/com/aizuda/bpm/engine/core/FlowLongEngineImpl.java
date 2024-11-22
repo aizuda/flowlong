@@ -163,16 +163,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return flwTaskOptional.isPresent();
     }
 
-    /**
-     * 执行任务并跳转到指定节点
-     */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
-        // 执行任务跳转归档
-        return this.executeJumpTask(taskId, nodeKey, flowCreator, args, TaskType.jump).isPresent();
-    }
-
-    protected Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
+    public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
         // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());

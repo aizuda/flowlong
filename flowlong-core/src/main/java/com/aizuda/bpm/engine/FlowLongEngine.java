@@ -216,11 +216,16 @@ public interface FlowLongEngine {
      * @param args        任务参数
      * @return true 成功 false 失败
      */
-    boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
+    default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+        // 执行任务跳转归档
+        return this.executeJumpTask(taskId, nodeKey, flowCreator, args, TaskType.jump).isPresent();
+    }
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator) {
         return executeJumpTask(taskId, nodeKey, flowCreator, null);
     }
+
+    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye);
 
     /**
      * 根据当前任务对象驳回至指定 nodeKey 节点，如果 nodeKey 为空默认为上一步处理
