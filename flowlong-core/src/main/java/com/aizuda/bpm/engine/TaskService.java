@@ -81,9 +81,14 @@ public interface TaskService {
      * @param args              任务参数
      * @param nodeKey           跳转至目标节点key
      * @param executionFunction 执行函数
+     * @param taskTye           任务类型，仅支持 jump 或 rejectJump
      * @return 当前 flowCreator 所在的任务
      */
-    boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction);
+    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskTye);
+
+    default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
+        return executeJumpTask(taskId, nodeKey, flowCreator, args, executionFunction, TaskType.jump).isPresent();
+    }
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
         return executeJumpTask(taskId, nodeKey, flowCreator, null, executionFunction);
@@ -291,8 +296,7 @@ public interface TaskService {
      * @param executionFunction 执行函数
      * @return 创建任务集合
      */
-    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
-                                FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
+    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
 
     /**
      * 获取超时或者提醒的任务

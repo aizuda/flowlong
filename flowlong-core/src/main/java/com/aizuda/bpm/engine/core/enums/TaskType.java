@@ -111,9 +111,13 @@ public enum TaskType {
      */
     jump(20),
     /**
+     * 驳回跳转
+     */
+    rejectJump(21),
+    /**
      * 路由分支
      */
-    routeBranch(21);
+    routeBranch(22);
 
     private final int value;
 

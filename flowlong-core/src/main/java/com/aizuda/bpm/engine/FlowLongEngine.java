@@ -223,6 +223,21 @@ public interface FlowLongEngine {
     }
 
     /**
+     * 根据当前任务对象驳回至指定 nodeKey 节点，如果 nodeKey 为空默认为上一步处理
+     *
+     * @param currentFlwTask 当前任务对象
+     * @param nodeKey        跳转的节点key
+     * @param flowCreator    任务创建者
+     * @param args           任务参数
+     * @return Task 任务对象
+     */
+    Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
+
+    default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
+        return executeRejectTask(currentFlwTask, null, flowCreator, args);
+    }
+
+    /**
      * 根据已有任务、参与者创建新的任务
      * <p>
      * 适用于动态转派，动态协办等处理且流程图中不体现节点情况

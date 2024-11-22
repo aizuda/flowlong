@@ -137,7 +137,9 @@ public class TaskServiceImpl implements TaskService {
      * 执行节点跳转任务
      */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
+    public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
+                                   Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
+        Assert.illegal(taskTye != TaskType.jump && taskTye != TaskType.rejectJump, "taskTye only allow jump and rejectJump");
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
 
         // 执行跳转到目标节点
@@ -166,11 +168,11 @@ public class TaskServiceImpl implements TaskService {
 
         // 设置任务类型为跳转
         FlwTask createTask = this.createTaskBase(nodeModel, execution);
-        createTask.setTaskType(TaskType.jump);
+        createTask.setTaskType(taskTye);
         if (TaskType.major == taskType) {
             // 发起节点，创建发起任务，分配发起人
             createTask.setPerformType(PerformType.start);
-            Assert.isFalse(taskDao.insert(createTask), "Failed to create initiation task");
+            Assert.isFalse(taskDao.insert(createTask), "failed to create initiation task");
             taskActorDao.insert(FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), createTask.getId()));
         } else {
             // 模型中获取参与者信息
@@ -181,8 +183,8 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 任务监听器通知
-        this.taskNotify(TaskEventType.jump, () -> flwTask, nodeModel, flowCreator);
-        return true;
+        this.taskNotify(taskTye == TaskType.jump ? TaskEventType.jump : TaskEventType.rejectJump, () -> flwTask, nodeModel, flowCreator);
+        return Optional.of(createTask);
     }
 
     /**

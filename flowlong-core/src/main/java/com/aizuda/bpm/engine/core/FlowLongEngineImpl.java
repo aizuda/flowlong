@@ -169,6 +169,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
         // 执行任务跳转归档
+        return this.executeJumpTask(taskId, nodeKey, flowCreator, args, TaskType.jump).isPresent();
+    }
+
+    protected Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
+        // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
@@ -176,7 +181,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 传递父节点信息
             execution.setFlwTask(flwTask);
             return execution;
-        });
+        }, taskTye);
+    }
+
+    @Override
+    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+        if (null != nodeKey) {
+            return this.executeJumpTask(currentFlwTask.getId(), nodeKey, flowCreator, args, TaskType.rejectJump);
+        }
+        return taskService().rejectTask(currentFlwTask, flowCreator, args);
     }
 
     @Override
