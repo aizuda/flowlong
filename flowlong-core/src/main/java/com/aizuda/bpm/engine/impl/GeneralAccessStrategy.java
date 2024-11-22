@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.impl;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
  * 该策略类适合组作为参与者的情况
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin

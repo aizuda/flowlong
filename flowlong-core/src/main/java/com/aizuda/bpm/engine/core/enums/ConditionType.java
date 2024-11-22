@@ -1,3 +1,7 @@
+/*
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
+ */
 package com.aizuda.bpm.engine.core.enums;
 
 import java.util.Objects;
@@ -6,7 +10,7 @@ import java.util.Objects;
  * JSON BPM 节点表达式 条件类型
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author insist

@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package test.mysql.config;
 
