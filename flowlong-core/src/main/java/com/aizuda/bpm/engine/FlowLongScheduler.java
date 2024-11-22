@@ -113,7 +113,7 @@ public abstract class FlowLongScheduler {
                                 }
                             } else if (Objects.equals(termMode, 1)) {
                                 // 自动拒绝
-                                if (!flowLongEngine.autoRejectTask(flwTask.getId())) {
+                                if (!flowLongEngine.autoRejectTask(flwTask)) {
                                     log.info("Scheduling failed to execute autoRejectTask");
                                 }
                             }
