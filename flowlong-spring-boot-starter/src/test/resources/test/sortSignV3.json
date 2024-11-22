@@ -1,0 +1,37 @@
+{
+  "key": "sortSignV3",
+  "name": "测试角色顺序审批",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "k002",
+      "type": 1,
+      "setType": 3,
+      "nodeAssigneeList": [
+        {
+          "id": "role01",
+          "name": "技术总监"
+        },
+        {
+          "id": "role02",
+          "name": "财务总监"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "remind": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "approveSelf": 0,
+      "directorMode": 0,
+      "typeOfApprove": 1
+    }
+  }
+}

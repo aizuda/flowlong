@@ -347,7 +347,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
-                execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
+                execution.setNextFlwTaskActor(FlwTaskActor.of(nextNodeAssignee, nodeModel.getSetType()));
                 return flowLongContext.createTask(execution, nodeModel);
             }
         }
