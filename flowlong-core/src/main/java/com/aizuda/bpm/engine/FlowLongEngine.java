@@ -193,7 +193,7 @@ public interface FlowLongEngine {
      * 自动拒绝任务
      *
      * @param flwTask 任务对象
-     * @param args   任务参数
+     * @param args    任务参数
      * @return true 成功 false 失败
      */
     boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args);
