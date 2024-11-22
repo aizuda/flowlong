@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine;
 
@@ -11,13 +12,14 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
  * 流程实例运行业务类
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -46,12 +48,23 @@ public interface RuntimeService {
     ProcessModel getProcessModelByInstanceId(Long instanceId);
 
     /**
-     * 向指定实例id添加全局变量数据
+     * 根据 流程实例ID 更新流程实例全局变量
      *
-     * @param instanceId 实例id
-     * @param args       变量数据
+     * @param instanceId 流程实例ID
+     * @param args       流程实例参数
+     * @param function   待更新实例回调处理函数
      */
-    void addVariable(Long instanceId, Map<String, Object> args);
+    boolean addVariable(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function);
+
+    /**
+     * 根据 流程实例ID 更新流程实例全局变量
+     *
+     * @param instanceId 流程实例ID
+     * @param args       流程实例参数
+     */
+    default boolean addVariable(Long instanceId, Map<String, Object> args) {
+        return this.addVariable(instanceId, args, t -> new FlwInstance());
+    }
 
     /**
      * 结束流程实例（审批通过）
@@ -78,7 +91,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void reject(Long instanceId, FlowCreator flowCreator);
+    boolean reject(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
@@ -86,7 +99,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void revoke(Long instanceId, FlowCreator flowCreator);
+    boolean revoke(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例超时（设定审批时间超时，自动结束）
@@ -94,7 +107,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void timeout(Long instanceId, FlowCreator flowCreator);
+    boolean timeout(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 流程实例超时（忽略操作权限）
@@ -111,7 +124,7 @@ public interface RuntimeService {
      * @param instanceId  流程实例ID
      * @param flowCreator 处理人员
      */
-    void terminate(Long instanceId, FlowCreator flowCreator);
+    boolean terminate(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 更新流程实例
@@ -123,11 +136,11 @@ public interface RuntimeService {
     /**
      * 根据 流程实例ID 更新流程实例模型内容
      *
-     * @param id           流程实例ID
+     * @param instanceId   流程实例ID
      * @param processModel 流程模型
      * @return true 成功 false 失败
      */
-    boolean updateInstanceModelById(Long id, ProcessModel processModel);
+    boolean updateInstanceModelById(Long instanceId, ProcessModel processModel);
 
     /**
      * 级联删除指定流程实例的所有数据
@@ -135,6 +148,13 @@ public interface RuntimeService {
      * @param processId 流程ID
      */
     void cascadeRemoveByProcessId(Long processId);
+
+    /**
+     * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_instance, flw_his_instance
+     *
+     * @param instanceId 流程实例ID
+     */
+    void cascadeRemoveByInstanceId(Long instanceId);
 
     /**
      * 追加节点模型（不执行任务跳转）

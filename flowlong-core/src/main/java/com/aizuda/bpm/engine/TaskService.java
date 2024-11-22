@@ -1,8 +1,11 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine;
 
+import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.*;
@@ -20,7 +23,7 @@ import java.util.function.Function;
  * 任务业务类接口
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -78,9 +81,14 @@ public interface TaskService {
      * @param args              任务参数
      * @param nodeKey           跳转至目标节点key
      * @param executionFunction 执行函数
+     * @param taskTye           任务类型，仅支持 jump rejectJump routeJump
      * @return 当前 flowCreator 所在的任务
      */
-    boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction);
+    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskTye);
+
+    default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
+        return executeJumpTask(taskId, nodeKey, flowCreator, args, executionFunction, TaskType.jump).isPresent();
+    }
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
         return executeJumpTask(taskId, nodeKey, flowCreator, null, executionFunction);
@@ -148,7 +156,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators) {
-        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators);
+        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators, null);
     }
 
     /**
@@ -160,7 +168,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator));
+        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), null);
     }
 
     /**
@@ -172,7 +180,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
-        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator));
+        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), null);
     }
 
     /**
@@ -182,9 +190,21 @@ public interface TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
+     * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators);
+    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Function<FlwTask, Boolean> check);
+
+    default boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
+
+        // 校验存在重复分配抛出异常
+        return this.assigneeTask(taskId, taskType, flowCreator, assigneeFlowCreators, t -> {
+            if (ObjectUtils.isNotEmpty(t.getAssignorId())) {
+                Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
+            }
+            return true;
+        });
+    }
 
     /**
      * 根据 任务ID 解决委派任务
@@ -251,11 +271,16 @@ public interface TaskService {
     /**
      * 根据任务模型、执行对象创建新的任务
      *
-     * @param taskModel 任务模型
-     * @param execution 执行对象
+     * @param taskModel    任务模型
+     * @param execution    执行对象
+     * @param taskFunction 任务处理函数，如果自定义 CreateTaskHandler 可用于控制任务创建属性设置
      * @return 创建任务集合
      */
-    List<FlwTask> createTask(NodeModel taskModel, Execution execution);
+    List<FlwTask> createTask(NodeModel taskModel, Execution execution, Function<FlwTask, FlwTask> taskFunction);
+
+    default List<FlwTask> createTask(NodeModel taskModel, Execution execution) {
+        return createTask(taskModel, execution, null);
+    }
 
     /**
      * 根据已有任务、参与者创建新的任务
@@ -271,8 +296,7 @@ public interface TaskService {
      * @param executionFunction 执行函数
      * @return 创建任务集合
      */
-    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
-                                FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
+    List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
 
     /**
      * 获取超时或者提醒的任务
@@ -331,5 +355,5 @@ public interface TaskService {
      *
      * @param instanceIds 流程实例ID列表
      */
-    void cascadeRemoveByInstanceIds(List<Long> instanceIds);
+    boolean cascadeRemoveByInstanceIds(List<Long> instanceIds);
 }

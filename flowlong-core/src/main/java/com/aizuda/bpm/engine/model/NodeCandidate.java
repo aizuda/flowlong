@@ -7,8 +7,11 @@ package com.aizuda.bpm.engine.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * JSON BPM 节点表达式条件
+ * JSON BPM 分配到任务的候选人或角色
  *
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
@@ -19,26 +22,19 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class NodeExpression {
+public class NodeCandidate implements Serializable {
+
     /**
-     * 名称
+     * 候选类型
+     * <p>
+     * 1，用户 2，角色 3，部门
+     * </p>
      */
-    private String label;
+    private Integer type;
+
     /**
-     * 属性
+     * 候选处理者，过 type 区分个人角色或部门
      */
-    private String field;
-    /**
-     * 操作
-     */
-    private String operator;
-    /**
-     * 内容
-     */
-    private String value;
-    /**
-     * 条件类型 {@link com.aizuda.bpm.engine.core.enums.ConditionType}
-     */
-    private String type;
+    private List<NodeAssignee> assignees;
 
 }

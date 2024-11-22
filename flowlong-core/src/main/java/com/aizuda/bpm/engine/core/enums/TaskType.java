@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.core.enums;
 
@@ -13,7 +14,7 @@ import java.util.Objects;
  * 任务类型
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -108,7 +109,19 @@ public enum TaskType {
     /**
      * 跳转任务，从上个任务 {@link FlwTask#getParentTaskId()} 跳转过来的
      */
-    jump(20);
+    jump(20),
+    /**
+     * 驳回跳转
+     */
+    rejectJump(21),
+    /**
+     * 路由跳转
+     */
+    routeJump(22),
+    /**
+     * 路由分支
+     */
+    routeBranch(23);
 
     private final int value;
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
+ */
 package com.aizuda.bpm.engine;
 
 import com.aizuda.bpm.engine.assist.Assert;
@@ -22,7 +26,7 @@ import java.util.Objects;
  * 定时任务实现流程提醒超时处理类
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -94,19 +98,24 @@ public abstract class FlowLongScheduler {
                         // 获取当前执行模型节点
                         ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
                         NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
-                        Integer termMode = nodeModel.getTermMode();
-                        if (null == termMode) {
-                            // 执行超时
-                            context.getRuntimeService().timeout(flwTask.getInstanceId());
-                        } else if (Objects.equals(termMode, 0)) {
-                            // 自动通过
-                            if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
-                                log.info("Scheduling failed to execute autoCompleteTask");
-                            }
-                        } else if (Objects.equals(termMode, 1)) {
-                            // 自动拒绝
-                            if (!flowLongEngine.autoRejectTask(flwTask.getId())) {
-                                log.info("Scheduling failed to execute autoRejectTask");
+
+                        // 超时自动审批
+                        Boolean termAuto = nodeModel.getTermAuto();
+                        if (termAuto != null && termAuto) {
+                            Integer termMode = nodeModel.getTermMode();
+                            if (null == termMode) {
+                                // 执行超时
+                                context.getRuntimeService().timeout(flwTask.getInstanceId());
+                            } else if (Objects.equals(termMode, 0)) {
+                                // 自动通过
+                                if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                                    log.info("Scheduling failed to execute autoCompleteTask");
+                                }
+                            } else if (Objects.equals(termMode, 1)) {
+                                // 自动拒绝
+                                if (!flowLongEngine.autoRejectTask(flwTask)) {
+                                    log.info("Scheduling failed to execute autoRejectTask");
+                                }
                             }
                         }
                     }

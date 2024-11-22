@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.core;
 
@@ -8,7 +9,6 @@ import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskActorProvider;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.entity.FlwInstance;
-import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.ModelHelper;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * 流程执行过程中所传递的执行对象，其中包含流程定义、流程模型、流程实例对象、执行参数、返回的任务列表
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -121,6 +121,14 @@ public class Execution implements Serializable {
         this.processModel = processModel;
         this.flowCreator = flowCreator;
         this.flwInstance = flwInstance;
+        this.args = args;
+    }
+
+    /**
+     * 构造函数，仅适用于模型条件节点查找
+     */
+    public Execution(FlowCreator flowCreator, Map<String, Object> args) {
+        this.flowCreator = flowCreator;
         this.args = args;
     }
 

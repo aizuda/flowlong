@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 /**
  * 同步监听任务事件，需要注入该监听器有效
  * <p>
- * 不可以 EventTaskListener 同时使用
+ * 不可以 EventTaskListener 同时使用，同时关闭 flowlong.eventing.task = true 配置
  * </p>
  */
 public class TestTaskListener implements TaskListener {

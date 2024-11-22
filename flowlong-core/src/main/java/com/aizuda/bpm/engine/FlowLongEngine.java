@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine;
 
@@ -23,7 +24,7 @@ import java.util.function.Supplier;
  * FlowLong流程引擎接口
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -191,14 +192,14 @@ public interface FlowLongEngine {
     /**
      * 自动拒绝任务
      *
-     * @param taskId 任务ID
-     * @param args   任务参数
+     * @param flwTask 任务对象
+     * @param args    任务参数
      * @return true 成功 false 失败
      */
-    boolean autoRejectTask(Long taskId, Map<String, Object> args);
+    boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args);
 
-    default boolean autoRejectTask(Long taskId) {
-        return this.autoRejectTask(taskId, null);
+    default boolean autoRejectTask(FlwTask flwTask) {
+        return this.autoRejectTask(flwTask, null);
     }
 
 
@@ -215,10 +216,30 @@ public interface FlowLongEngine {
      * @param args        任务参数
      * @return true 成功 false 失败
      */
-    boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
+    default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+        // 执行任务跳转归档
+        return this.executeJumpTask(taskId, nodeKey, flowCreator, args, TaskType.jump).isPresent();
+    }
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator) {
         return executeJumpTask(taskId, nodeKey, flowCreator, null);
+    }
+
+    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye);
+
+    /**
+     * 根据当前任务对象驳回至指定 nodeKey 节点，如果 nodeKey 为空默认为上一步处理
+     *
+     * @param currentFlwTask 当前任务对象
+     * @param nodeKey        跳转的节点key
+     * @param flowCreator    任务创建者
+     * @param args           任务参数
+     * @return Task 任务对象
+     */
+    Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
+
+    default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
+        return executeRejectTask(currentFlwTask, null, flowCreator, args);
     }
 
     /**

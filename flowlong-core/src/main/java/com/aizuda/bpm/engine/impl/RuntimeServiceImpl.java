@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.impl;
 
@@ -13,9 +14,9 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -26,9 +27,11 @@ import com.aizuda.bpm.engine.model.ModelHelper;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -36,7 +39,7 @@ import java.util.stream.Collectors;
  * 流程实例运行业务类
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -102,23 +105,17 @@ public class RuntimeServiceImpl implements RuntimeService {
         return flwExtInstance.model();
     }
 
-    /**
-     * 向活动实例临时添加全局变量数据
-     *
-     * @param instanceId 实例id
-     * @param args       变量数据
-     */
     @Override
-    public void addVariable(Long instanceId, Map<String, Object> args) {
+    public boolean addVariable(Long instanceId, Map<String, Object> args, Function<FlwInstance, FlwInstance> function) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
+        Assert.isNull(flwInstance, "not found instance");
+        FlwInstance fi = function.apply(flwInstance);
+        fi.setId(instanceId);
         Map<String, Object> data = flwInstance.variableToMap();
         data.putAll(args);
-        FlwInstance temp = new FlwInstance();
-        temp.setId(instanceId);
-        temp.setMapVariable(data);
-        instanceDao.updateById(temp);
+        fi.setMapVariable(data);
+        return instanceDao.updateById(fi);
     }
-
 
     /**
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
@@ -198,18 +195,18 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void reject(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
+    public boolean reject(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
     }
 
     @Override
-    public void revoke(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
+    public boolean revoke(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
     }
 
     @Override
-    public void timeout(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
+    public boolean timeout(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
     }
 
     /**
@@ -219,8 +216,8 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param flowCreator 处理人员
      */
     @Override
-    public void terminate(Long instanceId, FlowCreator flowCreator) {
-        this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
+    public boolean terminate(Long instanceId, FlowCreator flowCreator) {
+        return this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
     }
 
     /**
@@ -231,11 +228,11 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param instanceState 流程实例最终状态
      * @param eventType     监听事件类型
      */
-    protected void forceComplete(Long instanceId, FlowCreator flowCreator,
-                                 InstanceState instanceState, TaskEventType eventType) {
+    protected boolean forceComplete(Long instanceId, FlowCreator flowCreator,
+                                    InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
-            return;
+            return false;
         }
 
         final Long parentInstanceId = flwInstance.getParentInstanceId();
@@ -250,6 +247,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 结束当前流程实例
         this.forceCompleteAll(flwInstance, flowCreator, instanceState, eventType);
+        return true;
     }
 
     /**
@@ -283,13 +281,13 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public boolean updateInstanceModelById(Long id, ProcessModel processModel) {
+    public boolean updateInstanceModelById(Long instanceId, ProcessModel processModel) {
         // 使缓存失效
-        FlowLongContext.invalidateProcessModel(FlowConstants.processInstanceCacheKey + id);
+        FlowLongContext.invalidateProcessModel(FlowConstants.processInstanceCacheKey + instanceId);
 
         // 更新流程实例模型
         FlwExtInstance extInstance = new FlwExtInstance();
-        extInstance.setId(id);
+        extInstance.setId(instanceId);
         extInstance.setModelContent(FlowLongContext.toJson(processModel));
         return extInstanceDao.updateById(extInstance);
     }
@@ -317,6 +315,17 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 删除实例
             instanceDao.deleteByProcessId(processId);
+        }
+    }
+
+    @Override
+    public void cascadeRemoveByInstanceId(Long instanceId) {
+        if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
+            // 删除实例
+            instanceDao.deleteById(instanceId);
+
+            // 删除历史实例
+            hisInstanceDao.deleteById(instanceId);
         }
     }
 

@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.model;
 
@@ -28,7 +29,7 @@ import java.util.function.Function;
  * JSON BPM 节点
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -63,12 +64,12 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 节点类型
      * <p>
-     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支
+     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支 23，路由分支
      * </p>
      */
     private Integer type;
     /**
-     * 审核人类型
+     * 审核人类型 {@link NodeSetType}
      * <p>
      * 1，指定成员 2，主管 3，角色 4，发起人自选 5，发起人自己 6，连续多级主管 7，部门
      * </p>
@@ -78,6 +79,10 @@ public class NodeModel implements ModelInstance, Serializable {
      * 审核分配到任务的处理者，过 setType 区分个人角色或部门
      */
     private List<NodeAssignee> nodeAssigneeList;
+    /**
+     * 节点候选人或角色等
+     */
+    private NodeCandidate nodeCandidate;
     /**
      * 指定主管层级
      */
@@ -132,6 +137,14 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer passWeight;
     /**
+     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点
+     */
+    private Integer rejectStrategy;
+    /**
+     * 驳回重新审批策略 1，继续往下执行 2，回到上一个节点
+     */
+    private Integer rejectStart;
+    /**
      * 条件节点列表
      */
     private List<ConditionNode> conditionNodes;
@@ -145,6 +158,11 @@ public class NodeModel implements ModelInstance, Serializable {
      * <p>相当于包容网关</p>
      */
     private List<ConditionNode> inclusiveNodes;
+    /**
+     * 路由节点
+     * <p>setType设置为 10 生效，根据对应条件自动跳转到指定路由节点位置</p>
+     */
+    private List<ConditionNode> routeNodes;
     /**
      * 审批提醒
      */
@@ -218,7 +236,7 @@ public class NodeModel implements ModelInstance, Serializable {
     @Override
     public boolean execute(FlowLongContext flowLongContext, Execution execution) {
 
-        if (ObjectUtils.isNotEmpty(conditionNodes)) {
+        if (TaskType.conditionBranch.eq(this.type)) {
             /*
              * 执行条件分支
              */
@@ -228,7 +246,7 @@ public class NodeModel implements ModelInstance, Serializable {
             return true;
         }
 
-        if (ObjectUtils.isNotEmpty(parallelNodes)) {
+        if (TaskType.parallelBranch.eq(this.type)) {
             /*
              * 执行并行分支
              */
@@ -242,13 +260,25 @@ public class NodeModel implements ModelInstance, Serializable {
             return true;
         }
 
-        if (ObjectUtils.isNotEmpty(inclusiveNodes)) {
+        if (TaskType.inclusiveBranch.eq(this.type)) {
             /*
              * 执行包容分支
              */
             flowLongContext.getFlowConditionHandler()
                     .getInclusiveNodes(flowLongContext, execution, this)
                     .ifPresent(t -> t.forEach(s -> this.executeConditionNode(flowLongContext, execution, s)));
+            return true;
+        }
+
+        if (TaskType.routeBranch.eq(this.type)) {
+            /*
+             * 执行路由分支
+             */
+            flowLongContext.getFlowConditionHandler()
+                    .getConditionNode(flowLongContext, execution, this)
+                    // 自动跳转到指定节点
+                    .ifPresent(t -> execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), t.getNodeKey(),
+                            execution.getFlowCreator(), execution.getArgs(), TaskType.rejectJump));
             return true;
         }
 

@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.core;
 
@@ -25,7 +26,7 @@ import java.util.function.Supplier;
  * 基本的流程引擎实现类
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -154,19 +155,16 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 自动拒绝任务
      */
     @Override
-    public boolean autoRejectTask(Long taskId, Map<String, Object> args) {
-        FlwTask flwTask = taskService().executeTask(taskId, FlowCreator.ADMIN, ObjectUtils.getArgs(args), TaskState.autoComplete, TaskEventType.autoComplete);
+    public boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args) {
+        Optional<FlwTask> flwTaskOptional = taskService().rejectTask(flwTask, FlowCreator.ADMIN, args);
         if (log.isDebugEnabled()) {
-            log.debug("Auto reject taskId={}", taskId);
+            log.debug("Auto reject taskId={}", flwTask.getId());
         }
-        return null != flwTask;
+        return flwTaskOptional.isPresent();
     }
 
-    /**
-     * 执行任务并跳转到指定节点
-     */
     @Override
-    public boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
         // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
@@ -175,7 +173,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 传递父节点信息
             execution.setFlwTask(flwTask);
             return execution;
-        });
+        }, taskTye);
+    }
+
+    @Override
+    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+        if (null != nodeKey) {
+            return this.executeJumpTask(currentFlwTask.getId(), nodeKey, flowCreator, args, TaskType.rejectJump);
+        }
+        return taskService().rejectTask(currentFlwTask, flowCreator, args);
     }
 
     @Override
@@ -333,7 +339,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
             // 如果下一个顺序执行人存在，创建顺序审批任务
             if (null != nextNodeAssignee) {
-                execution.setNextFlwTaskActor(FlwTaskActor.ofNodeAssignee(nextNodeAssignee));
+                execution.setNextFlwTaskActor(FlwTaskActor.of(nextNodeAssignee, nodeModel.getSetType()));
                 return flowLongContext.createTask(execution, nodeModel);
             }
         }

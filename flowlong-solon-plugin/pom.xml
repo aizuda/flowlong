@@ -26,35 +26,26 @@
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-lib</artifactId>
+            <scope>compile</scope>
             <version>${solon.version}</version>
         </dependency>
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-scheduling</artifactId>
+            <scope>compile</scope>
             <version>${solon.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.aviator</groupId>
             <artifactId>aviator</artifactId>
+            <scope>compile</scope>
             <version>3.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-core</artifactId>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.noear</groupId>
-            <artifactId>solon-test</artifactId>
-            <version>${solon.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

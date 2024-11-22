@@ -1,5 +1,6 @@
 /*
- * Copyright 2023-2025 Licensed under the AGPL License
+ * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.entity;
 
@@ -16,7 +17,7 @@ import java.util.Date;
  * 历史流程实例实体类
  *
  * <p>
- * 尊重知识产权，不允许非法使用，后果自负
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>
  *
  * @author hubin
@@ -27,7 +28,7 @@ import java.util.Date;
 @ToString
 public class FlwHisInstance extends FlwInstance {
     /**
-     * 状态 0，活动 1，结束
+     * 状态 0，活动 1，结束 更多查看 {@link InstanceState}
      */
     protected Integer instanceState;
     /**
@@ -52,29 +53,50 @@ public class FlwHisInstance extends FlwInstance {
         this.instanceState = instanceState;
     }
 
-    public static FlwHisInstance of(FlwInstance flwInstance, InstanceState instanceState) {
+    public static FlwHisInstance of(FlwInstance fi, InstanceState instanceState) {
         FlwHisInstance his = new FlwHisInstance();
-        his.id = flwInstance.getId();
-        his.tenantId = flwInstance.getTenantId();
-        his.createId = flwInstance.getCreateId();
-        his.createBy = flwInstance.getCreateBy();
-        his.createTime = flwInstance.getCreateTime();
-        his.processId = flwInstance.getProcessId();
-        his.parentInstanceId = flwInstance.getParentInstanceId();
-        his.priority = flwInstance.getPriority();
-        his.instanceNo = flwInstance.getInstanceNo();
-        his.businessKey = flwInstance.getBusinessKey();
-        his.variable = flwInstance.getVariable();
-        his.currentNodeName = flwInstance.getCurrentNodeName();
-        his.currentNodeKey = flwInstance.getCurrentNodeKey();
-        his.expireTime = flwInstance.getExpireTime();
-        his.lastUpdateBy = flwInstance.getLastUpdateBy();
-        his.lastUpdateTime = flwInstance.getLastUpdateTime();
+        his.id = fi.getId();
+        his.tenantId = fi.getTenantId();
+        his.createId = fi.getCreateId();
+        his.createBy = fi.getCreateBy();
+        his.createTime = fi.getCreateTime();
+        his.processId = fi.getProcessId();
+        his.parentInstanceId = fi.getParentInstanceId();
+        his.priority = fi.getPriority();
+        his.instanceNo = fi.getInstanceNo();
+        his.businessKey = fi.getBusinessKey();
+        his.variable = fi.getVariable();
+        his.currentNodeName = fi.getCurrentNodeName();
+        his.currentNodeKey = fi.getCurrentNodeKey();
+        his.expireTime = fi.getExpireTime();
+        his.lastUpdateBy = fi.getLastUpdateBy();
+        his.lastUpdateTime = fi.getLastUpdateTime();
         his.instanceState = instanceState.getValue();
         if (InstanceState.active != instanceState) {
             his.calculateDuration();
         }
         return his;
+    }
+
+    public FlwInstance toFlwInstance() {
+        FlwInstance fi = new FlwInstance();
+        fi.setId(this.id);
+        fi.setTenantId(this.tenantId);
+        fi.setCreateId(this.createId);
+        fi.setCreateBy(this.createBy);
+        fi.setCreateTime(this.createTime);
+        fi.setProcessId(this.processId);
+        fi.setParentInstanceId(this.parentInstanceId);
+        fi.setPriority(this.priority);
+        fi.setInstanceNo(this.instanceNo);
+        fi.setBusinessKey(this.businessKey);
+        fi.setVariable(this.variable);
+        fi.setCurrentNodeName(this.currentNodeName);
+        fi.setCurrentNodeKey(this.currentNodeKey);
+        fi.setExpireTime(this.expireTime);
+        fi.setLastUpdateBy(this.lastUpdateBy);
+        fi.setLastUpdateTime(this.lastUpdateTime);
+        return fi;
     }
 
     /**
