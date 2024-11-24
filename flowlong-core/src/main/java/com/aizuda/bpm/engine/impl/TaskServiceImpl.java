@@ -139,6 +139,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
                                              Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
+        FlwTask flwTask = null;
         TaskEventType taskEventType = null;
         if (taskTye == TaskType.jump) {
             taskEventType = TaskEventType.jump;
@@ -146,9 +147,14 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.rejectJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+            // 获取历史任务
+            flwTask = hisTaskDao.selectCheckById(taskId);
         }
         Assert.illegal(null == taskEventType,"taskTye only allow jump and rejectJump");
-        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
+        if (null == flwTask) {
+            // 获取当前任务
+            flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
+        }
 
         // 执行跳转到目标节点
         Execution execution = executionFunction.apply(flwTask);
@@ -191,7 +197,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 任务监听器通知
-        this.taskNotify(taskEventType, () -> flwTask, nodeModel, flowCreator);
+        this.taskNotify(taskEventType, execution::getFlwTask, nodeModel, flowCreator);
         return Optional.of(createTask);
     }
 

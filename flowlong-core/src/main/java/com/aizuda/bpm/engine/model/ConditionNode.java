@@ -29,6 +29,9 @@ public class ConditionNode implements Serializable {
     private String nodeName;
     /**
      * 节点 key
+     * <p>
+     * 如果为路由分支，格式 route:targetNodeKey
+     * </p>
      */
     private String nodeKey;
     /**
@@ -51,4 +54,10 @@ public class ConditionNode implements Serializable {
      */
     private NodeModel childNode;
 
+    /**
+     * 获取路由分支的目标节点 key
+     */
+    public String routeNodeKey() {
+        return nodeKey.split(":")[1];
+    }
 }

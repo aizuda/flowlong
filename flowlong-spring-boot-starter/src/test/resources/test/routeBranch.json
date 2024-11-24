@@ -1,0 +1,158 @@
+{
+  "key": "routeBranch",
+  "name": "路由分支测试",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "childNode": {
+      "nodeName": "主管审核",
+      "nodeKey": "k002",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "测试01"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "remind": false,
+      "term": 1,
+      "termMode": 1,
+      "examineMode": 1,
+      "approveSelf": 0,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "childNode": {
+        "nodeName": "条件路由",
+        "nodeKey": "k003",
+        "type": 4,
+        "conditionNodes": [
+          {
+            "nodeName": "条件 1",
+            "nodeKey": "k004",
+            "type": 3,
+            "priorityLevel": 1,
+            "conditionList": [
+              [
+                {
+                  "label": "age",
+                  "field": "age",
+                  "operator": ">",
+                  "value": "18",
+                  "type": "custom"
+                }
+              ]
+            ],
+            "childNode": {
+              "nodeName": "财务总监审核",
+              "nodeKey": "k005",
+              "type": 1,
+              "setType": 3,
+              "nodeAssigneeList": [
+                {
+                  "id": "role01",
+                  "name": "财务总监"
+                }
+              ],
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "remind": false,
+              "term": 1,
+              "termMode": 1,
+              "examineMode": 1,
+              "approveSelf": 0,
+              "directorMode": 0,
+              "typeOfApprove": 1,
+              "allowTransfer": false,
+              "allowAppendNode": false,
+              "allowRollback": false
+            }
+          },
+          {
+            "nodeName": "默认条件",
+            "nodeKey": "k006",
+            "type": 3,
+            "priorityLevel": 2,
+            "conditionList": [],
+            "childNode": {
+              "nodeName": "路由分支",
+              "nodeKey": "route001",
+              "type": 23,
+              "routeNodes": [
+                {
+                  "nodeName": "路由至主管审批",
+                  "nodeKey": "route:k005",
+                  "priorityLevel": 2,
+                  "conditionList": [
+                    [
+                      {
+                        "label": "请假天数",
+                        "field": "day",
+                        "operator": ">",
+                        "value": "7"
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "nodeName": "默认路由",
+                  "nodeKey": "route:default",
+                  "priorityLevel": 1,
+                  "conditionList": []
+                }
+              ],
+              "childNode": {
+                "nodeName": "抄送人",
+                "nodeKey": "k007",
+                "type": 2,
+                "allowSelection": true,
+                "nodeAssigneeList": [
+                  {
+                    "id": "test002",
+                    "name": "测试02"
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "childNode": {
+          "nodeName": "技术总监审核",
+          "nodeKey": "k008",
+          "type": 1,
+          "setType": 3,
+          "nodeAssigneeList": [
+            {
+              "id": "role02",
+              "name": "技术总监"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "remind": false,
+          "term": 1,
+          "termMode": 1,
+          "examineMode": 1,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "allowTransfer": false,
+          "allowAppendNode": false,
+          "allowRollback": false
+        }
+      }
+    }
+  }
+}
