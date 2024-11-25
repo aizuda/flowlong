@@ -103,12 +103,6 @@
                       }
                     ]
                   ]
-                },
-                {
-                  "nodeName": "默认路由",
-                  "nodeKey": "route:default",
-                  "priorityLevel": 1,
-                  "conditionList": []
                 }
               ],
               "childNode": {

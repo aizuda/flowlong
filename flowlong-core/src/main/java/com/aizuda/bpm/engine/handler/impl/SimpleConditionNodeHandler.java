@@ -42,7 +42,13 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        return this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        if (conditionNodeOptional.isPresent()) {
+            return conditionNodeOptional;
+        }
+
+        // 未发现满足条件分支，使用无条件分支
+        return defaultConditionNode(nodeModel.getConditionNodes());
     }
 
     public Optional<ConditionNode> matchConditionNode(FlowLongContext flowLongContext, Execution execution, List<ConditionNode> conditionNodes) {
@@ -63,15 +69,8 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         // 根据正则条件节点选择
         Map<String, Object> args = this.getArgs(flowLongContext, execution);
         Expression expression = flowLongContext.checkExpression();
-        Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream()
-                .sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+        return conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                 .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
-        if (conditionNodeOptional.isPresent()) {
-            return conditionNodeOptional;
-        }
-
-        // 未发现满足条件分支，使用无条件分支
-        return defaultConditionNode(conditionNodes);
     }
 
     @Override
