@@ -276,9 +276,16 @@ public class NodeModel implements ModelInstance, Serializable {
              */
             flowLongContext.getFlowConditionHandler()
                     .getRouteNode(flowLongContext, execution, this)
-                    // 自动跳转到指定节点
-                    .ifPresent(t -> execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), t.routeNodeKey(),
-                            execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump));
+                    .ifPresent(t -> {
+                        if (ObjectUtils.isNotEmpty(t.getConditionList())) {
+                            // 自动跳转到指定节点
+                            execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), t.routeNodeKey(),
+                                    execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump);
+                        } else {
+                            // 执行下一个节点
+                            this.nextNode().ifPresent(nextNode -> flowLongContext.createTask(execution, nextNode));
+                        }
+                    });
             return true;
         }
 
