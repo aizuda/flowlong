@@ -38,6 +38,11 @@ public class FlwExtInstanceDaoImpl implements FlwExtInstanceDao {
     }
 
     @Override
+    public boolean deleteById(Long instanceId) {
+        return extInstanceMapper.deleteById(instanceId) > 0;
+    }
+
+    @Override
     public boolean updateById(FlwExtInstance extInstance) {
         return extInstanceMapper.updateById(extInstance) > 0;
     }

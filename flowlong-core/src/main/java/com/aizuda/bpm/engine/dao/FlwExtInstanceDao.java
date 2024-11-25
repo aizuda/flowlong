@@ -22,8 +22,9 @@ public interface FlwExtInstanceDao {
 
     boolean deleteByProcessId(Long processId);
 
+    boolean deleteById(Long instanceId);
+
     boolean updateById(FlwExtInstance extInstance);
 
     FlwExtInstance selectById(Long id);
-
 }

@@ -321,11 +321,14 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId) {
         if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
-            // 删除实例
-            instanceDao.deleteById(instanceId);
+            // 删除扩展实例
+            extInstanceDao.deleteById(instanceId);
 
             // 删除历史实例
             hisInstanceDao.deleteById(instanceId);
+
+            // 删除实例
+            instanceDao.deleteById(instanceId);
         }
     }
 
