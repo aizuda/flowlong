@@ -150,7 +150,7 @@ public class TaskServiceImpl implements TaskService {
             // 获取历史任务
             flwTask = hisTaskDao.selectCheckById(taskId);
         }
-        Assert.illegal(null == taskEventType,"taskTye only allow jump and rejectJump");
+        Assert.illegal(null == taskEventType, "taskTye only allow jump and rejectJump");
         if (null == flwTask) {
             // 获取当前任务
             flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
@@ -468,6 +468,32 @@ public class TaskServiceImpl implements TaskService {
         // 任务监听器通知
         this.taskNotify(eventType, () -> flwTask, null, flowCreator);
         return flwTask;
+    }
+
+    @Override
+    public boolean transferTask(FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+        List<FlwTaskActor> flwTaskActors = taskActorDao.selectListByActorId(flowCreator.getCreateId());
+        if (ObjectUtils.isEmpty(flwTaskActors)) {
+            return false;
+        }
+        // 遍历处理所有任务
+        for (FlwTaskActor flwTaskActor : flwTaskActors) {
+            // 设置委托人信息
+            FlwTask ft = new FlwTask();
+            ft.setId(flwTaskActor.getTaskId());
+            ft.setTaskType(TaskType.transfer);
+            ft.setAssignorId(flowCreator.getCreateId());
+            ft.setAssignor(flowCreator.getCreateBy());
+            if (taskDao.updateById(ft)) {
+                // 更新任务参与者为指定用户
+                FlwTaskActor fta = new FlwHisTaskActor();
+                fta.setId(flwTaskActor.getId());
+                fta.setActorId(assigneeFlowCreator.getCreateId());
+                fta.setActorName(assigneeFlowCreator.getCreateBy());
+                taskActorDao.updateById(fta);
+            }
+        }
+        return true;
     }
 
     /**

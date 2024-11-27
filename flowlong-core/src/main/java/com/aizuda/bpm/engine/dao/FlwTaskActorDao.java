@@ -44,5 +44,7 @@ public interface FlwTaskActorDao {
 
     List<FlwTaskActor> selectListByTaskIdAndActorId(Long taskId, String actorId);
 
+    List<FlwTaskActor> selectListByActorId(String actorId);
+
     Long selectCountByTaskIdAndActorId(Long taskId, String actorId);
 }
