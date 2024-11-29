@@ -39,6 +39,37 @@ public class TestModel extends MysqlTest {
         }
     }
 
+    @Test
+    public void testProcessModel2json() throws Exception {
+        FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
+
+        // 测试子流程
+        this.testModel2json("test/subProcess.json", "测试子流程");
+
+        // 测试简单流程
+        this.testModel2json("test/simpleProcess.json", "测试简单流程");
+
+        // 测试条件分支
+        this.testModel2json("test/ccToCondition.json", "抄送节点跟条件分支");
+
+        // 测试条件分支嵌套
+        this.testModel2json("test/condNestCondition.json", "条件分支嵌套");
+
+        // 测试并行分支
+        this.testModel2json("test/parallelProcess.json", "测试并行分支");
+
+        // 测试包容分支
+        this.testModel2json("test/inclusiveProcess.json", "测试包容分支");
+    }
+
+    private void testModel2json(String jsonFile, String modelName) throws Exception {
+        String jsonContent = StreamUtils.readBytes(StreamUtils.getResourceAsStream(jsonFile));
+        ProcessModel processModel = FlowLongContext.fromJson(jsonContent, ProcessModel.class);
+        Assertions.assertEquals(processModel.getName(), modelName);
+        processModel.cleanParentNode(processModel.getNodeConfig());
+        System.err.println(FlowLongContext.toJson(processModel));
+    }
+
     /**
      * 测试获取节点 Map 格式列表
      */

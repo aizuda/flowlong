@@ -1,6 +1,6 @@
 {
   "key": "subProcess",
-  "name": "请假审批",
+  "name": "测试子流程",
   "nodeConfig": {
     "nodeName": "发起人",
     "nodeKey": "k001",
