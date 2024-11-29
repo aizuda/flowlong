@@ -1,0 +1,47 @@
+{
+  "key": "issues_IB7SSY",
+  "name": "测试同节点多人顺序审批",
+  "nodeConfig": {
+    "nodeKey": "flk01",
+    "nodeName": "发起人",
+    "type": 0,
+    "childNode": {
+      "nodeKey": "flk02",
+      "nodeName": "顺序审批",
+      "examineLevel": 1,
+      "termMode": 1,
+      "examineMode": 1,
+      "type": 1,
+      "setType": 1,
+      "directorMode": 0,
+      "directorLevel": 1,
+      "childNode": {
+        "nodeKey": "flk03",
+        "nodeName": "审核人",
+        "examineLevel": 1,
+        "termMode": 1,
+        "examineMode": 3,
+        "type": 1,
+        "setType": 1,
+        "directorMode": 0,
+        "directorLevel": 1,
+        "nodeAssigneeList": [
+          {
+            "name": "sa",
+            "id": "10001"
+          }
+        ]
+      },
+      "nodeAssigneeList": [
+        {
+          "name": "财务",
+          "id": "test001"
+        },
+        {
+          "name": "管理员",
+          "id": "test002"
+        }
+      ]
+    }
+  }
+}

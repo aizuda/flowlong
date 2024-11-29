@@ -4,10 +4,7 @@ import com.aizuda.bpm.engine.ProcessService;
 import com.aizuda.bpm.engine.QueryService;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.core.FlowCreator;
-import com.aizuda.bpm.engine.entity.FlwHisInstance;
-import com.aizuda.bpm.engine.entity.FlwInstance;
-import com.aizuda.bpm.engine.entity.FlwProcess;
-import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.mybatisplus.mapper.FlwProcessMapper;
@@ -373,6 +370,31 @@ public class TestIssue extends MysqlTest {
             this.executeTask(instance.getId(), testCreator);
 
             // 超过 50% 流程结束
+        });
+    }
+
+    /**
+     * 测试同节点多人顺序审批
+     */
+    @Test
+    public void issues_IB7SSY() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_IB7SSY.json", testCreator, false);
+
+        // 启动流程
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 财务审批
+            this.executeTask(instance.getId(), testCreator);
+
+            // 校验节点信息
+            List<FlwTask> flwTaskList = flowLongEngine.queryService().getTasksByInstanceId(instance.getId());
+            Assertions.assertEquals(1, flwTaskList.size());
+            List<FlwTaskActor> taskActors = flowLongEngine.queryService().getTaskActorsByTaskId(flwTaskList.get(0).getId());
+            Assertions.assertEquals("管理员", taskActors.get(0).getActorName());
+            Assertions.assertEquals(0, taskActors.get(0).getActorType());
         });
     }
 
