@@ -443,6 +443,22 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 获取父审批节点
+     *
+     * @return 模型节点
+     */
+    public NodeModel parentApprovalNode() {
+        NodeModel parentNode = this.getParentNode();
+        if (TaskType.approval.eq(parentNode.getType()) || TaskType.major.eq(parentNode.getType())) {
+            // 父节点为审批节点或主办发起节点
+            return parentNode;
+        }
+
+        // 继续找父审批节点
+        return parentNode.parentApprovalNode();
+    }
+
+    /**
      * 判断是否为条件节点
      *
      * @return true 是 false 否

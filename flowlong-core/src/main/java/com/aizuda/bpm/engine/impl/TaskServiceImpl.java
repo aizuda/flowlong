@@ -165,8 +165,8 @@ public class TaskServiceImpl implements TaskService {
         // 查找模型节点
         NodeModel nodeModel;
         if (null == nodeKey) {
-            // 1，找到当前节点的父节点
-            nodeModel = processModel.getNode(flwTask.getTaskKey()).getParentNode();
+            // 1，找到当前节点的父审批节点
+            nodeModel = processModel.getNode(flwTask.getTaskKey()).parentApprovalNode();
         } else {
             // 2，找到指定 nodeName 节点
             nodeModel = processModel.getNode(nodeKey);
