@@ -46,7 +46,16 @@ public interface Expression {
         if (ObjectUtils.isEmpty(conditionList)) {
             return false;
         }
+
         Map<String, Object> args = argsSupplier.get();
+        for (List<NodeExpression> nodeExpressions : conditionList) {
+            // 判断参数是否包含参数，不包含则返回 false
+            if (nodeExpressions.stream().anyMatch(t -> !args.containsKey(t.getField()))) {
+                return false;
+            }
+        }
+
+        // 执行存在参数的表达式
         String expr = conditionList.stream().map(cl -> cl.stream().map(t -> exprOfArgs(t, args))
                 .collect(Collectors.joining(" && "))).collect(Collectors.joining(" || "));
         return evalFunc.apply(expr);

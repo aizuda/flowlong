@@ -13,14 +13,35 @@ public class TestSpelExpression {
 
     @Test
     public void test() {
-        SpelExpression expression = new SpelExpression();
-        Map<String, Object> args = new HashMap<>();
-        args.put("day", 8);
         NodeExpression nodeExpression = new NodeExpression();
         nodeExpression.setLabel("日期");
         nodeExpression.setField("day");
         nodeExpression.setOperator(">");
         nodeExpression.setValue("7");
-        Assertions.assertTrue(expression.eval(Collections.singletonList(Collections.singletonList(nodeExpression)), args));
+        Assertions.assertFalse(this.eval(nodeExpression, null));
+        Assertions.assertTrue(this.eval(nodeExpression, new HashMap<String, Object>() {{
+            put("day", 8);
+        }}));
+    }
+
+    @Test
+    public void testEqual() {
+        NodeExpression nodeExpression = new NodeExpression();
+        nodeExpression.setLabel("姓名");
+        nodeExpression.setField("name");
+        nodeExpression.setOperator("==");
+        nodeExpression.setValue("张三");
+        Assertions.assertFalse(this.eval(nodeExpression, null));
+        Assertions.assertTrue(this.eval(nodeExpression, new HashMap<String, Object>() {{
+            put("name", "张三");
+        }}));
+    }
+
+    private boolean eval(NodeExpression nodeExpression, Map<String, Object> args) {
+        SpelExpression expression = new SpelExpression();
+        if (null == args) {
+            args = Collections.emptyMap();
+        }
+        return expression.eval(Collections.singletonList(Collections.singletonList(nodeExpression)), args);
     }
 }

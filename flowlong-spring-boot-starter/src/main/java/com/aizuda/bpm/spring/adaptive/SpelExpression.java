@@ -35,10 +35,8 @@ public class SpelExpression implements Expression {
     @Override
     public boolean eval(List<List<NodeExpression>> conditionList, Map<String, Object> args) {
         return this.eval(conditionList, () -> args, expr -> {
-            EvaluationContext context = new StandardEvaluationContext();
-            for (Entry<String, Object> entry : args.entrySet()) {
-                context.setVariable(entry.getKey(), entry.getValue());
-            }
+            StandardEvaluationContext context = new StandardEvaluationContext();
+            context.setVariables(args);
             return parser.parseExpression(expr).getValue(context, Boolean.class);
         });
     }
