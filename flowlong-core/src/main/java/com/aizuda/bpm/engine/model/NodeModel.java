@@ -278,7 +278,7 @@ public class NodeModel implements ModelInstance, Serializable {
                     .getRouteNode(flowLongContext, execution, this);
             if (routeNodeOptional.isPresent()) {
                 // 自动跳转到指定节点
-                execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), routeNodeOptional.get().routeNodeKey(),
+                execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), routeNodeOptional.get().getNodeKey(),
                         execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump);
             } else {
                 // 执行下一个节点
