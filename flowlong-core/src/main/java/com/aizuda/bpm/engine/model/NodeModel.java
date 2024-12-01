@@ -274,11 +274,16 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行路由分支
              */
-            flowLongContext.getFlowConditionHandler()
-                    .getConditionNode(flowLongContext, execution, this)
-                    // 自动跳转到指定节点
-                    .ifPresent(t -> execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), t.getNodeKey(),
-                            execution.getFlowCreator(), execution.getArgs(), TaskType.rejectJump));
+            Optional<ConditionNode> routeNodeOptional = flowLongContext.getFlowConditionHandler()
+                    .getRouteNode(flowLongContext, execution, this);
+            if (routeNodeOptional.isPresent()) {
+                // 自动跳转到指定节点
+                execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), routeNodeOptional.get().getNodeKey(),
+                        execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump);
+            } else {
+                // 执行下一个节点
+                this.nextNode().ifPresent(nextNode -> flowLongContext.createTask(execution, nextNode));
+            }
             return true;
         }
 
@@ -435,6 +440,22 @@ public class NodeModel implements ModelInstance, Serializable {
             nextNode = ModelHelper.findNextNode(this, currentTask);
         }
         return Optional.ofNullable(nextNode);
+    }
+
+    /**
+     * 获取父审批节点
+     *
+     * @return 模型节点
+     */
+    public NodeModel parentApprovalNode() {
+        NodeModel parentNode = this.getParentNode();
+        if (TaskType.approval.eq(parentNode.getType()) || TaskType.major.eq(parentNode.getType())) {
+            // 父节点为审批节点或主办发起节点
+            return parentNode;
+        }
+
+        // 继续找父审批节点
+        return parentNode.parentApprovalNode();
     }
 
     /**

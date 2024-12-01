@@ -1,5 +1,5 @@
 {
-  "key": "duplicateNodeNames.json",
+  "key": "duplicateNodeNames",
   "name": "检测校验重复节点名称",
   "nodeConfig": {
     "nodeName": "发起人",

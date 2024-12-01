@@ -42,7 +42,16 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        if (conditionNodeOptional.isPresent()) {
+            return conditionNodeOptional;
+        }
+
+        // 未发现满足条件分支，使用无条件分支
+        return defaultConditionNode(nodeModel.getConditionNodes());
+    }
+
+    public Optional<ConditionNode> matchConditionNode(FlowLongContext flowLongContext, Execution execution, List<ConditionNode> conditionNodes) {
 
         // 根据指定条件节点选择
         String conditionNodeKey = FlowDataTransfer.get(FlowConstants.processSpecifyConditionNodeKey);
@@ -58,20 +67,18 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         }
 
         // 根据正则条件节点选择
-        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+        Map<String, Object> args = this.getArgs(flowLongContext, execution);
         Expression expression = flowLongContext.checkExpression();
-        Optional<ConditionNode> conditionNodeOptional = conditionNodes.stream()
-                .sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
+        return conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                 .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
-        if (conditionNodeOptional.isPresent()) {
-            return conditionNodeOptional;
-        }
-
-        // 未发现满足条件分支，使用无条件分支
-        return defaultConditionNode(conditionNodes);
     }
 
-    public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
+    @Override
+    public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
+        return this.matchConditionNode(flowLongContext, execution, nodeModel.getRouteNodes());
+    }
+
+    public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
         Map<String, Object> args = execution.getArgs();
         Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
         return args;
@@ -89,7 +96,7 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
         // 根据正则条件节点选择
         Expression expression = flowLongContext.checkExpression();
-        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+        Map<String, Object> args = this.getArgs(flowLongContext, execution);
         List<ConditionNode> cnsOpt = inclusiveNodes.stream().filter(t -> expression.eval(t.getConditionList(), args)).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(cnsOpt)) {
             cnsOpt = Collections.singletonList(defaultConditionNode(inclusiveNodes).get());

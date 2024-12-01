@@ -139,6 +139,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
                                              Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
+        FlwTask flwTask = null;
         TaskEventType taskEventType = null;
         if (taskTye == TaskType.jump) {
             taskEventType = TaskEventType.jump;
@@ -146,9 +147,14 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.rejectJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+            // 获取历史任务
+            flwTask = hisTaskDao.selectCheckById(taskId);
         }
-        Assert.illegal(null == taskEventType,"taskTye only allow jump and rejectJump");
-        FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
+        Assert.illegal(null == taskEventType, "taskTye only allow jump and rejectJump");
+        if (null == flwTask) {
+            // 获取当前任务
+            flwTask = this.getAllowedFlwTask(taskId, flowCreator, null, null);
+        }
 
         // 执行跳转到目标节点
         Execution execution = executionFunction.apply(flwTask);
@@ -159,8 +165,8 @@ public class TaskServiceImpl implements TaskService {
         // 查找模型节点
         NodeModel nodeModel;
         if (null == nodeKey) {
-            // 1，找到当前节点的父节点
-            nodeModel = processModel.getNode(flwTask.getTaskKey()).getParentNode();
+            // 1，找到当前节点的父审批节点
+            nodeModel = processModel.getNode(flwTask.getTaskKey()).parentApprovalNode();
         } else {
             // 2，找到指定 nodeName 节点
             nodeModel = processModel.getNode(nodeKey);
@@ -191,7 +197,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 任务监听器通知
-        this.taskNotify(taskEventType, () -> flwTask, nodeModel, flowCreator);
+        this.taskNotify(taskEventType, execution::getFlwTask, nodeModel, flowCreator);
         return Optional.of(createTask);
     }
 
@@ -462,6 +468,32 @@ public class TaskServiceImpl implements TaskService {
         // 任务监听器通知
         this.taskNotify(eventType, () -> flwTask, null, flowCreator);
         return flwTask;
+    }
+
+    @Override
+    public boolean transferTask(FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
+        List<FlwTaskActor> flwTaskActors = taskActorDao.selectListByActorId(flowCreator.getCreateId());
+        if (ObjectUtils.isEmpty(flwTaskActors)) {
+            return false;
+        }
+        // 遍历处理所有任务
+        for (FlwTaskActor flwTaskActor : flwTaskActors) {
+            // 设置委托人信息
+            FlwTask ft = new FlwTask();
+            ft.setId(flwTaskActor.getTaskId());
+            ft.setTaskType(TaskType.transfer);
+            ft.setAssignorId(flowCreator.getCreateId());
+            ft.setAssignor(flowCreator.getCreateBy());
+            if (taskDao.updateById(ft)) {
+                // 更新任务参与者为指定用户
+                FlwTaskActor fta = new FlwHisTaskActor();
+                fta.setId(flwTaskActor.getId());
+                fta.setActorId(assigneeFlowCreator.getCreateId());
+                fta.setActorName(assigneeFlowCreator.getCreateBy());
+                taskActorDao.updateById(fta);
+            }
+        }
+        return true;
     }
 
     /**

@@ -172,6 +172,18 @@ public interface TaskService {
     }
 
     /**
+     * 参与者的所有任务【离职转办】给指定办理人
+     * <p>
+     * 用于任务参与者离职
+     * </p>
+     *
+     * @param flowCreator         任务参与者
+     * @param assigneeFlowCreator 指定办理人
+     * @return true 成功 false 失败
+     */
+    boolean transferTask(FlowCreator flowCreator, FlowCreator assigneeFlowCreator);
+
+    /**
      * 根据 任务ID 委派任务、代理人办理完任务该任务重新归还给原处理人
      *
      * @param taskId              任务ID

@@ -1,7 +1,7 @@
 {
   "id": 10,
   "key": "parallelNodes",
-  "name": "请假审批",
+  "name": "测试并行分支",
   "nodeConfig": {
     "nodeName": "发起人",
     "nodeKey": "k001",
