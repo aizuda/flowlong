@@ -1049,6 +1049,7 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setPerformType(nodeModel.getExamineMode());
+        flwTask.setActionUrl(nodeModel.getActionUrl());
         // 触发器 父任务ID flwTask 不为 null 但 getFlwTask().getId() == null
         FlwTask executionTask = execution.getFlwTask();
         if (null == executionTask || null == executionTask.getId()) {
