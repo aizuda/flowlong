@@ -178,9 +178,22 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     @Override
     public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+
         if (null != nodeKey) {
+            // 3，驳回到指定节点
             return this.executeJumpTask(currentFlwTask.getId(), nodeKey, flowCreator, args, TaskType.rejectJump);
         }
+
+        FlwExtInstance extInstance = queryService().getExtInstance(currentFlwTask.getInstanceId());
+        ProcessModel processModel = extInstance.model();
+        NodeModel nodeModel = processModel.getNode(currentFlwTask.getTaskKey());
+
+        if (Objects.equals(1, nodeModel.getRejectStrategy())) {
+            // 驳回策略 1，驳回到发起人
+            return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        }
+
+        // 2，驳回到上一节点
         return taskService().rejectTask(currentFlwTask, flowCreator, args);
     }
 
