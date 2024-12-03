@@ -271,6 +271,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 流程模型
          */
         final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+        NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
+        if (Objects.equals(2, nodeModel.getRejectStart())) {
+            // 驳回重新审批策略 2，回到上一个节点
+            FlwHisTask hisTask = queryService().getHistTask(flwTask.getParentTaskId());
+            return this.executeJumpTask(flwTask.getId(), hisTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+        }
 
         /*
          * 票签（ 总权重大于 50% 表示通过 ）
@@ -278,7 +284,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.voteSign) {
             Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
             if (flwTaskActorsOptional.isPresent()) {
-                NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
@@ -300,7 +305,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeAssigneeList = nodeModel.getNodeAssigneeList();
