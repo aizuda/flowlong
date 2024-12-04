@@ -255,13 +255,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             return true;
         }
 
-        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+        Long instanceId = flwTask.getInstanceId();
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
             /*
              * 会签未全部完成，不继续执行节点模型
              */
-            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskKey(flwInstance.getId(), flwTask.getTaskKey());
+            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskKey(instanceId, flwTask.getTaskKey());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return true;
             }
@@ -270,7 +270,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         /*
          * 流程模型
          */
-        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(instanceId);
         NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
         if (Objects.equals(2, nodeModel.getRejectStart())) {
             // 驳回重新审批策略 2，回到上一个节点
@@ -282,7 +282,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 票签（ 总权重大于 50% 表示通过 ）
          */
         if (performType == PerformType.voteSign) {
-            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
+            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(instanceId);
             if (flwTaskActorsOptional.isPresent()) {
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
@@ -291,15 +291,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
-                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(instanceId, flowCreator),
                             "Failed to close voting status");
                 }
             }
         }
 
         // 构建执行对象
-        Map<String, Object> objectMap = ObjectUtils.getArgs(args);
-        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, objectMap);
+        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, ObjectUtils.getArgs(args));
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
