@@ -45,6 +45,10 @@ public enum NodeSetType {
      * 部门
      */
     department(7),
+    /**
+     * 指定候选人
+     */
+    designatedCandidate(8),
     ;
 
     private final int value;

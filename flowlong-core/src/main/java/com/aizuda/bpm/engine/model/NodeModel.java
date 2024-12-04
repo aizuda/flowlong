@@ -62,7 +62,7 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String actionUrl;
     /**
-     * 节点类型
+     * 节点类型 {@link TaskType}
      * <p>
      * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支 23，路由分支
      * </p>
@@ -71,7 +71,7 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 审核人类型 {@link NodeSetType}
      * <p>
-     * 1，指定成员 2，主管 3，角色 4，发起人自选 5，发起人自己 6，连续多级主管 7，部门
+     * 1，指定成员 2，主管 3，角色 4，发起人自选 5，发起人自己 6，连续多级主管 7，部门 8，指定候选人
      * </p>
      */
     private Integer setType;
