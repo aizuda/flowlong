@@ -145,6 +145,8 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.jump;
         } else if (taskTye == TaskType.rejectJump) {
             taskEventType = TaskEventType.rejectJump;
+        } else if (taskTye == TaskType.reApproveJump) {
+            taskEventType = TaskEventType.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
             // 获取历史任务
