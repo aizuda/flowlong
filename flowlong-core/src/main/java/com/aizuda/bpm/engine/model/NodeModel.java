@@ -504,6 +504,15 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 判断是否为路由节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean routeNode() {
+        return TaskType.routeBranch.eq(type);
+    }
+
+    /**
      * 参与者类型 0，用户 1，角色 2，部门
      */
     public int actorType() {
