@@ -85,7 +85,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setMapVariable(args);
 
         // 重新加载流程模型
-        ModelHelper.reloadProcessModel(flwProcess.model(), flwProcess::setModelContent2Json);
+        ModelHelper.reloadProcessModel(flwProcess.model(), t -> flwProcess.setModelContent2Json(t.cleanParentNode()));
 
         // 保存实例
         this.saveInstance(flwInstance, flwProcess, flowCreator);
