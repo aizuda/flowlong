@@ -449,13 +449,22 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public NodeModel parentApprovalNode() {
         NodeModel parentNode = this.getParentNode();
-        if (TaskType.approval.eq(parentNode.getType()) || TaskType.major.eq(parentNode.getType())) {
+        if (parentNode.approvalOrMajor()) {
             // 父节点为审批节点或主办发起节点
             return parentNode;
         }
 
         // 继续找父审批节点
         return parentNode.parentApprovalNode();
+    }
+
+    /**
+     * 判断是否为审批或主办节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean approvalOrMajor() {
+        return TaskType.approval.eq(type) || TaskType.major.eq(type);
     }
 
     /**
