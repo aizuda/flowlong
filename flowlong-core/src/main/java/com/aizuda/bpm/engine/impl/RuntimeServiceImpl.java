@@ -288,7 +288,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         // 更新流程实例模型
         FlwExtInstance extInstance = new FlwExtInstance();
         extInstance.setId(instanceId);
-        extInstance.setModelContent(FlowLongContext.toJson(processModel));
+        extInstance.setModelContent(FlowLongContext.toJson(processModel.cleanParentNode()));
         return extInstanceDao.updateById(extInstance);
     }
 
@@ -360,13 +360,10 @@ public class RuntimeServiceImpl implements RuntimeService {
             selectNode.setChildNode(nodeModel);
         }
 
-        // 清理父节点关系
-        processModel.cleanParentNode(processModel.getNodeConfig());
-
         // 更新最新模型
         FlwExtInstance temp = new FlwExtInstance();
         temp.setId(flwExtInstance.getId());
-        temp.setModelContent(FlowLongContext.toJson(processModel));
+        temp.setModelContent(FlowLongContext.toJson(processModel.cleanParentNode()));
         Assert.isFalse(extInstanceDao.updateById(temp), "Update FlwExtInstance Failed");
 
         // 使缓存失效

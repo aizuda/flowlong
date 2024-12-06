@@ -99,10 +99,17 @@ public class ProcessModel implements Serializable {
 
     /**
      * 清理父节点关系
+     */
+    public ProcessModel cleanParentNode() {
+        return this.cleanParentNode(this.nodeConfig);
+    }
+
+    /**
+     * 清理父节点关系
      *
      * @param rootNode 根节点
      */
-    public void cleanParentNode(NodeModel rootNode) {
+    public ProcessModel cleanParentNode(NodeModel rootNode) {
         rootNode.setParentNode(null);
 
         // 清理条件节点
@@ -124,6 +131,7 @@ public class ProcessModel implements Serializable {
         if (null != childNode) {
             this.cleanParentNode(childNode);
         }
+        return this;
     }
 
     /**

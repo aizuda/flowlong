@@ -361,11 +361,8 @@ public class ModelHelper {
                 }
             });
 
-            // 清理父节点
-            processModel.cleanParentNode(processModel.getNodeConfig());
-
-            // 更新模型
-            consumer.accept(processModel);
+            // 清理父节点，更新模型
+            consumer.accept(processModel.cleanParentNode());
 
             // 删除动态分配处理人员参数
             FlowDataTransfer.removeByKey(FlowConstants.processDynamicAssignee);

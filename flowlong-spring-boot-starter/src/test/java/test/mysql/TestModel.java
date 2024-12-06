@@ -66,8 +66,7 @@ public class TestModel extends MysqlTest {
         String jsonContent = StreamUtils.readBytes(StreamUtils.getResourceAsStream(jsonFile));
         ProcessModel processModel = FlowLongContext.fromJson(jsonContent, ProcessModel.class);
         Assertions.assertEquals(processModel.getName(), modelName);
-        processModel.cleanParentNode(processModel.getNodeConfig());
-        System.err.println(FlowLongContext.toJson(processModel));
+        System.err.println(FlowLongContext.toJson(processModel.cleanParentNode()));
     }
 
     /**
