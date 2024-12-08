@@ -80,8 +80,7 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
         Map<String, Object> args = execution.getArgs();
-        Assert.illegal(ObjectUtils.isEmpty(args), "Execution parameter cannot be empty");
-        return args;
+        return ObjectUtils.isEmpty(args) ? Collections.emptyMap() : args;
     }
 
     public Optional<ConditionNode> defaultConditionNode(List<ConditionNode> conditionNodes) {

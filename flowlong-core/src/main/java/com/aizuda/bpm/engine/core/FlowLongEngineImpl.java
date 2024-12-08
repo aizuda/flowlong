@@ -178,9 +178,22 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     @Override
     public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+
         if (null != nodeKey) {
+            // 3，驳回到指定节点
             return this.executeJumpTask(currentFlwTask.getId(), nodeKey, flowCreator, args, TaskType.rejectJump);
         }
+
+        FlwExtInstance extInstance = queryService().getExtInstance(currentFlwTask.getInstanceId());
+        ProcessModel processModel = extInstance.model();
+        NodeModel nodeModel = processModel.getNode(currentFlwTask.getTaskKey());
+
+        if (Objects.equals(1, nodeModel.getRejectStrategy())) {
+            // 驳回策略 1，驳回到发起人
+            return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        }
+
+        // 2，驳回到上一节点
         return taskService().rejectTask(currentFlwTask, flowCreator, args);
     }
 
@@ -242,13 +255,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             return true;
         }
 
-        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+        Long instanceId = flwTask.getInstanceId();
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
             /*
              * 会签未全部完成，不继续执行节点模型
              */
-            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskKey(flwInstance.getId(), flwTask.getTaskKey());
+            List<FlwTask> flwTaskList = queryService().getTasksByInstanceIdAndTaskKey(instanceId, flwTask.getTaskKey());
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
                 return true;
             }
@@ -257,15 +270,20 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         /*
          * 流程模型
          */
-        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+        final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(instanceId);
+        NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
+        if (Objects.equals(2, nodeModel.getRejectStart())) {
+            // 驳回重新审批策略 2，回到上一个节点
+            FlwHisTask hisTask = queryService().getHistTask(flwTask.getParentTaskId());
+            return this.executeJumpTask(flwTask.getId(), hisTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+        }
 
         /*
          * 票签（ 总权重大于 50% 表示通过 ）
          */
         if (performType == PerformType.voteSign) {
-            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(flwInstance.getId());
+            Optional<List<FlwTaskActor>> flwTaskActorsOptional = queryService().getActiveTaskActorsByInstanceId(instanceId);
             if (flwTaskActorsOptional.isPresent()) {
-                NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
                 int passWeight = nodeModel.getPassWeight() == null ? 50 : nodeModel.getPassWeight();
                 int votedWeight = 100 - flwTaskActorsOptional.get().stream().mapToInt(t -> t.getWeight() == null ? 0 : t.getWeight()).sum();
                 if (votedWeight < passWeight) {
@@ -273,21 +291,20 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
-                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(flwInstance.getId(), flowCreator),
+                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(instanceId, flowCreator),
                             "Failed to close voting status");
                 }
             }
         }
 
         // 构建执行对象
-        Map<String, Object> objectMap = ObjectUtils.getArgs(args);
-        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, objectMap);
+        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
+        final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, ObjectUtils.getArgs(args));
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
             boolean findTaskActor = false;
             NodeAssignee nextNodeAssignee = null;
             List<NodeAssignee> nodeAssigneeList = nodeModel.getNodeAssigneeList();

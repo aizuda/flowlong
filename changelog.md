@@ -1,5 +1,20 @@
 # 更新日志
 
+## [v1.0.7] 2024.12.08
+
+- feat: 创建 task 设置 actionUrl
+- feat: 支持驳回策略
+- feat: 支持驳回重新审批策略
+- feat: 支持驳回重新审批策略
+- feat: 支持 NodeModel setType 添加设置指定候选人类型
+- feat: 新增 TaskEventType reApproveJump 事件
+- feat: 新增判断是否为路由节点方法
+- opt: 优化执行任务后续处理逻辑
+- opt: 优化审批或主办节点提取判断方法
+- opt: 优化默认允许无参数判断条件分支
+- opt: 优化模型清理父节点逻辑
+- opt: 优化重新加载模型由业务决定是否清理父节点
+
 ## [v1.0.7] 2024.12.01
 
 - feat: 新增离职转办

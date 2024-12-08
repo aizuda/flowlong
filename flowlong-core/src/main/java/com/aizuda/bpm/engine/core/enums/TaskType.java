@@ -121,7 +121,11 @@ public enum TaskType {
     /**
      * 路由分支
      */
-    routeBranch(23);
+    routeBranch(23),
+    /**
+     * 驳回重新审批跳转
+     */
+    reApproveJump(24);
 
     private final int value;
 

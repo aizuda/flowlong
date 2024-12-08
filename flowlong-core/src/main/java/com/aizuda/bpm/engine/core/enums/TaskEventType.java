@@ -116,6 +116,10 @@ public enum TaskEventType {
      */
     routeJump,
     /**
+     * 驳回重新审批跳转
+     */
+    reApproveJump,
+    /**
      * 自动审批完成
      */
     autoComplete,

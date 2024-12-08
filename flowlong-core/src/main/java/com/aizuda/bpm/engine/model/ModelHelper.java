@@ -37,7 +37,7 @@ public class ModelHelper {
      */
     public static NodeModel findNextNode(NodeModel nodeModel, List<String> currentTask) {
         NodeModel parentNode = nodeModel.getParentNode();
-        if (null == parentNode || Objects.equals(0, parentNode.getType())) {
+        if (null == parentNode || TaskType.major.eq(parentNode.getType())) {
             // 递归至发起节点，流程结束
             return null;
         }
@@ -360,9 +360,6 @@ public class ModelHelper {
                     }
                 }
             });
-
-            // 清理父节点
-            processModel.cleanParentNode(processModel.getNodeConfig());
 
             // 更新模型
             consumer.accept(processModel);

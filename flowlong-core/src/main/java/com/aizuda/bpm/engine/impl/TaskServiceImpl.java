@@ -145,6 +145,8 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.jump;
         } else if (taskTye == TaskType.rejectJump) {
             taskEventType = TaskEventType.rejectJump;
+        } else if (taskTye == TaskType.reApproveJump) {
+            taskEventType = TaskEventType.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
             // 获取历史任务
@@ -1049,6 +1051,7 @@ public class TaskServiceImpl implements TaskService {
         flwTask.setTaskKey(nodeModel.getNodeKey());
         flwTask.setTaskType(nodeModel.getType());
         flwTask.setPerformType(nodeModel.getExamineMode());
+        flwTask.setActionUrl(nodeModel.getActionUrl());
         // 触发器 父任务ID flwTask 不为 null 但 getFlwTask().getId() == null
         FlwTask executionTask = execution.getFlwTask();
         if (null == executionTask || null == executionTask.getId()) {
