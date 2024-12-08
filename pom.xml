@@ -17,7 +17,7 @@
     </modules>
 
     <properties>
-        <revision>1.0.7</revision>
+        <revision>1.0.8</revision>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.7.0</spring-boot.version>
