@@ -10,6 +10,7 @@ import com.aizuda.bpm.mybatisplus.mapper.FlwHisInstanceMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 历史流程实例数据访问层接口实现类
@@ -55,8 +56,14 @@ public class FlwHisInstanceDaoImpl implements FlwHisInstanceDao {
     }
 
     @Override
-    public List<FlwHisInstance> selectListByProcessId(Long processId) {
-        return hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
-                .eq(FlwHisInstance::getProcessId, processId));
+    public Optional<List<FlwHisInstance>> selectListByProcessId(Long processId) {
+        return Optional.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+                .eq(FlwHisInstance::getProcessId, processId)));
+    }
+
+    @Override
+    public Optional<List<FlwHisInstance>> selectListByBusinessKey(String businessKey) {
+        return Optional.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+                .eq(FlwHisInstance::getBusinessKey, businessKey)));
     }
 }

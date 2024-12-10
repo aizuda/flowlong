@@ -186,4 +186,19 @@ public interface QueryService {
      */
     Optional<List<FlwInstance>> getSubProcessByInstanceId(Long instanceId);
 
+    /**
+     * 根据业务主键获取流程实例
+     *
+     * @param businessKey 业务主键
+     * @return 流程实例列表
+     */
+    Optional<List<FlwInstance>> getInstancesByBusinessKey(String businessKey);
+
+    /**
+     * 根据业务主键获取历史流程实例
+     *
+     * @param businessKey 业务主键
+     * @return 历史流程实例列表
+     */
+    Optional<List<FlwHisInstance>> getHisInstancesByBusinessKey(String businessKey);
 }

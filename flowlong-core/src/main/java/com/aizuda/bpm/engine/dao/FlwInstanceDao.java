@@ -34,4 +34,6 @@ public interface FlwInstanceDao {
     FlwInstance selectById(Long id);
 
     Optional<List<FlwInstance>> selectListByParentInstanceId(Long parentInstanceId);
+
+    Optional<List<FlwInstance>> selectListByBusinessKey(String businessKey);
 }

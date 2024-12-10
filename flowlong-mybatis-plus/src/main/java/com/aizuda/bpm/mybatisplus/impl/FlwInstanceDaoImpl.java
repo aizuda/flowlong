@@ -65,4 +65,10 @@ public class FlwInstanceDaoImpl implements FlwInstanceDao {
         return Optional.ofNullable(instanceMapper.selectList(Wrappers.<FlwInstance>lambdaQuery()
                 .eq(FlwInstance::getParentInstanceId, parentInstanceId)));
     }
+
+    @Override
+    public Optional<List<FlwInstance>> selectListByBusinessKey(String businessKey) {
+        return Optional.ofNullable(instanceMapper.selectList(Wrappers.<FlwInstance>lambdaQuery()
+                .eq(FlwInstance::getBusinessKey, businessKey)));
+    }
 }

@@ -10,7 +10,6 @@ import com.aizuda.bpm.engine.RuntimeService;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
-import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -28,7 +27,6 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -302,10 +300,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void cascadeRemoveByProcessId(Long processId) {
-        List<FlwHisInstance> flwHisInstances = hisInstanceDao.selectListByProcessId(processId);
-        if (ObjectUtils.isNotEmpty(flwHisInstances)) {
+        hisInstanceDao.selectListByProcessId(processId).ifPresent(hisInstances -> {
+
             // 删除活动任务相关信息
-            taskService.cascadeRemoveByInstanceIds(flwHisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+            taskService.cascadeRemoveByInstanceIds(hisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
             // 删除扩展实例
             extInstanceDao.deleteByProcessId(processId);
@@ -315,7 +313,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 删除实例
             instanceDao.deleteByProcessId(processId);
-        }
+        });
     }
 
     @Override
