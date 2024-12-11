@@ -29,6 +29,103 @@ import java.util.stream.Collectors;
 public class ModelHelper {
 
     /**
+     * 动态获取下一个节点
+     *
+     * @param flowLongContext 流程上下文 {@link FlowLongContext}
+     * @param execution       流程执行对象 {@link Execution}
+     * @param rootNodeModel   根节点
+     * @param currentNodeKey  当前节点
+     * @return 下一个节点集合
+     */
+    public static List<NodeModel> getNextChildNodes(FlowLongContext flowLongContext, Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
+        NodeModel currentNodeModel = rootNodeModel.getNode(currentNodeKey);
+        if (currentNodeModel.approvalOrMajor()) {
+            // 审批节点
+            NodeModel childNode = currentNodeModel.getChildNode();
+            if (null == childNode) {
+                // 子节点不存在，可能是结束节点
+                return getChildNode(flowLongContext, execution, rootNodeModel, currentNodeModel);
+            }
+
+            // 获取下一个待执行子节点
+            return getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode);
+        }
+        return null;
+    }
+
+    private static List<NodeModel> getNextChildNodes(FlowLongContext flowLongContext, Execution execution, NodeModel rootNodeModel, NodeModel childNode) {
+        List<NodeModel> nextNodes = new ArrayList<>();
+        if (childNode.conditionNode()) {
+            // 条件节点
+            flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, childNode)
+                    // 添加执行条件节点
+                    .ifPresent(t -> nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode())));
+        } else if (childNode.parallelNode()) {
+            // 并行节点
+            childNode.getParallelNodes().forEach(t -> nextNodes.add(t.getChildNode()));
+        } else if (childNode.inclusiveNode()) {
+            // 包容节点
+            flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, childNode).ifPresent(optList -> {
+                if (Objects.equals(1, optList.size()) && null != childNode.getChildNode()) {
+                    // 获取包容分支子节点
+                    nextNodes.add(childNode.getChildNode());
+                } else {
+                    // 添加执行条件节点
+                    optList.forEach(t -> nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode())));
+                }
+            });
+        } else if (childNode.routeNode()) {
+            // 路由节点
+            Optional<ConditionNode> opt = flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, childNode);
+            if (opt.isPresent()) {
+                // 添加执行条件节点
+                nextNodes.add(rootNodeModel.getNode(opt.get().getNodeKey()));
+            } else if (null != childNode.getChildNode()) {
+                // 获取路由分支子节点
+                nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode.getChildNode()));
+            }
+        } else {
+            // 普通节点
+            nextNodes.add(childNode);
+        }
+        return nextNodes;
+    }
+
+    private static List<NodeModel> getChildNode(FlowLongContext flowLongContext, Execution execution, NodeModel rootNodeModel, NodeModel nodeModel) {
+        List<NodeModel> nextNodes = new ArrayList<>();
+        NodeModel parentNode = nodeModel.getParentNode();
+        if (null == parentNode || TaskType.major.eq(parentNode.getType())) {
+            // 递归至发起节点，流程结束
+            return nextNodes;
+        }
+        if (parentNode.conditionNode()) {
+            NodeModel parentChildNode = parentNode.getChildNode();
+            if (null == parentChildNode || Objects.equals(parentChildNode.getNodeKey(), nodeModel.getNodeKey())) {
+                // 继续查找上级节点
+                return getChildNode(flowLongContext, execution, rootNodeModel, parentNode);
+            } else {
+                // 条件执行节点，返回子节点
+                nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, parentChildNode));
+            }
+        } else if (parentNode.parallelNode()) {
+            // 并行分支
+            nextNodes.add(parentNode.getChildNode());
+        } else if (parentNode.inclusiveNode()) {
+            // 包容分支
+            flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, parentNode)
+                    // 添加执行条件节点
+                    .ifPresent(inclusiveNodes -> inclusiveNodes.forEach(t ->
+                            nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode()))));
+        } else if (parentNode.routeNode()) {
+            // 路由分支
+            flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, parentNode)
+                    // 添加执行条件节点
+                    .ifPresent(t -> nextNodes.add(parentNode.getNode(t.getNodeKey())));
+        }
+        return nextNodes;
+    }
+
+    /**
      * 递归查找下一个执行节点
      *
      * @param nodeModel   当前节点
@@ -420,7 +517,7 @@ public class ModelHelper {
     }
 
     public static void getChildAllUsedNodeKeys(List<String> currentUsedNodeKeys, FlowLongContext flowLongContext,
-                                                       Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
+                                               Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
         if (!currentUsedNodeKeys.contains(currentNodeKey)) {
             currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel, currentNodeKey));
         }
