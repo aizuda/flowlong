@@ -59,19 +59,19 @@ public class ModelHelper {
             // 条件节点
             flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, childNode)
                     // 添加执行条件节点
-                    .ifPresent(t -> nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode())));
+                    .ifPresent(t -> nextNodes.add(t.getChildNode()));
         } else if (childNode.parallelNode()) {
             // 并行节点
             childNode.getParallelNodes().forEach(t -> nextNodes.add(t.getChildNode()));
         } else if (childNode.inclusiveNode()) {
             // 包容节点
             flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, childNode).ifPresent(optList -> {
-                if (Objects.equals(1, optList.size()) && null != childNode.getChildNode()) {
+                if (Objects.equals(1, optList.size()) && null == optList.get(0).getChildNode()) {
                     // 获取包容分支子节点
                     nextNodes.add(childNode.getChildNode());
                 } else {
                     // 添加执行条件节点
-                    optList.forEach(t -> nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode())));
+                    optList.forEach(t -> nextNodes.add(t.getChildNode()));
                 }
             });
         } else if (childNode.routeNode()) {
@@ -112,10 +112,7 @@ public class ModelHelper {
             nextNodes.add(parentNode.getChildNode());
         } else if (parentNode.inclusiveNode()) {
             // 包容分支
-            flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, parentNode)
-                    // 添加执行条件节点
-                    .ifPresent(inclusiveNodes -> inclusiveNodes.forEach(t ->
-                            nextNodes.addAll(getChildNode(flowLongContext, execution, rootNodeModel, t.getChildNode()))));
+            nextNodes.add(parentNode.getChildNode());
         } else if (parentNode.routeNode()) {
             // 路由分支
             flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, parentNode)
