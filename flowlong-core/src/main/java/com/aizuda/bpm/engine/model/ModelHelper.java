@@ -84,7 +84,7 @@ public class ModelHelper {
                 // 获取路由分支子节点
                 nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode.getChildNode()));
             }
-        } else {
+        } else if (!TaskType.end.eq(childNode.getType())) {
             // 普通节点
             nextNodes.add(childNode);
         }

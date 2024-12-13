@@ -438,6 +438,9 @@ public class NodeModel implements ModelInstance, Serializable {
         if (null == nextNode) {
             // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
             nextNode = ModelHelper.findNextNode(this, currentTask);
+        } else if(TaskType.end.eq(nextNode.getType())) {
+            // 执行到结束节点
+            nextNode = null;
         }
         return Optional.ofNullable(nextNode);
     }

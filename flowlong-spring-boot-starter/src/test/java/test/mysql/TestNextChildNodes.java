@@ -51,6 +51,9 @@ public class TestNextChildNodes extends TestModel {
         }});
 
         assertEquals("flk1733658019276", "flk1733658095760", processModel);
+
+        // 结束
+        assertConsumer("flk1733658019276", processModel, null, nodeModels -> Assertions.assertTrue(nodeModels.isEmpty()));
     }
 
     private void assertEquals(String nextNodeKey, String nodeKey, ProcessModel processModel) {

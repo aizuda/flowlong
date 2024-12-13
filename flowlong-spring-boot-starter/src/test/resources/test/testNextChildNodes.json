@@ -367,7 +367,12 @@
                     "allowAppendNode": false,
                     "allowRollback": false,
                     "rejectStrategy": 2,
-                    "rejectStart": 1
+                    "rejectStart": 1,
+                    "childNode": {
+                      "nodeName": "结束",
+                      "nodeKey": "flk1733380933011",
+                      "type": -1
+                    }
                   }
                 }
               }
