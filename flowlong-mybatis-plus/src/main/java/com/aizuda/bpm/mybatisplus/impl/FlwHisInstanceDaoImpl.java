@@ -55,15 +55,19 @@ public class FlwHisInstanceDaoImpl implements FlwHisInstanceDao {
         return hisInstanceMapper.selectById(id);
     }
 
+    private Optional<List<FlwHisInstance>> ofNullable(List<FlwHisInstance> hisInstances) {
+        return Optional.ofNullable(null == hisInstances || hisInstances.isEmpty() ? null : hisInstances);
+    }
+
     @Override
     public Optional<List<FlwHisInstance>> selectListByProcessId(Long processId) {
-        return Optional.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+        return this.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
                 .eq(FlwHisInstance::getProcessId, processId)));
     }
 
     @Override
     public Optional<List<FlwHisInstance>> selectListByBusinessKey(String businessKey) {
-        return Optional.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+        return this.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
                 .eq(FlwHisInstance::getBusinessKey, businessKey)));
     }
 }
