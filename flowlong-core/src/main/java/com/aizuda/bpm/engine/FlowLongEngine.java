@@ -179,27 +179,37 @@ public interface FlowLongEngine {
     /**
      * 自动完成任务
      *
-     * @param taskId 任务ID
-     * @param args   任务参数
+     * @param taskId      任务ID
+     * @param args        任务参数
+     * @param flowCreator 任务创建者
      * @return true 成功 false 失败
      */
-    boolean autoCompleteTask(Long taskId, Map<String, Object> args);
+    boolean autoCompleteTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator);
+
+    default boolean autoCompleteTask(Long taskId, FlowCreator flowCreator) {
+        return this.autoCompleteTask(taskId, null, flowCreator);
+    }
 
     default boolean autoCompleteTask(Long taskId) {
-        return this.autoCompleteTask(taskId, null);
+        return this.autoCompleteTask(taskId, FlowCreator.ADMIN);
     }
 
     /**
      * 自动拒绝任务
      *
-     * @param flwTask 任务对象
-     * @param args    任务参数
+     * @param flwTask     任务对象
+     * @param args        任务参数
+     * @param flowCreator 任务创建者
      * @return true 成功 false 失败
      */
-    boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args);
+    boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args, FlowCreator flowCreator);
+
+    default boolean autoRejectTask(FlwTask flwTask, FlowCreator flowCreator) {
+        return this.autoRejectTask(flwTask,  null, flowCreator);
+    }
 
     default boolean autoRejectTask(FlwTask flwTask) {
-        return this.autoRejectTask(flwTask, null);
+        return this.autoRejectTask(flwTask, FlowCreator.ADMIN);
     }
 
 

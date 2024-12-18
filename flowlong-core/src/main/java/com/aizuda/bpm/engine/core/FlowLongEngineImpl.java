@@ -147,16 +147,16 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 自动完成任务
      */
     @Override
-    public boolean autoCompleteTask(Long taskId, Map<String, Object> args) {
-        return executeTask(taskId, FlowCreator.ADMIN, null, TaskState.autoComplete, TaskEventType.autoComplete);
+    public boolean autoCompleteTask(Long taskId, Map<String, Object> args, FlowCreator flowCreator) {
+        return executeTask(taskId, flowCreator, null, TaskState.autoComplete, TaskEventType.autoComplete);
     }
 
     /**
      * 自动拒绝任务
      */
     @Override
-    public boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args) {
-        Optional<FlwTask> flwTaskOptional = taskService().rejectTask(flwTask, FlowCreator.ADMIN, args);
+    public boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args, FlowCreator flowCreator) {
+        Optional<FlwTask> flwTaskOptional = taskService().rejectTask(flwTask, flowCreator, args);
         if (log.isDebugEnabled()) {
             log.debug("Auto reject taskId={}", flwTask.getId());
         }

@@ -7,6 +7,7 @@ package com.aizuda.bpm.engine;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
+import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwTask;
@@ -89,7 +90,7 @@ public abstract class FlowLongScheduler {
                     else if (null != flwTask.getExpireTime()) {
                         // 定时器任务或触发器任务直接执行通过
                         if (TaskType.timer.eq(flwTask.getTaskType()) || TaskType.trigger.eq(flwTask.getTaskType())) {
-                            if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                            if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {
                                 log.info("Scheduling [taskName={}] failed to execute autoCompleteTask", flwTask.getTaskName());
                             }
                             continue;
@@ -108,12 +109,12 @@ public abstract class FlowLongScheduler {
                                 context.getRuntimeService().timeout(flwTask.getInstanceId());
                             } else if (Objects.equals(termMode, 0)) {
                                 // 自动通过
-                                if (!flowLongEngine.autoCompleteTask(flwTask.getId())) {
+                                if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {
                                     log.info("Scheduling failed to execute autoCompleteTask");
                                 }
                             } else if (Objects.equals(termMode, 1)) {
                                 // 自动拒绝
-                                if (!flowLongEngine.autoRejectTask(flwTask)) {
+                                if (!flowLongEngine.autoRejectTask(flwTask, this.getAutoFlowCreator())) {
                                     log.info("Scheduling failed to execute autoRejectTask");
                                 }
                             }
@@ -135,5 +136,13 @@ public abstract class FlowLongScheduler {
             remindParam.setCron("*/5 * * * * ?");
         }
         this.remindParam = remindParam;
+    }
+
+    /**
+     * 自动完成流程任务创建者
+     * <p>默认为管理员，子类可以重写为自定义用户</p>
+     */
+    public FlowCreator getAutoFlowCreator() {
+        return FlowCreator.ADMIN;
     }
 }
