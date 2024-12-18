@@ -293,7 +293,22 @@ public class NodeModel implements ModelInstance, Serializable {
         if (TaskType.approval.eq(this.type) || TaskType.cc.eq(this.type)
                 || TaskType.callProcess.eq(this.type) || TaskType.timer.eq(this.type)
                 || TaskType.trigger.eq(this.type)) {
-            flowLongContext.createTask(execution, this);
+
+            // 创建任务
+            if (flowLongContext.createTask(execution, this)) {
+
+                // 抄送任务，需要继续往下执行
+                if (TaskType.cc.eq(this.type)) {
+                    Optional<NodeModel> nextNodeOptional = this.nextNode();
+                    if (nextNodeOptional.isPresent()) {
+                        // 执行下一个节点
+                        flowLongContext.createTask(execution, nextNodeOptional.get());
+                    } else {
+                        // 不存在任何子节点结束流程
+                        execution.endInstance(this);
+                    }
+                }
+            }
         }
 
         /*
@@ -438,7 +453,7 @@ public class NodeModel implements ModelInstance, Serializable {
         if (null == nextNode) {
             // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
             nextNode = ModelHelper.findNextNode(this, currentTask);
-        } else if(TaskType.end.eq(nextNode.getType())) {
+        } else if (TaskType.end.eq(nextNode.getType())) {
             // 执行到结束节点
             nextNode = null;
         }
