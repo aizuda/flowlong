@@ -16,6 +16,7 @@ import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.core.enums.TaskEventType;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -122,23 +123,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     public boolean endInstance(Execution execution, Long instanceId, NodeModel endNode) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null != flwInstance) {
-            FlwHisInstance his = new FlwHisInstance();
-            his.setId(instanceId);
-            InstanceState instanceState = InstanceState.complete;
-            his.setInstanceState(instanceState);
-            if (null != endNode) {
-                his.setCurrentNodeName(endNode.getNodeName());
-                his.setCurrentNodeKey(endNode.getNodeKey());
-            } else {
-                his.setCurrentNodeName(instanceState.name());
-                his.setCurrentNodeKey(instanceState.name());
-            }
-            his.setCreateTime(flwInstance.getCreateTime());
-            his.setLastUpdateBy(flwInstance.getLastUpdateBy());
-            his.setLastUpdateTime(flwInstance.getLastUpdateTime());
-            his.calculateDuration();
             instanceDao.deleteById(instanceId);
-            hisInstanceDao.updateById(his);
+            hisInstanceDao.updateById(this.getFlwHisInstance(instanceId, endNode, flwInstance));
             // 流程实例监听器通知
             this.instanceNotify(InstanceEventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
@@ -161,6 +147,31 @@ public class RuntimeServiceImpl implements RuntimeService {
             }
         }
         return true;
+    }
+
+    protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance) {
+        FlwHisInstance his = new FlwHisInstance();
+        his.setId(instanceId);
+        InstanceState instanceState = InstanceState.complete;
+        his.setInstanceState(instanceState);
+        String currentNodeName = instanceState.name();
+        String currentNodeKey = instanceState.name();
+        if (null != endNode) {
+            NodeModel childNode = endNode.getChildNode();
+            if (null == childNode || TaskType.end.ne(childNode.getType())) {
+                childNode = endNode;
+            }
+            // 记录结束节点
+            currentNodeName = childNode.getNodeName();
+            currentNodeKey = childNode.getNodeKey();
+        }
+        his.setCurrentNodeName(currentNodeName);
+        his.setCurrentNodeKey(currentNodeKey);
+        his.setCreateTime(flwInstance.getCreateTime());
+        his.setLastUpdateBy(flwInstance.getLastUpdateBy());
+        his.setLastUpdateTime(flwInstance.getLastUpdateTime());
+        his.calculateDuration();
+        return his;
     }
 
     protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
