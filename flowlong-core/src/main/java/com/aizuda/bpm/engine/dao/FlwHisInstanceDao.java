@@ -7,6 +7,7 @@ package com.aizuda.bpm.engine.dao;
 import com.aizuda.bpm.engine.entity.FlwHisInstance;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 历史流程实例数据访问层接口
@@ -30,5 +31,7 @@ public interface FlwHisInstanceDao {
 
     FlwHisInstance selectById(Long id);
 
-    List<FlwHisInstance> selectListByProcessId(Long processId);
+    Optional<List<FlwHisInstance>> selectListByProcessId(Long processId);
+
+    Optional<List<FlwHisInstance>> selectListByBusinessKey(String businessKey);
 }

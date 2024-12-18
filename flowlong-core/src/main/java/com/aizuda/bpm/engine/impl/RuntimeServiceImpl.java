@@ -10,13 +10,13 @@ import com.aizuda.bpm.engine.RuntimeService;
 import com.aizuda.bpm.engine.TaskService;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
-import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.InstanceEventType;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.core.enums.TaskEventType;
+import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -28,7 +28,6 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -124,23 +123,8 @@ public class RuntimeServiceImpl implements RuntimeService {
     public boolean endInstance(Execution execution, Long instanceId, NodeModel endNode) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null != flwInstance) {
-            FlwHisInstance his = new FlwHisInstance();
-            his.setId(instanceId);
-            InstanceState instanceState = InstanceState.complete;
-            his.setInstanceState(instanceState);
-            if (null != endNode) {
-                his.setCurrentNodeName(endNode.getNodeName());
-                his.setCurrentNodeKey(endNode.getNodeKey());
-            } else {
-                his.setCurrentNodeName(instanceState.name());
-                his.setCurrentNodeKey(instanceState.name());
-            }
-            his.setCreateTime(flwInstance.getCreateTime());
-            his.setLastUpdateBy(flwInstance.getLastUpdateBy());
-            his.setLastUpdateTime(flwInstance.getLastUpdateTime());
-            his.calculateDuration();
             instanceDao.deleteById(instanceId);
-            hisInstanceDao.updateById(his);
+            hisInstanceDao.updateById(this.getFlwHisInstance(instanceId, endNode, flwInstance));
             // 流程实例监听器通知
             this.instanceNotify(InstanceEventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
@@ -163,6 +147,31 @@ public class RuntimeServiceImpl implements RuntimeService {
             }
         }
         return true;
+    }
+
+    protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance) {
+        FlwHisInstance his = new FlwHisInstance();
+        his.setId(instanceId);
+        InstanceState instanceState = InstanceState.complete;
+        his.setInstanceState(instanceState);
+        String currentNodeName = instanceState.name();
+        String currentNodeKey = instanceState.name();
+        if (null != endNode) {
+            NodeModel childNode = endNode.getChildNode();
+            if (null == childNode || TaskType.end.ne(childNode.getType())) {
+                childNode = endNode;
+            }
+            // 记录结束节点
+            currentNodeName = childNode.getNodeName();
+            currentNodeKey = childNode.getNodeKey();
+        }
+        his.setCurrentNodeName(currentNodeName);
+        his.setCurrentNodeKey(currentNodeKey);
+        his.setCreateTime(flwInstance.getCreateTime());
+        his.setLastUpdateBy(flwInstance.getLastUpdateBy());
+        his.setLastUpdateTime(flwInstance.getLastUpdateTime());
+        his.calculateDuration();
+        return his;
     }
 
     protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
@@ -302,10 +311,10 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public void cascadeRemoveByProcessId(Long processId) {
-        List<FlwHisInstance> flwHisInstances = hisInstanceDao.selectListByProcessId(processId);
-        if (ObjectUtils.isNotEmpty(flwHisInstances)) {
+        hisInstanceDao.selectListByProcessId(processId).ifPresent(hisInstances -> {
+
             // 删除活动任务相关信息
-            taskService.cascadeRemoveByInstanceIds(flwHisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+            taskService.cascadeRemoveByInstanceIds(hisInstances.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
             // 删除扩展实例
             extInstanceDao.deleteByProcessId(processId);
@@ -315,7 +324,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 删除实例
             instanceDao.deleteByProcessId(processId);
-        }
+        });
     }
 
     @Override

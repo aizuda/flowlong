@@ -131,4 +131,13 @@ public class QueryServiceImpl implements QueryService {
         return instanceDao.selectListByParentInstanceId(instanceId);
     }
 
+    @Override
+    public Optional<List<FlwInstance>> getInstancesByBusinessKey(String businessKey) {
+        return instanceDao.selectListByBusinessKey(businessKey);
+    }
+
+    @Override
+    public Optional<List<FlwHisInstance>> getHisInstancesByBusinessKey(String businessKey) {
+        return hisInstanceDao.selectListByBusinessKey(businessKey);
+    }
 }

@@ -950,7 +950,7 @@ public class TaskServiceImpl implements TaskService {
             final long instanceId = flwTask.getInstanceId();
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
                 FlwInstance flwInstance = new FlwInstance();
-                flwInstance.setBusinessKey(nodeModel.getNodeKey());
+                flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
                 flwInstance.setParentInstanceId(instanceId);
                 return flwInstance;
             }).ifPresent(instance -> {
