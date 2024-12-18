@@ -1,10 +1,21 @@
 # 更新日志
 
+## [v1.0.9] 2024.12.18
+
+- feat: 新增支持根据businessKey查询实例列表方法
+- feat: 新增动态获取下一个节点方法
+- feat: 新增模型结束节点判断处理逻辑
+- feat: 新增自动完成任务创建人允许参数传入且定时任务允许子类重写
+- opt: 优化模型序列化json排除非空属性缩小模型字符体积
+- opt: 优化流程实例记录最终结束节点位置
+- opt: 优化执行到抄送任务继续执行可能存在的子节点
+- fix: 级联删除指定流程实例的所有数据无实例Bug修复
+- feat: 创建 task 设置 actionUrl
+
 ## [v1.0.8] 2024.12.08
 
 - feat: 创建 task 设置 actionUrl
 - feat: 支持驳回策略
-- feat: 支持驳回重新审批策略
 - feat: 支持驳回重新审批策略
 - feat: 支持 NodeModel setType 添加设置指定候选人类型
 - feat: 新增 TaskEventType reApproveJump 事件
