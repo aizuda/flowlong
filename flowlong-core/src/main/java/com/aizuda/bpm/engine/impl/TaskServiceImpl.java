@@ -920,7 +920,14 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 可能存在子节点
              */
-            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            Optional<NodeModel> nextNodeOptional = nodeModel.nextNode();
+            if (nextNodeOptional.isPresent()) {
+                // 执行下一个节点
+                nextNodeOptional.get().execute(execution.getEngine().getContext(), execution);
+            } else {
+                // 不存在任何子节点结束流程
+                execution.endInstance(nodeModel);
+            }
         } else if (TaskType.conditionNode.eq(nodeType)) {
             /*
              * 3，条件审批

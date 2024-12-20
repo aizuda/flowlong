@@ -295,20 +295,7 @@ public class NodeModel implements ModelInstance, Serializable {
                 || TaskType.trigger.eq(this.type)) {
 
             // 创建任务
-            if (flowLongContext.createTask(execution, this)) {
-
-                // 抄送任务，需要继续往下执行
-                if (TaskType.cc.eq(this.type)) {
-                    Optional<NodeModel> nextNodeOptional = this.nextNode();
-                    if (nextNodeOptional.isPresent()) {
-                        // 执行下一个节点
-                        flowLongContext.createTask(execution, nextNodeOptional.get());
-                    } else {
-                        // 不存在任何子节点结束流程
-                        execution.endInstance(this);
-                    }
-                }
-            }
+            flowLongContext.createTask(execution, this);
         }
 
         /*
