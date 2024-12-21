@@ -64,6 +64,12 @@ public class FlwTaskActor implements Serializable {
      * <p>
      * 票签任务时，该值为不同处理人员的分量比例
      * </p>
+     * <p>
+     * 代理任务时，该值为 1 时为代理人
+     * </p>
+     * <p>
+     * 或签任务时，该值为 1 时为或签处理人
+     * </p>
      */
     protected Integer weight;
     /**

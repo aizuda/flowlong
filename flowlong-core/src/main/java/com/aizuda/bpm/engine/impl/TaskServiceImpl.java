@@ -327,6 +327,10 @@ public class TaskServiceImpl implements TaskService {
 
             // 删除会签任务
             return taskDao.deleteByIds(taskIds);
+        } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
+            // 或签情况处理，标记完成任务参与者 weight 为 1
+            taskActors.stream().filter(t -> Objects.equals(flowCreator.getCreateId(), t.getActorId()))
+                    .findFirst().ifPresent(t -> t.setWeight(1));
         }
 
         // 迁移任务至历史表
