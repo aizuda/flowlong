@@ -102,7 +102,7 @@ public class FlwTask extends FlowEntity {
         this.variable = variable;
     }
 
-    public void setTaskType(TaskType taskType) {
+    public void taskType(TaskType taskType) {
         this.taskType = taskType.getValue();
     }
 
