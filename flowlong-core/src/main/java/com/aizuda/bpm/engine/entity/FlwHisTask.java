@@ -1,12 +1,11 @@
 /*
- * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * Copyright 2023-2025 Licensed under the Dual Licensing
  * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
-import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -115,7 +114,7 @@ public class FlwHisTask extends FlwTask {
      */
     public FlwTask undoTask(TaskType taskType) {
         FlwTask flwTask = this.cloneTask(this.createId, this.createBy);
-        flwTask.setTaskType(taskType);
+        flwTask.taskType(taskType);
         return flwTask;
     }
 

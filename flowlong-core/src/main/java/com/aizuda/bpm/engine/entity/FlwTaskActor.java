@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * Copyright 2023-2025 Licensed under the Dual Licensing
  * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.entity;
@@ -63,6 +63,12 @@ public class FlwTaskActor implements Serializable {
      * 权重
      * <p>
      * 票签任务时，该值为不同处理人员的分量比例
+     * </p>
+     * <p>
+     * 代理任务时，该值为 1 时为代理人
+     * </p>
+     * <p>
+     * 或签任务时，该值为 1 时为或签处理人
      * </p>
      */
     protected Integer weight;

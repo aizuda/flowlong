@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * Copyright 2023-2025 Licensed under the Dual Licensing
  * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.handler.impl;

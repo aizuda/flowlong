@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Licensed under the apache-2.0 License
+ * Copyright 2023-2025 Licensed under the Dual Licensing
  * website: https://aizuda.com
  */
 package com.aizuda.bpm.engine.impl;
@@ -184,7 +184,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 设置任务类型为跳转
         FlwTask createTask = this.createTaskBase(nodeModel, execution);
-        createTask.setTaskType(taskTye);
+        createTask.taskType(taskTye);
         if (TaskType.major == taskType) {
             // 发起节点，创建发起任务，分配发起人
             createTask.setPerformType(PerformType.start);
@@ -256,7 +256,7 @@ public class TaskServiceImpl implements TaskService {
             if (null != agentFlwTaskActor) {
 
                 // 设置历史代理任务状态为【代理人协办完成的任务】设置被代理人信息
-                hisTask.setTaskType(TaskType.agentAssist);
+                hisTask.taskType(TaskType.agentAssist);
                 taskActors.stream().filter(t -> Objects.equals(agentFlwTaskActor.getAgentId(), t.getActorId()))
                         .findFirst().ifPresent(t -> {
                             hisTask.setAssignorId(t.getActorId());
@@ -278,7 +278,7 @@ public class TaskServiceImpl implements TaskService {
                 // 代理人完成任务，当前任务设置为代理人归还任务，代理人信息变更
                 FlwTask newFlwTask = new FlwTask();
                 newFlwTask.setId(flwTask.getId());
-                newFlwTask.setTaskType(TaskType.agentReturn);
+                newFlwTask.taskType(TaskType.agentReturn);
                 newFlwTask.setAssignorId(flowCreator.getCreateId());
                 newFlwTask.setAssignor(flowCreator.getCreateBy());
                 return taskDao.updateById(newFlwTask);
@@ -295,7 +295,7 @@ public class TaskServiceImpl implements TaskService {
                 }
                 taskActors = newFlwTaskActor;
                 // 设置被代理人自己完成任务
-                flwTask.setTaskType(TaskType.agentOwn);
+                flwTask.taskType(TaskType.agentOwn);
             }
         }
 
@@ -305,7 +305,7 @@ public class TaskServiceImpl implements TaskService {
             hisTaskDao.deleteById(flwTask.getId());
 
             // 代理人协办完成的任务
-            hisTask.setTaskType(TaskType.agentAssist);
+            hisTask.taskType(TaskType.agentAssist);
         }
 
         // 会签情况处理其它任务 排除完成及自动跳过情况，自动跳过是当前任务归档非所有任务
@@ -327,6 +327,10 @@ public class TaskServiceImpl implements TaskService {
 
             // 删除会签任务
             return taskDao.deleteByIds(taskIds);
+        } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
+            // 或签情况处理，标记完成任务参与者 weight 为 1
+            taskActors.stream().filter(t -> Objects.equals(flowCreator.getCreateId(), t.getActorId()))
+                    .findFirst().ifPresent(t -> t.setWeight(1));
         }
 
         // 迁移任务至历史表
@@ -483,7 +487,7 @@ public class TaskServiceImpl implements TaskService {
             // 设置委托人信息
             FlwTask ft = new FlwTask();
             ft.setId(flwTaskActor.getTaskId());
-            ft.setTaskType(TaskType.transfer);
+            ft.taskType(TaskType.transfer);
             ft.setAssignorId(flowCreator.getCreateId());
             ft.setAssignor(flowCreator.getCreateBy());
             if (taskDao.updateById(ft)) {
@@ -522,7 +526,7 @@ public class TaskServiceImpl implements TaskService {
         // 设置任务为委派任务或者为转办任务
         FlwTask flwTask = new FlwTask();
         flwTask.setId(taskId);
-        flwTask.setTaskType(taskType);
+        flwTask.taskType(taskType);
 
         if (taskType == TaskType.agent) {
             // 设置代理人员信息，第一个人为主办 assignorId 其他人为协办 assignor 多个英文逗号分隔
@@ -549,7 +553,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 任务监听器通知
         this.taskNotify(TaskEventType.assignment, () -> {
-            dbFlwTask.setTaskType(taskType);
+            dbFlwTask.taskType(taskType);
             dbFlwTask.setAssignorId(flwTask.getAssignorId());
             dbFlwTask.setAssignor(flwTask.getAssignor());
             return dbFlwTask;
@@ -593,7 +597,7 @@ public class TaskServiceImpl implements TaskService {
             // 设置任务状态为委托归还，委托人设置为归还人
             FlwTask temp = new FlwTask();
             temp.setId(taskId);
-            temp.setTaskType(TaskType.delegateReturn);
+            temp.taskType(TaskType.delegateReturn);
             temp.setAssignorId(flowCreator.getCreateId());
             temp.setAssignor(flowCreator.getCreateBy());
             Assert.isFalse(taskDao.updateById(temp), "resolveTask failed");
@@ -827,7 +831,7 @@ public class TaskServiceImpl implements TaskService {
                                        FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction) {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
-        newFlwTask.setTaskType(taskType);
+        newFlwTask.taskType(taskType);
         newFlwTask.setPerformType(performType);
         newFlwTask.setParentTaskId(taskId);
         Execution execution = executionFunction.apply(newFlwTask);
@@ -920,7 +924,14 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 可能存在子节点
              */
-            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            Optional<NodeModel> nextNodeOptional = nodeModel.nextNode();
+            if (nextNodeOptional.isPresent()) {
+                // 执行下一个节点
+                nextNodeOptional.get().execute(execution.getEngine().getContext(), execution);
+            } else {
+                // 不存在任何子节点结束流程
+                execution.endInstance(nodeModel);
+            }
         } else if (TaskType.conditionNode.eq(nodeType)) {
             /*
              * 3，条件审批
@@ -1017,7 +1028,7 @@ public class TaskServiceImpl implements TaskService {
 
             // 抄送历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
-            flwHisTask.setTaskType(TaskType.cc);
+            flwHisTask.taskType(TaskType.cc);
             flwHisTask.setPerformType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
