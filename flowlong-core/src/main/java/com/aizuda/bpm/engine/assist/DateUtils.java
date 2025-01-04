@@ -71,9 +71,9 @@ public class DateUtils {
      */
     public static Long calculateDateDifference(Date startDate, Date endDate) {
         if (null == startDate || null == endDate) {
-            return null;
+            return 0L;
         }
-        return endDate.getTime() - startDate.getTime();
+        return Math.max(endDate.getTime() - startDate.getTime(), 0);
     }
 
     /**
