@@ -227,6 +227,17 @@ public class TestModel extends MysqlTest {
     }
 
     /**
+     * 测试解析模型
+     */
+    @Test
+    public void testParseProcessModel() {
+        ProcessModel processModel = getProcessModel("test/reloadProcessModel.json");
+        String jsonContent = FlowLongContext.toJson(processModel.cleanParentNode());
+        ProcessModel parseProcessModel = FlowLongContext.parseProcessModel(jsonContent, "cacheKey001", false);
+        Assertions.assertEquals("结束", parseProcessModel.getNode("flk17358809716731").getNodeName());
+    }
+
+    /**
      * 测试获取当前已使用的节点key列表
      */
     @Test
