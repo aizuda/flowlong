@@ -1,0 +1,90 @@
+{
+  "key": "reloadProcessModel",
+  "name": "重新加载模型测试",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1735880971673",
+    "type": 0,
+    "childNode": {
+      "nodeName": "审核人1",
+      "nodeKey": "flk1735880973738",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "李小广"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "examineMode": 1,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "rejectStrategy": 1,
+      "rejectStart": 1,
+      "remind": false,
+      "approveSelf": 0,
+      "childNode": {
+        "nodeName": "审核人2",
+        "nodeKey": "flk1735880993544",
+        "type": 1,
+        "setType": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "test002",
+            "name": "陈小辉"
+          }
+        ],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "examineMode": 1,
+        "directorMode": 0,
+        "typeOfApprove": 1,
+        "rejectStrategy": 1,
+        "rejectStart": 1,
+        "remind": false,
+        "allowRollback": true,
+        "approveSelf": 0,
+        "childNode": {
+          "nodeName": "审核人3",
+          "nodeKey": "flk1735881014635",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "test003",
+              "name": "杨小凤"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "rejectStrategy": 1,
+          "rejectStart": 1,
+          "remind": false,
+          "approveSelf": 0,
+          "childNode": {
+            "nodeName": "结束",
+            "nodeKey": "flk17358809716731",
+            "type": -1
+          }
+        }
+      }
+    }
+  }
+}
