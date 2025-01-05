@@ -1,6 +1,7 @@
 package test.mysql;
 
 import com.aizuda.bpm.engine.assist.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,5 +48,14 @@ public class TestParallelNode extends MysqlTest {
             flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId())
                     .ifPresent(flwTasks -> Assert.isFalse(flwTasks.isEmpty(), "task size should be zero"));
         });
+    }
+
+
+    @Test
+    public void testCcTaskParallel() {
+        processId = this.deployByResource("test/ccTaskParallel.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).flatMap(instance ->
+                flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()))
+                .ifPresent(t -> Assertions.assertEquals(1, t.size()));
     }
 }

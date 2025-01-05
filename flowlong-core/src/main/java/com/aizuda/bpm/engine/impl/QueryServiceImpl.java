@@ -68,6 +68,11 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    public boolean existActiveTask(Long instanceId) {
+        return taskDao.selectCountByInstanceId(instanceId) > 0;
+    }
+
+    @Override
     public FlwHisTask getHistTask(Long taskId) {
         return hisTaskDao.selectById(taskId);
     }

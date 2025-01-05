@@ -54,6 +54,14 @@ public interface QueryService {
     boolean existActiveSubProcess(Long instanceId);
 
     /**
+     * 判断流程实例下是否存在活跃任务
+     *
+     * @param instanceId 流程实例ID
+     * @return true 存在 false 不存在
+     */
+    boolean existActiveTask(Long instanceId);
+
+    /**
      * 根据任务ID获取任务对象
      *
      * @param taskId 任务ID

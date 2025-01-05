@@ -926,8 +926,20 @@ public class TaskServiceImpl implements TaskService {
              */
             Optional<NodeModel> nextNodeOptional = nodeModel.nextNode();
             if (nextNodeOptional.isPresent()) {
-                // 执行下一个节点
-                nextNodeOptional.get().execute(execution.getEngine().getContext(), execution);
+                // 下一个节点如果在并行分支，判断是否并行分支都执行结束
+                boolean _exec = true;
+                NodeModel ccNextNode = nextNodeOptional.get();
+                NodeModel _cnn = execution.getProcessModel().getNode(ccNextNode.getNodeKey());
+                if (_cnn.getParentNode().parallelNode()) {
+                    // 抄送节点独立占据一个分支或者存在执行任务
+                    if (ccNextNode.getParentNode().parallelNode() || taskDao.selectCountByInstanceId(flwTask.getInstanceId()) > 0) {
+                        _exec = false;
+                    }
+                }
+                if (_exec) {
+                    // 执行下一个节点
+                    ccNextNode.execute(execution.getEngine().getContext(), execution);
+                }
             } else {
                 // 不存在任何子节点结束流程
                 execution.endInstance(nodeModel);

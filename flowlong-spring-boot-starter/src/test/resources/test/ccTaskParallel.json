@@ -1,0 +1,112 @@
+{
+  "id": 11010,
+  "key": "ccTaskParallel",
+  "name": "抄送任务并行分支",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1736056686549",
+    "type": 0,
+    "childNode": {
+      "nodeName": "并行路由",
+      "nodeKey": "flk1736056692729",
+      "type": 8,
+      "parallelNodes": [
+        {
+          "nodeName": "分支1",
+          "nodeKey": "flk17360566927291",
+          "type": 3,
+          "childNode": {
+            "nodeName": "抄送人",
+            "nodeKey": "flk1736056695797",
+            "type": 2,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "CEO"
+              }
+            ],
+            "allowSelection": true,
+            "childNode": {
+              "nodeName": "审核人",
+              "nodeKey": "flk1736056818736",
+              "type": 1,
+              "setType": 1,
+              "nodeCandidate": {
+                "type": 1
+              },
+              "examineLevel": 1,
+              "examineMode": 1,
+              "directorLevel": 1,
+              "directorMode": 0,
+              "selectMode": 1,
+              "termAuto": false,
+              "term": 0,
+              "termMode": 1,
+              "typeOfApprove": 1,
+              "rejectStrategy": 2,
+              "rejectStart": 1,
+              "remind": false,
+              "approveSelf": 0,
+              "nodeAssigneeList": [
+                {
+                  "id": "test002",
+                  "name": "夏小华"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "nodeName": "分支2",
+          "nodeKey": "flk17360566927292",
+          "type": 3,
+          "childNode": {
+            "nodeName": "抄送人",
+            "nodeKey": "flk1736056697926",
+            "type": 2,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "CEO"
+              }
+            ],
+            "allowSelection": true
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "审核人",
+        "nodeKey": "flk1736056705898",
+        "type": 1,
+        "setType": 1,
+        "nodeCandidate": {
+          "type": 1
+        },
+        "examineLevel": 1,
+        "examineMode": 1,
+        "directorLevel": 1,
+        "directorMode": 0,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "typeOfApprove": 1,
+        "rejectStrategy": 2,
+        "rejectStart": 1,
+        "remind": false,
+        "approveSelf": 0,
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk17360566865491",
+          "type": -1
+        },
+        "nodeAssigneeList": [
+          {
+            "id": "test003",
+            "name": "陈小辉"
+          }
+        ]
+      }
+    }
+  }
+}
