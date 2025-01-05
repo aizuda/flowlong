@@ -87,10 +87,26 @@ public class NodeModel implements ModelInstance, Serializable {
      * 指定主管层级
      */
     private Integer examineLevel;
+
+    /**
+     * 多人审批时审批方式 {@link PerformType}
+     * <p>
+     * 0，发起 1，按顺序依次审批 2，会签 (可同时审批，每个人必须审批通过) 3，或签 (有一人审批通过即可) 4，票签 (总权重大于 50% 表示通过) <br/>
+     * 5， 6，定时器 7，触发器 8， 9，抄送
+     * </p>
+     */
+    private Integer examineMode;
     /**
      * 自定义连续主管审批层级
      */
     private Integer directorLevel;
+    /**
+     * 连续主管审批方式
+     * <p>
+     * 0，直到最上级主管 1，自定义审批终点
+     * </p>
+     */
+    private Integer directorMode;
     /**
      * 发起人自选类型
      * <p>
@@ -113,21 +129,6 @@ public class NodeModel implements ModelInstance, Serializable {
      * </p>
      */
     private Integer termMode;
-    /**
-     * 多人审批时审批方式 {@link PerformType}
-     * <p>
-     * 0，发起 1，按顺序依次审批 2，会签 (可同时审批，每个人必须审批通过) 3，或签 (有一人审批通过即可) 4，票签 (总权重大于 50% 表示通过) <br/>
-     * 5， 6，定时器 7，触发器 8， 9，抄送
-     * </p>
-     */
-    private Integer examineMode;
-    /**
-     * 连续主管审批方式
-     * <p>
-     * 0，直到最上级主管 1，自定义审批终点
-     * </p>
-     */
-    private Integer directorMode;
     /**
      * 审批类型 1，人工审批 2，自动通过 3，自动拒绝
      */
@@ -557,5 +558,45 @@ public class NodeModel implements ModelInstance, Serializable {
             }
         }
         Assert.isFalse(flag, "trigger execute error");
+    }
+
+    /**
+     * 克隆基本信息
+     * <p>不包含节点信息内容，避免循环递归序列化异常</p>
+     *
+     * @return 节点模型
+     */
+    public NodeModel cloneBaseInfo() {
+        NodeModel nodeModel = new NodeModel();
+        nodeModel.setNodeName(this.nodeName);
+        nodeModel.setNodeKey(this.nodeKey);
+        nodeModel.setCallProcess(this.callProcess);
+        nodeModel.setActionUrl(this.actionUrl);
+        nodeModel.setType(this.type);
+        nodeModel.setSetType(this.setType);
+        nodeModel.setNodeAssigneeList(this.nodeAssigneeList);
+        nodeModel.setNodeCandidate(this.nodeCandidate);
+        nodeModel.setExamineLevel(this.examineLevel);
+        nodeModel.setExamineMode(this.examineMode);
+        nodeModel.setDirectorLevel(this.directorLevel);
+        nodeModel.setDirectorMode(this.directorMode);
+        nodeModel.setSelectMode(this.selectMode);
+        nodeModel.setTermAuto(this.termAuto);
+        nodeModel.setTerm(this.term);
+        nodeModel.setTermMode(this.termMode);
+        nodeModel.setTypeOfApprove(this.typeOfApprove);
+        nodeModel.setPassWeight(this.passWeight);
+        nodeModel.setRejectStrategy(this.rejectStrategy);
+        nodeModel.setRejectStart(this.rejectStart);
+        nodeModel.setRemind(this.remind);
+        nodeModel.setAllowSelection(this.allowSelection);
+        nodeModel.setAllowTransfer(this.allowTransfer);
+        nodeModel.setAllowAppendNode(this.allowAppendNode);
+        nodeModel.setAllowRollback(this.allowRollback);
+        nodeModel.setApproveSelf(this.approveSelf);
+        nodeModel.setExtendConfig(this.extendConfig);
+        nodeModel.setTriggerType(this.triggerType);
+        nodeModel.setDelayType(this.delayType);
+        return nodeModel;
     }
 }

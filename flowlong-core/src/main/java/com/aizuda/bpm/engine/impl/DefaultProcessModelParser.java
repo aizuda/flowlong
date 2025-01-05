@@ -47,7 +47,7 @@ public class DefaultProcessModelParser implements ProcessModelParser {
         if (null != cacheKey) {
             FlowCache flowCache = this.getFlowCache();
             ProcessModel processModel = flowCache.get(cacheKey);
-            if (null == processModel || redeploy) {
+            if (null != content && (null == processModel || redeploy)) {
                 processModel = parseProcessModel(content);
                 flowCache.put(cacheKey, processModel);
             }

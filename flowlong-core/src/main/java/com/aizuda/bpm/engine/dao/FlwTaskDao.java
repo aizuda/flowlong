@@ -42,6 +42,8 @@ public interface FlwTaskDao {
 
     Long selectCountByParentTaskId(Long parentTaskId);
 
+    Long selectCountByInstanceId(Long instanceId);
+
     List<FlwTask> selectListByInstanceId(Long instanceId);
 
     List<FlwTask> selectListByInstanceIdAndTaskName(Long instanceId, String taskName);
