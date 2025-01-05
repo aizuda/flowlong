@@ -58,4 +58,34 @@ public class TestParallelNode extends MysqlTest {
                 flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId()))
                 .ifPresent(t -> Assertions.assertEquals(1, t.size()));
     }
+
+
+    @Test
+    public void testParallelJumpTask() {
+        processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 分支2审核
+            this.executeTask(instance.getId(), test2Creator);
+
+            // 领导审核跳转到分支2审核
+            this.executeTask(instance.getId(), test3Creator, flwTask -> {
+
+                flowLongEngine.executeJumpTask(flwTask.getId(), "flk1736078362210", test3Creator);
+
+                flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId())
+                        .ifPresent(t -> Assertions.assertEquals(2, t.size()));
+            });
+
+            // 分支2审核跳转到发起人
+            this.executeTask(instance.getId(), test2Creator, flwTask -> {
+
+                flowLongEngine.executeJumpTask(flwTask.getId(), "flk1735871288160", test2Creator);
+
+                flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId())
+                        .ifPresent(t -> Assertions.assertEquals(1, t.size()));
+            });
+
+        });
+    }
 }

@@ -1,0 +1,125 @@
+{
+  "id": 1100,
+  "key": "parallelJumpTask",
+  "name": "测试跳转任务并行分支",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1735871288160",
+    "type": 0,
+    "childNode": {
+      "nodeName": "并行路由",
+      "nodeKey": "flk1736078357828",
+      "type": 8,
+      "parallelNodes": [
+        {
+          "nodeName": "分支1",
+          "nodeKey": "flk17360783578281",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "conditionList": [],
+          "childNode": {
+            "nodeName": "分支1审核",
+            "nodeKey": "flk1736078360143",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "陈小辉"
+              }
+            ],
+            "nodeCandidate": {
+              "type": 1,
+              "assignees": []
+            },
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1
+          }
+        },
+        {
+          "nodeName": "分支2",
+          "nodeKey": "flk17360783578282",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1,
+          "conditionList": [],
+          "childNode": {
+            "nodeName": "分支2审核",
+            "nodeKey": "flk1736078362210",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test002",
+                "name": "夏小华"
+              }
+            ],
+            "nodeCandidate": {
+              "type": 1,
+              "assignees": []
+            },
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "childNode": {
+              "nodeName": "领导审核",
+              "nodeKey": "flk1736078364197",
+              "type": 1,
+              "setType": 1,
+              "nodeAssigneeList": [
+                {
+                  "id": "test003",
+                  "name": "CEO"
+                }
+              ],
+              "nodeCandidate": {
+                "type": 1,
+                "assignees": []
+              },
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "remind": false,
+              "term": 0,
+              "termMode": 1,
+              "examineMode": 1,
+              "approveSelf": 0,
+              "directorMode": 0,
+              "typeOfApprove": 1,
+              "rejectStrategy": 2,
+              "rejectStart": 1
+            },
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "结束",
+        "nodeKey": "flk17358742884601",
+        "type": -1
+      }
+    }
+  }
+}

@@ -17,6 +17,7 @@ import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.listener.TaskListener;
+import com.aizuda.bpm.engine.model.ModelHelper;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
@@ -179,8 +180,13 @@ public class TaskServiceImpl implements TaskService {
         TaskType taskType = TaskType.get(nodeModel.getType());
         Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
 
-        // 获取当前执行实例的所有正在执行的任务，强制终止执行并跳到指定节点
-        taskDao.selectListByInstanceId(flwTask.getInstanceId()).forEach(t -> this.moveToHisTask(t, TaskState.jump, flowCreator));
+        // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
+        List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(nodeModel);
+        taskDao.selectListByInstanceId(flwTask.getInstanceId()).forEach(t -> {
+            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), t.getTaskKey()))) {
+                this.moveToHisTask(t, TaskState.jump, flowCreator);
+            }
+        });
 
         // 设置任务类型为跳转
         FlwTask createTask = this.createTaskBase(nodeModel, execution);
