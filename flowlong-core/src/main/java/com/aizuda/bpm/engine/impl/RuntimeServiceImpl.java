@@ -99,9 +99,11 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public ProcessModel getProcessModelByInstanceId(Long instanceId) {
-        FlwExtInstance flwExtInstance = extInstanceDao.selectById(instanceId);
-        Assert.isNull(flwExtInstance, "The process instance model does not exist.");
-        return flwExtInstance.model();
+        return FlwExtInstance.cacheProcessModelById(instanceId, () -> {
+            FlwExtInstance fri = extInstanceDao.selectById(instanceId);
+            Assert.isNull(fri, "The process instance model does not exist.");
+            return fri.model(true);
+        });
     }
 
     @Override

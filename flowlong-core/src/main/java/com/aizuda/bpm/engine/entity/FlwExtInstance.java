@@ -6,11 +6,14 @@ package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.ProcessModelCache;
+import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 /**
  * 扩展流程实例实体类
@@ -69,4 +72,13 @@ public class FlwExtInstance implements ProcessModelCache, Serializable {
     public String modelCacheKey() {
         return FlowConstants.processInstanceCacheKey + this.id;
     }
+
+    public static ProcessModel cacheProcessModelById(Long id, Supplier<ProcessModel> supplier) {
+        ProcessModel processModel = FlowLongContext.parseProcessModel(null, FlowConstants.processInstanceCacheKey + id, false);
+        if (null == processModel && null != supplier) {
+            processModel = supplier.get();
+        }
+        return processModel;
+    }
+
 }
