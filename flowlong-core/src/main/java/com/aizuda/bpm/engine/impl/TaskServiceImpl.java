@@ -1157,7 +1157,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 参与者类型
-        int actorType = nodeModel.actorType();
+        int actorType = execution.getTaskActorProvider().getActorType(nodeModel);
 
         if (performType == PerformType.orSign) {
             /*

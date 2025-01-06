@@ -519,19 +519,6 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
-     * 参与者类型 0，用户 1，角色 2，部门
-     */
-    public int actorType() {
-        if (NodeSetType.role.eq(setType)) {
-            return 1;
-        }
-        if (NodeSetType.department.eq(setType)) {
-            return 2;
-        }
-        return 0;
-    }
-
-    /**
      * 执行触发器
      *
      * @param execution {@link Execution}
