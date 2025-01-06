@@ -58,6 +58,8 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         if (NodeSetType.department.eq(nodeModel.getSetType())) {
             return 2;
         }
-        return null;
+
+        // 其它类型可以实现该类重写
+        return 0;
     }
 }
