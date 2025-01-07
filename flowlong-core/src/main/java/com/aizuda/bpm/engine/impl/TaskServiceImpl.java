@@ -150,9 +150,14 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+        }
+
+        // 驳回重新审批跳转或者路由跳转，当前任务已被执行需查历史
+        if (taskTye == TaskType.reApproveJump || taskTye == TaskType.routeJump) {
             // 获取历史任务
             flwTask = hisTaskDao.selectCheckById(taskId);
         }
+
         Assert.illegal(null == taskEventType, "taskTye only allow jump and rejectJump");
         if (null == flwTask) {
             // 获取当前任务
