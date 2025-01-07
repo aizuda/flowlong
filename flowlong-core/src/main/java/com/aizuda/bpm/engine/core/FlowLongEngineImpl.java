@@ -255,7 +255,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             return true;
         }
 
-        Long instanceId = flwTask.getInstanceId();
+        final Long instanceId = flwTask.getInstanceId();
         PerformType performType = PerformType.get(flwTask.getPerformType());
         if (performType == PerformType.countersign) {
             /*
@@ -271,12 +271,22 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 流程模型
          */
         final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(instanceId);
-        NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
-        if (Objects.equals(2, nodeModel.getRejectStart())) {
-            // 驳回重新审批策略 2，回到上一个节点
-            FlwHisTask hisTask = queryService().getHistTask(flwTask.getParentTaskId());
-            return this.executeJumpTask(flwTask.getId(), hisTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+
+        /*
+         * 驳回跳转，处理重新审批策略
+         */
+        if (TaskType.rejectJump.eq(flwTask.getTaskType())) {
+            // 找到父节点模型处理策略
+            FlwHisTask parentTask = queryService().getHistTask(flwTask.getParentTaskId());
+            NodeModel parentNodeModel = processModel.getNode(parentTask.getTaskKey());
+            if (Objects.equals(2, parentNodeModel.getRejectStart())) {
+                // 驳回重新审批策略 2，回到上一个节点
+                return this.executeJumpTask(flwTask.getId(), parentTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+            }
         }
+
+        // 当前节点模型
+        NodeModel nodeModel = processModel.getNode(flwTask.getTaskKey());
 
         /*
          * 票签（ 总权重大于 50% 表示通过 ）
