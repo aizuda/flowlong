@@ -209,6 +209,9 @@ public class TaskServiceImpl implements TaskService {
             this.saveTask(createTask, performType, taskActors, execution, nodeModel);
         }
 
+        // 更新当前节点
+        this.updateCurrentNode(createTask);
+
         // 任务监听器通知
         this.taskNotify(taskEventType, execution::getFlwTask, nodeModel, flowCreator);
         return Optional.of(createTask);
