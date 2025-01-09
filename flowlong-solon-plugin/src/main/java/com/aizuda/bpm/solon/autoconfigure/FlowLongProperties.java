@@ -5,6 +5,8 @@
 package com.aizuda.bpm.solon.autoconfigure;
 
 import com.aizuda.bpm.engine.scheduling.RemindParam;
+import lombok.Getter;
+import lombok.Setter;
 import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Inject;
 
@@ -18,19 +20,18 @@ import org.noear.solon.annotation.Inject;
  * @author hubin
  * @since 1.0
  */
+@Getter
+@Setter
 @Inject("${flowlong}")
 @Configuration
 public class FlowLongProperties {
+    /**
+     * 是否打印 banner
+     */
+    private boolean banner = true;
     /**
      * 提醒时间
      */
     private RemindParam remind;
 
-    public RemindParam getRemind() {
-        return remind;
-    }
-
-    public void setRemind(RemindParam remind) {
-        this.remind = remind;
-    }
 }

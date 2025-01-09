@@ -25,6 +25,10 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 @ConfigurationProperties(prefix = "flowlong")
 public class FlowLongProperties {
     /**
+     * 是否打印 banner
+     */
+    private boolean banner = true;
+    /**
      * 提醒时间
      */
     @NestedConfigurationProperty
