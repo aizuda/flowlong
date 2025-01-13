@@ -414,16 +414,6 @@ public class ModelHelper {
     }
 
     /**
-     * 获取动态分配处理人员
-     *
-     * @param rootNodeModel 根节点模型
-     * @return 动态分配处理人员
-     */
-    public static Map<String, DynamicAssignee> getAssigneeMap(NodeModel rootNodeModel) {
-        return getRootNodeAllChildNodes(rootNodeModel).stream().collect(Collectors.toMap(NodeModel::getNodeKey, DynamicAssignee::ofNodeModel));
-    }
-
-    /**
      * 获取指定节点KEY模型信息
      *
      * @param nodeKey       节点 KEY

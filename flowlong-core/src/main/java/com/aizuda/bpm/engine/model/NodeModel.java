@@ -110,7 +110,7 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 发起人自选类型
      * <p>
-     * 1，自选一个人 2，自选多个人
+     * 1，自选一个人 2，自选多个人 3，自选角色
      * </p>
      */
     private Integer selectMode;

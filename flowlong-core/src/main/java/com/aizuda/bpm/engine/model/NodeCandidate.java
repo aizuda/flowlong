@@ -25,9 +25,9 @@ import java.util.List;
 public class NodeCandidate implements Serializable {
 
     /**
-     * 候选类型
+     * 候选类型 0，用户 1，角色 2，部门
      * <p>
-     * 1，用户 2，角色 3，部门
+     * 需要与参数 {@link com.aizuda.bpm.engine.entity.FlwTaskActor#actorType} 值保持一致
      * </p>
      */
     private Integer type;

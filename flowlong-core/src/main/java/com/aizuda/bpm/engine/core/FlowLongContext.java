@@ -191,9 +191,9 @@ public class FlowLongContext {
         configEngine.configure(this);
 
         if (banner) {
-            System.err.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");
-            System.err.println("├┤ │  │ │││││  │ │││││ ┬");
-            System.err.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.1");
+            System.out.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");
+            System.out.println("├┤ │  │ │││││  │ │││││ ┬");
+            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.2");
         }
 
         return this;
