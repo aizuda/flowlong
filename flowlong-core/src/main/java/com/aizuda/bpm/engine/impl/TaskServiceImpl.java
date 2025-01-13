@@ -737,6 +737,37 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args, String nodeKey) {
+        // 无上一步任务ID，无法驳回至上一步处理
+        Assert.isTrue(currentFlwTask.startNode(), "上一步任务ID为空，无法驳回至上一步处理");
+        Assert.isTrue(nodeKey == null, "指定节点key不允许为空");
+
+        // 检查历史任务中是否存在指定的节点
+        List<FlwHisTask> hisTasks = hisTaskDao.selectListByInstanceId(currentFlwTask.getInstanceId()).orElse(Collections.emptyList());
+        // 往回遍历任务，找到最近的指定节点的任务
+        Optional<FlwTask> flwTaskOptional;
+        FlwHisTask hisTask = null;
+        int i = hisTasks.size() - 1;
+        for ( ; i >= 0; i--) {
+            hisTask = hisTasks.get(i);
+            if (Objects.equals(hisTask.getTaskKey(), nodeKey)) {
+                break;
+            };
+        }
+        Assert.isTrue(i < 0, "未找到指定节点[" + nodeKey + "]的历史任务");
+
+        // 执行任务驳回
+        this.executeTask(currentFlwTask.getId(), flowCreator, args, TaskState.reject, TaskEventType.reject);
+
+        // 撤回至指定节点
+        flwTaskOptional = this.undoHisTask(hisTask.getId(), flowCreator, TaskType.reject, null);
+
+        // 任务监听器通知
+        flwTaskOptional.ifPresent(flwTask -> this.taskNotify(TaskEventType.recreate, () -> flwTask, null, flowCreator));
+        return flwTaskOptional;
+    }
+
+    @Override
     public Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
         Assert.isTrue(currentFlwTask.startNode(), "上一步任务ID为空，无法驳回至上一步处理");
 

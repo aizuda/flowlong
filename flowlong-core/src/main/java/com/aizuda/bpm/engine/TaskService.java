@@ -257,6 +257,18 @@ public interface TaskService {
      */
     Optional<FlwTask> withdrawTask(Long taskId, FlowCreator flowCreator);
 
+
+    /**
+     * 根据当前任务对象驳回至指定节点处理
+     *
+     * @param currentFlwTask 当前任务对象
+     * @param flowCreator    任务创建者
+     * @param args           任务参数
+     * @param nodeKey        驳回指定节点key
+     * @return Task 任务对象
+     */
+    Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args, String nodeKey);
+
     /**
      * 根据当前任务对象驳回至上一步处理
      *
