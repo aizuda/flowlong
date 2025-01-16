@@ -177,7 +177,7 @@ public class FlowLongContext {
      * @param configEngine 流程配置引擎
      * @return {@link FlowLongEngine}
      */
-    public FlowLongContext build(FlowLongEngine configEngine) {
+    public FlowLongContext build(FlowLongEngine configEngine, boolean banner) {
         if (log.isInfoEnabled()) {
             log.info("FlowLongEngine start......");
         }
@@ -189,6 +189,13 @@ public class FlowLongContext {
             log.info("FlowLongEngine be found {}", configEngine.getClass());
         }
         configEngine.configure(this);
+
+        if (banner) {
+            System.out.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");
+            System.out.println("├┤ │  │ │││││  │ │││││ ┬");
+            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.2");
+        }
+
         return this;
     }
 

@@ -78,4 +78,12 @@ public interface TaskActorProvider {
                 flwTask.getTaskKey() + ", performType = " + performType.getValue());
         return true;
     }
+
+    /**
+     * 参与者类型转换处理方法
+     *
+     * @param nodeModel 当前审批节点 {@link NodeModel}
+     * @return 返回值对应 flw_task_actor flw_his_task_actor 表字段参与者类型 actorType
+     */
+    Integer getActorType(NodeModel nodeModel);
 }

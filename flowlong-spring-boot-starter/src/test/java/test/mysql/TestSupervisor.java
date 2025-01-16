@@ -37,6 +37,22 @@ public class TestSupervisor extends MysqlTest {
                 new TaskActorProvider() {
 
                     @Override
+                    public Integer getActorType(NodeModel nodeModel) {
+
+                        // 1，角色
+                        if (NodeSetType.role.eq(nodeModel.getSetType())) {
+                            return 1;
+                        }
+
+                        // 2，部门
+                        if (NodeSetType.department.eq(nodeModel.getSetType())) {
+                            return 2;
+                        }
+
+                        return 0;
+                    }
+
+                    @Override
                     public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
                         if (nodeModel.getType() == 0) {
                             // 发起人审批，经过 isAllowed 验证合法，直接返回当前执行人

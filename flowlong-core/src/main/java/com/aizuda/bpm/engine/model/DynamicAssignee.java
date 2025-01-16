@@ -27,7 +27,10 @@ public class DynamicAssignee {
      */
     private List<NodeAssignee> assigneeList;
     /**
-     * 分配类型  0，用户 1，角色  2，部门 该属性决定 assigneeList 属性是分配到人还是角色
+     * 分配类型  0，用户 1，角色 2，部门 该属性决定 assigneeList 属性是分配到人还是角色
+     * <p>
+     * 需要与参数 {@link com.aizuda.bpm.engine.entity.FlwTaskActor#actorType} 值保持一致
+     * </p>
      */
     private Integer type;
 
@@ -41,23 +44,23 @@ public class DynamicAssignee {
         return this;
     }
 
-    public static DynamicAssignee ofNodeModel(NodeModel nodeModel) {
-        return builder().assigneeList(nodeModel.getNodeAssigneeList()).type(nodeModel.getType());
-    }
-
     public static DynamicAssignee builder() {
         return new DynamicAssignee();
     }
 
     public static DynamicAssignee assigneeUserList(List<NodeAssignee> assigneeList) {
-        return builder().assigneeList(assigneeList).type(0);
+        return of(0, assigneeList);
     }
 
     public static DynamicAssignee assigneeRoleList(List<NodeAssignee> assigneeList) {
-        return builder().assigneeList(assigneeList).type(1);
+        return of(1, assigneeList);
     }
 
     public static DynamicAssignee assigneeDeptList(List<NodeAssignee> assigneeList) {
-        return builder().assigneeList(assigneeList).type(2);
+        return of(2, assigneeList);
+    }
+
+    public static DynamicAssignee of(Integer type, List<NodeAssignee> assigneeList) {
+        return builder().type(type).assigneeList(assigneeList);
     }
 }

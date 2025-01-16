@@ -150,9 +150,14 @@ public class TaskServiceImpl implements TaskService {
             taskEventType = TaskEventType.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+        }
+
+        // 驳回重新审批跳转或者路由跳转，当前任务已被执行需查历史
+        if (taskTye == TaskType.reApproveJump || taskTye == TaskType.routeJump) {
             // 获取历史任务
             flwTask = hisTaskDao.selectCheckById(taskId);
         }
+
         Assert.illegal(null == taskEventType, "taskTye only allow jump and rejectJump");
         if (null == flwTask) {
             // 获取当前任务
@@ -203,6 +208,9 @@ public class TaskServiceImpl implements TaskService {
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             this.saveTask(createTask, performType, taskActors, execution, nodeModel);
         }
+
+        // 更新当前节点
+        this.updateCurrentNode(createTask);
 
         // 任务监听器通知
         this.taskNotify(taskEventType, execution::getFlwTask, nodeModel, flowCreator);
@@ -1157,7 +1165,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 参与者类型
-        int actorType = nodeModel.actorType();
+        int actorType = execution.getTaskActorProvider().getActorType(nodeModel);
 
         if (performType == PerformType.orSign) {
             /*

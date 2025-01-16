@@ -130,6 +130,7 @@ public class FlowLongAutoConfiguration {
                                            TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider,
                                            FlowLongEngine flowLongEngine,
+                                           FlowLongProperties flp,
                                            @Inject(required = false) FlowCache flowCache,
                                            @Inject(required = false) ProcessModelParser processModelParser,
                                            @Inject(required = false) FlowJsonHandler flowJsonHandler,
@@ -158,7 +159,7 @@ public class FlowLongAutoConfiguration {
         flc.setCreateTaskHandler(createTaskHandler);
         flc.setTaskReminder(taskReminder);
         flc.setTaskTrigger(taskTrigger);
-        return flc.build(flowLongEngine);
+        return flc.build(flowLongEngine, flp.isBanner());
     }
 
     @Bean

@@ -110,7 +110,7 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 发起人自选类型
      * <p>
-     * 1，自选一个人 2，自选多个人
+     * 1，自选一个人 2，自选多个人 3，自选角色
      * </p>
      */
     private Integer selectMode;
@@ -516,19 +516,6 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean routeNode() {
         return TaskType.routeBranch.eq(type);
-    }
-
-    /**
-     * 参与者类型 0，用户 1，角色 2，部门
-     */
-    public int actorType() {
-        if (NodeSetType.role.eq(setType)) {
-            return 1;
-        }
-        if (NodeSetType.department.eq(setType)) {
-            return 2;
-        }
-        return 0;
     }
 
     /**

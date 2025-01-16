@@ -111,7 +111,7 @@ public class FlowLongAutoConfiguration {
     @ConditionalOnMissingBean
     public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
                                            TaskService taskService, Expression expression, TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine,
+                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine, FlowLongProperties flp,
                                            @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
@@ -139,7 +139,7 @@ public class FlowLongAutoConfiguration {
         flc.setCreateTaskHandler(createTaskHandler);
         flc.setTaskReminder(taskReminder);
         flc.setTaskTrigger(taskTrigger);
-        return flc.build(flowLongEngine);
+        return flc.build(flowLongEngine, flp.isBanner());
     }
 
     /**

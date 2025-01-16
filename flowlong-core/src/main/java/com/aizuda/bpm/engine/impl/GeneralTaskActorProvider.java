@@ -30,7 +30,7 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
     public List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution) {
         List<FlwTaskActor> flwTaskActors = new ArrayList<>();
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
-            final Integer actorType = getActorType(nodeModel);
+            final Integer actorType = this.getActorType(nodeModel);
             if (null != actorType) {
                 for (NodeAssignee nodeAssignee : nodeModel.getNodeAssigneeList()) {
                     flwTaskActors.add(FlwTaskActor.of(nodeAssignee, actorType));
@@ -40,7 +40,8 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         return ObjectUtils.isEmpty(flwTaskActors) ? null : flwTaskActors;
     }
 
-    private static Integer getActorType(NodeModel nodeModel) {
+    @Override
+    public Integer getActorType(NodeModel nodeModel) {
         // 0，用户
         if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())
                 || NodeSetType.initiatorThemselves.eq(nodeModel.getSetType())
@@ -57,6 +58,8 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         if (NodeSetType.department.eq(nodeModel.getSetType())) {
             return 2;
         }
-        return null;
+
+        // 其它类型可以实现该类重写
+        return 0;
     }
 }
