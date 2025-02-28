@@ -91,7 +91,7 @@ public class FlwTaskActor implements Serializable {
      * @return true 是 false 否
      */
     public boolean agentActor() {
-        return Objects.equals(0, this.actorType);
+        return Objects.equals(0, this.agentType);
     }
 
     public boolean eqActorId(String actorId) {
