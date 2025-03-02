@@ -315,9 +315,6 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加
          */
         if (performType == PerformType.sort) {
-            boolean findTaskActor = false;
-            NodeAssignee nextNodeAssignee = null;
-            List<NodeAssignee> nodeAssigneeList = nodeModel.getNodeAssigneeList();
             // 当前任务实际办理人
             String assigneeId = flowCreator.getCreateId();
             if (NodeSetType.role.eq(nodeModel.getSetType()) || NodeSetType.department.eq(nodeModel.getSetType())) {
@@ -329,42 +326,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             } else if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
                 assigneeId = flwTask.getAssignorId();
             }
-            if (ObjectUtils.isEmpty(nodeAssigneeList)) {
-                /*
-                 * 模型未设置处理人，那么需要获取自定义参与者
-                 */
-                List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
-                if (ObjectUtils.isNotEmpty(taskActors)) {
-                    for (FlwTaskActor taskActor : taskActors) {
-                        if (findTaskActor) {
-                            // 找到下一个执行人
-                            nextNodeAssignee = NodeAssignee.of(taskActor);
-                            break;
-                        }
-
-                        // 判断找到当前任务实际办理人
-                        if (Objects.equals(taskActor.getActorId(), assigneeId)) {
-                            findTaskActor = true;
-                        }
-                    }
-                }
-            } else {
-                /*
-                 * 模型中去找下一个执行者
-                 */
-                for (NodeAssignee nodeAssignee : nodeAssigneeList) {
-                    if (findTaskActor) {
-                        // 找到下一个执行人
-                        nextNodeAssignee = nodeAssignee;
-                        break;
-                    }
-                    if (Objects.equals(nodeAssignee.getId(), assigneeId)) {
-                        findTaskActor = true;
-                    }
-                }
-            }
 
             // 如果下一个顺序执行人存在，创建顺序审批任务
+            NodeAssignee nextNodeAssignee = nodeModel.nextNodeAssignee(execution, assigneeId);
             if (null != nextNodeAssignee) {
                 // 参与者类型
                 int actorType = execution.getTaskActorProvider().getActorType(nodeModel);

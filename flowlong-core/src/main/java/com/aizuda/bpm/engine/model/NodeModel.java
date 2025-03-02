@@ -15,6 +15,7 @@ import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.entity.FlwProcess;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -516,6 +517,47 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean routeNode() {
         return TaskType.routeBranch.eq(type);
+    }
+
+    public NodeAssignee nextNodeAssignee(Execution execution, String assigneeId) {
+        boolean findTaskActor = false;
+        NodeAssignee nextNodeAssignee = null;
+        List<NodeAssignee> nodeAssigneeList = this.getNodeAssigneeList();
+        if (ObjectUtils.isEmpty(nodeAssigneeList)) {
+            /*
+             * 模型未设置处理人，那么需要获取自定义参与者
+             */
+            List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(this, execution);
+            if (ObjectUtils.isNotEmpty(taskActors)) {
+                for (FlwTaskActor taskActor : taskActors) {
+                    if (findTaskActor) {
+                        // 找到下一个执行人
+                        nextNodeAssignee = NodeAssignee.of(taskActor);
+                        break;
+                    }
+
+                    // 判断找到当前任务实际办理人
+                    if (Objects.equals(taskActor.getActorId(), assigneeId)) {
+                        findTaskActor = true;
+                    }
+                }
+            }
+        } else {
+            /*
+             * 模型中去找下一个执行者
+             */
+            for (NodeAssignee nodeAssignee : nodeAssigneeList) {
+                if (findTaskActor) {
+                    // 找到下一个执行人
+                    nextNodeAssignee = nodeAssignee;
+                    break;
+                }
+                if (Objects.equals(nodeAssignee.getId(), assigneeId)) {
+                    findTaskActor = true;
+                }
+            }
+        }
+        return nextNodeAssignee;
     }
 
     /**

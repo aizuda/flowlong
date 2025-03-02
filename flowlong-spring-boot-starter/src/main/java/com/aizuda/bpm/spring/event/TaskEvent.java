@@ -7,11 +7,13 @@ package com.aizuda.bpm.spring.event;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 流程任务事件对象
@@ -28,6 +30,7 @@ import java.io.Serializable;
 public class TaskEvent implements Serializable {
     private TaskEventType eventType;
     private FlwTask flwTask;
+    private List<FlwTaskActor> taskActors;
     private NodeModel nodeModel;
     private FlowCreator flowCreator;
 
