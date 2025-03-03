@@ -330,14 +330,14 @@ public interface TaskService {
      *
      * @param taskId        任务ID
      * @param performType   参与类型 {@link PerformType}
-     * @param flwTaskActors 参与者列表
+     * @param taskActors    参与者列表
      * @param flowCreator   执行操作人员
      * @return true 成功 false 失败
      */
-    boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> flwTaskActors, FlowCreator flowCreator);
+    boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator);
 
-    default boolean addTaskActor(Long taskId, PerformType performType, FlwTaskActor flwTaskActor, FlowCreator flowCreator) {
-        return this.addTaskActor(taskId, performType, Collections.singletonList(flwTaskActor), flowCreator);
+    default boolean addTaskActor(Long taskId, PerformType performType, FlwTaskActor taskActor, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, performType, Collections.singletonList(taskActor), flowCreator);
     }
 
     /**
