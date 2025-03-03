@@ -23,6 +23,11 @@ import lombok.Setter;
 public class EventingParam {
 
     /**
+     * 是否开启实例事件监听
+     */
+    private boolean instance;
+
+    /**
      * 是否开启任务事件监听
      */
     private boolean task;
