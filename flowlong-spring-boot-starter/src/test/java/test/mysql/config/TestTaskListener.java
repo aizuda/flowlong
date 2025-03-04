@@ -6,6 +6,7 @@ import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.core.enums.NodeApproveSelf;
 import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.entity.FlwTask;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -23,8 +24,7 @@ public class TestTaskListener implements TaskListener {
     private FlowLongEngine flowLongEngine;
 
     @Override
-    public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, NodeModel nodeModel,
-                          FlowCreator flowCreator) {
+    public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, List<FlwTaskActor> taskActors, NodeModel nodeModel, FlowCreator flowCreator) {
         if (TaskEventType.create.eq(eventType)) {
             // 创建任务时候，判断是否自动审批通过
             Integer approveSelf = nodeModel.getApproveSelf();

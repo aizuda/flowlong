@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskActorProvider;
 import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.core.enums.TaskEventType;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
@@ -83,6 +84,14 @@ public class Execution implements Serializable {
      * 针对join节点的处理
      */
     private boolean isMerged = false;
+    /**
+     * 指定任务事件类型
+     */
+    private TaskEventType taskEventType;
+
+    public TaskEventType getTaskEventType() {
+        return null == taskEventType ? TaskEventType.create : taskEventType;
+    }
 
     /**
      * 用于产生子流程执行对象使用

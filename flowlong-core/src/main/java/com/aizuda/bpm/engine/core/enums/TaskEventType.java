@@ -120,6 +120,10 @@ public enum TaskEventType {
      */
     reApproveJump,
     /**
+     * 驳回重新审批创建
+     */
+    reApproveCreate,
+    /**
      * 自动审批完成
      */
     autoComplete,

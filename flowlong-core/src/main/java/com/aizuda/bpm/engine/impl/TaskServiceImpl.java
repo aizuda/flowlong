@@ -1197,7 +1197,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(flwTask);
 
             // 创建任务监听
-            this.taskNotify(TaskEventType.create, () -> flwTask, taskActors, nodeModel, flowCreator);
+            this.taskNotify(execution.getTaskEventType(), () -> flwTask, taskActors, nodeModel, flowCreator);
             return flwTasks;
         }
 
@@ -1216,7 +1216,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), assignActorType(actorType, nextFlwTaskActor.getActorType()), nextFlwTaskActor);
 
             // 创建任务监听
-            this.taskNotify(TaskEventType.create, () -> flwTask, Collections.singletonList(nextFlwTaskActor), nodeModel, flowCreator);
+            this.taskNotify(execution.getTaskEventType(), () -> flwTask, Collections.singletonList(nextFlwTaskActor), nodeModel, flowCreator);
             return flwTasks;
         }
 
@@ -1232,7 +1232,7 @@ public class TaskServiceImpl implements TaskService {
                 this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), assignActorType(actorType, t.getActorType()), t);
 
                 // 创建任务监听
-                this.taskNotify(TaskEventType.create, () -> newFlwTask, Collections.singletonList(t), nodeModel, flowCreator);
+                this.taskNotify(execution.getTaskEventType(), () -> newFlwTask, Collections.singletonList(t), nodeModel, flowCreator);
             }
         });
 
