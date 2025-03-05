@@ -111,7 +111,7 @@ public class FlwTask extends FlowEntity {
         this.taskType = taskType;
     }
 
-    public void setPerformType(PerformType performType) {
+    public void performType(PerformType performType) {
         this.performType = performType.getValue();
     }
 

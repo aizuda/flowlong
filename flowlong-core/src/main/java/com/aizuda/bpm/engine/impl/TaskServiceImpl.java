@@ -200,7 +200,7 @@ public class TaskServiceImpl implements TaskService {
         createTask.taskType(taskTye);
         if (TaskType.major == taskType) {
             // 发起节点，创建发起任务，分配发起人
-            createTask.setPerformType(PerformType.start);
+            createTask.performType(PerformType.start);
             Assert.isFalse(taskDao.insert(createTask), "failed to create initiation task");
             FlwTaskActor fta = FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), createTask.getId());
             taskActors.add(fta);
@@ -867,7 +867,7 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
         newFlwTask.taskType(taskType);
-        newFlwTask.setPerformType(performType);
+        newFlwTask.performType(performType);
         newFlwTask.setParentTaskId(taskId);
         Execution execution = executionFunction.apply(newFlwTask);
         execution.setFlowCreator(flowCreator);
@@ -1076,7 +1076,7 @@ public class TaskServiceImpl implements TaskService {
             // 抄送历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
             flwHisTask.taskType(TaskType.cc);
-            flwHisTask.setPerformType(PerformType.copy);
+            flwHisTask.performType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
 
@@ -1145,7 +1145,7 @@ public class TaskServiceImpl implements TaskService {
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution, NodeModel nodeModel) {
         List<FlwTask> flwTasks = new ArrayList<>();
-        flwTask.setPerformType(performType);
+        flwTask.performType(performType);
         final FlowCreator flowCreator = execution.getFlowCreator();
 
         if (performType == PerformType.timer || performType == PerformType.trigger) {
@@ -1307,7 +1307,7 @@ public class TaskServiceImpl implements TaskService {
         // 更新任务参与类型
         FlwTask temp = new FlwTask();
         temp.setId(taskId);
-        temp.setPerformType(performType);
+        temp.performType(performType);
         if (taskDao.updateById(temp)) {
             // 创建任务监听
             this.taskNotify(TaskEventType.addTaskActor, () -> flwTask, taskActors, null, flowCreator);
