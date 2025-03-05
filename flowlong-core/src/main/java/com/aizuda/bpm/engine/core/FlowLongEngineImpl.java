@@ -288,6 +288,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             } else if (Objects.equals(2, parentNodeModel.getRejectStart())) {
                 // 驳回重新审批策略 2，回到上一个节点
                 return this.executeJumpTask(flwTask.getId(), parentTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+            } else {
+                // 驳回重新审批默认事件
+                taskEventType = TaskEventType.reApproveReject;
             }
         }
 

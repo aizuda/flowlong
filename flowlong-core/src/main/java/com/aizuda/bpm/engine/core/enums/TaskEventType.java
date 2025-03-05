@@ -116,13 +116,17 @@ public enum TaskEventType {
      */
     routeJump,
     /**
-     * 驳回重新审批跳转
+     * 重新审批跳转
      */
     reApproveJump,
     /**
-     * 驳回重新审批创建
+     * 重新审批创建（相当于重新发起）
      */
     reApproveCreate,
+    /**
+     * 重新审批驳回
+     */
+    reApproveReject,
     /**
      * 自动审批完成
      */
