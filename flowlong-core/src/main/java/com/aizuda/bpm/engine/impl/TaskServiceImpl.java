@@ -142,14 +142,19 @@ public class TaskServiceImpl implements TaskService {
                                              Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
         FlwTask flwTask = null;
         TaskEventType taskEventType = null;
+        TaskState taskState = null;
         if (taskTye == TaskType.jump) {
             taskEventType = TaskEventType.jump;
+            taskState = TaskState.jump;
         } else if (taskTye == TaskType.rejectJump) {
             taskEventType = TaskEventType.rejectJump;
+            taskState = TaskState.rejectJump;
         } else if (taskTye == TaskType.reApproveJump) {
             taskEventType = TaskEventType.reApproveJump;
+            taskState = TaskState.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+            taskState = TaskState.routeJump;
         }
 
         // 驳回重新审批跳转或者路由跳转，当前任务已被执行需查历史
@@ -187,11 +192,13 @@ public class TaskServiceImpl implements TaskService {
 
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
         List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(nodeModel);
-        taskDao.selectListByInstanceId(flwTask.getInstanceId()).forEach(t -> {
-            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), t.getTaskKey()))) {
-                this.moveToHisTask(t, TaskState.jump, flowCreator);
+        List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
+        for (FlwTask ft : fts) {
+            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                // 归档历史
+                this.moveToHisTask(ft, taskState, flowCreator);
             }
-        });
+        }
 
         List<FlwTaskActor> taskActors = new ArrayList<>();
 
