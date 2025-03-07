@@ -20,6 +20,10 @@ public enum TaskEventType {
      */
     start,
     /**
+     * 重新发起
+     */
+    restart,
+    /**
      * 创建
      */
     create,
