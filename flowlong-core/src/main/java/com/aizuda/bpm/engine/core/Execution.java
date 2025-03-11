@@ -165,15 +165,7 @@ public class Execution implements Serializable {
         Assert.isNull(processModel, "Process model content cannot be empty");
 
         // 重新加载流程模型内容
-        ModelHelper.reloadProcessModel(processModel, t -> {
-
-            // 更新流程模型
-            boolean ok = flowLongContext.getRuntimeService().updateInstanceModelById(flwInstance.getId(), t);
-            Assert.isFalse(ok, "Failed to update process model content");
-
-            // 重新构建父节点
-            t.buildParentNode(processModel.getNodeConfig());
-        });
+        ModelHelper.reloadProcessModel(flowLongContext,  flwInstance.getId(), processModel);
 
         // 获取节点模型
         NodeModel nodeModel = processModel.getNode(nodeKey);
