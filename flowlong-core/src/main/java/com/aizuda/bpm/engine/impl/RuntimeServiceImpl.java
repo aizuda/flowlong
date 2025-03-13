@@ -45,12 +45,12 @@ import java.util.stream.Collectors;
  * @since 1.0
  */
 public class RuntimeServiceImpl implements RuntimeService {
-    private final InstanceListener instanceListener;
-    private final QueryService queryService;
-    private final TaskService taskService;
-    private final FlwInstanceDao instanceDao;
-    private final FlwHisInstanceDao hisInstanceDao;
-    private final FlwExtInstanceDao extInstanceDao;
+    protected final InstanceListener instanceListener;
+    protected final QueryService queryService;
+    protected final TaskService taskService;
+    protected final FlwInstanceDao instanceDao;
+    protected final FlwHisInstanceDao hisInstanceDao;
+    protected final FlwExtInstanceDao extInstanceDao;
 
     public RuntimeServiceImpl(InstanceListener instanceListener, QueryService queryService, TaskService taskService,
                               FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao) {
