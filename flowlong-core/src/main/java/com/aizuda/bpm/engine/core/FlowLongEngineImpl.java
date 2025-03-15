@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.*;
+import com.aizuda.bpm.engine.model.ModelHelper;
 import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
@@ -169,7 +170,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+
+            // 重新加载流程模型内容
+            ModelHelper.reloadProcessModel(flowLongContext,  flwInstance.getId(), processModel);
+
+            // 构建节点模型
             Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
+
             // 传递父节点信息
             execution.setFlwTask(flwTask);
             return execution;
@@ -272,6 +279,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          */
         final ProcessModel processModel = runtimeService().getProcessModelByInstanceId(instanceId);
 
+        // 当前任务事件
+        TaskEventType taskEventType = null;
+
         /*
          * 驳回跳转，处理重新审批策略
          */
@@ -282,6 +292,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (Objects.equals(2, parentNodeModel.getRejectStart())) {
                 // 驳回重新审批策略 2，回到上一个节点
                 return this.executeJumpTask(flwTask.getId(), parentTask.getTaskKey(), flowCreator, args, TaskType.reApproveJump).isPresent();
+            } else {
+                // 驳回重新审批策略 1，继续往下执行
+                taskEventType = TaskEventType.reApproveCreate;
             }
         }
 
@@ -310,6 +323,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         // 构建执行对象
         FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         final Execution execution = this.createExecution(processModel, flwInstance, flwTask, flowCreator, ObjectUtils.getArgs(args));
+
+        // 设置当前任务事件
+        execution.setTaskEventType(taskEventType);
 
         /*
          * 按顺序依次审批，一个任务按顺序多个参与者依次添加

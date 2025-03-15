@@ -64,7 +64,19 @@ public enum TaskState {
     /**
      * 自动跳转
      */
-    autoJump(10);
+    autoJump(10),
+    /**
+     * 驳回跳转
+     */
+    rejectJump(11),
+    /**
+     * 驳回重新审批跳转
+     */
+    reApproveJump(12),
+    /**
+     * 路由跳转
+     */
+    routeJump(13);
 
     private final int value;
 

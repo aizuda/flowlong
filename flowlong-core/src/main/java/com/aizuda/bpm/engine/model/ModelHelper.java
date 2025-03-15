@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.model;
 
 import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.FlowDataTransfer;
+import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -59,10 +60,20 @@ public class ModelHelper {
             // 条件节点
             flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, childNode)
                     // 添加执行条件节点
-                    .ifPresent(t -> nextNodes.add(t.getChildNode()));
+                    .ifPresent(t -> {
+                        NodeModel _childNode = t.getChildNode();
+                        if (null != _childNode) {
+                            nextNodes.add(_childNode);
+                        }
+                    });
         } else if (childNode.parallelNode()) {
             // 并行节点
-            childNode.getParallelNodes().forEach(t -> nextNodes.add(t.getChildNode()));
+            childNode.getParallelNodes().forEach(t -> {
+                NodeModel _childNode = t.getChildNode();
+                if (null != _childNode) {
+                    nextNodes.add(_childNode);
+                }
+            });
         } else if (childNode.inclusiveNode()) {
             // 包容节点
             flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, childNode).ifPresent(optList -> {
@@ -422,6 +433,26 @@ public class ModelHelper {
      */
     public static NodeModel getNodeModel(String nodeKey, NodeModel rootNodeModel) {
         return getRootNodeAllChildNodes(rootNodeModel).stream().filter(e -> Objects.equals(nodeKey, e.getNodeKey())).findFirst().orElse(null);
+    }
+
+    /**
+     * 重新加载流程模型
+     *
+     * @param flowLongContext 流程上下文
+     * @param flwInstanceId   流程实例ID
+     * @param processModel    流程模型
+     */
+    public static void reloadProcessModel(FlowLongContext flowLongContext, Long flwInstanceId, ProcessModel processModel) {
+        // 重新加载流程模型内容
+        reloadProcessModel(processModel, t -> {
+
+            // 更新流程模型
+            boolean ok = flowLongContext.getRuntimeService().updateInstanceModelById(flwInstanceId, t);
+            Assert.isFalse(ok, "Failed to update process model content");
+
+            // 重新构建父节点
+            t.buildParentNode(processModel.getNodeConfig());
+        });
     }
 
     /**

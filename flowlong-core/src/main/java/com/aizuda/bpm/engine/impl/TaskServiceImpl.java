@@ -39,16 +39,16 @@ import java.util.stream.Collectors;
  * @since 1.0
  */
 public class TaskServiceImpl implements TaskService {
-    private final TaskAccessStrategy taskAccessStrategy;
-    private final TaskTrigger taskTrigger;
-    private final TaskListener taskListener;
-    private final FlwInstanceDao instanceDao;
-    private final FlwExtInstanceDao extInstanceDao;
-    private final FlwHisInstanceDao hisInstanceDao;
-    private final FlwTaskDao taskDao;
-    private final FlwTaskActorDao taskActorDao;
-    private final FlwHisTaskDao hisTaskDao;
-    private final FlwHisTaskActorDao hisTaskActorDao;
+    protected final TaskAccessStrategy taskAccessStrategy;
+    protected final TaskTrigger taskTrigger;
+    protected final TaskListener taskListener;
+    protected final FlwInstanceDao instanceDao;
+    protected final FlwExtInstanceDao extInstanceDao;
+    protected final FlwHisInstanceDao hisInstanceDao;
+    protected final FlwTaskDao taskDao;
+    protected final FlwTaskActorDao taskActorDao;
+    protected final FlwHisTaskDao hisTaskDao;
+    protected final FlwHisTaskActorDao hisTaskActorDao;
 
     public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, TaskTrigger taskTrigger,
                            FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao, FlwHisInstanceDao hisInstanceDao,
@@ -102,6 +102,11 @@ public class TaskServiceImpl implements TaskService {
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args, taskState);
 
+        // 重新发起审批
+        if (PerformType.start.eq(flwTask.getPerformType()) && null != flwTask.getParentTaskId()) {
+            eventType = TaskEventType.restart;
+        }
+
         // 触发器情况直接移除任务
         if (PerformType.trigger.eq(flwTask.getPerformType())) {
             taskDao.deleteById(flwTask.getId());
@@ -142,14 +147,19 @@ public class TaskServiceImpl implements TaskService {
                                              Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
         FlwTask flwTask = null;
         TaskEventType taskEventType = null;
+        TaskState taskState = null;
         if (taskTye == TaskType.jump) {
             taskEventType = TaskEventType.jump;
+            taskState = TaskState.jump;
         } else if (taskTye == TaskType.rejectJump) {
             taskEventType = TaskEventType.rejectJump;
+            taskState = TaskState.rejectJump;
         } else if (taskTye == TaskType.reApproveJump) {
             taskEventType = TaskEventType.reApproveJump;
+            taskState = TaskState.reApproveJump;
         } else if (taskTye == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
+            taskState = TaskState.routeJump;
         }
 
         // 驳回重新审批跳转或者路由跳转，当前任务已被执行需查历史
@@ -186,12 +196,14 @@ public class TaskServiceImpl implements TaskService {
         Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
 
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
-        List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(nodeModel);
-        taskDao.selectListByInstanceId(flwTask.getInstanceId()).forEach(t -> {
-            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), t.getTaskKey()))) {
-                this.moveToHisTask(t, TaskState.jump, flowCreator);
+        List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+        List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
+        for (FlwTask ft : fts) {
+            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                // 归档历史
+                this.moveToHisTask(ft, taskState, flowCreator);
             }
-        });
+        }
 
         List<FlwTaskActor> taskActors = new ArrayList<>();
 
@@ -200,7 +212,7 @@ public class TaskServiceImpl implements TaskService {
         createTask.taskType(taskTye);
         if (TaskType.major == taskType) {
             // 发起节点，创建发起任务，分配发起人
-            createTask.setPerformType(PerformType.start);
+            createTask.performType(PerformType.start);
             Assert.isFalse(taskDao.insert(createTask), "failed to create initiation task");
             FlwTaskActor fta = FlwTaskActor.ofFlwInstance(execution.getFlwInstance(), createTask.getId());
             taskActors.add(fta);
@@ -867,7 +879,7 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
         newFlwTask.taskType(taskType);
-        newFlwTask.setPerformType(performType);
+        newFlwTask.performType(performType);
         newFlwTask.setParentTaskId(taskId);
         Execution execution = executionFunction.apply(newFlwTask);
         execution.setFlowCreator(flowCreator);
@@ -1076,7 +1088,7 @@ public class TaskServiceImpl implements TaskService {
             // 抄送历史任务
             FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
             flwHisTask.taskType(TaskType.cc);
-            flwHisTask.setPerformType(PerformType.copy);
+            flwHisTask.performType(PerformType.copy);
             flwHisTask.calculateDuration();
             hisTaskDao.insert(flwHisTask);
 
@@ -1100,7 +1112,7 @@ public class TaskServiceImpl implements TaskService {
      * @param execution 执行对象
      * @return Task任务对象
      */
-    private FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
+    protected FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
         FlwTask flwTask = new FlwTask();
         flwTask.setFlowCreator(execution.getFlowCreator());
         flwTask.setCreateTime(DateUtils.getCurrentDate());
@@ -1145,7 +1157,7 @@ public class TaskServiceImpl implements TaskService {
      */
     protected List<FlwTask> saveTask(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, Execution execution, NodeModel nodeModel) {
         List<FlwTask> flwTasks = new ArrayList<>();
-        flwTask.setPerformType(performType);
+        flwTask.performType(performType);
         final FlowCreator flowCreator = execution.getFlowCreator();
 
         if (performType == PerformType.timer || performType == PerformType.trigger) {
@@ -1197,7 +1209,7 @@ public class TaskServiceImpl implements TaskService {
             flwTasks.add(flwTask);
 
             // 创建任务监听
-            this.taskNotify(TaskEventType.create, () -> flwTask, taskActors, nodeModel, flowCreator);
+            this.taskNotify(execution.getTaskEventType(), () -> flwTask, taskActors, nodeModel, flowCreator);
             return flwTasks;
         }
 
@@ -1216,7 +1228,7 @@ public class TaskServiceImpl implements TaskService {
             this.assignTask(flwTask.getInstanceId(), flwTask.getId(), assignActorType(actorType, nextFlwTaskActor.getActorType()), nextFlwTaskActor);
 
             // 创建任务监听
-            this.taskNotify(TaskEventType.create, () -> flwTask, Collections.singletonList(nextFlwTaskActor), nodeModel, flowCreator);
+            this.taskNotify(execution.getTaskEventType(), () -> flwTask, Collections.singletonList(nextFlwTaskActor), nodeModel, flowCreator);
             return flwTasks;
         }
 
@@ -1232,7 +1244,7 @@ public class TaskServiceImpl implements TaskService {
                 this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), assignActorType(actorType, t.getActorType()), t);
 
                 // 创建任务监听
-                this.taskNotify(TaskEventType.create, () -> newFlwTask, Collections.singletonList(t), nodeModel, flowCreator);
+                this.taskNotify(execution.getTaskEventType(), () -> newFlwTask, Collections.singletonList(t), nodeModel, flowCreator);
             }
         });
 
@@ -1307,7 +1319,7 @@ public class TaskServiceImpl implements TaskService {
         // 更新任务参与类型
         FlwTask temp = new FlwTask();
         temp.setId(taskId);
-        temp.setPerformType(performType);
+        temp.performType(performType);
         if (taskDao.updateById(temp)) {
             // 创建任务监听
             this.taskNotify(TaskEventType.addTaskActor, () -> flwTask, taskActors, null, flowCreator);

@@ -1,0 +1,65 @@
+{
+  "key": "testNextChildNodes",
+  "name": "测试获取子节点",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1733380944015",
+    "type": 0,
+    "childNode": {
+      "nodeName": "审核人q",
+      "nodeKey": "flk1733396309547",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "CEO"
+        },
+        {
+          "id": "1778236187025342466",
+          "name": "夏小华"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 1,
+      "termMode": 1,
+      "examineMode": 3,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "remind": false,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "approveSelf": 0,
+      "childNode": {
+        "nodeName": "审核人w",
+        "nodeKey": "flk1733380972879",
+        "type": 1,
+        "setType": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "1778264912529981441",
+            "name": "陈小辉"
+          }
+        ],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": true,
+        "term": 5,
+        "termMode": 0,
+        "examineMode": 1,
+        "directorMode": 0,
+        "typeOfApprove": 1,
+        "remind": true,
+        "allowTransfer": false,
+        "allowAppendNode": false,
+        "allowRollback": false,
+        "approveSelf": 0
+      }
+    }
+  }
+}

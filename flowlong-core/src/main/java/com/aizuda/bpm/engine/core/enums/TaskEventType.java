@@ -20,6 +20,10 @@ public enum TaskEventType {
      */
     start,
     /**
+     * 重新发起
+     */
+    restart,
+    /**
      * 创建
      */
     create,
@@ -116,9 +120,13 @@ public enum TaskEventType {
      */
     routeJump,
     /**
-     * 驳回重新审批跳转
+     * 重新审批跳转
      */
     reApproveJump,
+    /**
+     * 重新审批创建
+     */
+    reApproveCreate,
     /**
      * 自动审批完成
      */
