@@ -39,16 +39,16 @@ import java.util.stream.Collectors;
  * @since 1.0
  */
 public class TaskServiceImpl implements TaskService {
-    private final TaskAccessStrategy taskAccessStrategy;
-    private final TaskTrigger taskTrigger;
-    private final TaskListener taskListener;
-    private final FlwInstanceDao instanceDao;
-    private final FlwExtInstanceDao extInstanceDao;
-    private final FlwHisInstanceDao hisInstanceDao;
-    private final FlwTaskDao taskDao;
-    private final FlwTaskActorDao taskActorDao;
-    private final FlwHisTaskDao hisTaskDao;
-    private final FlwHisTaskActorDao hisTaskActorDao;
+    protected final TaskAccessStrategy taskAccessStrategy;
+    protected final TaskTrigger taskTrigger;
+    protected final TaskListener taskListener;
+    protected final FlwInstanceDao instanceDao;
+    protected final FlwExtInstanceDao extInstanceDao;
+    protected final FlwHisInstanceDao hisInstanceDao;
+    protected final FlwTaskDao taskDao;
+    protected final FlwTaskActorDao taskActorDao;
+    protected final FlwHisTaskDao hisTaskDao;
+    protected final FlwHisTaskActorDao hisTaskActorDao;
 
     public TaskServiceImpl(TaskAccessStrategy taskAccessStrategy, TaskListener taskListener, TaskTrigger taskTrigger,
                            FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao, FlwHisInstanceDao hisInstanceDao,
@@ -1112,7 +1112,7 @@ public class TaskServiceImpl implements TaskService {
      * @param execution 执行对象
      * @return Task任务对象
      */
-    private FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
+    protected FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
         FlwTask flwTask = new FlwTask();
         flwTask.setFlowCreator(execution.getFlowCreator());
         flwTask.setCreateTime(DateUtils.getCurrentDate());
