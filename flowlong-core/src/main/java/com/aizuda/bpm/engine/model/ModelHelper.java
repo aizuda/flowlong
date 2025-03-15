@@ -60,10 +60,20 @@ public class ModelHelper {
             // 条件节点
             flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, childNode)
                     // 添加执行条件节点
-                    .ifPresent(t -> nextNodes.add(t.getChildNode()));
+                    .ifPresent(t -> {
+                        NodeModel _childNode = t.getChildNode();
+                        if (null != _childNode) {
+                            nextNodes.add(_childNode);
+                        }
+                    });
         } else if (childNode.parallelNode()) {
             // 并行节点
-            childNode.getParallelNodes().forEach(t -> nextNodes.add(t.getChildNode()));
+            childNode.getParallelNodes().forEach(t -> {
+                NodeModel _childNode = t.getChildNode();
+                if (null != _childNode) {
+                    nextNodes.add(_childNode);
+                }
+            });
         } else if (childNode.inclusiveNode()) {
             // 包容节点
             flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, childNode).ifPresent(optList -> {
