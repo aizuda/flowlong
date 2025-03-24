@@ -4,10 +4,7 @@
  */
 package com.aizuda.bpm.engine.impl;
 
-import com.aizuda.bpm.engine.FlowConstants;
-import com.aizuda.bpm.engine.QueryService;
-import com.aizuda.bpm.engine.RuntimeService;
-import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.Execution;
@@ -46,15 +43,17 @@ import java.util.stream.Collectors;
  */
 public class RuntimeServiceImpl implements RuntimeService {
     protected final InstanceListener instanceListener;
+    protected final IdGenerator idGenerator;
     protected final QueryService queryService;
     protected final TaskService taskService;
     protected final FlwInstanceDao instanceDao;
     protected final FlwHisInstanceDao hisInstanceDao;
     protected final FlwExtInstanceDao extInstanceDao;
 
-    public RuntimeServiceImpl(InstanceListener instanceListener, QueryService queryService, TaskService taskService,
+    public RuntimeServiceImpl(InstanceListener instanceListener, IdGenerator idGenerator, QueryService queryService, TaskService taskService,
                               FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao) {
         this.instanceListener = instanceListener;
+        this.idGenerator = idGenerator;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceDao = instanceDao;
@@ -192,17 +191,19 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator) {
         // 保存流程实例
+        flwInstance.setId(idGenerator.getId());
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
-        FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, InstanceState.active);
-        hisInstanceDao.insert(flwHisInstance);
+        FlwHisInstance fhi = FlwHisInstance.of(flwInstance, InstanceState.active);
+        if (hisInstanceDao.insert(fhi)) {
 
-        // 保存扩展流程实例
-        extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
+            // 保存扩展流程实例
+            extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
 
-        // 流程实例监听器通知
-        this.instanceNotify(InstanceEventType.start, () -> flwHisInstance, flowCreator);
+            // 流程实例监听器通知
+            this.instanceNotify(InstanceEventType.start, () -> fhi, flowCreator);
+        }
     }
 
     @Override

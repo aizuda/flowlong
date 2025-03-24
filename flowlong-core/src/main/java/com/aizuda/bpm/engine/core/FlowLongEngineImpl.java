@@ -137,6 +137,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("Auto execute taskId={}", taskId);
         }
+
+        // 会签情况存在多个任务，遇到某个处理人自动跳过
+        if (TaskEventType.autoJump.eq(eventType) && PerformType.countersign.eq(flwTask.getPerformType())) {
+            // 直接返回，不再执行后续逻辑
+            return true;
+        }
+
         // 完成任务后续逻辑
         return afterDoneTask(flowCreator, flwTask, args, execution -> {
             // 执行节点模型

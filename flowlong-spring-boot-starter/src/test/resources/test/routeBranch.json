@@ -91,7 +91,7 @@
               "routeNodes": [
                 {
                   "nodeName": "路由至主管审批",
-                  "nodeKey": "route:k005",
+                  "nodeKey": "k005",
                   "priorityLevel": 2,
                   "conditionList": [
                     [
