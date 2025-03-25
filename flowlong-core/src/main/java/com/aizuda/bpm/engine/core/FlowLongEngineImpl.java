@@ -364,8 +364,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 执行触发器任务
          */
         if (performType == PerformType.trigger) {
-            taskService().executeTaskTrigger(execution, flwTask);
-            return true;
+            return taskService().executeTaskTrigger(execution, flwTask);
         }
 
         // 执行回调逻辑

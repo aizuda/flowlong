@@ -404,7 +404,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean executeTaskTrigger(Execution execution, FlwTask flwTask) {
         NodeModel nodeModel = execution.getProcessModel().getNode(flwTask.getTaskKey());
-        nodeModel.executeTrigger(execution, (e) -> {
+        nodeModel.executeTrigger(execution, () -> {
             // 使用默认触发器
             TaskTrigger taskTrigger = execution.getEngine().getContext().getTaskTrigger();
             if (null == taskTrigger) {
@@ -417,10 +417,12 @@ public class TaskServiceImpl implements TaskService {
         this.taskNotify(TaskEventType.trigger, () -> flwTask, null, nodeModel, execution.getFlowCreator());
 
         /*
-         * 可能存在子节点
+         * 可能存在子节点，存在继续执行
          */
-        nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
-        return true;
+        return nodeModel.nextNode().map(model -> model.execute(execution.getEngine().getContext(), execution))
+                // 不存在子节点，结束流程
+                .orElseGet(() -> execution.endInstance(nodeModel));
+
     }
 
     /**
@@ -1071,7 +1073,7 @@ public class TaskServiceImpl implements TaskService {
                 // 立即触发器，直接执行
                 execution.setFlwTask(flwTask);
                 // 使用默认触发器
-                nodeModel.executeTrigger(execution, (e) -> taskTrigger.execute(nodeModel, execution));
+                nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution));
                 // 执行成功，任务归档
                 FlwHisTask hisTask = FlwHisTask.of(flwTask);
                 hisTask.setTaskState(TaskState.complete);
@@ -1318,8 +1320,8 @@ public class TaskServiceImpl implements TaskService {
     /**
      * 向指定的任务ID添加参与者
      *
-     * @param taskId        任务ID
-     * @param taskActors    参与者列表
+     * @param taskId     任务ID
+     * @param taskActors 参与者列表
      */
     @Override
     public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {

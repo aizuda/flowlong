@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * JSON BPM 节点
@@ -564,9 +565,9 @@ public class NodeModel implements ModelInstance, Serializable {
      * 执行触发器
      *
      * @param execution {@link Execution}
-     * @param function  执行默认触发器执行函数
+     * @param supplier  执行默认触发器执行函数
      */
-    public void executeTrigger(Execution execution, Function<Exception, Boolean> function) {
+    public void executeTrigger(Execution execution, Supplier<Boolean> supplier) {
         boolean flag = false;
         Map<String, Object> extendConfig = this.getExtendConfig();
         if (null != extendConfig) {
@@ -579,10 +580,12 @@ public class NodeModel implements ModelInstance, Serializable {
                         flag = taskTrigger.execute(this, execution);
                     }
                 } catch (Exception e) {
-                    // 使用默认触发器
-                    if (null != function) {
-                        flag = function.apply(e);
-                    }
+                    e.printStackTrace();
+                }
+            } else {
+                // 使用默认触发器
+                if (null != supplier) {
+                    flag = supplier.get();
                 }
             }
         }
