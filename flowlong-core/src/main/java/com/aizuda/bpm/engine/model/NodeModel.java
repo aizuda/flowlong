@@ -568,12 +568,14 @@ public class NodeModel implements ModelInstance, Serializable {
      * @param supplier  执行默认触发器执行函数
      */
     public void executeTrigger(Execution execution, Supplier<Boolean> supplier) {
+        boolean callSupplier = true;
         boolean flag = false;
         Map<String, Object> extendConfig = this.getExtendConfig();
         if (null != extendConfig) {
             Object _trigger = extendConfig.get("trigger");
             if (null != _trigger) {
                 try {
+                    callSupplier = false;
                     Class<?> triggerClass = Class.forName((String) _trigger);
                     if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
                         TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
@@ -582,12 +584,11 @@ public class NodeModel implements ModelInstance, Serializable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else {
-                // 使用默认触发器
-                if (null != supplier) {
-                    flag = supplier.get();
-                }
             }
+        }
+        // 使用默认触发器
+        if (null != supplier && callSupplier) {
+            flag = supplier.get();
         }
         Assert.isFalse(flag, "trigger execute error");
     }
