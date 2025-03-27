@@ -9,10 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-/**
- * @author songyinyin
- * @since 2025/3/12 18:02
- */
 public class TestJump extends MysqlTest {
 
     @Autowired
