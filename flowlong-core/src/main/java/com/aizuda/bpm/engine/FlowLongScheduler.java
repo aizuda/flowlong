@@ -63,26 +63,27 @@ public abstract class FlowLongScheduler {
             TaskService taskService = context.getTaskService();
             List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
             if (ObjectUtils.isNotEmpty(flwTaskList)) {
-                Date currentDate = DateUtils.getCurrentDate();
                 for (FlwTask flwTask : flwTaskList) {
+                    /*
+                     * 任务提醒
+                     */
                     if (null != flwTask.getRemindTime()) {
-                        /*
-                         * 任务提醒
-                         */
-                        if (DateUtils.after(flwTask.getRemindTime(), currentDate) && flwTask.getRemindRepeat() > 0) {
-                            // 1，更新提醒次数加 1 次
-                            FlwTask temp = new FlwTask();
-                            temp.setId(flwTask.getId());
-                            temp.setRemindRepeat(flwTask.getRemindRepeat() + 1);
-                            // 2，调用提醒接口
-                            TaskReminder taskReminder = context.getTaskReminder();
-                            Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
-                            Date nextRemindTime = taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
-                            if (null != nextRemindTime) {
-                                temp.setRemindTime(nextRemindTime);
-                            }
-                            taskService.updateTaskById(temp, null);
+                        // 1，更新提醒次数加 1 次
+                        FlwTask temp = new FlwTask();
+                        temp.setId(flwTask.getId());
+                        int remindRepeat = 1;
+                        if (null != flwTask.getRemindRepeat()) {
+                            remindRepeat = flwTask.getRemindRepeat() + 1;
                         }
+                        temp.setRemindRepeat(remindRepeat);
+                        // 2，调用提醒接口
+                        TaskReminder taskReminder = context.getTaskReminder();
+                        Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
+                        Date nextRemindTime = taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
+                        if (null != nextRemindTime) {
+                            temp.setRemindTime(nextRemindTime);
+                        }
+                        taskService.updateTaskById(temp, this.getAutoFlowCreator());
                     }
                     /*
                      * 任务超时
@@ -110,12 +111,12 @@ public abstract class FlowLongScheduler {
                             } else if (Objects.equals(termMode, 0)) {
                                 // 自动通过
                                 if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {
-                                    log.info("Scheduling failed to execute autoCompleteTask");
+                                    log.info("Scheduling failed to execute autoCompleteTask, taskId = {}", flwTask.getId());
                                 }
                             } else if (Objects.equals(termMode, 1)) {
                                 // 自动拒绝
                                 if (!flowLongEngine.autoRejectTask(flwTask, this.getAutoFlowCreator())) {
-                                    log.info("Scheduling failed to execute autoRejectTask");
+                                    log.info("Scheduling failed to execute autoRejectTask, taskId = {}", flwTask.getId());
                                 }
                             }
                         }
