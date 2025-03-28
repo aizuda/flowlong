@@ -73,7 +73,7 @@ public abstract class FlowLongScheduler {
                         temp.setId(flwTask.getId());
                         int remindRepeat = 1;
                         if (null != flwTask.getRemindRepeat()) {
-                            remindRepeat = flwTask.getRemindRepeat() + 1;
+                            remindRepeat += flwTask.getRemindRepeat();
                         }
                         temp.setRemindRepeat(remindRepeat);
                         // 2，调用提醒接口
