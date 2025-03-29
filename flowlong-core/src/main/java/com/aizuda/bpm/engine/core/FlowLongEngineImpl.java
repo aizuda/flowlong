@@ -231,6 +231,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
     /**
      * 创建抄送任务
+     * <p>默认不校验是否重复抄送</p>
      *
      * @param taskModel   任务模型
      * @param ccUserList  抄送任务分配到任务的人或角色列表
