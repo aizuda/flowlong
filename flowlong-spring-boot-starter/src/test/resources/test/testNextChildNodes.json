@@ -73,8 +73,8 @@
               "conditionList": [
                 [
                   {
-                    "label": "aaa",
-                    "field": "aaa",
+                    "label": "www",
+                    "field": "www",
                     "operator": "==",
                     "value": "11",
                     "type": "custom"
@@ -237,8 +237,8 @@
                     "conditionList": [
                       [
                         {
-                          "label": "aaa",
-                          "field": "aaa",
+                          "label": "rrr",
+                          "field": "rrr",
                           "operator": "==",
                           "value": "11",
                           "type": "custom"
