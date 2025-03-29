@@ -11,6 +11,7 @@ import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 
 import java.util.Collections;
@@ -311,6 +312,16 @@ public interface TaskService {
     List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator, Function<FlwTask, Execution> executionFunction);
 
     /**
+     * 创建抄送任务
+     *
+     * @param taskModel   任务模型
+     * @param flwTask     当前任务
+     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param flowCreator 任务创建者
+     */
+    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
+
+    /**
      * 获取超时或者提醒的任务
      *
      * @return 任务列表
@@ -328,10 +339,10 @@ public interface TaskService {
     /**
      * 向指定的任务ID添加参与者【加签】
      *
-     * @param taskId        任务ID
-     * @param performType   参与类型 {@link PerformType}
-     * @param taskActors    参与者列表
-     * @param flowCreator   执行操作人员
+     * @param taskId      任务ID
+     * @param performType 参与类型 {@link PerformType}
+     * @param taskActors  参与者列表
+     * @param flowCreator 执行操作人员
      * @return true 成功 false 失败
      */
     boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator);

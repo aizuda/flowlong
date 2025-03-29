@@ -911,6 +911,53 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * 创建抄送任务
+     *
+     * @param taskModel   任务模型
+     * @param flwTask     当前任务
+     * @param flowCreator 任务创建者
+     */
+    @Override
+    public boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
+        if (ObjectUtils.isEmpty(ccUserList)) {
+            return false;
+        }
+
+        FlwTask newFlwTask;
+        if (TaskType.cc.eq(taskModel.getType())) {
+            // 抄送任务
+            newFlwTask = flwTask;
+        } else {
+            // 非抄送任务手动创建抄送，需要克隆当前任务
+            newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
+        }
+        newFlwTask.setId(idGenerator.getId());
+        taskDao.insert(newFlwTask);
+
+        // 抄送历史任务
+        FlwHisTask fht = FlwHisTask.of(newFlwTask, TaskState.complete);
+        fht.taskType(TaskType.cc);
+        fht.performType(PerformType.copy);
+        fht.calculateDuration();
+        fht.setId(idGenerator.getId());
+        hisTaskDao.insert(fht);
+
+        // 即刻归档，确保自增ID情况一致性
+        taskDao.deleteById(newFlwTask.getId());
+
+        // 历史任务参与者数据入库
+        for (NodeAssignee nodeUser : ccUserList) {
+            FlwHisTaskActor hta = FlwHisTaskActor.ofNodeAssignee(nodeUser, fht.getInstanceId(), fht.getId());
+            hta.setId(idGenerator.getId());
+            hisTaskActorDao.insert(hta);
+        }
+
+        // 任务监听器通知
+        this.taskNotify(TaskEventType.cc, () -> fht, null, taskModel, flowCreator);
+        return true;
+    }
+
+    /**
      * 获取超时或者提醒的任务
      *
      * @return 任务列表
@@ -990,7 +1037,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 2，抄送任务
              */
-            this.saveTaskCc(nodeModel, flwTask, execution.getFlowCreator());
+            this.createCcTask(nodeModel, flwTask, nodeModel.getNodeAssigneeList(), execution.getFlowCreator());
 
             /*
              * 可能存在子节点
@@ -1096,43 +1143,6 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return flwTasks;
-    }
-
-    /**
-     * 保存抄送任务
-     *
-     * @param nodeModel   节点模型
-     * @param flwTask     流程任务对象
-     * @param flowCreator 处理人
-     */
-    public void saveTaskCc(NodeModel nodeModel, FlwTask flwTask, FlowCreator flowCreator) {
-        List<NodeAssignee> nodeUserList = nodeModel.getNodeAssigneeList();
-        if (ObjectUtils.isNotEmpty(nodeUserList)) {
-            // 抄送任务
-            flwTask.setId(idGenerator.getId());
-            taskDao.insert(flwTask);
-
-            // 抄送历史任务
-            FlwHisTask fht = FlwHisTask.of(flwTask, TaskState.complete);
-            fht.taskType(TaskType.cc);
-            fht.performType(PerformType.copy);
-            fht.calculateDuration();
-            fht.setId(idGenerator.getId());
-            hisTaskDao.insert(fht);
-
-            // 即刻归档，确保自增ID情况一致性
-            taskDao.deleteById(flwTask.getId());
-
-            // 历史任务参与者数据入库
-            for (NodeAssignee nodeUser : nodeUserList) {
-                FlwHisTaskActor hta = FlwHisTaskActor.ofNodeAssignee(nodeUser, fht.getInstanceId(), fht.getId());
-                hta.setId(idGenerator.getId());
-                hisTaskActorDao.insert(hta);
-            }
-
-            // 任务监听器通知
-            this.taskNotify(TaskEventType.cc, () -> fht, null, nodeModel, flowCreator);
-        }
     }
 
     /**

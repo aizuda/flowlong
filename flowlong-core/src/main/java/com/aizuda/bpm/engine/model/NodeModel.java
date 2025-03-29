@@ -187,6 +187,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean allowRollback;
     /**
+     * 允许审批节点手动创建抄送任务
+     */
+    private Boolean allowCc;
+    /**
      * 审批人与提交人为同一人时 {@link NodeApproveSelf}
      * <p>
      * 0，由发起人对自己审批 1，自动跳过 2，转交给直接上级审批 3，转交给部门负责人审批

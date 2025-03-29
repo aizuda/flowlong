@@ -179,7 +179,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
 
             // 重新加载流程模型内容
-            ModelHelper.reloadProcessModel(flowLongContext,  flwInstance.getId(), processModel);
+            ModelHelper.reloadProcessModel(flowLongContext, flwInstance.getId(), processModel);
 
             // 构建节点模型
             Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
@@ -227,6 +227,19 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 构建执行对象
             return this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
         });
+    }
+
+    /**
+     * 创建抄送任务
+     *
+     * @param taskModel   任务模型
+     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param flwTask     当前任务
+     * @param flowCreator 任务创建者
+     */
+    @Override
+    public boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
+        return taskService().createCcTask(taskModel, flwTask, ccUserList, flowCreator);
     }
 
     @Override
