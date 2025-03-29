@@ -313,6 +313,7 @@ public interface TaskService {
 
     /**
      * 创建抄送任务
+     * <p>默认不校验是否重复抄送</p>
      *
      * @param taskModel   任务模型
      * @param flwTask     当前任务
