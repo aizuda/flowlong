@@ -125,6 +125,9 @@ public class TestModel extends MysqlTest {
 
         ProcessModel error02 = getProcessModel("test/testAutoNodeError02.json");
         Assertions.assertEquals(2, ModelHelper.checkNodeModel(error02.getNodeConfig()));
+
+        ProcessModel error03 = getProcessModel("test/testAutoNodeError03.json");
+        Assertions.assertEquals(3, ModelHelper.checkNodeModel(error03.getNodeConfig()));
     }
 
     /**
