@@ -10,10 +10,7 @@ import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.NodeApproveSelf;
-import com.aizuda.bpm.engine.core.enums.NodeSetType;
-import com.aizuda.bpm.engine.core.enums.PerformType;
-import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
@@ -25,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * JSON BPM 节点
@@ -65,7 +63,10 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 节点类型 {@link TaskType}
      * <p>
-     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支 23，路由分支
+     * -1，结束节点 0，发起人 1，审批人 2，抄送人 3，条件审批 4，条件分支 5，办理子流程 6，定时器任务 7，触发器任务 8，并发分支 9，包容分支
+     * </p>
+     * <p>
+     * 23，路由分支 30，自动通过 31，自动拒绝
      * </p>
      */
     private Integer type;
@@ -186,6 +187,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean allowRollback;
     /**
+     * 允许审批节点手动创建抄送任务
+     */
+    private Boolean allowCc;
+    /**
      * 审批人与提交人为同一人时 {@link NodeApproveSelf}
      * <p>
      * 0，由发起人对自己审批 1，自动跳过 2，转交给直接上级审批 3，转交给部门负责人审批
@@ -298,6 +303,20 @@ public class NodeModel implements ModelInstance, Serializable {
 
             // 创建任务
             flowLongContext.createTask(execution, this);
+        }
+
+        /*
+         * 执行【自动通过】结束流程
+         */
+        else if (TaskType.autoPass.eq(this.type)) {
+            return execution.endInstance(this, InstanceState.autoPass);
+        }
+
+        /*
+         * 执行【自动拒绝】结束流程
+         */
+        else if (TaskType.autoReject.eq(this.type)) {
+            return execution.endInstance(this, InstanceState.autoReject);
         }
 
         /*
@@ -564,27 +583,30 @@ public class NodeModel implements ModelInstance, Serializable {
      * 执行触发器
      *
      * @param execution {@link Execution}
-     * @param function  执行默认触发器执行函数
+     * @param supplier  执行默认触发器执行函数
      */
-    public void executeTrigger(Execution execution, Function<Exception, Boolean> function) {
+    public void executeTrigger(Execution execution, Supplier<Boolean> supplier) {
+        boolean callSupplier = true;
         boolean flag = false;
         Map<String, Object> extendConfig = this.getExtendConfig();
         if (null != extendConfig) {
             Object _trigger = extendConfig.get("trigger");
             if (null != _trigger) {
                 try {
+                    callSupplier = false;
                     Class<?> triggerClass = Class.forName((String) _trigger);
                     if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
                         TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
                         flag = taskTrigger.execute(this, execution);
                     }
                 } catch (Exception e) {
-                    // 使用默认触发器
-                    if (null != function) {
-                        flag = function.apply(e);
-                    }
+                    e.printStackTrace();
                 }
             }
+        }
+        // 使用默认触发器
+        if (null != supplier && callSupplier) {
+            flag = supplier.get();
         }
         Assert.isFalse(flag, "trigger execute error");
     }

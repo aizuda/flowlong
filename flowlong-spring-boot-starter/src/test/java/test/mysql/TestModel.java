@@ -33,7 +33,9 @@ public class TestModel extends MysqlTest {
         try {
             String modeContent = StreamUtils.readBytes(StreamUtils.getResourceAsStream(name));
             FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
-            return FlowLongContext.fromJson(modeContent, ProcessModel.class);
+            ProcessModel pm = FlowLongContext.fromJson(modeContent, ProcessModel.class);
+            pm.buildParentNode(pm.getNodeConfig());
+            return pm;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,7 +79,7 @@ public class TestModel extends MysqlTest {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         NodeModel rootNode = processModel.getNodeConfig();
-        Assertions.assertEquals(rootNode.getNodeName(), "发起人");
+        Assertions.assertEquals("发起人", rootNode.getNodeName());
         List<NodeAssignee> nodeAssigneeList = rootNode.getNodeAssigneeList();
         Assertions.assertEquals(2, nodeAssigneeList.size());
     }
@@ -91,11 +93,11 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         processModel.buildParentNode(processModel.getNodeConfig());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
-        Assertions.assertEquals(previousNodeNames.size(), 4);
+        Assertions.assertEquals(4, previousNodeNames.size());
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
-        Assertions.assertFalse(ModelHelper.checkDuplicateNodeKeys(rootNodeModel));
-        Assertions.assertEquals(ModelHelper.checkConditionNode(rootNodeModel), 0);
+        Assertions.assertEquals(0, ModelHelper.checkNodeModel(rootNodeModel));
+        Assertions.assertEquals(0, ModelHelper.checkConditionNode(rootNodeModel));
     }
 
     /**
@@ -104,7 +106,28 @@ public class TestModel extends MysqlTest {
     @Test
     public void testCheckDuplicateNodeNames() {
         ProcessModel processModel = getProcessModel("test/duplicateNodeNames.json");
-        Assertions.assertTrue(ModelHelper.checkDuplicateNodeKeys(processModel.getNodeConfig()));
+        Assertions.assertEquals(1, ModelHelper.checkNodeModel(processModel.getNodeConfig()));
+    }
+
+    /**
+     * 测试检查是否存在重复节点名称
+     */
+    @Test
+    public void testCheckNodeModel() {
+        ProcessModel pm = getProcessModel("test/testAutoNode.json");
+        Assertions.assertEquals(0, ModelHelper.checkNodeModel(pm.getNodeConfig()));
+
+        ProcessModel pm01 = getProcessModel("test/testAutoNode01.json");
+        Assertions.assertEquals(0, ModelHelper.checkNodeModel(pm01.getNodeConfig()));
+
+        ProcessModel error01 = getProcessModel("test/testAutoNodeError01.json");
+        Assertions.assertEquals(2, ModelHelper.checkNodeModel(error01.getNodeConfig()));
+
+        ProcessModel error02 = getProcessModel("test/testAutoNodeError02.json");
+        Assertions.assertEquals(2, ModelHelper.checkNodeModel(error02.getNodeConfig()));
+
+        ProcessModel error03 = getProcessModel("test/testAutoNodeError03.json");
+        Assertions.assertEquals(3, ModelHelper.checkNodeModel(error03.getNodeConfig()));
     }
 
     /**
@@ -114,7 +137,7 @@ public class TestModel extends MysqlTest {
     public void testGetUnsetAssigneeNodeKeys() {
         ProcessModel processModel = getProcessModel("test/unsetAssigneeNodes.json");
         List<NodeModel> NodeModels = ModelHelper.getUnsetAssigneeNodes(processModel.getNodeConfig());
-        Assertions.assertEquals(NodeModels.size(), 2);
+        Assertions.assertEquals(2, NodeModels.size());
     }
 
     /**

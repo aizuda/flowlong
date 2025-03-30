@@ -29,7 +29,7 @@ public class TestNextChildNodes extends TestModel {
         assertEquals("flk1733446929109", "flk1733380972879", processModel);
 
         assertEquals("flk1733446923640", "flk1733380972879", processModel, new HashMap<String, Object>() {{
-            put("aaa", "11");
+            put("www", "11");
         }});
 
         // 下一步执行到并行分支
@@ -39,7 +39,11 @@ public class TestNextChildNodes extends TestModel {
 
         // 路由分支
         assertEquals("flk1733446923640", "flk1733446917296", processModel, new HashMap<String, Object>() {{
-            put("aaa", "11");
+            put("rrr", "11");
+        }});
+        // 路由分支跳过，包容分支默认线跳过
+        assertEquals("flk1733658019276", "flk1733446917296", processModel, new HashMap<String, Object>() {{
+            put("rrr", "333");
         }});
 
         // 跳过路由分支，包容分支执行默认条件

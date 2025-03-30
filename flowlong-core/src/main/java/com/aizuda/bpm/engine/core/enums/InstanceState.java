@@ -44,7 +44,15 @@ public enum InstanceState {
     /**
      * 强制终止
      */
-    terminate(5);
+    terminate(5),
+    /**
+     * 自动通过
+     */
+    autoPass(6),
+    /**
+     * 自动拒绝
+     */
+    autoReject(7);
 
     private final int value;
 

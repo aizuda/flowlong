@@ -137,6 +137,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (log.isDebugEnabled()) {
             log.debug("Auto execute taskId={}", taskId);
         }
+
+        // 会签情况存在多个任务，遇到某个处理人自动跳过
+        if (TaskEventType.autoJump.eq(eventType) && PerformType.countersign.eq(flwTask.getPerformType())) {
+            // 直接返回，不再执行后续逻辑
+            return true;
+        }
+
         // 完成任务后续逻辑
         return afterDoneTask(flowCreator, flwTask, args, execution -> {
             // 执行节点模型
@@ -172,7 +179,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
 
             // 重新加载流程模型内容
-            ModelHelper.reloadProcessModel(flowLongContext,  flwInstance.getId(), processModel);
+            ModelHelper.reloadProcessModel(flowLongContext, flwInstance.getId(), processModel);
 
             // 构建节点模型
             Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
@@ -220,6 +227,20 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 构建执行对象
             return this.createExecution(processModel, flwInstance, flwTask, flowCreator, args);
         });
+    }
+
+    /**
+     * 创建抄送任务
+     * <p>默认不校验是否重复抄送</p>
+     *
+     * @param taskModel   任务模型
+     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param flwTask     当前任务
+     * @param flowCreator 任务创建者
+     */
+    @Override
+    public boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
+        return taskService().createCcTask(taskModel, flwTask, ccUserList, flowCreator);
     }
 
     @Override
@@ -357,8 +378,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
          * 执行触发器任务
          */
         if (performType == PerformType.trigger) {
-            taskService().executeTaskTrigger(execution, flwTask);
-            return true;
+            return taskService().executeTaskTrigger(execution, flwTask);
         }
 
         // 执行回调逻辑

@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine;
 
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -69,12 +70,13 @@ public interface RuntimeService {
     /**
      * 结束流程实例（审批通过）
      *
-     * @param execution  {@link Execution}
-     * @param instanceId 流程实例ID
-     * @param endNode    结束节点
+     * @param execution     {@link Execution}
+     * @param instanceId    流程实例ID
+     * @param endNode       结束节点
+     * @param instanceState 实例状态
      * @return true 成功 false 失败
      */
-    boolean endInstance(Execution execution, Long instanceId, NodeModel endNode);
+    boolean endInstance(Execution execution, Long instanceId, NodeModel endNode, InstanceState instanceState);
 
     /**
      * 保存流程实例

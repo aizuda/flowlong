@@ -47,11 +47,17 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public IdGenerator idGenerator() {
+        return new DefaultIdGenerator();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public TaskService taskService(@Autowired(required = false) TaskAccessStrategy taskAccessStrategy, @Autowired(required = false) TaskListener taskListener,
-                                   @Autowired(required = false) TaskTrigger taskTrigger, FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao,
+                                   @Autowired(required = false) TaskTrigger taskTrigger, IdGenerator idGenerator, FlwInstanceDao instanceDao, FlwExtInstanceDao extInstanceDao,
                                    FlwHisInstanceDao hisInstanceDao, FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
                                    FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, instanceDao, extInstanceDao, hisInstanceDao,
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, idGenerator, instanceDao, extInstanceDao, hisInstanceDao,
                 taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
@@ -64,16 +70,16 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener, QueryService queryService,
+    public RuntimeService runtimeService(@Autowired(required = false) InstanceListener instanceListener, IdGenerator idGenerator, QueryService queryService,
                                          TaskService taskService, FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
                                          FlwExtInstanceDao extInstanceDao) {
-        return new RuntimeServiceImpl(instanceListener, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
+        return new RuntimeServiceImpl(instanceListener, idGenerator, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ProcessService processService(RuntimeService runtimeService, FlwProcessDao processDao) {
-        return new ProcessServiceImpl(runtimeService, processDao);
+    public ProcessService processService(RuntimeService runtimeService, IdGenerator idGenerator, FlwProcessDao processDao) {
+        return new ProcessServiceImpl(runtimeService, idGenerator, processDao);
     }
 
     @Bean
@@ -93,7 +99,6 @@ public class FlowLongAutoConfiguration {
     public TaskAccessStrategy taskAccessStrategy() {
         return new GeneralAccessStrategy();
     }
-
 
     @Bean
     @ConditionalOnMissingBean

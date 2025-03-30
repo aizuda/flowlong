@@ -26,6 +26,8 @@ public interface FlwHisTaskActorDao {
 
     boolean deleteByTaskId(Long taskId);
 
+    List<FlwHisTaskActor> selectCcTaskActorsByInstanceId(Long instanceId);
+
     List<FlwHisTaskActor> selectListByTaskId(Long taskId);
 
     List<FlwHisTaskActor> selectListByTaskIds(List<Long> taskIds);

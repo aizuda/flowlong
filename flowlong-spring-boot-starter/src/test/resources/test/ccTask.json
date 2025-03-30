@@ -1,0 +1,43 @@
+{
+  "id": 1101001,
+  "key": "ccTask",
+  "name": "抄送任务测试",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1743154482627",
+    "type": 0,
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "flk1743151182627",
+      "type": 1,
+      "setType": 1,
+      "examineLevel": 1,
+      "examineMode": 1,
+      "directorLevel": 1,
+      "directorMode": 0,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 1,
+      "termMode": 1,
+      "typeOfApprove": 1,
+      "rejectStrategy": 2,
+      "rejectStart": 1,
+      "remind": false,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "approveSelf": 0,
+      "childNode": {
+        "nodeName": "结束",
+        "nodeKey": "flk1743154382627",
+        "type": -1
+      },
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "CEO"
+        }
+      ]
+    }
+  }
+}

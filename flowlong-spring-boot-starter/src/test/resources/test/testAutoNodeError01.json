@@ -1,0 +1,68 @@
+{
+  "key": "testAutoNodeError01",
+  "name": "测试自动节点错误01",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1743260650486",
+    "type": 0,
+    "nodeAssigneeList": [
+      {
+        "id": "1778231636381663234",
+        "name": "CEO"
+      }
+    ],
+    "childNode": {
+      "nodeName": "条件路由",
+      "nodeKey": "flk1743302083146",
+      "type": 4,
+      "conditionNodes": [
+        {
+          "nodeName": "条件 1",
+          "nodeKey": "flk1743302083146-1",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "conditionList": [
+            [
+              {
+                "label": "aaa",
+                "field": "aaa",
+                "operator": "==",
+                "value": "111",
+                "type": "custom"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "自动通过",
+            "nodeKey": "flk1743302101707",
+            "type": 30,
+            "childNode": {
+              "nodeName": "错误后置节点",
+              "nodeKey": "flk1743302109240",
+              "type": 1
+            }
+          }
+        },
+        {
+          "nodeName": "默认条件",
+          "nodeKey": "flk1743302083146-default",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1,
+          "conditionList": []
+        }
+      ],
+      "childNode": {
+        "nodeName": "审核人",
+        "nodeKey": "flk1743260669824",
+        "type": 1,
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk1743260550486",
+          "type": -1
+        }
+      }
+    }
+  }
+}

@@ -125,7 +125,15 @@ public enum TaskType {
     /**
      * 驳回重新审批跳转
      */
-    reApproveJump(24);
+    reApproveJump(24),
+    /**
+     * 自动通过
+     */
+    autoPass(30),
+    /**
+     * 自动拒绝
+     */
+    autoReject(31);
 
     private final int value;
 

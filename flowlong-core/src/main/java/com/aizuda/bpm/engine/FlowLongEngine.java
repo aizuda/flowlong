@@ -13,7 +13,9 @@ import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
+import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
+import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.List;
 import java.util.Map;
@@ -205,7 +207,7 @@ public interface FlowLongEngine {
     boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args, FlowCreator flowCreator);
 
     default boolean autoRejectTask(FlwTask flwTask, FlowCreator flowCreator) {
-        return this.autoRejectTask(flwTask,  null, flowCreator);
+        return this.autoRejectTask(flwTask, null, flowCreator);
     }
 
     default boolean autoRejectTask(FlwTask flwTask) {
@@ -270,6 +272,25 @@ public interface FlowLongEngine {
                                 FlowCreator flowCreator, Map<String, Object> args);
 
     /**
+     * 创建抄送任务
+     * <p>默认不校验是否重复抄送</p>
+     *
+     * @param taskModel   任务模型
+     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param flwTask     当前任务
+     * @param flowCreator 任务创建者
+     */
+    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
+
+    /**
+     * 创建抄送任务
+     */
+    default boolean createCcTask(FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
+        ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
+        return this.createCcTask(processModel.getNode(flwTask.getTaskKey()), flwTask, ccUserList, flowCreator);
+    }
+
+    /**
      * 执行追加节点模型
      *
      * @param taskId      当前任务ID
@@ -281,6 +302,9 @@ public interface FlowLongEngine {
      */
     boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter);
 
+    /**
+     * 执行追加节点模型
+     */
     default boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
         return executeAppendNodeModel(taskId, nodeModel, flowCreator, null, beforeAfter);
     }

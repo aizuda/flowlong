@@ -1,0 +1,36 @@
+{
+  "key": "testAutoNodeError01",
+  "name": "测试自动节点错误01",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1743260650486",
+    "type": 0,
+    "nodeAssigneeList": [
+      {
+        "id": "1778231636381663234",
+        "name": "CEO"
+      }
+    ],
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "flk1743260669824",
+      "type": 1,
+      "setType": 5,
+      "childNode": {
+        "nodeName": "自动通过",
+        "nodeKey": "flk1743302321198",
+        "type": 30,
+        "childNode": {
+          "nodeName": "主管审批",
+          "nodeKey": "flk1743302320129",
+          "type": 1,
+          "childNode": {
+            "nodeName": "结束",
+            "nodeKey": "flk1743260550486",
+            "type": -1
+          }
+        }
+      }
+    }
+  }
+}
