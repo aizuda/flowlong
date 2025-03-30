@@ -121,11 +121,11 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除活动流程实例数据，更新历史流程实例的状态、结束时间
      */
     @Override
-    public boolean endInstance(Execution execution, Long instanceId, NodeModel endNode) {
+    public boolean endInstance(Execution execution, Long instanceId, NodeModel endNode, InstanceState instanceState) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null != flwInstance) {
             instanceDao.deleteById(instanceId);
-            hisInstanceDao.updateById(this.getFlwHisInstance(instanceId, endNode, flwInstance));
+            hisInstanceDao.updateById(this.getFlwHisInstance(instanceId, endNode, flwInstance, instanceState));
             // 流程实例监听器通知
             this.instanceNotify(InstanceEventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
@@ -150,10 +150,9 @@ public class RuntimeServiceImpl implements RuntimeService {
         return true;
     }
 
-    protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance) {
+    protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance, InstanceState instanceState) {
         FlwHisInstance his = new FlwHisInstance();
         his.setId(instanceId);
-        InstanceState instanceState = InstanceState.complete;
         his.setInstanceState(instanceState);
         String currentNodeName = instanceState.name();
         String currentNodeKey = instanceState.name();
