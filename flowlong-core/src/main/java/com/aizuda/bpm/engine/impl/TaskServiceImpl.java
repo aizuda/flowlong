@@ -950,6 +950,7 @@ public class TaskServiceImpl implements TaskService {
         for (NodeAssignee nodeUser : ccUserList) {
             FlwHisTaskActor hta = FlwHisTaskActor.ofNodeAssignee(nodeUser, fht.getInstanceId(), fht.getId());
             hta.setId(idGenerator.getId());
+            hta.setWeight(6);
             hisTaskActorDao.insert(hta);
         }
 

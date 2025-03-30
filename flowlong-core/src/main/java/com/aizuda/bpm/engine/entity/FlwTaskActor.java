@@ -70,6 +70,9 @@ public class FlwTaskActor implements Serializable {
      * <p>
      * 或签任务时，该值为 1 时为或签处理人
      * </p>
+     * <p>
+     * 抄送任务时，该值为 6 时为抄送人
+     * </p>
      */
     protected Integer weight;
     /**
