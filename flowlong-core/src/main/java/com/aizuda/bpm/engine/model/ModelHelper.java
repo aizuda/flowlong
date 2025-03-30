@@ -341,17 +341,49 @@ public class ModelHelper {
     }
 
     /**
-     * 检查是否存在重复节点名称
+     * 检查节点模型
      *
      * @param rootNodeModel 根节点模型
-     * @return true 重复 false 不重复
+     * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3,自动拒绝节点配置错误
      */
-    public static boolean checkDuplicateNodeKeys(NodeModel rootNodeModel) {
+    public static int checkNodeModel(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
         Set<String> set = new HashSet<>();
         for (NodeModel nextNode : allNextNodes) {
             if (!set.add(nextNode.getNodeKey())) {
-                return true;
+                // 节点KEY重复
+                return 1;
+            }
+            if (TaskType.autoPass.eq(nextNode.getType())) {
+                if (!inConditionNode(nextNode) || null != nextNode.getChildNode()) {
+                    // 自动通过节点配置错误
+                    return 2;
+                }
+            } else if (TaskType.autoReject.eq(nextNode.getType())) {
+                if (!inConditionNode(nextNode) || null != nextNode.getChildNode()) {
+                    // 自动拒绝节点配置错误
+                    return 3;
+                }
+            }
+        }
+        // 正确模型
+        return 0;
+    }
+
+    /**
+     * 判断节点是否在条件节点中
+     *
+     * @param nodeModel {@link NodeModel}
+     * @return true 是 false 否
+     */
+    public static boolean inConditionNode(NodeModel nodeModel) {
+        if (null != nodeModel) {
+            NodeModel parentNode = nodeModel.getParentNode();
+            if (null != parentNode) {
+                if (parentNode.conditionNode()) {
+                    return true;
+                }
+                return inConditionNode(parentNode);
             }
         }
         return false;
