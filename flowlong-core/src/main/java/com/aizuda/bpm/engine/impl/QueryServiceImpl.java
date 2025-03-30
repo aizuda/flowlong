@@ -102,8 +102,8 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
-    public List<FlwHisTaskActor> getCcTaskActorsByInstanceId(Long instanceId) {
-        return hisTaskActorDao.selectCcTaskActorsByInstanceId(instanceId);
+    public Optional<List<FlwHisTaskActor>> getCcTaskActorsByInstanceId(Long instanceId) {
+        return Optional.ofNullable(hisTaskActorDao.selectCcTaskActorsByInstanceId(instanceId));
     }
 
     @Override

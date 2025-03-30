@@ -133,7 +133,7 @@ public interface QueryService {
      * @param instanceId 历史任务ID
      * @return 当前活动任务参与者列表
      */
-    List<FlwHisTaskActor> getCcTaskActorsByInstanceId(Long instanceId);
+    Optional<List<FlwHisTaskActor>> getCcTaskActorsByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取活动任务参与者数组
