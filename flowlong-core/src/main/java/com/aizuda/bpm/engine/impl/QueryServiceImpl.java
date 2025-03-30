@@ -102,6 +102,11 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    public List<FlwHisTaskActor> getCcTaskActorsByInstanceId(Long instanceId) {
+        return hisTaskActorDao.selectCcTaskActorsByInstanceId(instanceId);
+    }
+
+    @Override
     public List<FlwTaskActor> getTaskActorsByTaskId(Long taskId) {
         return taskActorDao.selectListByTaskId(taskId);
     }
