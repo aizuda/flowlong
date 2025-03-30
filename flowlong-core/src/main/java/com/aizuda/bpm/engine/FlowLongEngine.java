@@ -282,6 +282,9 @@ public interface FlowLongEngine {
      */
     boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
 
+    /**
+     * 创建抄送任务
+     */
     default boolean createCcTask(FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
         ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
         return this.createCcTask(processModel.getNode(flwTask.getTaskKey()), flwTask, ccUserList, flowCreator);
@@ -299,6 +302,9 @@ public interface FlowLongEngine {
      */
     boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter);
 
+    /**
+     * 执行追加节点模型
+     */
     default boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
         return executeAppendNodeModel(taskId, nodeModel, flowCreator, null, beforeAfter);
     }

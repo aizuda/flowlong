@@ -566,6 +566,9 @@ public class ModelHelper {
         return currentUsedNodeKeys;
     }
 
+    /**
+     * 获取已使用所有的子节点key列表
+     */
     public static void getChildAllUsedNodeKeys(List<String> currentUsedNodeKeys, FlowLongContext flowLongContext,
                                                Execution execution, NodeModel rootNodeModel, String currentNodeKey) {
         if (!currentUsedNodeKeys.contains(currentNodeKey)) {
