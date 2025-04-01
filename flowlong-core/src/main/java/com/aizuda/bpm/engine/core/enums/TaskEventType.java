@@ -36,6 +36,10 @@ public enum TaskEventType {
      */
     cc,
     /**
+     * 手动创建抄送任务
+     */
+    createCc,
+    /**
      * 分配
      */
     assignment,

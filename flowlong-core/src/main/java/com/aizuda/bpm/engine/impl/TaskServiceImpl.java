@@ -924,12 +924,14 @@ public class TaskServiceImpl implements TaskService {
             return false;
         }
 
+        TaskEventType eventType = TaskEventType.cc;
         FlwTask newFlwTask;
         if (TaskType.cc.eq(taskModel.getType())) {
             // 抄送任务
             newFlwTask = flwTask;
         } else {
             // 非抄送任务手动创建抄送，需要克隆当前任务
+            eventType = TaskEventType.createCc;
             newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
         }
         newFlwTask.setId(flowLongIdGenerator.getId(newFlwTask.getId()));
@@ -958,7 +960,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 任务监听器通知
-        this.taskNotify(TaskEventType.cc, () -> fht, htaList, taskModel, flowCreator);
+        this.taskNotify(eventType, () -> fht, htaList, taskModel, flowCreator);
         return true;
     }
 
