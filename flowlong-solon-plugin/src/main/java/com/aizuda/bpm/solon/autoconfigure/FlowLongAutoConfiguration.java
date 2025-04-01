@@ -41,18 +41,18 @@ import org.noear.solon.scheduling.scheduled.manager.IJobManager;
 public class FlowLongAutoConfiguration {
 
     @Bean
-    @Condition(onMissingBean = IdGenerator.class)
-    public IdGenerator idGenerator() {
-        return new DefaultIdGenerator();
+    @Condition(onMissingBean = FlowLongIdGenerator.class)
+    public FlowLongIdGenerator flowLongIdGenerator() {
+        return new DefaultFlowLongIdGenerator();
     }
 
     @Bean
     @Condition(onMissingBean = TaskService.class)
     public TaskService taskService(@Inject(required = false) TaskAccessStrategy taskAccessStrategy, @Inject(required = false) TaskListener taskListener,
-                                   @Inject(required = false) TaskTrigger taskTrigger, IdGenerator idGenerator, FlwInstanceDao instanceDao,
+                                   @Inject(required = false) TaskTrigger taskTrigger, FlowLongIdGenerator flowLongIdGenerator, FlwInstanceDao instanceDao,
                                    FlwExtInstanceDao extInstanceDao, FlwHisInstanceDao hisInstanceDao, FlwTaskDao taskDao, FlwTaskActorDao taskActorDao,
                                    FlwHisTaskDao hisTaskDao, FlwHisTaskActorDao hisTaskActorDao) {
-        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, idGenerator, instanceDao, extInstanceDao, hisInstanceDao,
+        return new TaskServiceImpl(taskAccessStrategy, taskListener, taskTrigger, flowLongIdGenerator, instanceDao, extInstanceDao, hisInstanceDao,
                 taskDao, taskActorDao, hisTaskDao, hisTaskActorDao);
     }
 
@@ -65,16 +65,16 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @Condition(onMissingBean = RuntimeService.class)
-    public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener, IdGenerator idGenerator, QueryService queryService,
+    public RuntimeService runtimeService(@Inject(required = false) InstanceListener instanceListener, FlowLongIdGenerator flowLongIdGenerator, QueryService queryService,
                                          TaskService taskService, FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao,
                                          FlwExtInstanceDao extInstanceDao) {
-        return new RuntimeServiceImpl(instanceListener, idGenerator, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
+        return new RuntimeServiceImpl(instanceListener, flowLongIdGenerator, queryService, taskService, instanceDao, hisInstanceDao, extInstanceDao);
     }
 
     @Bean
     @Condition(onMissingBean = ProcessService.class)
-    public ProcessService processService(RuntimeService runtimeService, IdGenerator idGenerator, FlwProcessDao processDao) {
-        return new ProcessServiceImpl(runtimeService, idGenerator, processDao);
+    public ProcessService processService(RuntimeService runtimeService, FlowLongIdGenerator flowLongIdGenerator, FlwProcessDao processDao) {
+        return new ProcessServiceImpl(runtimeService, flowLongIdGenerator, processDao);
     }
 
     @Bean

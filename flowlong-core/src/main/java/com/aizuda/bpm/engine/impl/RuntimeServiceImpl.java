@@ -43,17 +43,17 @@ import java.util.stream.Collectors;
  */
 public class RuntimeServiceImpl implements RuntimeService {
     protected final InstanceListener instanceListener;
-    protected final IdGenerator idGenerator;
+    protected final FlowLongIdGenerator flowLongIdGenerator;
     protected final QueryService queryService;
     protected final TaskService taskService;
     protected final FlwInstanceDao instanceDao;
     protected final FlwHisInstanceDao hisInstanceDao;
     protected final FlwExtInstanceDao extInstanceDao;
 
-    public RuntimeServiceImpl(InstanceListener instanceListener, IdGenerator idGenerator, QueryService queryService, TaskService taskService,
+    public RuntimeServiceImpl(InstanceListener instanceListener, FlowLongIdGenerator flowLongIdGenerator, QueryService queryService, TaskService taskService,
                               FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao) {
         this.instanceListener = instanceListener;
-        this.idGenerator = idGenerator;
+        this.flowLongIdGenerator = flowLongIdGenerator;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceDao = instanceDao;
@@ -190,7 +190,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator) {
         // 保存流程实例
-        flwInstance.setId(idGenerator.getId(flwInstance.getId()));
+        flwInstance.setId(flowLongIdGenerator.getId(flwInstance.getId()));
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
