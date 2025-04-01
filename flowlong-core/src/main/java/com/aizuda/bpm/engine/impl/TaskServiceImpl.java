@@ -947,15 +947,18 @@ public class TaskServiceImpl implements TaskService {
         taskDao.deleteById(newFlwTask.getId());
 
         // 历史任务参与者数据入库
+        List<FlwTaskActor> htaList = new ArrayList<>();
         for (NodeAssignee nodeUser : ccUserList) {
             FlwHisTaskActor hta = FlwHisTaskActor.ofNodeAssignee(nodeUser, fht.getInstanceId(), fht.getId());
             hta.setId(flowLongIdGenerator.getId(hta.getId()));
             hta.setWeight(6);
-            hisTaskActorDao.insert(hta);
+            if (hisTaskActorDao.insert(hta)) {
+                htaList.add(hta);
+            }
         }
 
         // 任务监听器通知
-        this.taskNotify(TaskEventType.cc, () -> fht, null, taskModel, flowCreator);
+        this.taskNotify(TaskEventType.cc, () -> fht, htaList, taskModel, flowCreator);
         return true;
     }
 
