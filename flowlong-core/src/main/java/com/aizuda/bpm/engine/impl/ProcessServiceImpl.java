@@ -142,7 +142,7 @@ public class ProcessServiceImpl implements ProcessService {
              * 添加一条新的流程记录
              */
             FlwProcess process = FlwProcess.of(flowCreator, processModel, processVersion, jsonString);
-            process.setId(idGenerator.getId());
+            process.setId(idGenerator.getId(process.getId()));
             if (null != processSave) {
                 processSave.accept(process);
             }

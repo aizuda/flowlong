@@ -190,7 +190,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     @Override
     public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator) {
         // 保存流程实例
-        flwInstance.setId(idGenerator.getId());
+        flwInstance.setId(idGenerator.getId(flwInstance.getId()));
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态

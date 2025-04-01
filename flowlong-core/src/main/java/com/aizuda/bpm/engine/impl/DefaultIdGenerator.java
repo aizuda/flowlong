@@ -19,8 +19,8 @@ import com.aizuda.bpm.engine.IdGenerator;
 public class DefaultIdGenerator implements IdGenerator {
 
     @Override
-    public Long getId() {
+    public Long getId(Long id) {
         // 不做任何处理
-        return null;
+        return id;
     }
 }

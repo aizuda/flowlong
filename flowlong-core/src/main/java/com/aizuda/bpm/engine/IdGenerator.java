@@ -16,5 +16,11 @@ package com.aizuda.bpm.engine;
  */
 public interface IdGenerator {
 
-    Long getId();
+    /**
+     * 获取自定义ID值
+     *
+     * @param id 可能存在的ID值
+     * @return 用户业务实际情况返回的自定义ID值
+     */
+    Long getId(Long id);
 }
