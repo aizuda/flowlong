@@ -1,0 +1,38 @@
+{
+  "key": "delegateProcess",
+  "name": "任务委托",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "type": 0,
+    "nodeKey": "flk1743668656240",
+    "nodeAssigneeList": [],
+    "childNode": {
+      "nodeName": "审核人",
+      "nodeKey": "flk1743668691223",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "test001",
+          "name": "测试001"
+        }
+      ],
+      "childNode": {
+        "nodeName": "抄送人",
+        "nodeKey": "flk1743668707881",
+        "type": 2,
+        "nodeAssigneeList": [
+          {
+            "id": "test001",
+            "name": "测试001"
+          }
+        ],
+        "childNode": {
+          "nodeName": "结束",
+          "type": -1,
+          "nodeKey": "flk1743668556240"
+        }
+      }
+    }
+  }
+}

@@ -584,9 +584,15 @@ public class TaskServiceImpl implements TaskService {
                 taskActorDao.insert(fta);
             });
         } else {
-            // 设置委托人信息
-            flwTask.setAssignorId(flowCreator.getCreateId());
-            flwTask.setAssignor(flowCreator.getCreateBy());
+            if (null == flwTask.getAssignorId()) {
+                // 设置委托人信息
+                flwTask.setAssignorId(dbFlwTask.getCreateId());
+                flwTask.setAssignor(dbFlwTask.getCreateBy());
+            } else {
+                // 记录第原始的主办人信息
+                flwTask.setAssignorId(dbFlwTask.getAssignorId());
+                flwTask.setAssignor(dbFlwTask.getAssignor());
+            }
 
             // 删除任务历史参与者
             taskActorDao.deleteById(flwTaskActor.getId());
