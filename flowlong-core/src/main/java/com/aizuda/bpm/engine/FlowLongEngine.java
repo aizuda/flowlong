@@ -246,12 +246,17 @@ public interface FlowLongEngine {
      * @param nodeKey        跳转的节点key
      * @param flowCreator    任务创建者
      * @param args           任务参数
+     * @param termination    是否终止流程，该参数为 true 时，其它驳回策略无效
      * @return Task 任务对象
      */
-    Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination);
+
+    default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+        return executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, false);
+    }
 
     default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
-        return executeRejectTask(currentFlwTask, null, flowCreator, args);
+        return executeRejectTask(currentFlwTask, null, flowCreator, args, false);
     }
 
     /**

@@ -191,7 +191,23 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination) {
+        // 执行任务驳回
+        return this.executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, termination, () -> {
+
+            // 驳回并终止流程
+            flowLongContext.getRuntimeService().reject(currentFlwTask.getInstanceId(), flowCreator);
+            return Optional.of(currentFlwTask);
+        });
+    }
+
+    protected Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
+                                                  boolean termination, Supplier<Optional<FlwTask>> terminateProcess) {
+
+        if (termination) {
+            // 强制终止流程
+            return terminateProcess.get();
+        }
 
         if (null != nodeKey) {
             // 3，驳回到指定节点
@@ -205,6 +221,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (Objects.equals(1, nodeModel.getRejectStrategy())) {
             // 驳回策略 1，驳回到发起人
             return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        } else if (Objects.equals(4, nodeModel.getRejectStrategy())) {
+            // 驳回策略 4，终止审批流程
+            return terminateProcess.get();
         }
 
         // 2，驳回到上一节点
