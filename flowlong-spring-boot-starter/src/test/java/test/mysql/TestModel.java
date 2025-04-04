@@ -33,9 +33,7 @@ public class TestModel extends MysqlTest {
         try {
             String modeContent = StreamUtils.readBytes(StreamUtils.getResourceAsStream(name));
             FlowLongContext.setFlowJsonHandler(new FlowJacksonHandler());
-            ProcessModel pm = FlowLongContext.fromJson(modeContent, ProcessModel.class);
-            pm.buildParentNode(pm.getNodeConfig());
-            return pm;
+            return ModelHelper.buildProcessModel(modeContent);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
