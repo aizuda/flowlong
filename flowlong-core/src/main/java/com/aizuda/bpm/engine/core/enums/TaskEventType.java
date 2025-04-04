@@ -20,6 +20,10 @@ public enum TaskEventType {
      */
     start,
     /**
+     * 发起暂存草稿
+     */
+    startAsDraft,
+    /**
      * 重新发起
      */
     restart,

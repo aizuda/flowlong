@@ -86,6 +86,10 @@ public class Execution implements Serializable {
      */
     private boolean isMerged = false;
     /**
+     * 暂存草稿
+     */
+    private boolean saveAsDraft = false;
+    /**
      * 指定任务事件类型
      */
     private TaskEventType taskEventType;

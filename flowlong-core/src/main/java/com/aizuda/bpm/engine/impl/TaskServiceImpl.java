@@ -1032,14 +1032,16 @@ public class TaskServiceImpl implements TaskService {
 
         if (TaskType.major.eq(nodeType)) {
             /*
-             * 0，发起人 （ 直接保存历史任务、执行进入下一个节点逻辑 ）
+             * 0，发起人（ 直接保存历史任务、执行进入下一个节点逻辑 ）
              */
             flwTasks.addAll(this.saveTask(flwTask, PerformType.start, taskActors, execution, nodeModel));
 
             /*
-             * 执行进入下一个节点
+             * 非暂存草稿，执行进入下一个节点
              */
-            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            if (!execution.isSaveAsDraft()) {
+                nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            }
         } else if (TaskType.approval.eq(nodeType)) {
             /*
              * 1，审批人
@@ -1102,7 +1104,7 @@ public class TaskServiceImpl implements TaskService {
             }
             // 启动子流程，任务归档历史
             final long instanceId = flwTask.getInstanceId();
-            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, () -> {
+            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, execution.isSaveAsDraft(), () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
                 flwInstance.setParentInstanceId(instanceId);
@@ -1222,26 +1224,39 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (performType == PerformType.start) {
+            TaskEventType taskEventType;
             // 发起任务
             taskDao.insert(flwTask);
-            // 创建历史任务
-            FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
-            flwHisTask.calculateDuration();
-            if (hisTaskDao.insert(flwHisTask)) {
+            // 暂存草稿
+            if (execution.isSaveAsDraft()) {
+                taskEventType = TaskEventType.startAsDraft;
                 // 设置为执行任务
-                execution.setFlwTask(flwHisTask);
-                // 即刻归档，确保自增ID情况一致性
-                taskDao.deleteById(flwTask.getId());
+                execution.setFlwTask(flwTask);
                 // 记录发起人
-                FlwHisTaskActor fht = FlwHisTaskActor.ofFlwHisTask(flwHisTask);
+                FlwTaskActor fht = FlwTaskActor.ofFlwTask(flwTask);
                 fht.setId(flowLongIdGenerator.getId(fht.getId()));
-                hisTaskActorDao.insert(fht);
-                flwTask.setId(flwHisTask.getId());
-                flwTasks.add(flwTask);
-
-                // 创建任务监听
-                this.taskNotify(TaskEventType.start, () -> flwTask, taskActors, nodeModel, flowCreator);
+                taskActorDao.insert(fht);
+            } else {
+                taskEventType = TaskEventType.start;
+                // 创建历史任务
+                FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
+                flwHisTask.calculateDuration();
+                if (hisTaskDao.insert(flwHisTask)) {
+                    // 设置为执行任务
+                    execution.setFlwTask(flwHisTask);
+                    // 即刻归档，确保自增ID情况一致性
+                    taskDao.deleteById(flwTask.getId());
+                    // 记录发起人
+                    FlwHisTaskActor fht = FlwHisTaskActor.ofFlwHisTask(flwHisTask);
+                    fht.setId(flowLongIdGenerator.getId(fht.getId()));
+                    hisTaskActorDao.insert(fht);
+                    flwTask.setId(flwHisTask.getId());
+                }
             }
+            // 添加返回任务
+            flwTasks.add(flwTask);
+            // 创建任务监听
+            this.taskNotify(taskEventType, () -> flwTask, taskActors, nodeModel, flowCreator);
             return flwTasks;
         }
 

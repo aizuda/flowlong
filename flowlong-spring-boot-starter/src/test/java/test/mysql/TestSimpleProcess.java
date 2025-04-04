@@ -6,6 +6,7 @@ package test.mysql;
 
 import com.aizuda.bpm.engine.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +24,16 @@ class TestSimpleProcess extends MysqlTest {
     @BeforeEach
     public void before() {
         processId = this.deployByResource("test/simpleProcess.json", testCreator);
+    }
+
+    @Test
+    void testStartAsDraft() {
+        // 测试启动为草稿
+        flowLongEngine.startInstanceById(processId, testCreator, true).ifPresent(instance -> {
+
+            // 停留在发起人节点
+            this.executeActiveTasks(instance.getId(), t -> Assertions.assertEquals("发起人", t.getTaskName()));
+        });
     }
 
     @Test

@@ -55,18 +55,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人，参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessById(id);
-        return this.startProcessInstance(process.checkState(), flowCreator, args, supplier);
+        return this.startProcessInstance(process.checkState(), flowCreator, args, saveAsDraft, supplier);
     }
 
     /**
      * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessByVersion(flowCreator.getTenantId(), processKey, version);
-        return this.startProcessInstance(process, flowCreator, args, supplier);
+        return this.startProcessInstance(process, flowCreator, args, saveAsDraft, supplier);
     }
 
     /**
@@ -75,13 +75,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param process     流程定义对象
      * @param flowCreator 流程创建者
      * @param args        执行参数
+     * @param saveAsDraft 暂存草稿
      * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
     @Override
-    public Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args,
+                                                      boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         // 执行启动模型
-        return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
+        return process.executeStartModel(flowLongContext, flowCreator, saveAsDraft, nodeModel -> {
             FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, supplier);
             if (log.isDebugEnabled()) {
                 log.debug("start process instanceId={}", flwInstance.getId());
