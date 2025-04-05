@@ -154,7 +154,6 @@ public class RuntimeServiceImpl implements RuntimeService {
     protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance, InstanceState instanceState) {
         FlwHisInstance his = new FlwHisInstance();
         his.setId(instanceId);
-        his.setInstanceState(instanceState);
         String currentNodeName = instanceState.name();
         String currentNodeKey = instanceState.name();
         if (null != endNode) {
@@ -172,7 +171,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         his.setLastUpdateBy(flwInstance.getLastUpdateBy());
         his.setLastUpdateTime(flwInstance.getLastUpdateTime());
         his.calculateDuration();
-        return his;
+        return his.instanceState(instanceState);
     }
 
     protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {

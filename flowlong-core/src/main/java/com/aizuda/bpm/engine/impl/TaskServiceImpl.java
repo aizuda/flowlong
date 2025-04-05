@@ -101,13 +101,19 @@ public class TaskServiceImpl implements TaskService {
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args, taskState);
 
+        // 完成暂存待审任务，设置流程实例状态为审批中
+        if (TaskType.saveAsDraft.eq(flwTask.getTaskType())) {
+            eventType = TaskEventType.start;
+            FlwHisInstance fhi = new FlwHisInstance();
+            fhi.setId(flwTask.getInstanceId());
+            hisInstanceDao.updateById(fhi.instanceState(InstanceState.active));
+        }
         // 重新发起审批
-        if (PerformType.start.eq(flwTask.getPerformType()) && null != flwTask.getParentTaskId()) {
+        else if (PerformType.start.eq(flwTask.getPerformType()) && null != flwTask.getParentTaskId()) {
             eventType = TaskEventType.restart;
         }
-
         // 触发器情况直接移除任务
-        if (PerformType.trigger.eq(flwTask.getPerformType())) {
+        else if (PerformType.trigger.eq(flwTask.getPerformType())) {
             taskDao.deleteById(flwTask.getId());
             return flwTask;
         }
@@ -722,8 +728,7 @@ public class TaskServiceImpl implements TaskService {
                     // 重置历史实例为激活状态
                     FlwHisInstance temp = new FlwHisInstance();
                     temp.setId(instanceId);
-                    temp.setInstanceState(InstanceState.active);
-                    hisInstanceDao.updateById(temp);
+                    hisInstanceDao.updateById(temp.instanceState(InstanceState.active));
                 }
             }
         }
@@ -1225,11 +1230,12 @@ public class TaskServiceImpl implements TaskService {
 
         if (performType == PerformType.start) {
             TaskEventType taskEventType;
-            // 发起任务
-            taskDao.insert(flwTask);
             // 暂存草稿
             if (execution.isSaveAsDraft()) {
                 taskEventType = TaskEventType.startAsDraft;
+                // 暂存待审
+                flwTask.taskType(TaskType.saveAsDraft);
+                taskDao.insert(flwTask);
                 // 设置为执行任务
                 execution.setFlwTask(flwTask);
                 // 记录发起人
@@ -1238,6 +1244,8 @@ public class TaskServiceImpl implements TaskService {
                 taskActorDao.insert(fht);
             } else {
                 taskEventType = TaskEventType.start;
+                // 发起任务
+                taskDao.insert(flwTask);
                 // 创建历史任务
                 FlwHisTask flwHisTask = FlwHisTask.of(flwTask, TaskState.complete);
                 flwHisTask.calculateDuration();
