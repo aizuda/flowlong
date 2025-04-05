@@ -30,6 +30,19 @@ import java.util.stream.Collectors;
 public class ModelHelper {
 
     /**
+     * 构建流程模型
+     * <p>确保已经实现JSON解析处理器接口</p>
+     *
+     * @param jsonModel 流程模型JSON格式
+     * @return 流程模型
+     */
+    public static ProcessModel buildProcessModel(String jsonModel) {
+        ProcessModel pm = FlowLongContext.fromJson(jsonModel, ProcessModel.class);
+        pm.buildParentNode(pm.getNodeConfig());
+        return pm;
+    }
+
+    /**
      * 动态获取下一个节点
      *
      * @param flowLongContext 流程上下文 {@link FlowLongContext}
@@ -341,7 +354,7 @@ public class ModelHelper {
     }
 
     /**
-     * 检查节点模型
+     * 检查节点模型，检测节点模型需要构建父节点
      *
      * @param rootNodeModel 根节点模型
      * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3,自动拒绝节点配置错误

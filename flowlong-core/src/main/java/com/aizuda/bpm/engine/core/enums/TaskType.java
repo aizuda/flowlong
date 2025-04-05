@@ -127,6 +127,10 @@ public enum TaskType {
      */
     reApproveJump(24),
     /**
+     * 暂存待审
+     */
+    saveAsDraft(25),
+    /**
      * 自动通过
      */
     autoPass(30),

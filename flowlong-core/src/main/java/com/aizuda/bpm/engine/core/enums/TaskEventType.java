@@ -20,6 +20,10 @@ public enum TaskEventType {
      */
     start,
     /**
+     * 发起暂存草稿
+     */
+    startAsDraft,
+    /**
      * 重新发起
      */
     restart,
@@ -35,6 +39,10 @@ public enum TaskEventType {
      * 抄送
      */
     cc,
+    /**
+     * 手动创建抄送任务
+     */
+    createCc,
     /**
      * 分配
      */

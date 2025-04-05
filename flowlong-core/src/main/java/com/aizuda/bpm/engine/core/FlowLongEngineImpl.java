@@ -55,18 +55,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 根据流程定义ID，创建人，参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessById(id);
-        return this.startProcessInstance(process.checkState(), flowCreator, args, supplier);
+        return this.startProcessInstance(process.checkState(), flowCreator, args, saveAsDraft, supplier);
     }
 
     /**
      * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
     @Override
-    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessByVersion(flowCreator.getTenantId(), processKey, version);
-        return this.startProcessInstance(process, flowCreator, args, supplier);
+        return this.startProcessInstance(process, flowCreator, args, saveAsDraft, supplier);
     }
 
     /**
@@ -75,14 +75,16 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * @param process     流程定义对象
      * @param flowCreator 流程创建者
      * @param args        执行参数
+     * @param saveAsDraft 暂存草稿
      * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
     @Override
-    public Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, Supplier<FlwInstance> supplier) {
+    public Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args,
+                                                      boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         // 执行启动模型
-        return process.executeStartModel(flowLongContext, flowCreator, nodeModel -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, supplier);
+        return process.executeStartModel(flowLongContext, flowCreator, saveAsDraft, nodeModel -> {
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, saveAsDraft, supplier);
             if (log.isDebugEnabled()) {
                 log.debug("start process instanceId={}", flwInstance.getId());
             }
@@ -191,7 +193,23 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination) {
+        // 执行任务驳回
+        return this.executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, termination, () -> {
+
+            // 驳回并终止流程
+            flowLongContext.getRuntimeService().reject(currentFlwTask.getInstanceId(), flowCreator);
+            return Optional.of(currentFlwTask);
+        });
+    }
+
+    protected Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
+                                                  boolean termination, Supplier<Optional<FlwTask>> terminateProcess) {
+
+        if (termination) {
+            // 强制终止流程
+            return terminateProcess.get();
+        }
 
         if (null != nodeKey) {
             // 3，驳回到指定节点
@@ -205,6 +223,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (Objects.equals(1, nodeModel.getRejectStrategy())) {
             // 驳回策略 1，驳回到发起人
             return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        } else if (Objects.equals(4, nodeModel.getRejectStrategy())) {
+            // 驳回策略 4，终止审批流程
+            return terminateProcess.get();
         }
 
         // 2，驳回到上一节点

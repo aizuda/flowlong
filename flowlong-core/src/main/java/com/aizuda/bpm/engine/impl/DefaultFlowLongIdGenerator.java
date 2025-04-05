@@ -4,7 +4,7 @@
  */
 package com.aizuda.bpm.engine.impl;
 
-import com.aizuda.bpm.engine.IdGenerator;
+import com.aizuda.bpm.engine.FlowLongIdGenerator;
 
 /**
  * 数据访问层ID生成器默认实现
@@ -16,11 +16,11 @@ import com.aizuda.bpm.engine.IdGenerator;
  * @author hubin
  * @since 1.0
  */
-public class DefaultIdGenerator implements IdGenerator {
+public class DefaultFlowLongIdGenerator implements FlowLongIdGenerator {
 
     @Override
-    public Long getId() {
+    public Long getId(Long id) {
         // 不做任何处理
-        return null;
+        return id;
     }
 }

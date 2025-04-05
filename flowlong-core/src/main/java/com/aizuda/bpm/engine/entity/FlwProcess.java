@@ -111,10 +111,12 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      *
      * @param flowLongContext 流程引擎上下文
      * @param flowCreator     流程实例任务创建者
+     * @param saveAsDraft     暂存草稿
      * @param function        流程执行对象处理函数
      * @return 流程实例
      */
-    public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, Function<NodeModel, Execution> function) {
+    public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, boolean saveAsDraft,
+                                                   Function<NodeModel, Execution> function) {
         FlwInstance flwInstance = null;
         if (null != this.modelContent) {
             NodeModel nodeModel = this.model().getNodeConfig();
@@ -123,6 +125,8 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
             Assert.isTrue(ModelHelper.checkNodeModel(nodeModel) > 0, "process nodeModel config error");
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
+            // 暂存草稿
+            execution.setSaveAsDraft(saveAsDraft);
             // 重新渲染逻辑节点
             nodeModel = execution.getProcessModel().getNodeConfig();
             // 创建首个审批任务

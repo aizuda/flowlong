@@ -43,17 +43,17 @@ import java.util.stream.Collectors;
  */
 public class RuntimeServiceImpl implements RuntimeService {
     protected final InstanceListener instanceListener;
-    protected final IdGenerator idGenerator;
+    protected final FlowLongIdGenerator flowLongIdGenerator;
     protected final QueryService queryService;
     protected final TaskService taskService;
     protected final FlwInstanceDao instanceDao;
     protected final FlwHisInstanceDao hisInstanceDao;
     protected final FlwExtInstanceDao extInstanceDao;
 
-    public RuntimeServiceImpl(InstanceListener instanceListener, IdGenerator idGenerator, QueryService queryService, TaskService taskService,
+    public RuntimeServiceImpl(InstanceListener instanceListener, FlowLongIdGenerator flowLongIdGenerator, QueryService queryService, TaskService taskService,
                               FlwInstanceDao instanceDao, FlwHisInstanceDao hisInstanceDao, FlwExtInstanceDao extInstanceDao) {
         this.instanceListener = instanceListener;
-        this.idGenerator = idGenerator;
+        this.flowLongIdGenerator = flowLongIdGenerator;
         this.queryService = queryService;
         this.taskService = taskService;
         this.instanceDao = instanceDao;
@@ -65,7 +65,8 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, Supplier<FlwInstance> supplier) {
+    public FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel,
+                                      boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwInstance flwInstance = null;
         if (null != supplier) {
             flwInstance = supplier.get();
@@ -86,7 +87,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         ModelHelper.reloadProcessModel(flwProcess.model(), t -> flwProcess.setModelContent2Json(t.cleanParentNode()));
 
         // 保存实例
-        this.saveInstance(flwInstance, flwProcess, flowCreator);
+        this.saveInstance(flwInstance, flwProcess, saveAsDraft, flowCreator);
         return flwInstance;
     }
 
@@ -153,7 +154,6 @@ public class RuntimeServiceImpl implements RuntimeService {
     protected FlwHisInstance getFlwHisInstance(Long instanceId, NodeModel endNode, FlwInstance flwInstance, InstanceState instanceState) {
         FlwHisInstance his = new FlwHisInstance();
         his.setId(instanceId);
-        his.setInstanceState(instanceState);
         String currentNodeName = instanceState.name();
         String currentNodeKey = instanceState.name();
         if (null != endNode) {
@@ -171,7 +171,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         his.setLastUpdateBy(flwInstance.getLastUpdateBy());
         his.setLastUpdateTime(flwInstance.getLastUpdateTime());
         his.calculateDuration();
-        return his;
+        return his.instanceState(instanceState);
     }
 
     protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
@@ -185,16 +185,17 @@ public class RuntimeServiceImpl implements RuntimeService {
      *
      * @param flwInstance 流程实例对象
      * @param flwProcess  流程定义对象
+     * @param saveAsDraft 暂存草稿
      * @param flowCreator 处理人员
      */
     @Override
-    public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, FlowCreator flowCreator) {
+    public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, boolean saveAsDraft, FlowCreator flowCreator) {
         // 保存流程实例
-        flwInstance.setId(idGenerator.getId());
+        flwInstance.setId(flowLongIdGenerator.getId(flwInstance.getId()));
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
-        FlwHisInstance fhi = FlwHisInstance.of(flwInstance, InstanceState.active);
+        FlwHisInstance fhi = FlwHisInstance.of(flwInstance, saveAsDraft ? InstanceState.saveAsDraft : InstanceState.active);
         if (hisInstanceDao.insert(fhi)) {
 
             // 保存扩展流程实例

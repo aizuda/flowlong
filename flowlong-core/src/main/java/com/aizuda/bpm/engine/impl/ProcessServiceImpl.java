@@ -4,7 +4,7 @@
  */
 package com.aizuda.bpm.engine.impl;
 
-import com.aizuda.bpm.engine.IdGenerator;
+import com.aizuda.bpm.engine.FlowLongIdGenerator;
 import com.aizuda.bpm.engine.ProcessService;
 import com.aizuda.bpm.engine.RuntimeService;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -34,12 +34,12 @@ import java.util.function.Consumer;
 @Slf4j
 public class ProcessServiceImpl implements ProcessService {
     protected final RuntimeService runtimeService;
-    protected final IdGenerator idGenerator;
+    protected final FlowLongIdGenerator flowLongIdGenerator;
     protected final FlwProcessDao processDao;
 
-    public ProcessServiceImpl(RuntimeService runtimeService, IdGenerator idGenerator, FlwProcessDao processDao) {
+    public ProcessServiceImpl(RuntimeService runtimeService, FlowLongIdGenerator flowLongIdGenerator, FlwProcessDao processDao) {
         this.runtimeService = runtimeService;
-        this.idGenerator = idGenerator;
+        this.flowLongIdGenerator = flowLongIdGenerator;
         this.processDao = processDao;
     }
 
@@ -142,7 +142,7 @@ public class ProcessServiceImpl implements ProcessService {
              * 添加一条新的流程记录
              */
             FlwProcess process = FlwProcess.of(flowCreator, processModel, processVersion, jsonString);
-            process.setId(idGenerator.getId());
+            process.setId(flowLongIdGenerator.getId(process.getId()));
             if (null != processSave) {
                 processSave.accept(process);
             }
