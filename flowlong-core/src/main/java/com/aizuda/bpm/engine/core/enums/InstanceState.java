@@ -22,6 +22,10 @@ import java.util.Objects;
 @Getter
 public enum InstanceState {
     /**
+     * 暂存待审
+     */
+    saveAsDraft(-1),
+    /**
      * 审批中
      */
     active(0),

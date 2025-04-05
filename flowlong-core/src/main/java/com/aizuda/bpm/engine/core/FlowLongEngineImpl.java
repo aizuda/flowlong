@@ -84,7 +84,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                                                       boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         // 执行启动模型
         return process.executeStartModel(flowLongContext, flowCreator, saveAsDraft, nodeModel -> {
-            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, supplier);
+            FlwInstance flwInstance = runtimeService().createInstance(process, flowCreator, args, nodeModel, saveAsDraft, supplier);
             if (log.isDebugEnabled()) {
                 log.debug("start process instanceId={}", flwInstance.getId());
             }
