@@ -205,6 +205,8 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
         for (FlwTask ft : fts) {
             if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                // 设置执行参数
+                ft.setVariable(args);
                 // 归档历史
                 this.moveToHisTask(ft, taskState, flowCreator);
             }
