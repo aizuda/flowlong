@@ -195,68 +195,55 @@ public class ModelHelper {
     }
 
     /**
-     * 获取所有上一个节点key，不包含抄送节点
+     * 获取所有上一个节点key，只包含发起节点和审批节点（非直接所在条件分支排除在外）
      *
      * @param nodeModel 当前节点
      * @return 所有节点key
      */
     public static List<String> getAllPreviousNodeKeys(NodeModel nodeModel) {
-        List<String> getNodeKeys = getAllParentNodeKeys(nodeModel.getNodeKey(), nodeModel.getParentNode());
-        // 往上递归需要去重
-        return getNodeKeys.stream().distinct().collect(Collectors.toList());
-    }
-
-    private static List<String> getAllParentNodeKeys(String currentNodeKey, NodeModel nodeModel) {
         List<String> nodeKeys = new ArrayList<>();
-        if (null != nodeModel) {
-            if (!nodeModel.ccNode()) {
-                // 非抄送节点
-                if (nodeModel.conditionNode()) {
-                    // 条件节点找子节点
-                    nodeKeys.addAll(getAllConditionNodeKeys(currentNodeKey, nodeModel));
-                } else {
-                    // 普通节点
-                    nodeKeys.add(nodeModel.getNodeKey());
-                }
-            }
-            // 继续找上一个节点
-            nodeKeys.addAll(getAllParentNodeKeys(currentNodeKey, nodeModel.getParentNode()));
-        }
-        return nodeKeys;
-    }
-
-    private static List<String> getAllConditionNodeKeys(String currentNodeKey, NodeModel nodeModel) {
-        List<String> nodeKeys = new ArrayList<>();
-        if (null != nodeModel) {
-            List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
-            if (ObjectUtils.isNotEmpty(conditionNodes)) {
-                for (ConditionNode conditionNode : conditionNodes) {
-                    NodeModel childNodeMode = conditionNode.getChildNode();
-                    if (null != childNodeMode) {
-                        if (childNodeMode.conditionNode()) {
-                            // 条件路由继续往下找
-                            nodeKeys.addAll(getAllConditionNodeKeys(currentNodeKey, childNodeMode));
-                        } else {
-                            // 其它节点找子节点，必须包含当前节点的子节点分支
-                            List<String> allNextNodeKeys = getAllNextConditionNodeKeys(childNodeMode);
-                            if (allNextNodeKeys.contains(currentNodeKey)) {
-                                List<String> legalNodeKeys = new ArrayList<>();
-                                for (String t : allNextNodeKeys) {
-                                    if (currentNodeKey.equals(t)) {
-                                        break;
-                                    }
-                                    legalNodeKeys.add(t);
-                                }
-                                nodeKeys.addAll(legalNodeKeys);
-                            }
-                        }
-                    }
+        List<NodeModel> allParentNodeModels = getAllParentNodeModels(nodeModel);
+        if (!allParentNodeModels.isEmpty()) {
+            for (NodeModel parentNodeModel : allParentNodeModels) {
+                Integer type = parentNodeModel.getType();
+                if (TaskType.major.eq(type) || TaskType.approval.eq(type)) {
+                    // 发起或审批节点
+                    nodeKeys.add(parentNodeModel.getNodeKey());
                 }
             }
         }
         return nodeKeys;
     }
 
+    /**
+     * 获取当前节点的所有父节点模型
+     *
+     * @param nodeModel 当前节点模型
+     * @return 所有父节点模型
+     */
+    private static List<NodeModel> getAllParentNodeModels(NodeModel nodeModel) {
+        List<NodeModel> nodeModels = new ArrayList<>();
+        NodeModel parentNodeModel = nodeModel.getParentNode();
+        if (null != parentNodeModel) {
+            nodeModels.add(parentNodeModel);
+            if (TaskType.major.eq(parentNodeModel.getType())) {
+                return nodeModels;
+            }
+            // 继续往上递归
+            List<NodeModel> pnmList = getAllParentNodeModels(parentNodeModel);
+            if (!pnmList.isEmpty()) {
+                nodeModels.addAll(pnmList);
+            }
+        }
+        return nodeModels;
+    }
+
+    /**
+     * 获取所有下一个节点key，递归所有子节点
+     *
+     * @param nodeModel 当前节点模型
+     * @return 所有节点key
+     */
     private static List<String> getAllNextConditionNodeKeys(NodeModel nodeModel) {
         List<String> nodeKeys = new ArrayList<>();
         if (null != nodeModel) {

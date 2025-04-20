@@ -1,0 +1,777 @@
+{
+  "name": "办案流程",
+  "key": "case-flow",
+  "nodeConfig": {
+    "nodeName": "开始",
+    "nodeKey": "flow1724653907242",
+    "type": 0,
+    "childNode": {
+      "nodeName": "案源登记",
+      "nodeKey": "flow1743992564465",
+      "type": 1,
+      "setType": 5,
+      "examineLevel": 1,
+      "examineMode": 1,
+      "directorLevel": 1,
+      "directorMode": 0,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 1,
+      "termMode": 1,
+      "typeOfApprove": 2,
+      "remind": false,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "approveSelf": 0,
+      "extendConfig": {
+        "docs": [
+          {
+            "id": "1826813630957588482",
+            "title": "案件来源登记表",
+            "required": true
+          }
+        ],
+        "docSign": [
+          {
+            "docTemplateId": "1826813630957588482",
+            "sign": "sign-officer1",
+            "signTime": "clue-caseSourceReviewTime",
+            "opinion": "clue-caseSourceReviewOpinion",
+            "opinionLabel": "案源审核意见"
+          }
+        ]
+      },
+      "childNode": {
+        "nodeName": "抄送人",
+        "nodeKey": "flk1745030379055",
+        "type": 2,
+        "allowSelection": true,
+        "nodeAssigneeList": [],
+        "childNode": {
+          "nodeName": "条件路由",
+          "nodeKey": "flow1726043603184",
+          "type": 4,
+          "conditionNodes": [
+            {
+              "nodeName": "案源审核",
+              "nodeKey": "flow1726043603184-1",
+              "type": 3,
+              "priorityLevel": 1,
+              "conditionList": [
+                [
+                  {
+                    "label": "clueAudit",
+                    "field": "clueAudit",
+                    "operator": "==",
+                    "value": "1",
+                    "type": "custom"
+                  }
+                ]
+              ],
+              "childNode": {
+                "nodeName": "案源审核",
+                "nodeKey": "flow1726043626088",
+                "type": 1,
+                "setType": 3,
+                "nodeAssigneeList": [
+                  {
+                    "id": "1815378717562204162",
+                    "name": "系统运维"
+                  }
+                ],
+                "examineLevel": 1,
+                "examineMode": 3,
+                "directorLevel": 1,
+                "directorMode": 0,
+                "selectMode": 1,
+                "term": 1,
+                "termMode": 1,
+                "typeOfApprove": 1,
+                "remind": false,
+                "allowTransfer": false,
+                "allowAppendNode": false,
+                "allowRollback": false,
+                "approveSelf": 0,
+                "extendConfig": {
+                  "docSign": [
+                    {
+                      "docTemplateId": "1826813630957588482",
+                      "sign": "sign-leader",
+                      "signTime": "clue-caseSourceReviewTime",
+                      "opinion": "clue-caseSourceReviewOpinion",
+                      "opinionLabel": "案源审核意见"
+                    },
+                    {
+                      "docTemplateId": "1826813634879262722",
+                      "sign": "fdfaf111",
+                      "signTime": "fdfaf122",
+                      "opinion": "fdafdafdas444",
+                      "opinionLabel": "fdaffd333"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "nodeName": "默认条件",
+              "nodeKey": "flow1726043603184-default",
+              "type": 3,
+              "priorityLevel": 2
+            }
+          ],
+          "childNode": {
+            "nodeName": "核查检查",
+            "nodeKey": "flow-verification-inspections",
+            "actionUrl": "1834877482586808321:办案程序选择表单",
+            "type": 1,
+            "setType": 5,
+            "examineLevel": 1,
+            "examineMode": 3,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 2,
+            "term": 1,
+            "termMode": 1,
+            "typeOfApprove": 1,
+            "remind": true,
+            "allowTransfer": false,
+            "allowAppendNode": false,
+            "allowRollback": false,
+            "approveSelf": 0,
+            "extendConfig": {
+              "docs": [
+                {
+                  "id": "1826813694077669377",
+                  "title": "现场笔录",
+                  "required": false
+                },
+                {
+                  "id": "1826813672929988609",
+                  "title": "立案审批表",
+                  "required": false
+                },
+                {
+                  "id": "1838862822333231106",
+                  "title": "行政执法检查表",
+                  "required": true
+                }
+              ]
+            },
+            "childNode": {
+              "nodeName": "条件路由",
+              "nodeKey": "flow1725950039726",
+              "type": 4,
+              "conditionNodes": [
+                {
+                  "nodeName": "简易处罚",
+                  "nodeKey": "flow1725950123854-2",
+                  "type": 3,
+                  "priorityLevel": 1,
+                  "conditionList": [
+                    [
+                      {
+                        "label": "applicableProcedure",
+                        "field": "applicableProcedure",
+                        "operator": "==",
+                        "value": "1",
+                        "type": "custom"
+                      }
+                    ]
+                  ],
+                  "childNode": {
+                    "nodeName": "当场处罚",
+                    "nodeKey": "flow1726041716541",
+                    "type": 1,
+                    "setType": 5,
+                    "examineLevel": 1,
+                    "examineMode": 3,
+                    "directorLevel": 1,
+                    "directorMode": 0,
+                    "selectMode": 1,
+                    "term": 1,
+                    "termMode": 1,
+                    "typeOfApprove": 1,
+                    "remind": false,
+                    "allowTransfer": false,
+                    "allowAppendNode": false,
+                    "allowRollback": false,
+                    "approveSelf": 0,
+                    "extendConfig": {
+                      "docs": [
+                        {
+                          "id": "1826813641426571265",
+                          "title": "当场行政处罚决定书",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "nodeName": "简案快办",
+                  "nodeKey": "flow1726047158465-4",
+                  "type": 3,
+                  "priorityLevel": 2,
+                  "conditionList": [
+                    [
+                      {
+                        "label": "applicableProcedure",
+                        "field": "applicableProcedure",
+                        "operator": "==",
+                        "value": "2",
+                        "type": "custom"
+                      }
+                    ]
+                  ],
+                  "childNode": {
+                    "nodeName": "简案快办",
+                    "nodeKey": "flow1730961360166",
+                    "type": 1,
+                    "setType": 5,
+                    "examineLevel": 1,
+                    "examineMode": 3,
+                    "directorLevel": 1,
+                    "directorMode": 0,
+                    "selectMode": 1,
+                    "termAuto": false,
+                    "term": 1,
+                    "termMode": 1,
+                    "typeOfApprove": 2,
+                    "remind": false,
+                    "allowTransfer": false,
+                    "allowAppendNode": false,
+                    "allowRollback": false,
+                    "approveSelf": 0,
+                    "extendConfig": {
+                      "docSign": [
+                        {
+                          "docTemplateId": "1826813630957588482",
+                          "sign": "sign-leader",
+                          "signTime": "clue-caseSourceReviewTime",
+                          "opinion": "clue-caseSourceReviewOpinion",
+                          "opinionLabel": "案源审核意见"
+                        }
+                      ]
+                    },
+                    "childNode": {
+                      "nodeName": "并行路由",
+                      "nodeKey": "flk1745075373938",
+                      "type": 8,
+                      "parallelNodes": [
+                        {
+                          "nodeName": "并行分支 1",
+                          "nodeKey": "flk1745075373938-1",
+                          "type": 3,
+                          "priorityLevel": 1,
+                          "conditionMode": 1,
+                          "conditionList": [],
+                          "childNode": {
+                            "nodeName": "并行审批A",
+                            "nodeKey": "flk1745075378244",
+                            "type": 1,
+                            "setType": 5,
+                            "nodeAssigneeList": [],
+                            "examineLevel": 1,
+                            "directorLevel": 1,
+                            "selectMode": 1,
+                            "termAuto": false,
+                            "remind": false,
+                            "term": 1,
+                            "termMode": 1,
+                            "examineMode": 1,
+                            "approveSelf": 0,
+                            "directorMode": 0,
+                            "typeOfApprove": 1,
+                            "extendConfig": {},
+                            "allowTransfer": false,
+                            "allowAppendNode": false,
+                            "allowRollback": false,
+                            "rejectStrategy": 2,
+                            "rejectStart": 1
+                          }
+                        },
+                        {
+                          "nodeName": "并行分支 2",
+                          "nodeKey": "flk1745075373938-2",
+                          "type": 3,
+                          "priorityLevel": 2,
+                          "conditionMode": 1,
+                          "conditionList": [],
+                          "childNode": {
+                            "nodeName": "并行审批B",
+                            "nodeKey": "flk1745075403235",
+                            "type": 1,
+                            "setType": 4,
+                            "nodeAssigneeList": [],
+                            "examineLevel": 1,
+                            "directorLevel": 1,
+                            "selectMode": 1,
+                            "termAuto": false,
+                            "remind": false,
+                            "term": 1,
+                            "termMode": 1,
+                            "examineMode": 1,
+                            "approveSelf": 0,
+                            "directorMode": 0,
+                            "typeOfApprove": 1,
+                            "extendConfig": {},
+                            "allowTransfer": false,
+                            "allowAppendNode": false,
+                            "allowRollback": false,
+                            "rejectStrategy": 2,
+                            "rejectStart": 1
+                          }
+                        }
+                      ],
+                      "childNode": {
+                        "nodeName": "抄送人",
+                        "nodeKey": "flk1745030385786",
+                        "type": 2,
+                        "allowSelection": true,
+                        "nodeAssigneeList": [],
+                        "childNode": {
+                          "nodeName": "部门负责人立案审核",
+                          "nodeKey": "flow1726239460842",
+                          "actionUrl": "1854434170565611522:审核表单",
+                          "type": 1,
+                          "setType": 3,
+                          "nodeAssigneeList": [
+                            {
+                              "id": "1815378717562204162",
+                              "name": "系统运维"
+                            }
+                          ],
+                          "examineLevel": 1,
+                          "examineMode": 3,
+                          "directorLevel": 1,
+                          "directorMode": 0,
+                          "selectMode": 1,
+                          "term": 1,
+                          "termMode": 1,
+                          "typeOfApprove": 1,
+                          "remind": false,
+                          "allowTransfer": false,
+                          "allowAppendNode": false,
+                          "allowRollback": false,
+                          "approveSelf": 0
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "nodeName": "一般程序",
+                  "nodeKey": "flow1726047096865-3",
+                  "type": 3,
+                  "priorityLevel": 3,
+                  "conditionList": [
+                    [
+                      {
+                        "label": "applicableProcedure",
+                        "field": "applicableProcedure",
+                        "operator": "==",
+                        "value": "3",
+                        "type": "custom"
+                      }
+                    ]
+                  ],
+                  "childNode": {
+                    "nodeName": "平台运维立案审核",
+                    "nodeKey": "flow1726238355231",
+                    "actionUrl": "1854434170565611522:审核表单",
+                    "type": 1,
+                    "setType": 3,
+                    "nodeAssigneeList": [
+                      {
+                        "id": "1815378717562204162",
+                        "name": "系统运维"
+                      }
+                    ],
+                    "examineLevel": 1,
+                    "examineMode": 3,
+                    "directorLevel": 1,
+                    "directorMode": 0,
+                    "selectMode": 1,
+                    "term": 1,
+                    "termMode": 1,
+                    "typeOfApprove": 1,
+                    "remind": false,
+                    "allowTransfer": false,
+                    "allowAppendNode": false,
+                    "allowRollback": false,
+                    "approveSelf": 0,
+                    "childNode": {
+                      "nodeName": "行政处罚告知",
+                      "nodeKey": "flow1726238811546",
+                      "type": 1,
+                      "setType": 5,
+                      "examineLevel": 1,
+                      "examineMode": 3,
+                      "directorLevel": 1,
+                      "directorMode": 0,
+                      "selectMode": 1,
+                      "term": 1,
+                      "termMode": 1,
+                      "typeOfApprove": 1,
+                      "remind": false,
+                      "allowTransfer": false,
+                      "allowAppendNode": false,
+                      "allowRollback": false,
+                      "approveSelf": 0,
+                      "childNode": {
+                        "nodeName": "条件路由",
+                        "nodeKey": "flow1726238874398",
+                        "type": 4,
+                        "conditionNodes": [
+                          {
+                            "nodeName": "陈述申辩",
+                            "nodeKey": "flow1726238874398-1",
+                            "type": 3,
+                            "priorityLevel": 1,
+                            "conditionList": [
+                              [
+                                {
+                                  "label": "p",
+                                  "field": "p",
+                                  "operator": "==",
+                                  "value": "1",
+                                  "type": "custom"
+                                }
+                              ]
+                            ],
+                            "childNode": {
+                              "nodeName": "陈述申辩意见处理",
+                              "nodeKey": "flow1726238967819",
+                              "type": 1,
+                              "setType": 4,
+                              "examineLevel": 1,
+                              "examineMode": 1,
+                              "directorLevel": 1,
+                              "directorMode": 0,
+                              "selectMode": 1,
+                              "term": 1,
+                              "termMode": 1,
+                              "typeOfApprove": 1,
+                              "remind": false,
+                              "allowTransfer": false,
+                              "allowAppendNode": false,
+                              "allowRollback": false,
+                              "approveSelf": 0,
+                              "childNode": {
+                                "nodeName": "陈述申辩意见审核",
+                                "nodeKey": "flow1726238991929",
+                                "type": 1,
+                                "setType": 3,
+                                "nodeAssigneeList": [
+                                  {
+                                    "id": "1815378717562204162",
+                                    "name": "系统运维"
+                                  }
+                                ],
+                                "examineLevel": 1,
+                                "examineMode": 3,
+                                "directorLevel": 1,
+                                "directorMode": 0,
+                                "selectMode": 1,
+                                "term": 1,
+                                "termMode": 1,
+                                "typeOfApprove": 1,
+                                "remind": false,
+                                "allowTransfer": false,
+                                "allowAppendNode": false,
+                                "allowRollback": false,
+                                "approveSelf": 0
+                              }
+                            }
+                          },
+                          {
+                            "nodeName": "听证",
+                            "nodeKey": "flow1726238932060-2",
+                            "type": 3,
+                            "priorityLevel": 2,
+                            "conditionList": [
+                              [
+                                {
+                                  "label": "p",
+                                  "field": "p",
+                                  "operator": "==",
+                                  "value": "2",
+                                  "type": "custom"
+                                }
+                              ]
+                            ],
+                            "childNode": {
+                              "nodeName": "听证意见处理",
+                              "nodeKey": "flow1726239013784",
+                              "type": 1,
+                              "setType": 5,
+                              "examineLevel": 1,
+                              "examineMode": 3,
+                              "directorLevel": 1,
+                              "directorMode": 0,
+                              "selectMode": 1,
+                              "term": 1,
+                              "termMode": 1,
+                              "typeOfApprove": 1,
+                              "remind": false,
+                              "allowTransfer": false,
+                              "allowAppendNode": false,
+                              "allowRollback": false,
+                              "approveSelf": 0,
+                              "childNode": {
+                                "nodeName": "听证意见审核",
+                                "nodeKey": "flow1726239030670",
+                                "type": 1,
+                                "setType": 3,
+                                "nodeAssigneeList": [
+                                  {
+                                    "id": "1815378717562204162",
+                                    "name": "系统运维"
+                                  }
+                                ],
+                                "examineLevel": 1,
+                                "examineMode": 3,
+                                "directorLevel": 1,
+                                "directorMode": 0,
+                                "selectMode": 1,
+                                "term": 1,
+                                "termMode": 1,
+                                "typeOfApprove": 1,
+                                "remind": false,
+                                "allowTransfer": false,
+                                "allowAppendNode": false,
+                                "allowRollback": false,
+                                "approveSelf": 0
+                              }
+                            }
+                          },
+                          {
+                            "nodeName": "默认条件",
+                            "nodeKey": "flow1726238874398-default",
+                            "type": 3,
+                            "priorityLevel": 3
+                          }
+                        ],
+                        "childNode": {
+                          "nodeName": "抄送人",
+                          "nodeKey": "flk1745030390369",
+                          "type": 2,
+                          "allowSelection": true,
+                          "nodeAssigneeList": [],
+                          "childNode": {
+                            "nodeName": "行政处理决定意见呈报",
+                            "nodeKey": "flow1726239074244",
+                            "type": 1,
+                            "setType": 5,
+                            "examineLevel": 1,
+                            "examineMode": 1,
+                            "directorLevel": 1,
+                            "directorMode": 0,
+                            "selectMode": 1,
+                            "term": 1,
+                            "termMode": 1,
+                            "typeOfApprove": 1,
+                            "remind": false,
+                            "allowTransfer": false,
+                            "allowAppendNode": false,
+                            "allowRollback": false,
+                            "approveSelf": 0,
+                            "extendConfig": {
+                              "docs": [
+                                {
+                                  "id": "1826813659730513922",
+                                  "title": "行政处罚决定书（含前置复议）",
+                                  "required": false
+                                },
+                                {
+                                  "id": "1826813660288356353",
+                                  "title": "行政处罚决定书",
+                                  "required": false
+                                },
+                                {
+                                  "id": "1826813684070060034",
+                                  "title": "文书送达回证（行政处罚决定书）",
+                                  "required": false
+                                },
+                                {
+                                  "id": "1826813664197447682",
+                                  "title": "行政处理决定审批表",
+                                  "required": true
+                                },
+                                {
+                                  "id": "1826813658430279682",
+                                  "title": "行政处罚公示信息信用修复提醒函",
+                                  "required": false
+                                }
+                              ]
+                            },
+                            "childNode": {
+                              "nodeName": "案件结案部门负责人审批",
+                              "nodeKey": "flow1743993671070",
+                              "type": 1,
+                              "setType": 3,
+                              "nodeAssigneeList": [
+                                {
+                                  "id": "1815378717562204162",
+                                  "name": "系统运维"
+                                }
+                              ],
+                              "examineLevel": 1,
+                              "examineMode": 1,
+                              "directorLevel": 1,
+                              "directorMode": 0,
+                              "selectMode": 1,
+                              "termAuto": false,
+                              "term": 1,
+                              "termMode": 1,
+                              "typeOfApprove": 1,
+                              "remind": false,
+                              "allowTransfer": false,
+                              "allowAppendNode": false,
+                              "allowRollback": false,
+                              "approveSelf": 0
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "nodeName": "默认条件",
+                  "nodeKey": "flow1725950039726-default",
+                  "type": 3,
+                  "priorityLevel": 4,
+                  "childNode": {
+                    "nodeName": "包容路由",
+                    "nodeKey": "flk1745075455543",
+                    "type": 9,
+                    "inclusiveNodes": [
+                      {
+                        "nodeName": "包容条件 1",
+                        "nodeKey": "flk1745075455543-1",
+                        "type": 3,
+                        "priorityLevel": 1,
+                        "conditionMode": 1,
+                        "conditionList": [
+                          [
+                            {
+                              "label": "签名",
+                              "field": "signature_vcvl3rai",
+                              "operator": "==",
+                              "value": "9",
+                              "type": "form"
+                            }
+                          ]
+                        ],
+                        "childNode": {
+                          "nodeName": "包容审批A",
+                          "nodeKey": "flk1745075482115",
+                          "type": 1,
+                          "setType": 5,
+                          "nodeAssigneeList": [],
+                          "examineLevel": 1,
+                          "directorLevel": 1,
+                          "selectMode": 1,
+                          "termAuto": false,
+                          "remind": false,
+                          "term": 1,
+                          "termMode": 1,
+                          "examineMode": 1,
+                          "approveSelf": 0,
+                          "directorMode": 0,
+                          "typeOfApprove": 1,
+                          "extendConfig": {},
+                          "allowTransfer": false,
+                          "allowAppendNode": false,
+                          "allowRollback": false,
+                          "rejectStrategy": 2,
+                          "rejectStart": 1
+                        }
+                      },
+                      {
+                        "nodeName": "默认条件",
+                        "nodeKey": "flk1745075455543-default",
+                        "type": 3,
+                        "priorityLevel": 2,
+                        "conditionMode": 1,
+                        "conditionList": []
+                      }
+                    ]
+                  }
+                }
+              ],
+              "childNode": {
+                "nodeName": "抄送人",
+                "nodeKey": "flk1745030398944",
+                "type": 2,
+                "allowSelection": true,
+                "nodeAssigneeList": [],
+                "childNode": {
+                  "nodeName": "案卷归档",
+                  "nodeKey": "flow1743993686006",
+                  "type": 1,
+                  "setType": 5,
+                  "examineLevel": 1,
+                  "examineMode": 1,
+                  "directorLevel": 1,
+                  "directorMode": 0,
+                  "selectMode": 1,
+                  "termAuto": false,
+                  "term": 1,
+                  "termMode": 1,
+                  "typeOfApprove": 1,
+                  "remind": false,
+                  "allowTransfer": false,
+                  "allowAppendNode": false,
+                  "allowRollback": false,
+                  "approveSelf": 0,
+                  "extendConfig": {
+                    "docs": [
+                      {
+                        "id": "1826813672175013889",
+                        "title": "卷宗封面",
+                        "required": false
+                      },
+                      {
+                        "id": "1826813671688474625",
+                        "title": "卷宗封面（副卷）",
+                        "required": false
+                      },
+                      {
+                        "id": "1826813671101272065",
+                        "title": "卷内文件目录",
+                        "required": false
+                      },
+                      {
+                        "id": "1826813670690230274",
+                        "title": "卷内文件目录（副卷）",
+                        "required": false
+                      },
+                      {
+                        "id": "1826813670199496706",
+                        "title": "卷内备考表",
+                        "required": false
+                      },
+                      {
+                        "id": "1826813669704568834",
+                        "title": "卷内备考表（副卷）",
+                        "required": false
+                      }
+                    ]
+                  },
+                  "childNode": {
+                    "nodeName": "结案",
+                    "nodeKey": "flk-end",
+                    "type": -1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

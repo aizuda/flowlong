@@ -89,13 +89,34 @@ public class TestModel extends MysqlTest {
     public void testNodeNames() {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
-        processModel.buildParentNode(processModel.getNodeConfig());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
         Assertions.assertEquals(4, previousNodeNames.size());
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
         Assertions.assertEquals(0, ModelHelper.checkNodeModel(rootNodeModel));
         Assertions.assertEquals(0, ModelHelper.checkConditionNode(rootNodeModel));
+    }
+
+    @Test
+    public void testAllPreviousNodeKeys() {
+        ProcessModel processModel = getProcessModel("test/issues_IC1EG0.json");
+        // 案源审核
+        assertEquals(processModel, "flow1726043626088", 2);
+        // 包容审批A
+        assertEquals(processModel, "flk1745075482115", 3);
+        // 简案快办
+        assertEquals(processModel, "flow1730961360166", 3);
+        // 部门负责人立案审核
+        assertEquals(processModel, "flow1726239460842", 4);
+        // 案件结案部门负责人审批
+        assertEquals(processModel, "flow1743993671070", 6);
+        // 陈述申辩意见审核
+        assertEquals(processModel, "flow1726238991929", 6);
+    }
+
+    private void assertEquals(ProcessModel processModel, String nodeKey, int size) {
+        List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode(nodeKey)); // 条件内部审核
+        Assertions.assertEquals(size, previousNodeNames.size());
     }
 
     /**
