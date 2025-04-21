@@ -550,6 +550,54 @@ public class ModelHelper {
 
                     // 条件节点子节点
                     getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
+                } else if (rootNodeModel.parallelNode()) {
+                    // 并行节点
+                    int flag = 0;
+                    List<String> pnAllKeys = new ArrayList<>();
+                    for (NodeModel nodeModel : rootNodeModel.getParallelNodes()) {
+                        List<String> pnKeys = new ArrayList<>();
+                        // 添加执行条件节点
+                        pnKeys.add(nodeModel.getNodeKey());
+
+                        // 条件节点分支子节点
+                        pnKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, nodeModel, currentNodeKey));
+
+                        // 判断如果包含当前节点则添加到已使用的节点中
+                        if (pnKeys.contains(currentNodeKey)) {
+                            flag = 1;
+                            currentUsedNodeKeys.addAll(pnKeys);
+                            break;
+                        } else {
+                            pnAllKeys.addAll(pnKeys);
+                        }
+                    }
+
+                    // 如果不包含当前节点则添加到已使用的节点中
+                    if (Objects.equals(0, flag)) {
+                        currentUsedNodeKeys.addAll(pnAllKeys);
+                    }
+
+                    // 条件节点子节点
+                    getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
+                } else if (rootNodeModel.inclusiveNode()) {
+                    // 包容节点
+                    flowLongContext.getFlowConditionHandler().getInclusiveNodes(flowLongContext, execution, rootNodeModel).ifPresent(conditionNodes -> {
+                        for (ConditionNode conditionNode : conditionNodes) {
+                            // 添加执行条件节点
+                            currentUsedNodeKeys.add(conditionNode.getNodeKey());
+
+                            // 条件节点分支子节点
+                            currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, conditionNode.getChildNode(), currentNodeKey));
+
+                            // 已经找到当前节点，忽略其它分支
+                            if (currentUsedNodeKeys.contains(currentNodeKey)) {
+                                break;
+                            }
+                        }
+                    });
+
+                    // 条件节点子节点
+                    getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
                 } else {
 
                     // 普通节点
