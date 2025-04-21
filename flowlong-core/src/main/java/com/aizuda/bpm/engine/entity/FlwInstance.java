@@ -85,8 +85,7 @@ public class FlwInstance extends FlowEntity {
     @SuppressWarnings({"all"})
     public Map<String, Object> variableToMap() {
         Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
-        if (map == null) return new HashMap<>();
-        return map;
+        return null != map ? map : new HashMap<>();
     }
 
     public void setMapVariable(Map<String, Object> args) {
