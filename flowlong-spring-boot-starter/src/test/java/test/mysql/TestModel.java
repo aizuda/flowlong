@@ -89,13 +89,34 @@ public class TestModel extends MysqlTest {
     public void testNodeNames() {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
-        processModel.buildParentNode(processModel.getNodeConfig());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
         Assertions.assertEquals(4, previousNodeNames.size());
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
         Assertions.assertEquals(0, ModelHelper.checkNodeModel(rootNodeModel));
         Assertions.assertEquals(0, ModelHelper.checkConditionNode(rootNodeModel));
+    }
+
+    @Test
+    public void testAllPreviousNodeKeys() {
+        ProcessModel processModel = getProcessModel("test/issues_IC1EG0.json");
+        // 案源审核
+        assertEquals(processModel, "flow1726043626088", 2);
+        // 包容审批A
+        assertEquals(processModel, "flk1745075482115", 3);
+        // 简案快办
+        assertEquals(processModel, "flow1730961360166", 3);
+        // 部门负责人立案审核
+        assertEquals(processModel, "flow1726239460842", 4);
+        // 案件结案部门负责人审批
+        assertEquals(processModel, "flow1743993671070", 6);
+        // 陈述申辩意见审核
+        assertEquals(processModel, "flow1726238991929", 6);
+    }
+
+    private void assertEquals(ProcessModel processModel, String nodeKey, int size) {
+        List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode(nodeKey)); // 条件内部审核
+        Assertions.assertEquals(size, previousNodeNames.size());
     }
 
     /**
@@ -263,21 +284,53 @@ public class TestModel extends MysqlTest {
      */
     @Test
     public void testCurrentUsedNodeKeys() {
-        ProcessModel processModel = getProcessModel("test/ccToCondition.json");
-
-        Assertions.assertEquals(2, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, null),
-                processModel.getNodeConfig(), "k002").size());
-
-        Assertions.assertEquals(4, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+        // 测试模型 01
+        ProcessModel pm01 = getProcessModel("test/ccToCondition.json");
+        assertAllUsedNodeKeysEquals(pm01, null, "k002", 2);
+        assertAllUsedNodeKeysEquals(pm01, new HashMap<String, Object>() {{
             put("day", 3);
-        }}), processModel.getNodeConfig(), "k007").size());
-
-        Assertions.assertEquals(4, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+        }}, "k007", 4);
+        assertAllUsedNodeKeysEquals(pm01, new HashMap<String, Object>() {{
             put("day", 8);
-        }}), processModel.getNodeConfig(), "k005").size());
-
-        Assertions.assertEquals(5, ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, new HashMap<String, Object>() {{
+        }}, "k005", 4);
+        assertAllUsedNodeKeysEquals(pm01, new HashMap<String, Object>() {{
             put("day", 8);
-        }}), processModel.getNodeConfig(), "k008").size());
+        }}, "k008", 5);
+
+        // 测试模型 02
+        ProcessModel pm02 = getProcessModel("test/currentUsedNodeKeys.json");
+        // 包容分支
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 56);
+        }}, "flk1745141107412", 5);
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 20);
+        }}, "flk1745140795066", 6);
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 20);
+        }}, "flk1745140396395", 7);
+
+        // 并行分支
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 17);
+        }}, "flk1745146699448", 5);
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 17);
+        }}, "flk1745146755431", 9);
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 17);
+        }}, "flk1745140396395", 10);
+
+        // 默认分支
+        assertAllUsedNodeKeysEquals(pm02, new HashMap<String, Object>() {{
+            put("age", 1);
+        }}, "flk1745140277405", 5);
     }
+
+    private void assertAllUsedNodeKeysEquals(ProcessModel processModel, Map<String, Object> args, String currentNodeKey, int size) {
+        List<String> allUsedNodeKeys = ModelHelper.getAllUsedNodeKeys(flowLongEngine.getContext(), new Execution(testCreator, args),
+                processModel.getNodeConfig(), currentNodeKey);
+        Assertions.assertEquals(size, allUsedNodeKeys.size());
+    }
+
 }

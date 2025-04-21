@@ -9,8 +9,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -85,8 +85,7 @@ public class FlwInstance extends FlowEntity {
     @SuppressWarnings({"all"})
     public Map<String, Object> variableToMap() {
         Map<String, Object> map = FlowLongContext.fromJson(this.variable, Map.class);
-        if (map == null) return Collections.emptyMap();
-        return map;
+        return null != map ? map : new HashMap<>();
     }
 
     public void setMapVariable(Map<String, Object> args) {
