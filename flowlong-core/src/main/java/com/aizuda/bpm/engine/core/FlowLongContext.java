@@ -37,7 +37,7 @@ public class FlowLongContext {
     private QueryService queryService;
     private RuntimeService runtimeService;
     private TaskService taskService;
-    private Expression expression;
+    private FlowLongExpression flowLongExpression;
 
     /**
      * 流程任务创建处理器
@@ -105,9 +105,9 @@ public class FlowLongContext {
     /**
      * 检查并返回条件表达式
      */
-    public Expression checkExpression() {
-        Assert.isNull(expression, "Interface Expression not implemented");
-        return this.expression;
+    public FlowLongExpression checkFlowLongExpression() {
+        Assert.isNull(flowLongExpression, "Interface FlowLongExpression not implemented");
+        return this.flowLongExpression;
     }
 
     /**

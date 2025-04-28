@@ -1,7 +1,7 @@
 package test;
 
 import com.aizuda.bpm.engine.model.NodeExpression;
-import com.aizuda.bpm.spring.adaptive.SpelExpression;
+import com.aizuda.bpm.spring.adaptive.SpelFlowLongExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestSpelExpression {
+public class TestSpelFlowLongExpression {
 
     @Test
     public void test() {
@@ -38,7 +38,7 @@ public class TestSpelExpression {
     }
 
     private boolean eval(NodeExpression nodeExpression, Map<String, Object> args) {
-        SpelExpression expression = new SpelExpression();
+        SpelFlowLongExpression expression = new SpelFlowLongExpression();
         if (null == args) {
             args = Collections.emptyMap();
         }

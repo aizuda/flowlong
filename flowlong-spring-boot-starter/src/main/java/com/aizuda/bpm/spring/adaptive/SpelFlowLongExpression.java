@@ -4,16 +4,14 @@
  */
 package com.aizuda.bpm.spring.adaptive;
 
-import com.aizuda.bpm.engine.Expression;
+import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.model.NodeExpression;
-import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Spring el表达式解析器
@@ -25,10 +23,10 @@ import java.util.Map.Entry;
  * @author ximu
  * @since 1.0
  */
-public class SpelExpression implements Expression {
+public class SpelFlowLongExpression implements FlowLongExpression {
     private final ExpressionParser parser;
 
-    public SpelExpression() {
+    public SpelFlowLongExpression() {
         parser = new SpelExpressionParser();
     }
 

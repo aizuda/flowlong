@@ -4,7 +4,7 @@
  */
 package com.aizuda.bpm.engine.handler.impl;
 
-import com.aizuda.bpm.engine.Expression;
+import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -68,9 +68,9 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
         // 根据正则条件节点选择
         Map<String, Object> args = this.getArgs(flowLongContext, execution);
-        Expression expression = flowLongContext.checkExpression();
+        FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
         return conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
-                .filter(t -> expression.eval(t.getConditionList(), args)).findFirst();
+                .filter(t -> flowLongExpression.eval(t.getConditionList(), args)).findFirst();
     }
 
     @Override
@@ -94,9 +94,9 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         List<ConditionNode> inclusiveNodes = nodeModel.getInclusiveNodes();
 
         // 根据正则条件节点选择
-        Expression expression = flowLongContext.checkExpression();
+        FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
         Map<String, Object> args = this.getArgs(flowLongContext, execution);
-        List<ConditionNode> cnsOpt = inclusiveNodes.stream().filter(t -> expression.eval(t.getConditionList(), args)).collect(Collectors.toList());
+        List<ConditionNode> cnsOpt = inclusiveNodes.stream().filter(t -> flowLongExpression.eval(t.getConditionList(), args)).collect(Collectors.toList());
         if (ObjectUtils.isEmpty(cnsOpt)) {
             cnsOpt = Collections.singletonList(defaultConditionNode(inclusiveNodes).get());
         }

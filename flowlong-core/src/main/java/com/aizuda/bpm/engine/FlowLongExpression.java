@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
- * 条件表达式
+ * 飞龙条件表达式
  *
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @author hubin
  * @since 1.0
  */
-public interface Expression {
+public interface FlowLongExpression {
 
     /**
      * 根据表达式串、参数解析表达式并返回指定类型

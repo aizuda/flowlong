@@ -17,7 +17,7 @@ import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.solon.adaptive.SolonExpression;
+import com.aizuda.bpm.solon.adaptive.SolonFlowLongExpression;
 import com.aizuda.bpm.solon.adaptive.SolonFlowJsonHandler;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
@@ -78,9 +78,9 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
-    @Condition(onMissingBean = Expression.class)
-    public Expression expression() {
-        return new SolonExpression();
+    @Condition(onMissingBean = FlowLongExpression.class)
+    public FlowLongExpression flowLongExpression() {
+        return new SolonFlowLongExpression();
     }
 
     @Bean
@@ -108,7 +108,7 @@ public class FlowLongAutoConfiguration {
                                            QueryService queryService,
                                            RuntimeService runtimeService,
                                            TaskService taskService,
-                                           Expression expression,
+                                           FlowLongExpression flowLongExpression,
                                            TaskAccessStrategy taskAccessStrategy,
                                            TaskActorProvider taskActorProvider,
                                            FlowLongEngine flowLongEngine,
@@ -133,7 +133,7 @@ public class FlowLongAutoConfiguration {
         flc.setQueryService(queryService);
         flc.setRuntimeService(runtimeService);
         flc.setTaskService(taskService);
-        flc.setExpression(expression);
+        flc.setFlowLongExpression(flowLongExpression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
         flc.setConditionNodeHandler(conditionNodeHandler);
