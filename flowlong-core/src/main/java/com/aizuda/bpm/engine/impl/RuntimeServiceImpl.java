@@ -216,7 +216,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         fhi.setId(instanceId);
         fhi.instanceState(InstanceState.suspend);
         // 流程实例监听器通知
-        this.instanceNotify(InstanceEventType.start, () -> dbFhi, flowCreator);
+        this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, flowCreator);
         return hisInstanceDao.updateById(fhi);
     }
 
