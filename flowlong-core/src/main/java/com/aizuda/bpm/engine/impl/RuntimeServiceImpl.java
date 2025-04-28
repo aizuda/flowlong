@@ -207,6 +207,20 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
+    public boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator) {
+        FlwHisInstance dbFhi = hisInstanceDao.selectById(instanceId);
+        if (null == dbFhi) {
+            return false;
+        }
+        FlwHisInstance fhi = new FlwHisInstance();
+        fhi.setId(instanceId);
+        fhi.instanceState(InstanceState.suspend);
+        // 流程实例监听器通知
+        this.instanceNotify(InstanceEventType.start, () -> dbFhi, flowCreator);
+        return hisInstanceDao.updateById(fhi);
+    }
+
+    @Override
     public boolean reject(Long instanceId, FlowCreator flowCreator) {
         return this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
     }

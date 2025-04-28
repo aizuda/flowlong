@@ -90,6 +90,15 @@ public interface RuntimeService {
     void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, boolean saveAsDraft, FlowCreator flowCreator);
 
     /**
+     * 暂停流程实例 {@link InstanceState#suspend}
+     *
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
+     */
+    boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator);
+
+    /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）
      *
      * @param instanceId  流程实例ID
