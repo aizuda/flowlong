@@ -39,4 +39,21 @@ public class SpelFlowLongExpression implements FlowLongExpression {
         });
     }
 
+    @Override
+    public String exprOfArgs(NodeExpression nodeExpression, Map<String, Object> args) {
+        String value = nodeExpression.getValue();
+        String operator = nodeExpression.getOperator();
+        String field = nodeExpression.getField();
+        if ("include".equalsIgnoreCase(operator)) {
+           return String.format("'%s'.contains(#%s)", value, field);
+        }
+        if ("notinclude".equalsIgnoreCase(operator)) {
+            return String.format("not '%s'.contains(#%s)", value, field);
+        }
+        Object fieldValue = args.get(nodeExpression.getField());
+        if (fieldValue instanceof String) {
+            value = "'" + value + "'";
+        }
+        return "#" + field + " " + operator + " " + value;
+    }
 }

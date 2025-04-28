@@ -13,27 +13,37 @@ public class TestSpelFlowLongExpression {
 
     @Test
     public void test() {
+        assertNumericalValue(">", "7");
+        assertNumericalValue(">=", "8");
+        assertNumericalValue("<=", "8");
+        assertNumericalValue("<", "9");
+        assertNumericalValue("!=", "3");
+        assertStringValue("==", "张三");
+        assertStringValue("include", "张");
+        assertStringValue("notinclude", "李");
+    }
+
+    public void assertNumericalValue(String operator, String value) {
         NodeExpression nodeExpression = new NodeExpression();
         nodeExpression.setLabel("日期");
         nodeExpression.setField("day");
-        nodeExpression.setOperator(">");
-        nodeExpression.setValue("7");
+        nodeExpression.setOperator(operator);
+        nodeExpression.setValue(value);
         Assertions.assertFalse(this.eval(nodeExpression, null));
         Assertions.assertTrue(this.eval(nodeExpression, new HashMap<String, Object>() {{
             put("day", 8);
         }}));
     }
 
-    @Test
-    public void testEqual() {
+    public void assertStringValue(String operator, String value) {
         NodeExpression nodeExpression = new NodeExpression();
         nodeExpression.setLabel("姓名");
         nodeExpression.setField("name");
-        nodeExpression.setOperator("==");
+        nodeExpression.setOperator(operator);
         nodeExpression.setValue("张三");
         Assertions.assertFalse(this.eval(nodeExpression, null));
         Assertions.assertTrue(this.eval(nodeExpression, new HashMap<String, Object>() {{
-            put("name", "张三");
+            put("name", value);
         }}));
     }
 
