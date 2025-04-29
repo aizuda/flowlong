@@ -31,6 +31,18 @@ public enum InstanceEventType {
      */
     forceComplete,
     /**
+     * 驳回完成
+     */
+    rejectComplete,
+    /**
+     * 撤销完成
+     */
+    revokeComplete,
+    /**
+     * 超时完成
+     */
+    timeoutComplete,
+    /**
      * 结束
      */
     end;
