@@ -300,7 +300,7 @@ public class ModelHelper {
     }
 
     /**
-     * 获取根节点下的所有节点类型【 注意，只对根节点查找有效！】
+     * 获取根节点下的所有节点模型【 注意，只对根节点查找有效！】
      *
      * @param rootNodeModel 根节点模型
      * @return 所有节点信息

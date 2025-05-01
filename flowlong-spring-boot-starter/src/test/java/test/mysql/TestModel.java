@@ -280,6 +280,16 @@ public class TestModel extends MysqlTest {
     }
 
     /**
+     * 测试获取根节点下的所有节点模型
+     */
+    @Test
+    public void testGetRootNodeAllChildNodes() {
+        ProcessModel processModel = getProcessModel("test/currentUsedNodeKeys.json");
+        List<NodeModel> nodeModels = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+        Assertions.assertEquals(8, nodeModels.size());
+    }
+
+    /**
      * 测试获取当前已使用的节点key列表
      */
     @Test
