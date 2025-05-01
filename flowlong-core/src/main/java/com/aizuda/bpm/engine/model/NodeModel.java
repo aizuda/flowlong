@@ -288,8 +288,11 @@ public class NodeModel implements ModelInstance, Serializable {
                 execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), routeNodeOptional.get().getNodeKey(),
                         execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump);
             } else {
-                // 执行下一个节点
-                this.nextNode().ifPresent(nextNode -> flowLongContext.createTask(execution, nextNode));
+                // 执行子节点逻辑
+                NodeModel _childNode = this.getChildNode();
+                if (null != _childNode) {
+                    _childNode.execute(flowLongContext, execution);
+                }
             }
             return true;
         }

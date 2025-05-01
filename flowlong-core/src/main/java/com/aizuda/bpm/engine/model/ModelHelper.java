@@ -77,6 +77,9 @@ public class ModelHelper {
                         NodeModel _childNode = t.getChildNode();
                         if (null != _childNode) {
                             nextNodes.add(_childNode);
+                        } else if (null != childNode.getChildNode()) {
+                            // 默认条件，找下一个审批节点
+                            nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode.getChildNode()));
                         }
                     });
         } else if (childNode.parallelNode()) {
@@ -601,6 +604,17 @@ public class ModelHelper {
 
                     // 条件节点子节点
                     getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
+                } else if (rootNodeModel.routeNode()) {
+                    // 路由节点
+                    currentUsedNodeKeys.add(rootNodeModel.getNodeKey());
+                    Optional<ConditionNode> opt = flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, rootNodeModel);
+                    if (opt.isPresent()) {
+                        // 添加执行条件节点
+                        currentUsedNodeKeys.add(opt.get().getNodeKey());
+                    } else if (null != rootNodeModel.getChildNode()) {
+                        // 获取路由分支子节点
+                        currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey));
+                    }
                 } else {
 
                     // 普通节点
