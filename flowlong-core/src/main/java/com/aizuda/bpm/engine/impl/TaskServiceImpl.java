@@ -212,7 +212,7 @@ public class TaskServiceImpl implements TaskService {
                     this.moveToHisTask(ft, taskState, flowCreator);
 
                     // 任务监听器通知
-                    this.taskNotify(taskEventType, () -> ft, null, null, flowCreator);
+                    this.taskNotify(taskEventType, () -> ft, null, nodeModel, flowCreator);
                 }
             }
         }

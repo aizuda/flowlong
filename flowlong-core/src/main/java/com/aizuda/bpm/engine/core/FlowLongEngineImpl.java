@@ -226,6 +226,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         } else if (Objects.equals(4, nodeModel.getRejectStrategy())) {
             // 驳回策略 4，终止审批流程
             return terminateProcess.get();
+        } else if (Objects.equals(5, nodeModel.getRejectStrategy())) {
+            // 驳回策略 5，驳回到模型父节点
+            return this.executeJumpTask(currentFlwTask.getId(), nodeModel.getParentNode().getNodeKey(), flowCreator, args, TaskType.rejectJump);
         }
 
         // 2，驳回到上一节点

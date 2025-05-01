@@ -140,7 +140,7 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer passWeight;
     /**
-     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点 4，终止审批流程
+     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点 4，终止审批流程 5，驳回到模型父节点
      */
     private Integer rejectStrategy;
     /**
