@@ -201,14 +201,19 @@ public class TaskServiceImpl implements TaskService {
         Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
 
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
-        List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
         List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
-        for (FlwTask ft : fts) {
-            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
-                // 设置执行参数
-                ft.putAllVariable(args);
-                // 归档历史
-                this.moveToHisTask(ft, taskState, flowCreator);
+        if (ObjectUtils.isNotEmpty(fts)) {
+            List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+            for (FlwTask ft : fts) {
+                if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                    // 设置执行参数
+                    ft.putAllVariable(args);
+                    // 归档历史
+                    this.moveToHisTask(ft, taskState, flowCreator);
+
+                    // 任务监听器通知
+                    this.taskNotify(taskEventType, () -> ft, null, null, flowCreator);
+                }
             }
         }
 
