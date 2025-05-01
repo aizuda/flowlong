@@ -374,9 +374,16 @@ public class TaskServiceImpl implements TaskService {
             // 删除会签任务
             return taskDao.deleteByIds(taskIds);
         } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
-            // 或签情况处理，标记完成任务参与者 weight 为 1
-            taskActors.stream().filter(t -> Objects.equals(flowCreator.getCreateId(), t.getActorId()))
-                    .findFirst().ifPresent(t -> t.setWeight(1));
+            // 或签情况处理
+            for(FlwTaskActor fta: taskActors) {
+                if (Objects.equals(flowCreator.getCreateId(), fta.getActorId())) {
+                    // 找到审批任务参与者归档
+                    taskActors = Collections.singletonList(fta);
+                } else {
+                    // 移除 flw_task_actor 中 task 参与者信息
+                    taskActorDao.deleteById(fta.getId());
+                }
+            }
         }
 
         // 迁移任务至历史表
