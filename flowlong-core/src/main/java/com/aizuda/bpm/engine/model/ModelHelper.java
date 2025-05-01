@@ -347,7 +347,8 @@ public class ModelHelper {
      * 检查节点模型，检测节点模型需要构建父节点
      *
      * @param rootNodeModel 根节点模型
-     * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3，自动拒绝节点配置错误 4，路由节点必须配置错误（未配置路由分支）
+     * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3，自动拒绝节点配置错误
+     * 4，路由节点必须配置错误（未配置路由分支） 5，子流程节点配置错误（未选择子流程）
      */
     public static int checkNodeModel(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
@@ -370,6 +371,9 @@ public class ModelHelper {
             } else if (nextNode.routeNode() && ObjectUtils.isEmpty(nextNode.getRouteNodes())) {
                 // 路由节点必须配置错误（未配置路由分支）
                 return 4;
+            } else if (TaskType.callProcess.eq(nextNode.getType()) && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
+                // 子流程节点配置错误（未选择子流程）
+                return 5;
             }
         }
         // 正确模型
