@@ -371,7 +371,7 @@ public class ModelHelper {
             } else if (nextNode.routeNode() && ObjectUtils.isEmpty(nextNode.getRouteNodes())) {
                 // 路由节点必须配置错误（未配置路由分支）
                 return 4;
-            } else if (TaskType.callProcess.eq(nextNode.getType()) && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
+            } else if (nextNode.callProcessNode() && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
                 // 子流程节点配置错误（未选择子流程）
                 return 5;
             }

@@ -140,12 +140,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                 // 重启父流程实例
                 FlwInstance parentFlwInstance = instanceDao.selectById(flwInstance.getParentInstanceId());
                 execution.setFlwInstance(parentFlwInstance);
-                String currentNodeKey = flwInstance.getBusinessKey();
-                if (null == currentNodeKey) {
-                    // 子流程节点为空，则取父流程当前节点
-                    currentNodeKey = parentFlwInstance.getCurrentNodeKey();
-                }
-                execution.restartProcessInstance(parentFlwInstance.getProcessId(), currentNodeKey);
+                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
             }
         }
         return true;

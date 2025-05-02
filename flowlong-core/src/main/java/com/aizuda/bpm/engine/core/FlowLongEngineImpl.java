@@ -104,7 +104,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             if (nodeModelOptional.isPresent()) {
                 // 执行子节点
                 nodeModelOptional.get().execute(flowLongContext, execution);
-            } else {
+            } else if (nodeModel.endNode()) {
                 // 不存在任何子节点结束流程
                 execution.endInstance(nodeModel);
             }

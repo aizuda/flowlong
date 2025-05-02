@@ -1147,6 +1147,10 @@ public class TaskServiceImpl implements TaskService {
                     this.taskNotify(TaskEventType.callProcess, () -> flwHisTask, null, nodeModel, flowCreator);
                 }
             });
+            // 如果是异步调用，继续执行后续逻辑
+            if (nodeModel.callAsync()) {
+                nodeModel.nextNode().ifPresent(t -> t.execute(execution.getEngine().getContext(), execution));
+            }
         } else if (TaskType.timer.eq(nodeType)) {
             /*
              * 6，定时器任务

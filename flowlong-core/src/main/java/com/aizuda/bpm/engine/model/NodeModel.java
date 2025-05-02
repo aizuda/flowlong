@@ -57,6 +57,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String callProcess;
     /**
+     * 是否异步调用【例如：子流程该参数为 true 则为异步子流程】
+     */
+    private Boolean callAsync;
+    /**
      * 任务关联的表单url
      */
     private String actionUrl;
@@ -472,6 +476,13 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 是否异步调用
+     */
+    public boolean callAsync() {
+        return null != callAsync && callAsync;
+    }
+
+    /**
      * 获取父审批节点
      *
      * @return 模型节点
@@ -539,6 +550,24 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean routeNode() {
         return TaskType.routeBranch.eq(type);
+    }
+
+    /**
+     * 判断是否为调用子流程节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean callProcessNode() {
+        return TaskType.callProcess.eq(type);
+    }
+
+    /**
+     * 判断是否为结束节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean endNode() {
+        return TaskType.end.eq(type);
     }
 
     public NodeAssignee nextNodeAssignee(Execution execution, String assigneeId) {

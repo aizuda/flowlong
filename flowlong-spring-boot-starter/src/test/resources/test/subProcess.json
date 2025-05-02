@@ -83,11 +83,12 @@
           "nodeKey": "k007",
           "type": 5,
           "callProcess": "workHandover",
+          "callAsync": true,
           "childNode": {
-            "nodeName": "抄送人",
-            "nodeKey": "k008",
-            "type": 2,
-            "userSelectFlag": true,
+            "nodeName": "主管确认",
+            "nodeKey": "k009",
+            "type": 1,
+            "setType": 1,
             "nodeAssigneeList": [
               {
                 "tenantId": "1000",
