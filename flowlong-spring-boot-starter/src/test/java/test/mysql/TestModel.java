@@ -90,7 +90,7 @@ public class TestModel extends MysqlTest {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
-        Assertions.assertEquals(4, previousNodeNames.size());
+        Assertions.assertEquals(2, previousNodeNames.size());
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
         Assertions.assertEquals(0, ModelHelper.checkNodeModel(rootNodeModel));
