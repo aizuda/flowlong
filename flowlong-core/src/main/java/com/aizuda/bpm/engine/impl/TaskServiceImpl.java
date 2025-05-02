@@ -201,14 +201,19 @@ public class TaskServiceImpl implements TaskService {
         Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
 
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
-        List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
         List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
-        for (FlwTask ft : fts) {
-            if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
-                // 设置执行参数
-                ft.setVariable(args);
-                // 归档历史
-                this.moveToHisTask(ft, taskState, flowCreator);
+        if (ObjectUtils.isNotEmpty(fts)) {
+            List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+            for (FlwTask ft : fts) {
+                if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                    // 设置执行参数
+                    ft.putAllVariable(args);
+                    // 归档历史
+                    this.moveToHisTask(ft, taskState, flowCreator);
+
+                    // 任务监听器通知
+                    this.taskNotify(taskEventType, () -> ft, null, nodeModel, flowCreator);
+                }
             }
         }
 
@@ -254,7 +259,7 @@ public class TaskServiceImpl implements TaskService {
     protected FlwTask getAllowedFlwTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState) {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         if (null != args) {
-            flwTask.setVariable(args);
+            flwTask.putAllVariable(args);
         }
         if (null == taskState || TaskState.allowedCheck(taskState)) {
             Assert.isNull(isAllowed(flwTask, flowCreator.getCreateId()),
@@ -369,9 +374,16 @@ public class TaskServiceImpl implements TaskService {
             // 删除会签任务
             return taskDao.deleteByIds(taskIds);
         } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
-            // 或签情况处理，标记完成任务参与者 weight 为 1
-            taskActors.stream().filter(t -> Objects.equals(flowCreator.getCreateId(), t.getActorId()))
-                    .findFirst().ifPresent(t -> t.setWeight(1));
+            // 或签情况处理
+            for(FlwTaskActor fta: taskActors) {
+                if (Objects.equals(flowCreator.getCreateId(), fta.getActorId())) {
+                    // 找到审批任务参与者归档
+                    taskActors = Collections.singletonList(fta);
+                } else {
+                    // 移除 flw_task_actor 中 task 参与者信息
+                    taskActorDao.deleteById(fta.getId());
+                }
+            }
         }
 
         // 迁移任务至历史表
@@ -558,11 +570,13 @@ public class TaskServiceImpl implements TaskService {
      * @param taskType             任务类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
+     * @param args                 任务参数
      * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Function<FlwTask, Boolean> check) {
+    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators,
+                                Map<String, Object> args, Function<FlwTask, Boolean> check) {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
 
@@ -576,8 +590,14 @@ public class TaskServiceImpl implements TaskService {
 
         // 设置任务为委派任务或者为转办任务
         FlwTask flwTask = new FlwTask();
-        flwTask.setId(taskId);
+        flwTask.setId(dbFlwTask.getId());
         flwTask.taskType(taskType);
+
+        // 设置任务参数，如果有参数则设置到任务参数中
+        if (null != args) {
+            flwTask.setVariable(dbFlwTask.getVariable());
+            flwTask.putAllVariable(args);
+        }
 
         if (taskType == TaskType.agent) {
             // 设置代理人员信息，第一个人为主办 assignorId 其他人为协办 assignor 多个英文逗号分隔
@@ -1127,6 +1147,10 @@ public class TaskServiceImpl implements TaskService {
                     this.taskNotify(TaskEventType.callProcess, () -> flwHisTask, null, nodeModel, flowCreator);
                 }
             });
+            // 如果是异步调用，继续执行后续逻辑
+            if (nodeModel.callAsync()) {
+                nodeModel.nextNode().ifPresent(t -> t.execute(execution.getEngine().getContext(), execution));
+            }
         } else if (TaskType.timer.eq(nodeType)) {
             /*
              * 6，定时器任务
@@ -1201,7 +1225,7 @@ public class TaskServiceImpl implements TaskService {
             }
             args.put("termMode", nodeModel.getTermMode());
         }
-        flwTask.setVariable(args);
+        flwTask.putAllVariable(args);
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;

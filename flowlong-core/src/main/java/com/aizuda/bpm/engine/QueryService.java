@@ -78,6 +78,14 @@ public interface QueryService {
     FlwHisTask getHistTask(Long taskId);
 
     /**
+     * 根据流程实例ID获取开始任务对象
+     *
+     * @param instanceId 流程实例ID
+     * @return 开始任务对象
+     */
+    FlwHisTask getStartTaskByInstanceId(Long instanceId);
+
+    /**
      * 根据任务名称查询历史任务对象列表
      *
      * @param instanceId 流程实例ID

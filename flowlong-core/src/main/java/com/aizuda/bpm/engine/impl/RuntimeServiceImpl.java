@@ -140,12 +140,7 @@ public class RuntimeServiceImpl implements RuntimeService {
                 // 重启父流程实例
                 FlwInstance parentFlwInstance = instanceDao.selectById(flwInstance.getParentInstanceId());
                 execution.setFlwInstance(parentFlwInstance);
-                String currentNodeKey = flwInstance.getBusinessKey();
-                if (null == currentNodeKey) {
-                    // 子流程节点为空，则取父流程当前节点
-                    currentNodeKey = parentFlwInstance.getCurrentNodeKey();
-                }
-                execution.restartProcessInstance(parentFlwInstance.getProcessId(), currentNodeKey);
+                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
             }
         }
         return true;
@@ -207,18 +202,34 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
+    public boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator) {
+        FlwHisInstance dbFhi = hisInstanceDao.selectById(instanceId);
+        if (null != dbFhi) {
+            FlwHisInstance fhi = new FlwHisInstance();
+            fhi.setId(dbFhi.getId());
+            fhi.instanceState(InstanceState.suspend);
+            if (hisInstanceDao.updateById(fhi)) {
+                // 流程实例监听器通知
+                this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, flowCreator);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public boolean reject(Long instanceId, FlowCreator flowCreator) {
-        return this.forceComplete(instanceId, flowCreator, InstanceState.reject, TaskEventType.reject);
+        return this.forceComplete(instanceId, flowCreator, InstanceEventType.rejectComplete, InstanceState.reject, TaskEventType.reject);
     }
 
     @Override
     public boolean revoke(Long instanceId, FlowCreator flowCreator) {
-        return this.forceComplete(instanceId, flowCreator, InstanceState.revoke, TaskEventType.revoke);
+        return this.forceComplete(instanceId, flowCreator, InstanceEventType.revokeComplete, InstanceState.revoke, TaskEventType.revoke);
     }
 
     @Override
     public boolean timeout(Long instanceId, FlowCreator flowCreator) {
-        return this.forceComplete(instanceId, flowCreator, InstanceState.timeout, TaskEventType.timeout);
+        return this.forceComplete(instanceId, flowCreator, InstanceEventType.timeoutComplete, InstanceState.timeout, TaskEventType.timeout);
     }
 
     /**
@@ -229,7 +240,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      */
     @Override
     public boolean terminate(Long instanceId, FlowCreator flowCreator) {
-        return this.forceComplete(instanceId, flowCreator, InstanceState.terminate, TaskEventType.terminate);
+        return this.forceComplete(instanceId, flowCreator, InstanceEventType.rejectComplete, InstanceState.terminate, TaskEventType.terminate);
     }
 
     /**
@@ -240,7 +251,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * @param instanceState 流程实例最终状态
      * @param eventType     监听事件类型
      */
-    protected boolean forceComplete(Long instanceId, FlowCreator flowCreator,
+    protected boolean forceComplete(Long instanceId, FlowCreator flowCreator, InstanceEventType instanceEventType,
                                     InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
@@ -250,22 +261,22 @@ public class RuntimeServiceImpl implements RuntimeService {
         final Long parentInstanceId = flwInstance.getParentInstanceId();
         if (null != parentInstanceId) {
             // 找到主流程去执行完成逻辑
-            this.forceComplete(parentInstanceId, flowCreator, instanceState, eventType);
+            this.forceComplete(parentInstanceId, flowCreator, instanceEventType, instanceState, eventType);
         } else {
             // 结束所有子流程实例
             instanceDao.selectListByParentInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t ->
-                    this.forceCompleteAll(t, flowCreator, instanceState, eventType)));
+                    this.forceCompleteAll(t, flowCreator, instanceEventType, instanceState, eventType)));
         }
 
         // 结束当前流程实例
-        this.forceCompleteAll(flwInstance, flowCreator, instanceState, eventType);
+        this.forceCompleteAll(flwInstance, flowCreator, instanceEventType, instanceState, eventType);
         return true;
     }
 
     /**
      * 强制完成流程所有实例
      */
-    protected void forceCompleteAll(FlwInstance flwInstance, FlowCreator flowCreator,
+    protected void forceCompleteAll(FlwInstance flwInstance, FlowCreator flowCreator, InstanceEventType instanceEventType,
                                     InstanceState instanceState, TaskEventType eventType) {
 
         // 实例相关任务强制完成
@@ -279,7 +290,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         instanceDao.deleteById(flwInstance.getId());
 
         // 流程实例监听器通知
-        this.instanceNotify(InstanceEventType.forceComplete, () -> flwHisInstance, flowCreator);
+        this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
     }
 
     /**

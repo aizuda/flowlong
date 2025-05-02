@@ -20,12 +20,28 @@ public enum InstanceEventType {
      */
     start,
     /**
+     * 暂停，被主动挂起
+     */
+    suspend,
+    /**
      * 强制完成
      * <p>
      * 被终止的具体原因查看流程实例状态 {@link InstanceState}
      * </p>
      */
     forceComplete,
+    /**
+     * 驳回完成
+     */
+    rejectComplete,
+    /**
+     * 撤销完成
+     */
+    revokeComplete,
+    /**
+     * 超时完成
+     */
+    timeoutComplete,
     /**
      * 结束
      */

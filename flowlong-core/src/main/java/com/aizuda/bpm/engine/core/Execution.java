@@ -242,12 +242,14 @@ public class Execution implements Serializable {
         }
 
         /*
-         * 执行完成任务
+         * 执行自动完成逻辑
          */
-        List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
-        for (FlwTask flwTask : flwTasks) {
-            Assert.illegal(flwTask.major(), "There are unfinished major tasks");
-            engine.taskService().complete(flwTask.getId(), this.flowCreator);
+        if (instanceState == InstanceState.autoPass || instanceState == InstanceState.autoReject) {
+            List<FlwTask> flwTasks = engine.queryService().getTasksByInstanceId(flwInstance.getId());
+            for (FlwTask flwTask : flwTasks) {
+                Assert.illegal(flwTask.major(), "There are unfinished major tasks");
+                engine.taskService().complete(flwTask.getId(), this.flowCreator);
+            }
         }
 
         /*

@@ -90,7 +90,7 @@ public class TestModel extends MysqlTest {
         ProcessModel processModel = getProcessModel("test/simpleProcess.json");
         Assertions.assertEquals("simpleProcess", processModel.getKey());
         List<String> previousNodeNames = ModelHelper.getAllPreviousNodeKeys(processModel.getNode("k012")); // 条件内部审核
-        Assertions.assertEquals(4, previousNodeNames.size());
+        Assertions.assertEquals(2, previousNodeNames.size());
 
         NodeModel rootNodeModel = processModel.getNodeConfig();
         Assertions.assertEquals(0, ModelHelper.checkNodeModel(rootNodeModel));
@@ -277,6 +277,16 @@ public class TestModel extends MysqlTest {
         String jsonContent = FlowLongContext.toJson(processModel.cleanParentNode());
         ProcessModel parseProcessModel = FlowLongContext.parseProcessModel(jsonContent, "cacheKey001", false);
         Assertions.assertEquals("结束", parseProcessModel.getNode("flk17358809716731").getNodeName());
+    }
+
+    /**
+     * 测试获取根节点下的所有节点模型
+     */
+    @Test
+    public void testGetRootNodeAllChildNodes() {
+        ProcessModel processModel = getProcessModel("test/currentUsedNodeKeys.json");
+        List<NodeModel> nodeModels = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+        Assertions.assertEquals(8, nodeModels.size());
     }
 
     /**

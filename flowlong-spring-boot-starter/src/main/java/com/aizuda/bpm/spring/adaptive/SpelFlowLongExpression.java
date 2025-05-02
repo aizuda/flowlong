@@ -4,16 +4,14 @@
  */
 package com.aizuda.bpm.spring.adaptive;
 
-import com.aizuda.bpm.engine.Expression;
+import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.model.NodeExpression;
-import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Spring el表达式解析器
@@ -25,10 +23,10 @@ import java.util.Map.Entry;
  * @author ximu
  * @since 1.0
  */
-public class SpelExpression implements Expression {
+public class SpelFlowLongExpression implements FlowLongExpression {
     private final ExpressionParser parser;
 
-    public SpelExpression() {
+    public SpelFlowLongExpression() {
         parser = new SpelExpressionParser();
     }
 
@@ -41,4 +39,21 @@ public class SpelExpression implements Expression {
         });
     }
 
+    @Override
+    public String exprOfArgs(NodeExpression nodeExpression, Map<String, Object> args) {
+        String value = nodeExpression.getValue();
+        String operator = nodeExpression.getOperator();
+        String field = nodeExpression.getField();
+        if ("include".equalsIgnoreCase(operator)) {
+           return String.format("'%s'.contains(#%s)", value, field);
+        }
+        if ("notinclude".equalsIgnoreCase(operator)) {
+            return String.format("not '%s'.contains(#%s)", value, field);
+        }
+        Object fieldValue = args.get(nodeExpression.getField());
+        if (fieldValue instanceof String) {
+            value = "'" + value + "'";
+        }
+        return "#" + field + " " + operator + " " + value;
+    }
 }

@@ -4,7 +4,7 @@
  */
 package com.aizuda.bpm.solon.adaptive;
 
-import com.aizuda.bpm.engine.Expression;
+import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.model.NodeExpression;
 import com.googlecode.aviator.AviatorEvaluator;
 import org.noear.solon.annotation.Component;
@@ -23,7 +23,7 @@ import java.util.Map;
  * @since 1.0
  */
 @Component
-public class SolonExpression implements Expression {
+public class SolonFlowLongExpression implements FlowLongExpression {
 
     @Override
     public boolean eval(List<List<NodeExpression>> conditionList, Map<String, Object> args) {

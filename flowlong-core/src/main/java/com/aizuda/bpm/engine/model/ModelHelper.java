@@ -77,6 +77,9 @@ public class ModelHelper {
                         NodeModel _childNode = t.getChildNode();
                         if (null != _childNode) {
                             nextNodes.add(_childNode);
+                        } else if (null != childNode.getChildNode()) {
+                            // 默认条件，找下一个审批节点
+                            nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode.getChildNode()));
                         }
                     });
         } else if (childNode.parallelNode()) {
@@ -297,7 +300,7 @@ public class ModelHelper {
     }
 
     /**
-     * 获取根节点下的所有节点类型【 注意，只对根节点查找有效！】
+     * 获取根节点下的所有节点模型【 注意，只对根节点查找有效！】
      *
      * @param rootNodeModel 根节点模型
      * @return 所有节点信息
@@ -344,7 +347,8 @@ public class ModelHelper {
      * 检查节点模型，检测节点模型需要构建父节点
      *
      * @param rootNodeModel 根节点模型
-     * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3,自动拒绝节点配置错误
+     * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3，自动拒绝节点配置错误
+     * 4，路由节点必须配置错误（未配置路由分支） 5，子流程节点配置错误（未选择子流程）
      */
     public static int checkNodeModel(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
@@ -364,6 +368,12 @@ public class ModelHelper {
                     // 自动拒绝节点配置错误
                     return 3;
                 }
+            } else if (nextNode.routeNode() && ObjectUtils.isEmpty(nextNode.getRouteNodes())) {
+                // 路由节点必须配置错误（未配置路由分支）
+                return 4;
+            } else if (nextNode.callProcessNode() && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
+                // 子流程节点配置错误（未选择子流程）
+                return 5;
             }
         }
         // 正确模型
@@ -598,6 +608,17 @@ public class ModelHelper {
 
                     // 条件节点子节点
                     getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
+                } else if (rootNodeModel.routeNode()) {
+                    // 路由节点
+                    currentUsedNodeKeys.add(rootNodeModel.getNodeKey());
+                    Optional<ConditionNode> opt = flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, rootNodeModel);
+                    if (opt.isPresent()) {
+                        // 添加执行条件节点
+                        currentUsedNodeKeys.add(opt.get().getNodeKey());
+                    } else if (null != rootNodeModel.getChildNode()) {
+                        // 获取路由分支子节点
+                        currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey));
+                    }
                 } else {
 
                     // 普通节点

@@ -57,6 +57,10 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String callProcess;
     /**
+     * 是否异步调用【例如：子流程该参数为 true 则为异步子流程】
+     */
+    private Boolean callAsync;
+    /**
      * 任务关联的表单url
      */
     private String actionUrl;
@@ -140,7 +144,7 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer passWeight;
     /**
-     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点 4，终止审批流程
+     * 驳回策略 1，驳回到发起人，2，驳回到上一节点，3，驳回到指定节点 4，终止审批流程 5，驳回到模型父节点
      */
     private Integer rejectStrategy;
     /**
@@ -288,8 +292,11 @@ public class NodeModel implements ModelInstance, Serializable {
                 execution.getEngine().executeJumpTask(execution.getFlwTask().getId(), routeNodeOptional.get().getNodeKey(),
                         execution.getFlowCreator(), execution.getArgs(), TaskType.routeJump);
             } else {
-                // 执行下一个节点
-                this.nextNode().ifPresent(nextNode -> flowLongContext.createTask(execution, nextNode));
+                // 执行子节点逻辑
+                NodeModel _childNode = this.getChildNode();
+                if (null != _childNode) {
+                    _childNode.execute(flowLongContext, execution);
+                }
             }
             return true;
         }
@@ -469,6 +476,13 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 是否异步调用
+     */
+    public boolean callAsync() {
+        return null != callAsync && callAsync;
+    }
+
+    /**
      * 获取父审批节点
      *
      * @return 模型节点
@@ -536,6 +550,24 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     public boolean routeNode() {
         return TaskType.routeBranch.eq(type);
+    }
+
+    /**
+     * 判断是否为调用子流程节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean callProcessNode() {
+        return TaskType.callProcess.eq(type);
+    }
+
+    /**
+     * 判断是否为结束节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean endNode() {
+        return TaskType.end.eq(type);
     }
 
     public NodeAssignee nextNodeAssignee(Execution execution, String assigneeId) {
