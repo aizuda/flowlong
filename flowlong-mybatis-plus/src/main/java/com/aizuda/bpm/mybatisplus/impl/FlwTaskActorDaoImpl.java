@@ -40,7 +40,8 @@ public class FlwTaskActorDaoImpl implements FlwTaskActorDao {
 
     @Override
     public boolean deleteByIds(List<Long> ids) {
-        return taskActorMapper.deleteByIds(ids) > 0;
+        return taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery()
+                .in(FlwTaskActor::getId, ids)) > 0;
     }
 
     @Override
