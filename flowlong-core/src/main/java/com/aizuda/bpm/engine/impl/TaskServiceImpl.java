@@ -614,8 +614,8 @@ public class TaskServiceImpl implements TaskService {
         } else {
             if (null == flwTask.getAssignorId()) {
                 // 设置委托人信息
-                flwTask.setAssignorId(dbFlwTask.getCreateId());
-                flwTask.setAssignor(dbFlwTask.getCreateBy());
+                flwTask.setAssignorId(flowCreator.getCreateId());
+                flwTask.setAssignor(flowCreator.getCreateBy());
             } else {
                 // 记录第原始的主办人信息
                 flwTask.setAssignorId(dbFlwTask.getAssignorId());
