@@ -100,14 +100,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwProcess process = processService().getProcessById(id);
         NodeModel nodeModel = process.model().getNode(currentNodeKey);
         if (null != nodeModel) {
-            Optional<NodeModel> nodeModelOptional = nodeModel.nextNode();
-            if (nodeModelOptional.isPresent()) {
-                // 执行子节点
-                nodeModelOptional.get().execute(flowLongContext, execution);
-            } else if (nodeModel.endNode()) {
-                // 不存在任何子节点结束流程
-                execution.endInstance(nodeModel);
-            }
+            // 执行子节点
+            nodeModel.nextNode().ifPresent(t -> t.execute(flowLongContext, execution));
         }
     }
 

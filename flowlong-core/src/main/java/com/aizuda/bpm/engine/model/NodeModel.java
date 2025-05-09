@@ -362,12 +362,7 @@ public class NodeModel implements ModelInstance, Serializable {
             childNode.execute(flowLongContext, execution);
         } else {
             // 查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
-            if (nextNode().isPresent()) {
-                nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
-            } else {
-                // 不存在任何子节点结束流程
-                execution.endInstance(this);
-            }
+            this.nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
         }
     }
 
@@ -468,9 +463,6 @@ public class NodeModel implements ModelInstance, Serializable {
         if (null == nextNode) {
             // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
             nextNode = ModelHelper.findNextNode(this, currentTask);
-        } else if (TaskType.end.eq(nextNode.getType())) {
-            // 执行到结束节点
-            nextNode = null;
         }
         return Optional.ofNullable(nextNode);
     }
