@@ -616,10 +616,6 @@ public class TaskServiceImpl implements TaskService {
                 // 设置委托人信息
                 flwTask.setAssignorId(flowCreator.getCreateId());
                 flwTask.setAssignor(flowCreator.getCreateBy());
-            } else {
-                // 记录第原始的主办人信息
-                flwTask.setAssignorId(dbFlwTask.getAssignorId());
-                flwTask.setAssignor(dbFlwTask.getAssignor());
             }
 
             // 删除任务历史参与者
