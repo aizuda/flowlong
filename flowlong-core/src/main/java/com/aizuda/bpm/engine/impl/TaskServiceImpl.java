@@ -379,7 +379,7 @@ public class TaskServiceImpl implements TaskService {
             return taskDao.deleteByIds(taskIds);
         } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
             // 或签情况处理
-            for(FlwTaskActor fta: taskActors) {
+            for (FlwTaskActor fta : taskActors) {
                 if (Objects.equals(flowCreator.getCreateId(), fta.getActorId())) {
                     // 找到审批任务参与者归档
                     taskActors = Collections.singletonList(fta);
@@ -730,54 +730,51 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
-     * 唤醒指定的历史任务
+     * 唤醒撤回或拒绝终止历史任务
      */
     @Override
-    public FlwTask resume(Long taskId, FlowCreator flowCreator) {
-        FlwHisTask histTask = hisTaskDao.selectCheckById(taskId);
-        Assert.isTrue(ObjectUtils.isEmpty(histTask.getCreateBy()) || !Objects.equals(histTask.getCreateBy(), flowCreator.getCreateBy()),
-                "当前参与者[" + flowCreator.getCreateBy() + "]不允许唤醒历史任务[taskId=" + taskId + "]");
-
-        // 流程实例结束情况恢复流程实例
-        final Long instanceId = histTask.getInstanceId();
-        FlwInstance flwInstance = instanceDao.selectById(instanceId);
-        if (null == flwInstance) {
-            // 唤醒历史实例
-            FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
-            if (null != fhi) {
-                // 恢复当前实例
-                if (instanceDao.insert(fhi.toFlwInstance())) {
-                    // 重置历史实例为激活状态
-                    FlwHisInstance temp = new FlwHisInstance();
-                    temp.setId(instanceId);
-                    hisInstanceDao.updateById(temp.instanceState(InstanceState.active));
-                }
-            }
+    public boolean resume(Long instanceId, FlowCreator flowCreator) {
+        FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
+        if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) ||
+                (InstanceState.reject.ne(fhi.getInstanceState()) && InstanceState.revoke.ne(fhi.getInstanceState()))) {
+            return false;
         }
 
-        // 历史任务恢复
-        FlwTask flwTask = histTask.cloneTask(null);
-        flwTask.setId(flowLongIdGenerator.getId(flwTask.getId()));
-        taskDao.insert(flwTask);
+        // 恢复当前实例
+        if (instanceDao.insert(fhi.toFlwInstance())) {
+            // 重置历史实例为激活状态
+            FlwHisInstance temp = new FlwHisInstance();
+            temp.setId(instanceId);
+            hisInstanceDao.updateById(temp.instanceState(InstanceState.active));
+        }
 
-        List<FlwTaskActor> taskActors = new ArrayList<>();
+        // 恢复历史任务
+        TaskState taskState = TaskState.rejectEnd;
+        if (InstanceState.revoke.eq(fhi.getInstanceState())) {
+            taskState = TaskState.revoke;
+        }
+        hisTaskDao.selectListByInstanceIdAndTaskState(instanceId, taskState.getValue()).ifPresent(hisTasks ->
+                hisTasks.forEach(hisTask -> {
+                    // 历史任务恢复
+                    FlwTask flwTask = hisTask.cloneTask(null);
+                    flwTask.setId(flowLongIdGenerator.getId(flwTask.getId()));
+                    if (taskDao.insert(flwTask)) {
+                        // 历史任务参与者恢复
+                        List<FlwTaskActor> taskActors = new ArrayList<>();
+                        List<FlwHisTaskActor> hisTaskActors = hisTaskActorDao.selectListByTaskId(hisTask.getId());
+                        hisTaskActors.forEach(t -> {
+                            FlwTaskActor fta = FlwTaskActor.ofFlwHisTaskActor(flwTask.getId(), t);
+                            fta.setId(flowLongIdGenerator.getId(fta.getId()));
+                            if (taskActorDao.insert(fta)) {
+                                taskActors.add(fta);
+                            }
+                        });
 
-        // 历史任务参与者恢复
-        List<FlwHisTaskActor> hisTaskActors = hisTaskActorDao.selectListByTaskId(taskId);
-        hisTaskActors.forEach(t -> {
-            FlwTaskActor fta = FlwTaskActor.ofFlwHisTaskActor(flwTask.getId(), t);
-            fta.setId(flowLongIdGenerator.getId(fta.getId()));
-            if (taskActorDao.insert(fta)) {
-                taskActors.add(fta);
-            }
-        });
-
-        // 更新当前执行节点信息
-        this.updateCurrentNode(flwTask);
-
-        // 任务监听器通知
-        this.taskNotify(TaskEventType.resume, () -> flwTask, taskActors, null, flowCreator);
-        return flwTask;
+                        // 任务监听器通知
+                        this.taskNotify(TaskEventType.resume, () -> flwTask, taskActors, null, flowCreator);
+                    }
+                }));
+        return true;
     }
 
     /**

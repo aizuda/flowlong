@@ -265,16 +265,13 @@ public interface TaskService {
     Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator);
 
     /**
-     * 唤醒历史任务
-     * <p>
-     * 该方法会导致流程状态不可控，请慎用
-     * </p>
+     * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
      *
-     * @param taskId      历史任务ID
+     * @param instanceId  历史实例ID
      * @param flowCreator 任务唤醒者
-     * @return {@link FlwTask} 唤醒后的任务对象
+     * @return true 成功 false 失败
      */
-    FlwTask resume(Long taskId, FlowCreator flowCreator);
+    boolean resume(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）

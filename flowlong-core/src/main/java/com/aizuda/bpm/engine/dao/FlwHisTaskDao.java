@@ -45,6 +45,8 @@ public interface FlwHisTaskDao {
 
     Optional<List<FlwHisTask>> selectListByInstanceId(Long instanceId);
 
+    Optional<List<FlwHisTask>> selectListByInstanceIdAndTaskState(Long instanceId, Integer taskState);
+
     List<FlwHisTask> selectListByCallProcessIdAndCallInstanceId(Long callProcessId, Long callInstanceId);
 
     List<FlwHisTask> selectListByParentTaskId(Long parentTaskId);
