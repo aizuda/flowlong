@@ -138,9 +138,10 @@ public class RuntimeServiceImpl implements RuntimeService {
                 taskService.endCallProcessTask(flwInstance.getProcessId(), flwInstance.getId());
 
                 // 重启父流程实例
-                FlwInstance parentFlwInstance = instanceDao.selectById(flwInstance.getParentInstanceId());
-                execution.setFlwInstance(parentFlwInstance);
-                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
+                FlwInstance pfi = instanceDao.selectById(flwInstance.getParentInstanceId());
+                execution.setFlwInstance(flwInstance);
+                execution.setParentFlwInstance(pfi);
+                execution.restartProcessInstance(pfi.getProcessId(), pfi.getCurrentNodeKey());
             }
         }
         return true;
@@ -280,17 +281,18 @@ public class RuntimeServiceImpl implements RuntimeService {
                                     InstanceState instanceState, TaskEventType eventType) {
 
         // 实例相关任务强制完成
-        taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType);
+        if (taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType)) {
 
-        // 更新历史实例设置状态为终止
-        FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
-        hisInstanceDao.updateById(flwHisInstance);
+            // 更新历史实例设置状态为终止
+            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
+            hisInstanceDao.updateById(flwHisInstance);
 
-        // 删除实例
-        instanceDao.deleteById(flwInstance.getId());
+            // 删除实例
+            instanceDao.deleteById(flwInstance.getId());
 
-        // 流程实例监听器通知
-        this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
+            // 流程实例监听器通知
+            this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
+        }
     }
 
     /**

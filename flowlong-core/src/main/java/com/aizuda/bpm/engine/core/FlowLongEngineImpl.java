@@ -100,13 +100,30 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwProcess process = processService().getProcessById(id);
         NodeModel nodeModel = process.model().getNode(currentNodeKey);
         if (null != nodeModel) {
-            Optional<NodeModel> nodeModelOptional = nodeModel.nextNode();
-            if (nodeModelOptional.isPresent()) {
+            boolean exec = false;
+            FlwInstance fi = execution.getFlwInstance();
+            if (null != fi && null != fi.getParentInstanceId()) {
+                // 子流程判断处理逻辑
+                if (InstancePriority.async.eq(fi.getPriority())) {
+                    // 异步子流程，如果父流程不存在审批任务继续执行
+                    FlwInstance pfi = execution.getParentFlwInstance();
+                    if (null != pfi) {
+                        exec = !queryService().existActiveTask(pfi.getId());
+                    }
+                } else {
+                    // 普通子流程，继续执行子节点
+                    exec = true;
+                }
+                // 设置执行实例为父实例
+                execution.setFlwInstance(execution.getParentFlwInstance());
+                execution.setParentFlwInstance(null);
+            } else {
+                // 普通流程
+                exec = true;
+            }
+            if (exec) {
                 // 执行子节点
-                nodeModelOptional.get().execute(flowLongContext, execution);
-            } else if (nodeModel.endNode()) {
-                // 不存在任何子节点结束流程
-                execution.endInstance(nodeModel);
+                nodeModel.nextNode().ifPresent(t -> t.execute(flowLongContext, execution));
             }
         }
     }
@@ -223,12 +240,37 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (Objects.equals(1, nodeModel.getRejectStrategy())) {
             // 驳回策略 1，驳回到发起人
             return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
-        } else if (Objects.equals(4, nodeModel.getRejectStrategy())) {
+        }
+
+        if (Objects.equals(4, nodeModel.getRejectStrategy())) {
             // 驳回策略 4，终止审批流程
             return terminateProcess.get();
-        } else if (Objects.equals(5, nodeModel.getRejectStrategy())) {
+        }
+
+        final NodeModel parentNode = nodeModel.getParentNode();
+        if (parentNode.callProcessNode()) {
+            // 父节点为子流程，驳回到父审批节点
+            return this.executeJumpTask(currentFlwTask.getId(), parentNode.parentApprovalNode().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        }
+
+        if (Objects.equals(5, nodeModel.getRejectStrategy())) {
             // 驳回策略 5，驳回到模型父节点
-            return this.executeJumpTask(currentFlwTask.getId(), nodeModel.getParentNode().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+            return this.executeJumpTask(currentFlwTask.getId(), parentNode.getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        }
+
+        if (parentNode.conditionNode()) {
+            // 父节点为并行分支或包容分支，存在其它待审任务
+            NodeModel conditionParentNode = parentNode.getParentNode();
+            if (conditionParentNode.parallelNode() || conditionParentNode.inclusiveNode()) {
+                List<FlwTask> ftList = queryService().getTasksByInstanceId(currentFlwTask.getInstanceId());
+                for (FlwTask ft : ftList) {
+                    if (Objects.equals(currentFlwTask.getId(), ft.getId())) {
+                        continue;
+                    }
+                    // 强制驳回终止其它任务
+                    taskService().forceCompleteTask(ft, flowCreator, TaskState.rejectEnd, TaskEventType.reject);
+                }
+            }
         }
 
         // 2，驳回到上一节点
