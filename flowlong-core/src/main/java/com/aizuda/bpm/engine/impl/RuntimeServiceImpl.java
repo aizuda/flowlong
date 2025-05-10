@@ -280,17 +280,18 @@ public class RuntimeServiceImpl implements RuntimeService {
                                     InstanceState instanceState, TaskEventType eventType) {
 
         // 实例相关任务强制完成
-        taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType);
+        if (taskService.forceCompleteAllTask(flwInstance.getId(), flowCreator, instanceState, eventType)) {
 
-        // 更新历史实例设置状态为终止
-        FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
-        hisInstanceDao.updateById(flwHisInstance);
+            // 更新历史实例设置状态为终止
+            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
+            hisInstanceDao.updateById(flwHisInstance);
 
-        // 删除实例
-        instanceDao.deleteById(flwInstance.getId());
+            // 删除实例
+            instanceDao.deleteById(flwInstance.getId());
 
-        // 流程实例监听器通知
-        this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
+            // 流程实例监听器通知
+            this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
+        }
     }
 
     /**

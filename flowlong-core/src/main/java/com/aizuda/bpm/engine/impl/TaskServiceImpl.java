@@ -134,12 +134,16 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTask> flwTasks = taskDao.selectListByInstanceId(instanceId);
         if (null != flwTasks) {
             TaskState taskState = TaskState.of(instanceState);
-            flwTasks.forEach(t -> {
-                this.moveToHisTask(t, taskState, flowCreator);
+            flwTasks.forEach(t -> this.forceCompleteTask(t, flowCreator, taskState, eventType));
+        }
+        return true;
+    }
 
-                // 任务监听器通知
-                this.taskNotify(eventType, () -> t, null, null, flowCreator);
-            });
+    @Override
+    public boolean forceCompleteTask(FlwTask flwTask, FlowCreator flowCreator, TaskState taskState, TaskEventType eventType) {
+        if (this.moveToHisTask(flwTask, taskState, flowCreator)) {
+            // 任务监听器通知
+            this.taskNotify(eventType, () -> flwTask, null, null, flowCreator);
         }
         return true;
     }

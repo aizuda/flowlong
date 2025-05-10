@@ -75,6 +75,17 @@ public interface TaskService {
     boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
 
     /**
+     * 强制完成某个任务
+     *
+     * @param flwTask     审批任务
+     * @param flowCreator 处理人员
+     * @param taskState   流任务状态
+     * @param eventType   监听事件类型
+     * @return true 成功 false 失败
+     */
+    boolean forceCompleteTask(FlwTask flwTask, FlowCreator flowCreator, TaskState taskState, TaskEventType eventType);
+
+    /**
      * 执行节点跳转任务
      *
      * @param taskId            任务ID
@@ -154,7 +165,7 @@ public interface TaskService {
      * @param taskId            任务ID
      * @param flowCreator       任务参与者
      * @param agentFlowCreators 指定代理人列表
-     * @param args                 任务参数
+     * @param args              任务参数
      * @return true 成功 false 失败
      */
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators, Map<String, Object> args) {
@@ -171,7 +182,7 @@ public interface TaskService {
      * @param taskId              任务ID
      * @param flowCreator         任务参与者
      * @param assigneeFlowCreator 指定办理人
-     * @param args                 任务参数
+     * @param args                任务参数
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator, Map<String, Object> args) {
@@ -200,7 +211,7 @@ public interface TaskService {
      * @param taskId              任务ID
      * @param flowCreator         任务参与者
      * @param assigneeFlowCreator 指定办理人
-     * @param args                 任务参数
+     * @param args                任务参数
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator, Map<String, Object> args) {
