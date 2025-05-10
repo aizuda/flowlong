@@ -248,6 +248,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
 
         final NodeModel parentNode = nodeModel.getParentNode();
+        if (parentNode.callProcessNode()) {
+            // 父节点为子流程，驳回到父审批节点
+            return this.executeJumpTask(currentFlwTask.getId(), parentNode.parentApprovalNode().getNodeKey(), flowCreator, args, TaskType.rejectJump);
+        }
+
         if (Objects.equals(5, nodeModel.getRejectStrategy())) {
             // 驳回策略 5，驳回到模型父节点
             return this.executeJumpTask(currentFlwTask.getId(), parentNode.getNodeKey(), flowCreator, args, TaskType.rejectJump);
