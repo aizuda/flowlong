@@ -138,9 +138,10 @@ public class RuntimeServiceImpl implements RuntimeService {
                 taskService.endCallProcessTask(flwInstance.getProcessId(), flwInstance.getId());
 
                 // 重启父流程实例
-                FlwInstance parentFlwInstance = instanceDao.selectById(flwInstance.getParentInstanceId());
-                execution.setFlwInstance(parentFlwInstance);
-                execution.restartProcessInstance(parentFlwInstance.getProcessId(), parentFlwInstance.getCurrentNodeKey());
+                FlwInstance pfi = instanceDao.selectById(flwInstance.getParentInstanceId());
+                execution.setFlwInstance(flwInstance);
+                execution.setParentFlwInstance(pfi);
+                execution.restartProcessInstance(pfi.getProcessId(), pfi.getCurrentNodeKey());
             }
         }
         return true;

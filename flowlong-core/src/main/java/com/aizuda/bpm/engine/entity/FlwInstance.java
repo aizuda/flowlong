@@ -5,6 +5,8 @@
 package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.core.enums.InstancePriority;
+import com.aizuda.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -36,7 +38,7 @@ public class FlwInstance extends FlowEntity {
      */
     protected Long parentInstanceId;
     /**
-     * 流程实例优先级
+     * 流程实例优先级 0，正常 1，异步
      */
     protected Integer priority;
     /**
@@ -76,10 +78,19 @@ public class FlwInstance extends FlowEntity {
      */
     protected Date lastUpdateTime;
 
+    public FlwInstance() {
+        // 默认优先级 0
+        this.priority = 0;
+    }
+
     public static FlwInstance of(String businessKey) {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setBusinessKey(businessKey);
         return flwInstance;
+    }
+
+    public void priority(InstancePriority instancePriority) {
+        this.priority = instancePriority.getValue();
     }
 
     @SuppressWarnings({"all"})

@@ -100,8 +100,31 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwProcess process = processService().getProcessById(id);
         NodeModel nodeModel = process.model().getNode(currentNodeKey);
         if (null != nodeModel) {
-            // 执行子节点
-            nodeModel.nextNode().ifPresent(t -> t.execute(flowLongContext, execution));
+            boolean exec = false;
+            FlwInstance fi = execution.getFlwInstance();
+            if (null != fi && null != fi.getParentInstanceId()) {
+                // 子流程判断处理逻辑
+                if (InstancePriority.async.eq(fi.getPriority())) {
+                    // 异步子流程，如果父流程不存在审批任务继续执行
+                    FlwInstance pfi = execution.getParentFlwInstance();
+                    if (null != pfi) {
+                        exec = !queryService().existActiveTask(pfi.getId());
+                    }
+                } else {
+                    // 普通子流程，继续执行子节点
+                    exec = true;
+                }
+                // 设置执行实例为父实例
+                execution.setFlwInstance(execution.getParentFlwInstance());
+                execution.setParentFlwInstance(null);
+            } else {
+                // 普通流程
+                exec = true;
+            }
+            if (exec) {
+                // 执行子节点
+                nodeModel.nextNode().ifPresent(t -> t.execute(flowLongContext, execution));
+            }
         }
     }
 

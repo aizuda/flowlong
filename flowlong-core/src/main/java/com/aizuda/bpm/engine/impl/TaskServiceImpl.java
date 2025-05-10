@@ -1130,6 +1130,10 @@ public class TaskServiceImpl implements TaskService {
             final long instanceId = flwTask.getInstanceId();
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, execution.isSaveAsDraft(), () -> {
                 FlwInstance flwInstance = new FlwInstance();
+                if (nodeModel.callAsync()) {
+                    // 设置优先级为 1 异步子流程
+                    flwInstance.priority(InstancePriority.async);
+                }
                 flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
                 flwInstance.setParentInstanceId(instanceId);
                 return flwInstance;
@@ -1144,6 +1148,7 @@ public class TaskServiceImpl implements TaskService {
                     this.taskNotify(TaskEventType.callProcess, () -> flwHisTask, null, nodeModel, flowCreator);
                 }
             });
+
             // 如果是异步调用，继续执行后续逻辑
             if (nodeModel.callAsync()) {
                 nodeModel.nextNode().ifPresent(t -> t.execute(execution.getEngine().getContext(), execution));
