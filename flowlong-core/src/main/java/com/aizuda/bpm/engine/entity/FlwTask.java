@@ -13,10 +13,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 任务实体类
@@ -123,9 +124,11 @@ public class FlwTask extends FlowEntity {
             Map<String, Object> varMap = this.variableMap();
             if (null != varMap) {
                 // 合并变量
-                varMap.forEach(args::putIfAbsent);
+                this.variable = FlowLongContext.toJson(Stream.concat(varMap.entrySet().stream(), args.entrySet().stream())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, ((e1, e2) -> e2))));
+            } else {
+                this.variable = FlowLongContext.toJson(args);
             }
-            this.variable = FlowLongContext.toJson(args);
         }
     }
 
