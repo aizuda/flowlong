@@ -26,6 +26,8 @@ public interface FlwTaskDao {
 
     boolean deleteById(Long id);
 
+    boolean deleteByInstanceIdAndParentTaskId(Long instanceId, Long parentTaskId);
+
     boolean deleteByInstanceIds(List<Long> instanceIds);
 
     boolean deleteByIds(List<Long> ids);

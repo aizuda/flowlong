@@ -28,6 +28,8 @@ public interface FlwTaskActorDao {
 
     boolean deleteByTaskId(Long taskId);
 
+    boolean deleteByInstanceIdAndTaskIds(Long instanceId, List<Long> taskIds);
+
     boolean deleteByInstanceIds(List<Long> instanceIds);
 
     boolean deleteByTaskIdAndAgentType(Long taskId, int agentType);

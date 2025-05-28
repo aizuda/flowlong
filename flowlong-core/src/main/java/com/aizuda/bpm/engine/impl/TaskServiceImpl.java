@@ -817,6 +817,18 @@ public class TaskServiceImpl implements TaskService {
         // 执行任务驳回
         this.executeTask(currentFlwTask.getId(), flowCreator, args, TaskState.reject, TaskEventType.reject);
 
+        // 或签 结束其它任务
+        final Integer performType = currentFlwTask.getPerformType();
+        if (PerformType.countersign.eq(performType) || PerformType.orSign.eq(performType)
+                || PerformType.voteSign.eq(performType)) {
+            List<FlwTask> flwTasks = taskDao.selectListByParentTaskId(currentFlwTask.getParentTaskId());
+            if (null != flwTasks && !flwTasks.isEmpty()) {
+                // 删除其它任务及参与者信息
+                taskActorDao.deleteByInstanceIdAndTaskIds(currentFlwTask.getInstanceId(), flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+                taskDao.deleteByInstanceIdAndParentTaskId(currentFlwTask.getInstanceId(), currentFlwTask.getParentTaskId());
+            }
+        }
+
         // 撤回至上一级任务
         Long parentTaskId = currentFlwTask.getParentTaskId();
         Optional<FlwTask> flwTaskOptional = this.undoHisTask(parentTaskId, flowCreator, TaskType.reject, null);

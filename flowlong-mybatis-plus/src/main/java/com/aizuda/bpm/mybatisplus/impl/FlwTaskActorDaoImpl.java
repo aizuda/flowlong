@@ -51,6 +51,13 @@ public class FlwTaskActorDaoImpl implements FlwTaskActorDao {
     }
 
     @Override
+    public boolean deleteByInstanceIdAndTaskIds(Long instanceId, List<Long> taskIds) {
+        return taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery()
+                .eq(FlwTaskActor::getInstanceId, instanceId)
+                .in(FlwTaskActor::getTaskId, taskIds)) > 0;
+    }
+
+    @Override
     public boolean deleteByInstanceIds(List<Long> instanceIds) {
         return taskActorMapper.delete(Wrappers.<FlwTaskActor>lambdaQuery()
                 .in(FlwTaskActor::getInstanceId, instanceIds)) > 0;
