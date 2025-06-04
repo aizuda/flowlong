@@ -66,13 +66,14 @@ public interface TaskService {
     /**
      * 强制完成所有任务
      *
-     * @param instanceId    流程实例ID
-     * @param flowCreator   处理人员
-     * @param instanceState 流程实例最终状态
-     * @param eventType     监听事件类型
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
+     * @param instanceState  流程实例最终状态
+     * @param eventType      监听事件类型
      * @return true 成功 false 失败
      */
-    boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
+    boolean forceCompleteAllTask(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
 
     /**
      * 强制完成某个任务

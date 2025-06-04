@@ -215,7 +215,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return this.executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, termination, () -> {
 
             // 驳回并终止流程
-            flowLongContext.getRuntimeService().reject(currentFlwTask.getInstanceId(), flowCreator);
+            flowLongContext.getRuntimeService().reject(currentFlwTask.getInstanceId(), currentFlwTask, flowCreator);
             return Optional.of(currentFlwTask);
         });
     }

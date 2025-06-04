@@ -130,22 +130,23 @@ public class TaskServiceImpl implements TaskService {
      * 强制完成所有任务
      */
     @Override
-    public boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType) {
+    public boolean forceCompleteAllTask(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType) {
         List<FlwTask> flwTasks = taskDao.selectListByInstanceId(instanceId);
         if (null != flwTasks) {
             TaskState taskState = TaskState.of(instanceState);
             flwTasks.forEach(t -> this.forceCompleteTask(t, flowCreator, taskState, eventType));
+        }
+        // 当前任务监听器通知
+        if (null != currentFlwTask) {
+            this.taskNotify(eventType, () -> currentFlwTask, null, null, flowCreator);
         }
         return true;
     }
 
     @Override
     public boolean forceCompleteTask(FlwTask flwTask, FlowCreator flowCreator, TaskState taskState, TaskEventType eventType) {
-        if (this.moveToHisTask(flwTask, taskState, flowCreator)) {
-            // 任务监听器通知
-            this.taskNotify(eventType, () -> flwTask, null, null, flowCreator);
-        }
-        return true;
+        // 强制完成任务，不通知监听器
+        return this.moveToHisTask(flwTask, taskState, flowCreator);
     }
 
     /**

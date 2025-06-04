@@ -9,6 +9,7 @@ import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.InstanceState;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
@@ -101,43 +102,63 @@ public interface RuntimeService {
     /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）
      *
-     * @param instanceId  流程实例ID
-     * @param flowCreator 处理人员
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
      */
-    boolean reject(Long instanceId, FlowCreator flowCreator);
+    boolean reject(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator);
+
+    default boolean reject(Long instanceId, FlowCreator flowCreator) {
+        return this.reject(instanceId, null, flowCreator);
+    }
 
     /**
      * 流程实例撤销（用于错误发起审批申请，发起人主动撤销）
      *
-     * @param instanceId  流程实例ID
-     * @param flowCreator 处理人员
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
      */
-    boolean revoke(Long instanceId, FlowCreator flowCreator);
+    boolean revoke(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator);
+
+    default boolean revoke(Long instanceId, FlowCreator flowCreator) {
+        return this.revoke(instanceId, null, flowCreator);
+    }
 
     /**
      * 流程实例超时（设定审批时间超时，自动结束）
      *
-     * @param instanceId  流程实例ID
-     * @param flowCreator 处理人员
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
      */
-    boolean timeout(Long instanceId, FlowCreator flowCreator);
+    boolean timeout(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator);
+
+    default boolean timeout(Long instanceId, FlowCreator flowCreator) {
+        return this.timeout(instanceId, null, flowCreator);
+    }
 
     /**
      * 流程实例超时（忽略操作权限）
      *
      * @param instanceId 流程实例ID
      */
-    default void timeout(Long instanceId) {
-        this.timeout(instanceId, FlowCreator.ADMIN);
+    default boolean timeout(Long instanceId) {
+        return this.timeout(instanceId, FlowCreator.ADMIN);
     }
 
     /**
      * 流程实例强制终止
      *
-     * @param instanceId  流程实例ID
-     * @param flowCreator 处理人员
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
      */
-    boolean terminate(Long instanceId, FlowCreator flowCreator);
+    boolean terminate(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator);
+
+    default boolean terminate(Long instanceId, FlowCreator flowCreator) {
+        return this.terminate(instanceId, null, flowCreator);
+    }
 
     /**
      * 更新流程实例
