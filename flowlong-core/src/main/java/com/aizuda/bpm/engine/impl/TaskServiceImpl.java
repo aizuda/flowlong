@@ -623,7 +623,7 @@ public class TaskServiceImpl implements TaskService {
                 taskActorDao.insert(fta);
             });
         } else {
-            if (null == flwTask.getAssignorId()) {
+            if (null == dbFlwTask.getAssignorId()) {
                 // 设置委托人信息
                 flwTask.setAssignorId(flowCreator.getCreateId());
                 flwTask.setAssignor(flowCreator.getCreateBy());
