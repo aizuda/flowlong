@@ -1464,37 +1464,25 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public boolean removeTaskActor(Long taskId, List<String> actorIds, FlowCreator flowCreator) {
-        FlwTask flwTask = taskDao.selectCheckById(taskId);
-        Assert.isTrue(ObjectUtils.isEmpty(actorIds), "actorIds cannot be empty");
-
-        if (PerformType.countersign.eq(flwTask.getPerformType())) {
-            /*
-             * 会签多任务情况
-             */
-            List<FlwTaskActor> taskActorList = taskActorDao.selectListByInstanceId(flwTask.getInstanceId());
-            if (ObjectUtils.isEmpty(taskActorList)) {
-                return false;
-            }
-            taskActorList.forEach(t -> {
-                if (actorIds.contains(t.getActorId())) {
-                    // 删除参与者表
-                    taskActorDao.deleteById(t.getId());
-                    // 删除任务表
-                    taskDao.deleteById(t.getTaskId());
-                }
-            });
-        } else {
-            /*
-             * 单一任务多处理人员情况，删除参与者表，任务关联关系
-             */
-            if (!taskActorDao.deleteByTaskIdAndActorIds(taskId, actorIds)) {
-                return false;
-            }
+        if (ObjectUtils.isEmpty(actorIds)) {
+            return false;
         }
-
-        // 创建任务监听
-        this.taskNotify(TaskEventType.removeTaskActor, () -> flwTask, null, null, flowCreator);
-        return true;
+        List<FlwTaskActor> taskActorList = taskActorDao.selectListByTaskId(taskId);
+        if (ObjectUtils.isEmpty(taskActorList)) {
+            return false;
+        }
+        List<FlwTaskActor> ftaList = taskActorList.stream().filter(t -> actorIds.contains(t.getActorId())).collect(Collectors.toList());
+        if (Objects.equals(ftaList.size(), taskActorList.size())) {
+            // 不允许减签全部参与者
+            return false;
+        }
+        // 执行减签
+        if (taskActorDao.deleteByTaskIdAndActorIds(taskId, actorIds)) {
+            // 创建任务监听
+            this.taskNotify(TaskEventType.removeTaskActor, () -> taskDao.selectCheckById(taskId), ftaList, null, flowCreator);
+            return true;
+        }
+        return false;
     }
 
     @Override
