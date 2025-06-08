@@ -820,6 +820,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
         Assert.isTrue(currentFlwTask.startNode(), "上一步任务ID为空，无法驳回至上一步处理");
+        final Long instanceId = currentFlwTask.getInstanceId();
 
         // 执行任务驳回
         this.executeTask(currentFlwTask.getId(), flowCreator, args, TaskState.reject, TaskEventType.reject);
@@ -831,10 +832,27 @@ public class TaskServiceImpl implements TaskService {
             List<FlwTask> flwTasks = taskDao.selectListByParentTaskId(currentFlwTask.getParentTaskId());
             if (null != flwTasks && !flwTasks.isEmpty()) {
                 // 删除其它任务及参与者信息
-                taskActorDao.deleteByInstanceIdAndTaskIds(currentFlwTask.getInstanceId(), flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
-                taskDao.deleteByInstanceIdAndParentTaskId(currentFlwTask.getInstanceId(), currentFlwTask.getParentTaskId());
+                taskActorDao.deleteByInstanceIdAndTaskIds(instanceId, flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+                taskDao.deleteByInstanceIdAndParentTaskId(instanceId, currentFlwTask.getParentTaskId());
             }
         }
+
+        // 处理并行分支，包容分支情况（当前实例中获取模型）
+        FlwExtInstance flwExtInstance = extInstanceDao.selectById(instanceId);
+        ProcessModel processModel = flwExtInstance.model();
+        NodeModel currentNodeModel = processModel.getNode(currentFlwTask.getTaskKey());
+        NodeModel parentNode = currentNodeModel.getParentNode();
+        if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
+            List<String> allNextNodeKeys = ModelHelper.getAllNextConditionNodeKeys(parentNode.getParentNode());
+            List<Long> flwTaskIds = taskDao.selectListByInstanceId(instanceId).stream()
+                    .filter(t -> allNextNodeKeys.contains(t.getTaskKey()) && !Objects.equals(t.getId(), currentFlwTask.getId()))
+                    .map(FlowEntity::getId).collect(Collectors.toList());
+            if (!flwTaskIds.isEmpty()) {
+                taskActorDao.deleteByInstanceIdAndTaskIds(instanceId, flwTaskIds);
+                taskDao.deleteByIds(flwTaskIds);
+            }
+        }
+
 
         // 撤回至上一级任务
         Long parentTaskId = currentFlwTask.getParentTaskId();

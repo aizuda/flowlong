@@ -252,7 +252,7 @@ public class ModelHelper {
      * @param nodeModel 当前节点模型
      * @return 所有节点key
      */
-    private static List<String> getAllNextConditionNodeKeys(NodeModel nodeModel) {
+    public static List<String> getAllNextConditionNodeKeys(NodeModel nodeModel) {
         List<String> nodeKeys = new ArrayList<>();
         if (null != nodeModel) {
             if (nodeModel.conditionNode()) {
