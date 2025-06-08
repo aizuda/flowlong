@@ -60,13 +60,7 @@ public class ProcessModel implements Serializable {
         this.buildParentConditionNodes(rootNode, rootNode.getConditionNodes());
 
         // 并行分支
-        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
-        if (null != parallelNodes) {
-            for (NodeModel nodeModel : parallelNodes) {
-                nodeModel.setParentNode(rootNode);
-                this.buildParentNode(nodeModel);
-            }
-        }
+        this.buildParentConditionNodes(rootNode, rootNode.getParallelNodes());
 
         // 包容分支
         this.buildParentConditionNodes(rootNode, rootNode.getInclusiveNodes());
@@ -116,12 +110,7 @@ public class ProcessModel implements Serializable {
         this.cleanConditionParentNode(rootNode.getConditionNodes());
 
         // 清理并分支
-        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
-        if (null != parallelNodes) {
-            for (NodeModel nodeModel : parallelNodes) {
-                this.cleanParentNode(nodeModel);
-            }
-        }
+        this.cleanConditionParentNode(rootNode.getParallelNodes());
 
         // 清理包容分支
         this.cleanConditionParentNode(rootNode.getInclusiveNodes());

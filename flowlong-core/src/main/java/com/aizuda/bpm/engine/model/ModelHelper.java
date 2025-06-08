@@ -268,8 +268,8 @@ public class ModelHelper {
                 nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
             } else if (nodeModel.parallelNode()) {
                 // 并行节点
-                for (NodeModel node : nodeModel.getParallelNodes()) {
-                    nodeKeys.addAll(getAllNextConditionNodeKeys(node));
+                for (ConditionNode conditionNode : nodeModel.getParallelNodes()) {
+                    nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
             } else if (nodeModel.inclusiveNode()) {
                 // 包容节点
@@ -326,8 +326,8 @@ public class ModelHelper {
                 nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
             } else if (rootNodeModel.parallelNode()) {
                 // 并行节点
-                for (NodeModel nodeModel : rootNodeModel.getParallelNodes()) {
-                    nodeModels.addAll(getRootNodeAllChildNodes(nodeModel));
+                for (ConditionNode conditionNode : rootNodeModel.getParallelNodes()) {
+                    nodeModels.addAll(getRootNodeAllChildNodes(conditionNode.getChildNode()));
                 }
             } else if (rootNodeModel.inclusiveNode()) {
                 // 包容节点
@@ -569,13 +569,13 @@ public class ModelHelper {
                     // 并行节点
                     int flag = 0;
                     List<String> pnAllKeys = new ArrayList<>();
-                    for (NodeModel nodeModel : rootNodeModel.getParallelNodes()) {
+                    for (ConditionNode conditionNode : rootNodeModel.getParallelNodes()) {
                         List<String> pnKeys = new ArrayList<>();
                         // 添加执行条件节点
-                        pnKeys.add(nodeModel.getNodeKey());
+                        pnKeys.add(conditionNode.getNodeKey());
 
                         // 条件节点分支子节点
-                        pnKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, nodeModel, currentNodeKey));
+                        pnKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, conditionNode.getChildNode(), currentNodeKey));
 
                         // 判断如果包含当前节点则添加到已使用的节点中
                         if (pnKeys.contains(currentNodeKey)) {

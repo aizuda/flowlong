@@ -159,7 +159,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 并行节点
      * <p>相当于并行网关</p>
      */
-    private List<NodeModel> parallelNodes;
+    private List<ConditionNode> parallelNodes;
     /**
      * 包容节点
      * <p>相当于包容网关</p>
@@ -261,12 +261,8 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行并行分支
              */
-            for (NodeModel parallelNode : parallelNodes) {
-                if (TaskType.conditionNode.eq(parallelNode.getType())) {
-                    parallelNode.getChildNode().execute(flowLongContext, execution);
-                } else {
-                    parallelNode.execute(flowLongContext, execution);
-                }
+            for (ConditionNode parallelNode : parallelNodes) {
+                parallelNode.getChildNode().execute(flowLongContext, execution);
             }
             return true;
         }
@@ -384,7 +380,7 @@ public class NodeModel implements ModelInstance, Serializable {
         }
 
         // 并行分支
-        NodeModel fromParallelNode = this.getFromNodeModels(nodeKey, parallelNodes);
+        NodeModel fromParallelNode = this.getFromConditionNodes(nodeKey, parallelNodes);
         if (fromParallelNode != null) {
             return fromParallelNode;
         }
@@ -398,25 +394,6 @@ public class NodeModel implements ModelInstance, Serializable {
         // 条件节点中没有找到 那么去它的同级子节点中继续查找
         if (null != childNode) {
             return childNode.getNode(nodeKey);
-        }
-        return null;
-    }
-
-    /**
-     * 从节点列表中获取指定key节点信息
-     *
-     * @param nodeKey    节点 key
-     * @param nodeModels 节点模型列表
-     * @return 模型节点
-     */
-    private NodeModel getFromNodeModels(String nodeKey, List<NodeModel> nodeModels) {
-        if (null != nodeModels) {
-            for (NodeModel nodeModel : nodeModels) {
-                NodeModel selectNode = nodeModel.getNode(nodeKey);
-                if (null != selectNode) {
-                    return selectNode;
-                }
-            }
         }
         return null;
     }

@@ -1147,7 +1147,7 @@ public class TaskServiceImpl implements TaskService {
             }
             // 启动子流程，任务归档历史
             final long instanceId = flwTask.getInstanceId();
-            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, execution.isSaveAsDraft(), () -> {
+            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, false, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 if (nodeModel.callAsync()) {
                     // 设置优先级为 1 异步子流程
