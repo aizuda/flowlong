@@ -75,7 +75,13 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        return this.matchConditionNode(flowLongContext, execution, nodeModel.getRouteNodes());
+        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        if (conditionNodeOptional.isPresent()) {
+            return conditionNodeOptional;
+        }
+
+        // 未发现满足条件分支，使用无条件分支
+        return defaultConditionNode(nodeModel.getConditionNodes());
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
