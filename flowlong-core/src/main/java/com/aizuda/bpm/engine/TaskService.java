@@ -377,6 +377,14 @@ public interface TaskService {
         return this.addTaskActor(taskId, performType, Collections.singletonList(taskActor), flowCreator);
     }
 
+    default boolean addTaskActor(Long taskId, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, null, taskActors, flowCreator);
+    }
+
+    default boolean addTaskActor(Long taskId, FlwTaskActor taskActor, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, null, taskActor, flowCreator);
+    }
+
     /**
      * 对指定的任务ID删除参与者【减签】
      *

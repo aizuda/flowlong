@@ -1438,8 +1438,17 @@ public class TaskServiceImpl implements TaskService {
     public boolean addTaskActor(Long taskId, PerformType performType, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "actorIds cannot be empty");
+        boolean countersign = PerformType.countersign.eq(flwTask.getPerformType());
 
-        final boolean countersign = PerformType.countersign.eq(flwTask.getPerformType());
+        if (countersign || (PerformType.sort != performType && PerformType.countersign != performType
+                && PerformType.orSign != performType && PerformType.voteSign != performType)) {
+            // 会签（非合法类型）不允许修改审批方式
+            performType = null;
+        } else {
+            // 按顺序依次审批，被修改为会签
+            countersign = Objects.equals(PerformType.countersign, performType);
+        }
+
         List<FlwTaskActor> ftaList = new ArrayList<>();
         List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
         Map<String, FlwTaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(FlwTaskActor::getActorId, t -> t));
@@ -1473,10 +1482,12 @@ public class TaskServiceImpl implements TaskService {
         ftaList.addAll(taskActorList);
 
         // 更新任务参与类型
-        FlwTask temp = new FlwTask();
-        temp.setId(taskId);
-        temp.performType(performType);
-        taskDao.updateById(temp);
+        if (null != performType) {
+            FlwTask temp = new FlwTask();
+            temp.setId(taskId);
+            temp.performType(performType);
+            taskDao.updateById(temp);
+        }
 
         // 创建任务监听
         this.taskNotify(TaskEventType.addTaskActor, () -> flwTask, ftaList, null, flowCreator);
