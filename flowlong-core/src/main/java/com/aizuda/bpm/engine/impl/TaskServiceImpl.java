@@ -1439,6 +1439,8 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         Assert.isTrue(ObjectUtils.isEmpty(taskActors), "actorIds cannot be empty");
 
+        final boolean countersign = PerformType.countersign.eq(flwTask.getPerformType());
+        List<FlwTaskActor> ftaList = new ArrayList<>();
         List<FlwTaskActor> taskActorList = this.getTaskActorsByTaskId(taskId);
         Map<String, FlwTaskActor> taskActorMap = taskActorList.stream().collect(Collectors.toMap(FlwTaskActor::getActorId, t -> t));
         for (FlwTaskActor taskActor : taskActors) {
@@ -1446,32 +1448,39 @@ public class TaskServiceImpl implements TaskService {
             if (null != taskActorMap.get(taskActor.getActorId())) {
                 continue;
             }
-            if (PerformType.countersign.eq(flwTask.getPerformType())) {
+            if (countersign) {
                 /*
                  * 会签多任务情况
                  */
                 FlwTask newFlwTask = flwTask.cloneTask(flowCreator.getCreateId(), flowCreator.getCreateBy());
                 newFlwTask.setId(flowLongIdGenerator.getId(newFlwTask.getId()));
-                taskDao.insert(newFlwTask);
-                this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), 0, taskActor);
+                if (taskDao.insert(newFlwTask)) {
+                    // 分配参与者
+                    this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), 0, taskActor);
+                    // 创建会签加签任务监听
+                    this.taskNotify(TaskEventType.addCountersign, () -> newFlwTask, taskActors, null, flowCreator);
+                }
             } else {
                 /*
                  * 单一任务多处理人员情况
                  */
                 this.assignTask(flwTask.getInstanceId(), taskId, 0, taskActor);
+                // 新增参与者
+                ftaList.add(taskActor);
             }
         }
+        // 已存在参与者
+        ftaList.addAll(taskActorList);
 
         // 更新任务参与类型
         FlwTask temp = new FlwTask();
         temp.setId(taskId);
         temp.performType(performType);
-        if (taskDao.updateById(temp)) {
-            // 创建任务监听
-            this.taskNotify(TaskEventType.addTaskActor, () -> flwTask, taskActors, null, flowCreator);
-            return true;
-        }
-        return false;
+        taskDao.updateById(temp);
+
+        // 创建任务监听
+        this.taskNotify(TaskEventType.addTaskActor, () -> flwTask, ftaList, null, flowCreator);
+        return true;
     }
 
     protected List<FlwTaskActor> getTaskActorsByTaskId(Long taskId) {

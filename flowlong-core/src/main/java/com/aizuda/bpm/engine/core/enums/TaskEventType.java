@@ -52,6 +52,10 @@ public enum TaskEventType {
      */
     delegateResolve,
     /**
+     * 会签加签
+     */
+    addCountersign,
+    /**
      * 任务加签
      */
     addTaskActor,
