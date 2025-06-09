@@ -4,9 +4,9 @@
  */
 package com.aizuda.bpm.engine.handler.impl;
 
-import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.FlowConstants;
 import com.aizuda.bpm.engine.FlowDataTransfer;
+import com.aizuda.bpm.engine.FlowLongExpression;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
@@ -42,13 +42,17 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        final List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+        this.assertConditionNodes(conditionNodes);
+
+        // 查找匹配条件节点
+        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, conditionNodes);
         if (conditionNodeOptional.isPresent()) {
             return conditionNodeOptional;
         }
 
         // 未发现满足条件分支，使用无条件分支
-        return defaultConditionNode(nodeModel.getConditionNodes());
+        return defaultConditionNode(conditionNodes);
     }
 
     public Optional<ConditionNode> matchConditionNode(FlowLongContext flowLongContext, Execution execution, List<ConditionNode> conditionNodes) {
@@ -75,13 +79,9 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        Optional<ConditionNode> conditionNodeOptional = this.matchConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
-        if (conditionNodeOptional.isPresent()) {
-            return conditionNodeOptional;
-        }
 
-        // 未发现满足条件分支，使用无条件分支
-        return defaultConditionNode(nodeModel.getConditionNodes());
+        // 调用条件分支执行逻辑
+        return this.getConditionNode(flowLongContext, execution, nodeModel);
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
@@ -91,13 +91,22 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     public Optional<ConditionNode> defaultConditionNode(List<ConditionNode> conditionNodes) {
         Optional<ConditionNode> cnOpt = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
-        Assert.isFalse(cnOpt.isPresent(), "Not found executable ConditionNode");
+        assertIllegal(!cnOpt.isPresent());
         return cnOpt;
+    }
+
+    public void assertConditionNodes(List<ConditionNode> conditionNodes) {
+        assertIllegal(null == conditionNodes || conditionNodes.isEmpty());
+    }
+
+    public void assertIllegal(boolean illegal) {
+        Assert.illegal(illegal, "Not found executable ConditionNode");
     }
 
     @Override
     public Optional<List<ConditionNode>> getInclusiveNodes(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        List<ConditionNode> inclusiveNodes = nodeModel.getInclusiveNodes();
+        final List<ConditionNode> inclusiveNodes = nodeModel.getInclusiveNodes();
+        this.assertConditionNodes(inclusiveNodes);
 
         // 根据正则条件节点选择
         FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
