@@ -400,6 +400,15 @@ public interface TaskService {
     }
 
     /**
+     * 修改 taskId 任务办理人为指定 taskActor 参与者
+     *
+     * @param taskId      任务ID
+     * @param taskActor    参与者
+     * @return true 成功 false 失败
+     */
+    boolean changeTaskActor(Long taskId, FlwTaskActor taskActor);
+
+    /**
      * 结束调用外部流程任务
      *
      * @param callProcessId  调用外部流程定义ID

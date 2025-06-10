@@ -1524,6 +1524,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    public boolean changeTaskActor(Long taskId, FlwTaskActor taskActor) {
+        // 删除任务参与者信息
+        if (taskActorDao.deleteByTaskId(taskId)) {
+            // 关联为指定参与者
+            return taskActorDao.insert(taskActor);
+        }
+        return false;
+    }
+
+    @Override
     public void endCallProcessTask(Long callProcessId, Long callInstanceId) {
         List<FlwHisTask> flwHisTasks = hisTaskDao.selectListByCallProcessIdAndCallInstanceId(callProcessId, callInstanceId);
         if (ObjectUtils.isNotEmpty(flwHisTasks)) {
