@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSON BPM 模型
@@ -39,6 +40,10 @@ public class ProcessModel implements Serializable {
      * 节点信息
      */
     private NodeModel nodeConfig;
+    /**
+     * 扩展配置
+     */
+    private Map<String, Object> extendConfig;
 
     /**
      * 获取process定义的指定节点key的节点模型
