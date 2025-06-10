@@ -6,65 +6,102 @@
     "nodeName": "发起人",
     "nodeKey": "k001",
     "type": 0,
-    "nodeAssigneeList": [],
     "childNode": {
       "nodeName": "并行路由",
-      "type": 8,
       "nodeKey": "k002",
-      "conditionNodes": [],
+      "type": 8,
       "parallelNodes": [
         {
-          "nodeName": "领导审批",
-          "type": 1,
-          "setType": 1,
-          "nodeKey": "k003",
-          "nodeAssigneeList": [
-            {
-              "id": "test002",
-              "name": "测试2"
-            }
-          ],
-          "examineLevel": 1,
-          "directorLevel": 1,
-          "selectMode": 1,
-          "termAuto": false,
-          "term": 0,
-          "termMode": 1,
-          "examineMode": 1,
-          "directorMode": 0
+          "nodeName": "并行分支 1",
+          "nodeKey": "k002-1",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "childNode": {
+            "nodeName": "第二审批",
+            "nodeKey": "k004",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test003",
+                "name": "测试3"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 1,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprove": 1,
+            "allowCc": false,
+            "allowTransfer": false,
+            "allowAppendNode": false,
+            "allowRollback": false,
+            "rejectStrategy": 2,
+            "rejectStart": 1
+          }
         },
         {
-          "nodeName": "第二审批",
-          "type": 1,
-          "setType": 1,
-          "nodeKey": "k004",
-          "nodeAssigneeList": [
-            {
-              "id": "test003",
-              "name": "测试3"
-            }
-          ],
-          "examineLevel": 1,
-          "directorLevel": 1,
-          "selectMode": 1,
-          "termAuto": false,
-          "term": 0,
-          "termMode": 1,
-          "examineMode": 1,
-          "directorMode": 0
+          "nodeName": "并行分支 2",
+          "nodeKey": "k002-2",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1,
+          "childNode": {
+            "nodeName": "领导审批",
+            "nodeKey": "k003",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test002",
+                "name": "测试2"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 1,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprove": 1,
+            "extendConfig": {},
+            "allowCc": false,
+            "allowTransfer": false,
+            "allowAppendNode": false,
+            "allowRollback": false,
+            "rejectStrategy": 2,
+            "rejectStart": 1
+          }
         }
       ],
       "childNode": {
         "nodeName": "抄送人",
-        "type": 2,
         "nodeKey": "k005",
-        "userSelectFlag": true,
+        "type": 2,
+        "allowSelection": true,
+        "remind": false,
         "nodeAssigneeList": [
           {
-            "id": "220000200908305857",
+            "id": "test001",
             "name": "何秀英"
           }
-        ]
+        ],
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk1749087043557",
+          "type": -1
+        }
       }
     }
   }

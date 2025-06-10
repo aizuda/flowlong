@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * 流程状态
+ * 流程实例状态
  *
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
@@ -21,6 +21,10 @@ import java.util.Objects;
  */
 @Getter
 public enum InstanceState {
+    /**
+     * 作废状态，删除当前任务，保留了历史审批任务
+     */
+    destroy(-3),
     /**
      * 已暂停状态，被主动挂起，暂停执行
      */

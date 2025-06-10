@@ -99,7 +99,7 @@ public class FlwInstance extends FlowEntity {
         return null != map ? map : new HashMap<>();
     }
 
-    public void setMapVariable(Map<String, Object> args) {
-        this.variable = FlowLongContext.toJson(args);
+    public void putAllVariable(Map<String, Object> args) {
+        this.variable = FlowLongContext.putAllVariable(this.variable, args);
     }
 }

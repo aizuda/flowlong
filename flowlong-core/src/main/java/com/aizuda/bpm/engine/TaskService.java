@@ -66,13 +66,14 @@ public interface TaskService {
     /**
      * 强制完成所有任务
      *
-     * @param instanceId    流程实例ID
-     * @param flowCreator   处理人员
-     * @param instanceState 流程实例最终状态
-     * @param eventType     监听事件类型
+     * @param instanceId     流程实例ID
+     * @param currentFlwTask 当前任务
+     * @param flowCreator    处理人员
+     * @param instanceState  流程实例最终状态
+     * @param eventType      监听事件类型
      * @return true 成功 false 失败
      */
-    boolean forceCompleteAllTask(Long instanceId, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
+    boolean forceCompleteAllTask(Long instanceId, FlwTask currentFlwTask, FlowCreator flowCreator, InstanceState instanceState, TaskEventType eventType);
 
     /**
      * 强制完成某个任务
@@ -376,6 +377,14 @@ public interface TaskService {
         return this.addTaskActor(taskId, performType, Collections.singletonList(taskActor), flowCreator);
     }
 
+    default boolean addTaskActor(Long taskId, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, null, taskActors, flowCreator);
+    }
+
+    default boolean addTaskActor(Long taskId, FlwTaskActor taskActor, FlowCreator flowCreator) {
+        return this.addTaskActor(taskId, null, taskActor, flowCreator);
+    }
+
     /**
      * 对指定的任务ID删除参与者【减签】
      *
@@ -389,6 +398,15 @@ public interface TaskService {
     default boolean removeTaskActor(Long taskId, String actorId, FlowCreator flowCreator) {
         return removeTaskActor(taskId, Collections.singletonList(actorId), flowCreator);
     }
+
+    /**
+     * 修改 taskId 任务办理人为指定 taskActor 参与者
+     *
+     * @param taskId      任务ID
+     * @param taskActor    参与者
+     * @return true 成功 false 失败
+     */
+    boolean changeTaskActor(Long taskId, FlwTaskActor taskActor);
 
     /**
      * 结束调用外部流程任务

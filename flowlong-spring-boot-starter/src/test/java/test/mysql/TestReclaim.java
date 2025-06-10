@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 /**
- * 测试票签流程
+ * 测试拿回任务
  *
  * @author 青苗
  */
 @Slf4j
-public class TestClaim extends MysqlTest {
+public class TestReclaim extends MysqlTest {
 
     @BeforeEach
     public void before() {

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * JSON BPM 模型
@@ -39,6 +40,10 @@ public class ProcessModel implements Serializable {
      * 节点信息
      */
     private NodeModel nodeConfig;
+    /**
+     * 扩展配置
+     */
+    private Map<String, Object> extendConfig;
 
     /**
      * 获取process定义的指定节点key的节点模型
@@ -60,13 +65,7 @@ public class ProcessModel implements Serializable {
         this.buildParentConditionNodes(rootNode, rootNode.getConditionNodes());
 
         // 并行分支
-        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
-        if (null != parallelNodes) {
-            for (NodeModel nodeModel : parallelNodes) {
-                nodeModel.setParentNode(rootNode);
-                this.buildParentNode(nodeModel);
-            }
-        }
+        this.buildParentConditionNodes(rootNode, rootNode.getParallelNodes());
 
         // 包容分支
         this.buildParentConditionNodes(rootNode, rootNode.getInclusiveNodes());
@@ -116,12 +115,7 @@ public class ProcessModel implements Serializable {
         this.cleanConditionParentNode(rootNode.getConditionNodes());
 
         // 清理并分支
-        List<NodeModel> parallelNodes = rootNode.getParallelNodes();
-        if (null != parallelNodes) {
-            for (NodeModel nodeModel : parallelNodes) {
-                this.cleanParentNode(nodeModel);
-            }
-        }
+        this.cleanConditionParentNode(rootNode.getParallelNodes());
 
         // 清理包容分支
         this.cleanConditionParentNode(rootNode.getInclusiveNodes());

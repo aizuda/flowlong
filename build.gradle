@@ -17,7 +17,7 @@ buildscript {
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.29.0")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.32.0")
     }
 }
 
