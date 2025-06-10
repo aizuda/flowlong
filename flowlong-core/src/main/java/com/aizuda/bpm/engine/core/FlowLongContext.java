@@ -19,6 +19,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * FlowLong流程引擎上下文
  *
@@ -123,6 +127,20 @@ public class FlowLongContext {
 
     public static String toJson(Object object) {
         return getFlowJsonHandler().toJson(object);
+    }
+
+    @SuppressWarnings({"all"})
+    public static String putAllVariable(String variable, Map<String, Object> args) {
+        if (null != variable && null != args && !args.isEmpty()) {
+            Map<String, Object> varMap = fromJson(variable, Map.class);
+            if (null != varMap) {
+                // 合并变量
+                return toJson(Stream.concat(varMap.entrySet().stream(), args.entrySet().stream())
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, ((e1, e2) -> e2))));
+            }
+            return toJson(args);
+        }
+        return null;
     }
 
     private static FlowJsonHandler getFlowJsonHandler() {

@@ -191,6 +191,15 @@ public interface RuntimeService {
     void cascadeRemoveByInstanceId(Long instanceId);
 
     /**
+     * 根据 流程实例ID 作废流程
+     *
+     * @param instanceId 流程实例ID
+     * @param args 流程实例参数
+     * @return true 成功 false 失败
+     */
+    boolean destroyByByInstanceId(Long instanceId, Map<String, Object> args);
+
+    /**
      * 追加节点模型（不执行任务跳转）
      * <p>
      * 执行追加节点模型调用 {@link FlowLongEngine#executeAppendNodeModel(Long, NodeModel, FlowCreator, boolean)}

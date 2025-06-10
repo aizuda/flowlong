@@ -81,7 +81,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(flwProcess.getId());
-        flwInstance.setMapVariable(args);
+        flwInstance.putAllVariable(args);
 
         // 重新加载流程模型
         ModelHelper.reloadProcessModel(flwProcess.model(), t -> flwProcess.setModelContent2Json(t.cleanParentNode()));
@@ -114,7 +114,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         fi.setId(instanceId);
         Map<String, Object> data = flwInstance.variableToMap();
         data.putAll(args);
-        fi.setMapVariable(data);
+        fi.putAllVariable(data);
         return instanceDao.updateById(fi);
     }
 
@@ -347,6 +347,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId) {
+        // 删除活动任务相关信息
         if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
             // 删除扩展实例
             extInstanceDao.deleteById(instanceId);
@@ -357,6 +358,24 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 删除实例
             instanceDao.deleteById(instanceId);
         }
+    }
+
+    @Override
+    public boolean destroyByByInstanceId(Long instanceId, Map<String, Object> args) {
+        // 删除活动任务相关信息
+        if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
+
+            // 删除实例
+            instanceDao.deleteById(instanceId);
+
+            // 更新作废状态
+            FlwHisInstance fhi = new FlwHisInstance();
+            fhi.instanceState(InstanceState.destroy);
+            fhi.putAllVariable(args);
+            fhi.setId(instanceId);
+            return hisInstanceDao.updateById(fhi);
+        }
+        return false;
     }
 
     @Override
