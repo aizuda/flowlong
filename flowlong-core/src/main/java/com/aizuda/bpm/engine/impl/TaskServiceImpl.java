@@ -1467,19 +1467,17 @@ public class TaskServiceImpl implements TaskService {
                     // 分配参与者
                     this.assignTask(flwTask.getInstanceId(), newFlwTask.getId(), 0, taskActor);
                     // 创建会签加签任务监听
-                    this.taskNotify(TaskEventType.addCountersign, () -> newFlwTask, taskActors, null, flowCreator);
+                    this.taskNotify(TaskEventType.addCountersign, () -> newFlwTask, Collections.singletonList(taskActor), null, flowCreator);
                 }
             } else {
                 /*
                  * 单一任务多处理人员情况
                  */
                 this.assignTask(flwTask.getInstanceId(), taskId, 0, taskActor);
-                // 新增参与者
-                ftaList.add(taskActor);
             }
+            // 新增参与者
+            ftaList.add(taskActor);
         }
-        // 已存在参与者
-        ftaList.addAll(taskActorList);
 
         // 更新任务参与类型
         if (null != performType) {
