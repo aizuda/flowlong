@@ -128,7 +128,13 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceDao.deleteById(instanceId);
             hisInstanceDao.updateById(this.getFlwHisInstance(instanceId, endNode, flwInstance, instanceState));
             // 流程实例监听器通知
-            this.instanceNotify(InstanceEventType.end, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
+            InstanceEventType iet = InstanceEventType.end;
+            if (instanceState == InstanceState.autoPass) {
+                iet = InstanceEventType.autoComplete;
+            } else if (instanceState == InstanceState.autoReject) {
+                iet = InstanceEventType.autoReject;
+            }
+            this.instanceNotify(iet, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
 
             /*
              * 实例为子流程，重启动父流程任务

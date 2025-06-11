@@ -43,6 +43,14 @@ public enum InstanceEventType {
      */
     timeoutComplete,
     /**
+     * 自动完成
+     */
+    autoComplete,
+    /**
+     * 自动驳回
+     */
+    autoReject,
+    /**
      * 结束
      */
     end;
