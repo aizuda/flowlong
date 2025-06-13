@@ -197,7 +197,7 @@ public interface RuntimeService {
      * @param args 流程实例参数
      * @return true 成功 false 失败
      */
-    boolean destroyByByInstanceId(Long instanceId, Map<String, Object> args);
+    boolean destroyByInstanceId(Long instanceId, Map<String, Object> args);
 
     /**
      * 追加节点模型（不执行任务跳转）

@@ -367,7 +367,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public boolean destroyByByInstanceId(Long instanceId, Map<String, Object> args) {
+    public boolean destroyByInstanceId(Long instanceId, Map<String, Object> args) {
         // 删除活动任务相关信息
         if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
 
