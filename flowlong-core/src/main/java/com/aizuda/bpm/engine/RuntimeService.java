@@ -51,6 +51,17 @@ public interface RuntimeService {
     ProcessModel getProcessModelByInstanceId(Long instanceId);
 
     /**
+     * 通过流程实例ID节点KEY获取节点模型
+     *
+     * @param instanceId 流程实例ID
+     * @param nodeKey 节点KEY
+     */
+    default NodeModel getNodeModel(Long instanceId, String nodeKey) {
+        ProcessModel processModel = this.getProcessModelByInstanceId(instanceId);
+        return null == processModel ? null : processModel.getNode(nodeKey);
+    }
+
+    /**
      * 根据 流程实例ID 更新流程实例全局变量
      *
      * @param instanceId 流程实例ID

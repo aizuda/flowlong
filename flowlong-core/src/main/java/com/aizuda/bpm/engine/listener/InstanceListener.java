@@ -28,7 +28,7 @@ public interface InstanceListener {
      *
      * @param eventType   事件类型
      * @param supplier    监听实例提供者
-     * @param nodeModel   当前执行节点 {@link NodeModel}
+     * @param nodeModel   当前执行节点 {@link NodeModel} 可能为 null
      * @param flowCreator 处理人员
      * @return 通知结果 true 成功 false 失败
      */

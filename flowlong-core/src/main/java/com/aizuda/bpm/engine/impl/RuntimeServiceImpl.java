@@ -134,7 +134,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             } else if (instanceState == InstanceState.autoReject) {
                 iet = InstanceEventType.autoReject;
             }
-            this.instanceNotify(iet, () -> hisInstanceDao.selectById(instanceId), execution.getFlowCreator());
+            this.instanceNotify(iet, () -> hisInstanceDao.selectById(instanceId), endNode, execution.getFlowCreator());
 
             /*
              * 实例为子流程，重启动父流程任务
@@ -176,9 +176,9 @@ public class RuntimeServiceImpl implements RuntimeService {
         return his.instanceState(instanceState);
     }
 
-    protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, FlowCreator flowCreator) {
+    protected void instanceNotify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         if (null != instanceListener) {
-            instanceListener.notify(eventType, supplier, null, flowCreator);
+            instanceListener.notify(eventType, supplier, nodeModel, flowCreator);
         }
     }
 
@@ -204,7 +204,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             extInstanceDao.insert(FlwExtInstance.of(flwInstance, flwProcess));
 
             // 流程实例监听器通知
-            this.instanceNotify(InstanceEventType.start, () -> fhi, flowCreator);
+            this.instanceNotify(InstanceEventType.start, () -> fhi, null, flowCreator);
         }
     }
 
@@ -217,7 +217,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             fhi.instanceState(InstanceState.suspend);
             if (hisInstanceDao.updateById(fhi)) {
                 // 流程实例监听器通知
-                this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, flowCreator);
+                this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, null, flowCreator);
                 return true;
             }
         }
@@ -299,7 +299,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             instanceDao.deleteById(flwInstance.getId());
 
             // 流程实例监听器通知
-            this.instanceNotify(instanceEventType, () -> flwHisInstance, flowCreator);
+            this.instanceNotify(instanceEventType, () -> flwHisInstance, null, flowCreator);
         }
     }
 
