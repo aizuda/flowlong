@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -586,7 +585,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * @param execution {@link Execution}
      * @param supplier  执行默认触发器执行函数
      */
-    public void executeTrigger(Execution execution, Supplier<Boolean> supplier) {
+    public boolean executeTrigger(Execution execution, Supplier<Boolean> supplier, Supplier<Boolean> callAsync) {
         boolean callSupplier = true;
         boolean flag = false;
         Map<String, Object> extendConfig = this.getExtendConfig();
@@ -598,7 +597,7 @@ public class NodeModel implements ModelInstance, Serializable {
                     Class<?> triggerClass = Class.forName((String) _trigger);
                     if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
                         TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
-                        flag = taskTrigger.execute(this, execution);
+                        flag = taskTrigger.execute(this, execution, callAsync);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -610,6 +609,7 @@ public class NodeModel implements ModelInstance, Serializable {
             flag = supplier.get();
         }
         Assert.isFalse(flag, "trigger execute error");
+        return flag;
     }
 
     /**

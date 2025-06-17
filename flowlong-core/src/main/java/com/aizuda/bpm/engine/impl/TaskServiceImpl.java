@@ -435,25 +435,26 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean executeTaskTrigger(Execution execution, FlwTask flwTask) {
         NodeModel nodeModel = execution.getProcessModel().getNode(flwTask.getTaskKey());
-        nodeModel.executeTrigger(execution, () -> {
+        Supplier<Boolean> finishSupplier = () -> {
+
+            // 任务监听器通知
+            this.taskNotify(TaskEventType.trigger, () -> flwTask, null, nodeModel, execution.getFlowCreator());
+
+            /*
+             * 可能存在子节点，存在继续执行
+             */
+            return nodeModel.nextNode().map(model -> model.execute(execution.getEngine().getContext(), execution))
+                    // 不存在子节点，结束流程
+                    .orElseGet(() -> execution.endInstance(nodeModel));
+        };
+        return nodeModel.executeTrigger(execution, () -> {
             // 使用默认触发器
             TaskTrigger taskTrigger = execution.getEngine().getContext().getTaskTrigger();
             if (null == taskTrigger) {
                 return false;
             }
-            return taskTrigger.execute(nodeModel, execution);
-        });
-
-        // 任务监听器通知
-        this.taskNotify(TaskEventType.trigger, () -> flwTask, null, nodeModel, execution.getFlowCreator());
-
-        /*
-         * 可能存在子节点，存在继续执行
-         */
-        return nodeModel.nextNode().map(model -> model.execute(execution.getEngine().getContext(), execution))
-                // 不存在子节点，结束流程
-                .orElseGet(() -> execution.endInstance(nodeModel));
-
+            return taskTrigger.execute(nodeModel, execution, finishSupplier);
+        }, finishSupplier);
     }
 
     /**
@@ -1204,23 +1205,26 @@ public class TaskServiceImpl implements TaskService {
             if (null == flwTask.getExpireTime()) {
                 // 立即触发器，直接执行
                 execution.setFlwTask(flwTask);
-                // 使用默认触发器
-                nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution));
                 // 执行成功，任务归档
                 FlwHisTask hisTask = FlwHisTask.of(flwTask);
-                hisTask.setTaskState(TaskState.complete);
-                hisTask.setFlowCreator(execution.getFlowCreator());
-                hisTask.calculateDuration();
-                hisTask.setId(flowLongIdGenerator.getId(hisTask.getId()));
-                hisTaskDao.insert(hisTask);
+                // 使用默认触发器
+                Supplier<Boolean> finishSupplier = () -> {
+                    hisTask.setTaskState(TaskState.complete);
+                    hisTask.setFlowCreator(execution.getFlowCreator());
+                    hisTask.calculateDuration();
+                    hisTask.setId(flowLongIdGenerator.getId(hisTask.getId()));
+                    hisTaskDao.insert(hisTask);
 
-                // 任务监听器通知
-                this.taskNotify(TaskEventType.trigger, () -> hisTask, null, nodeModel, execution.getFlowCreator());
+                    // 任务监听器通知
+                    this.taskNotify(TaskEventType.trigger, () -> hisTask, null, nodeModel, execution.getFlowCreator());
 
-                /*
-                 * 可能存在子节点
-                 */
-                nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+                    /*
+                     * 可能存在子节点
+                     */
+                    nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+                    return true;
+                };
+                nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution, finishSupplier), finishSupplier);
             } else {
                 // 定时触发器，等待执行
                 flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
