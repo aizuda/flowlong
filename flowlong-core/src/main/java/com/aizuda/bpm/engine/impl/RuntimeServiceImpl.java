@@ -167,8 +167,13 @@ public class RuntimeServiceImpl implements RuntimeService {
             currentNodeName = childNode.getNodeName();
             currentNodeKey = childNode.getNodeKey();
         }
+        his.setPriority(flwInstance.getPriority());
+        his.setInstanceNo(flwInstance.getInstanceNo());
+        his.setBusinessKey(flwInstance.getBusinessKey());
+        his.setVariable(flwInstance.getVariable());
         his.setCurrentNodeName(currentNodeName);
         his.setCurrentNodeKey(currentNodeKey);
+        his.setExpireTime(flwInstance.getExpireTime());
         his.setCreateTime(flwInstance.getCreateTime());
         his.setLastUpdateBy(flwInstance.getLastUpdateBy());
         his.setLastUpdateTime(flwInstance.getLastUpdateTime());
