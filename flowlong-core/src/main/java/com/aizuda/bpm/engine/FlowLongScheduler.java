@@ -88,7 +88,7 @@ public abstract class FlowLongScheduler {
                     /*
                      * 任务超时
                      */
-                    else if (null != flwTask.getExpireTime()) {
+                    if (null != flwTask.getExpireTime()) {
                         // 定时器任务或触发器任务直接执行通过
                         if (TaskType.timer.eq(flwTask.getTaskType()) || TaskType.trigger.eq(flwTask.getTaskType())) {
                             if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {
