@@ -38,7 +38,7 @@ public class FlwInstance extends FlowEntity {
      */
     protected Long parentInstanceId;
     /**
-     * 流程实例优先级 0，正常 1，异步
+     * 流程实例优先级 0，同步 1，异步
      */
     protected Integer priority;
     /**

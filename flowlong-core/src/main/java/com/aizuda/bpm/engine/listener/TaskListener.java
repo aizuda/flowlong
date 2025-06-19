@@ -31,7 +31,7 @@ public interface TaskListener {
      * @param eventType   事件类型
      * @param supplier    监听任务提供者
      * @param taskActors  监听任务参与者
-     * @param nodeModel   当前执行节点 {@link NodeModel}
+     * @param nodeModel   当前执行节点 {@link NodeModel} 为 null 需要根据 runtimeService.getNodeModel(instanceId, nodeKey) 方法获取
      * @param flowCreator 处理人员
      * @return 通知结果 true 成功 false 失败
      */
