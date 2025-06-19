@@ -803,18 +803,24 @@ public class TaskServiceImpl implements TaskService {
                     flwTasks = taskDao.selectListByParentTaskIds(hisTaskIds);
                 }
             }
-            Assert.isEmpty(flwTasks, "后续活动任务已完成或不存在，无法撤回.");
-            List<Long> taskIds = flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
-            // 查询任务参与者
-            List<Long> taskActorIds = taskActorDao.selectListByTaskIds(taskIds)
-                    .stream().map(FlwTaskActor::getId).collect(Collectors.toList());
-            if (ObjectUtils.isNotEmpty(taskActorIds)) {
-                taskActorDao.deleteByIds(taskActorIds);
+            if (ObjectUtils.isEmpty(flwTasks)) {
+                flwTasks = taskDao.selectListByInstanceId(hisTask.getInstanceId());
+                // 设置为 0 执行撤回到发起人逻辑
+                hisTask.setParentTaskId(0L);
             }
-            taskDao.deleteByIds(flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
+            if (ObjectUtils.isNotEmpty(flwTasks)) {
+                List<Long> taskIds = flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
+                // 查询任务参与者
+                List<Long> taskActorIds = taskActorDao.selectListByTaskIds(taskIds)
+                        .stream().map(FlwTaskActor::getId).collect(Collectors.toList());
+                if (ObjectUtils.isNotEmpty(taskActorIds)) {
+                    taskActorDao.deleteByIds(taskActorIds);
+                }
+                taskDao.deleteByIds(flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList()));
 
-            // 任务监听器通知
-            this.taskNotify(TaskEventType.withdraw, () -> hisTask, null, null, flowCreator);
+                // 任务监听器通知
+                this.taskNotify(TaskEventType.withdraw, () -> hisTask, null, null, flowCreator);
+            }
         });
     }
 
@@ -876,6 +882,15 @@ public class TaskServiceImpl implements TaskService {
     protected Optional<FlwTask> undoHisTask(Long hisTaskId, FlowCreator flowCreator, TaskType taskType,
                                             Consumer<FlwHisTask> hisTaskConsumer) {
         FlwHisTask hisTask = hisTaskDao.selectCheckById(hisTaskId);
+        if (null == hisTask) {
+            return Optional.empty();
+        }
+        if (hisTask.startNode()) {
+            // 发起节点撤回直接返回
+            return Optional.of(hisTask);
+        }
+
+        // 回调处理函数
         if (null != hisTaskConsumer) {
             hisTaskConsumer.accept(hisTask);
         }
