@@ -741,7 +741,7 @@ public class TaskServiceImpl implements TaskService {
      * 唤醒撤回或拒绝终止历史任务
      */
     @Override
-    public boolean resume(Long instanceId, FlowCreator flowCreator) {
+    public boolean resume(Long instanceId, String nodeKey, FlowCreator flowCreator) {
         FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
         if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) ||
                 (InstanceState.reject.ne(fhi.getInstanceState()) && InstanceState.revoke.ne(fhi.getInstanceState()))) {
@@ -756,32 +756,49 @@ public class TaskServiceImpl implements TaskService {
             hisInstanceDao.updateById(temp.instanceState(InstanceState.active));
         }
 
-        // 恢复历史任务
-        TaskState taskState = TaskState.rejectEnd;
-        if (InstanceState.revoke.eq(fhi.getInstanceState())) {
-            taskState = TaskState.revoke;
-        }
-        hisTaskDao.selectListByInstanceIdAndTaskState(instanceId, taskState.getValue()).ifPresent(hisTasks ->
-                hisTasks.forEach(hisTask -> {
-                    // 历史任务恢复
-                    FlwTask flwTask = hisTask.cloneTask(null);
-                    flwTask.setId(flowLongIdGenerator.getId(flwTask.getId()));
-                    if (taskDao.insert(flwTask)) {
-                        // 历史任务参与者恢复
-                        List<FlwTaskActor> taskActors = new ArrayList<>();
-                        List<FlwHisTaskActor> hisTaskActors = hisTaskActorDao.selectListByTaskId(hisTask.getId());
-                        hisTaskActors.forEach(t -> {
-                            FlwTaskActor fta = FlwTaskActor.ofFlwHisTaskActor(flwTask.getId(), t);
-                            fta.setId(flowLongIdGenerator.getId(fta.getId()));
-                            if (taskActorDao.insert(fta)) {
-                                taskActors.add(fta);
-                            }
-                        });
-
-                        // 任务监听器通知
-                        this.taskNotify(TaskEventType.resume, () -> flwTask, taskActors, null, flowCreator);
+        Consumer<FlwHisTask> fhtConsumer = hisTask -> {
+            // 历史任务恢复
+            FlwTask flwTask = hisTask.cloneTask(null);
+            flwTask.setId(flowLongIdGenerator.getId(flwTask.getId()));
+            if (taskDao.insert(flwTask)) {
+                // 历史任务参与者恢复
+                List<FlwTaskActor> taskActors = new ArrayList<>();
+                List<FlwHisTaskActor> hisTaskActors = hisTaskActorDao.selectListByTaskId(hisTask.getId());
+                hisTaskActors.forEach(t -> {
+                    FlwTaskActor fta = FlwTaskActor.ofFlwHisTaskActor(flwTask.getId(), t);
+                    fta.setId(flowLongIdGenerator.getId(fta.getId()));
+                    if (taskActorDao.insert(fta)) {
+                        taskActors.add(fta);
                     }
-                }));
+                });
+
+                // 任务监听器通知
+                this.taskNotify(TaskEventType.resume, () -> flwTask, taskActors, null, flowCreator);
+            }
+        };
+
+        if (null != nodeKey) {
+            // 恢复指定节点key历史任务
+            hisTaskDao.selectListByInstanceIdAndTaskKey(instanceId, nodeKey).ifPresent(hisTasks -> {
+                if (hisTasks.size() > 1) {
+                    // 获取最近执行的指定节点历史任务
+                    List<FlwHisTask> lastFhtList = hisTaskDao.selectListByParentTaskId(hisTasks.get(0).getParentTaskId());
+                    if (ObjectUtils.isNotEmpty(lastFhtList)) {
+                        lastFhtList.forEach(fhtConsumer);
+                    }
+                } else {
+                    hisTasks.forEach(fhtConsumer);
+                }
+            });
+        } else {
+            // 恢复历史任务
+            TaskState taskState = TaskState.rejectEnd;
+            if (InstanceState.revoke.eq(fhi.getInstanceState())) {
+                taskState = TaskState.revoke;
+            }
+            hisTaskDao.selectListByInstanceIdAndTaskState(instanceId, taskState.getValue())
+                    .ifPresent(hisTasks -> hisTasks.forEach(fhtConsumer));
+        }
         return true;
     }
 

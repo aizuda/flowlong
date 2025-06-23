@@ -272,7 +272,19 @@ public interface TaskService {
      * @param flowCreator 任务唤醒者
      * @return true 成功 false 失败
      */
-    boolean resume(Long instanceId, FlowCreator flowCreator);
+    default boolean resume(Long instanceId, FlowCreator flowCreator) {
+        return this.resume(instanceId, null, flowCreator);
+    }
+
+    /**
+     * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
+     *
+     * @param instanceId  历史实例ID
+     * @param nodeKey     节点key历史任务
+     * @param flowCreator 任务唤醒者
+     * @return true 成功 false 失败
+     */
+    boolean resume(Long instanceId, String nodeKey, FlowCreator flowCreator);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）
