@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -585,7 +586,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * @param execution {@link Execution}
      * @param supplier  执行默认触发器执行函数
      */
-    public boolean executeTrigger(Execution execution, Supplier<Boolean> supplier, Supplier<Boolean> callAsync) {
+    public boolean executeTrigger(Execution execution, Supplier<Boolean> supplier, Function<Execution, Boolean> callAsync) {
         boolean callSupplier = true;
         boolean flag = false;
         Map<String, Object> extendConfig = this.getExtendConfig();

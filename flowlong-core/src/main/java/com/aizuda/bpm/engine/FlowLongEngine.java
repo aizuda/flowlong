@@ -182,7 +182,7 @@ public interface FlowLongEngine {
     void restartProcessInstance(Long id, String currentNode, Execution execution);
 
     /**
-     * 根据任务ID，创建人ID，参数列表执行任务
+     * 根据任务ID，创建人信息，参数列表执行任务
      *
      * @param taskId      任务ID
      * @param flowCreator 任务创建者
@@ -193,6 +193,20 @@ public interface FlowLongEngine {
 
     default boolean executeTask(Long taskId, FlowCreator flowCreator) {
         return this.executeTask(taskId, flowCreator, null);
+    }
+
+    /**
+     * 根据 触发器任务ID，创建人信息，参数列表执行完成触发器任务
+     *
+     * @param taskId      任务ID
+     * @param flowCreator 任务创建者
+     * @param args        全局参数列表
+     * @return true 成功 false 失败
+     */
+    boolean executeFinishTrigger(Long taskId, FlowCreator flowCreator, Map<String, Object> args);
+
+    default boolean executeFinishTrigger(Long taskId, FlowCreator flowCreator) {
+        return executeFinishTrigger(taskId, flowCreator, null);
     }
 
     /**
@@ -268,7 +282,7 @@ public interface FlowLongEngine {
         return executeJumpTask(taskId, nodeKey, flowCreator, null);
     }
 
-    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye);
+    Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye);
 
     /**
      * 根据当前任务对象驳回至指定 nodeKey 节点，如果 nodeKey 为空默认为上一步处理
@@ -280,13 +294,13 @@ public interface FlowLongEngine {
      * @param termination    是否终止流程，该参数为 true 时，其它驳回策略无效
      * @return Task 任务对象
      */
-    Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination);
+    Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination);
 
-    default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
+    default Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args) {
         return executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, false);
     }
 
-    default Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
+    default Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
         return executeRejectTask(currentFlwTask, null, flowCreator, args, false);
     }
 

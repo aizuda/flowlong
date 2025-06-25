@@ -16,10 +16,8 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -129,7 +127,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     /**
-     * 根据任务ID，创建人，参数列表执行任务
+     * 根据任务ID，创建人信息，参数列表执行任务
      */
     @Override
     public boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
@@ -141,6 +139,28 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return afterDoneTask(flowCreator, flwTask, args, execution ->
                 // 执行节点模型
                 execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey()));
+    }
+
+    /**
+     * 根据 触发器任务ID，创建人信息，参数列表执行完成触发器任务
+     */
+    @Override
+    public boolean executeFinishTrigger(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
+        FlwTask flwTask = queryService().getTask(taskId);
+        if (null == flwTask || TaskType.trigger.ne(flwTask.getTaskType())) {
+            return false;
+        }
+
+        // 更新流程实例
+        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy(), fi -> fi.putAllVariable(args));
+        ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
+
+        // 构建节点模型
+        Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
+
+        // 传递父节点信息
+        execution.setFlwTask(flwTask);
+        return taskService().executeFinishTrigger(processModel.getNode(flwTask.getTaskKey()), execution, flowCreator);
     }
 
     /**
@@ -183,15 +203,15 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args, FlowCreator flowCreator) {
-        Optional<FlwTask> flwTaskOptional = taskService().rejectTask(flwTask, flowCreator, args);
+        Optional<List<FlwTask>> flwTasksOptional = taskService().rejectTask(flwTask, flowCreator, args);
         if (log.isDebugEnabled()) {
             log.debug("Auto reject taskId={}", flwTask.getId());
         }
-        return flwTaskOptional.isPresent();
+        return flwTasksOptional.isPresent();
     }
 
     @Override
-    public Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
+    public Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
         // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
@@ -210,7 +230,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination) {
+    public Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, boolean termination) {
         // 执行任务驳回
         return this.executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, termination, () -> {
 
@@ -219,12 +239,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 currentFlwTask.putAllVariable(args);
             }
             flowLongContext.getRuntimeService().reject(currentFlwTask.getInstanceId(), currentFlwTask, flowCreator);
-            return Optional.of(currentFlwTask);
+            return Optional.of(Collections.singletonList(currentFlwTask));
         });
     }
 
-    protected Optional<FlwTask> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
-                                                  boolean termination, Supplier<Optional<FlwTask>> terminateProcess) {
+    protected Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
+                                                  boolean termination, Supplier<Optional<List<FlwTask>>> terminateProcess) {
 
         if (termination) {
             // 强制终止流程
@@ -333,17 +353,25 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     /**
      * 获取流程实例
      *
-     * @param instanceId 流程实例ID
-     * @param updateBy   更新人
+     * @param instanceId        流程实例ID
+     * @param instanceConsumer  流程实例处理函数
+     * @param updateBy          更新人
      * @return {@link FlwInstance}
      */
-    protected FlwInstance getFlwInstance(Long instanceId, String updateBy) {
+    protected FlwInstance getFlwInstance(Long instanceId, String updateBy, Consumer<FlwInstance> instanceConsumer) {
         FlwInstance flwInstance = queryService().getInstance(instanceId);
         Assert.isNull(flwInstance, "process instance [ id=" + instanceId + " ] completed or not present");
         flwInstance.setLastUpdateBy(updateBy);
         flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        if (null != instanceConsumer) {
+            instanceConsumer.accept(flwInstance);
+        }
         runtimeService().updateInstance(flwInstance);
         return flwInstance;
+    }
+
+    protected FlwInstance getFlwInstance(Long instanceId, String updateBy) {
+        return this.getFlwInstance(instanceId, updateBy, null);
     }
 
     /**

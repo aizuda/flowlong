@@ -142,7 +142,7 @@ public class FlowLongContext {
             }
             return toJson(args);
         }
-        return null;
+        return variable;
     }
 
     private static FlowJsonHandler getFlowJsonHandler() {
