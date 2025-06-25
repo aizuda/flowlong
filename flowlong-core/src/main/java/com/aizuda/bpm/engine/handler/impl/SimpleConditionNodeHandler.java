@@ -42,7 +42,11 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        final List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+        // 判断条件节点
+        return this.getConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+    }
+
+    public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, List<ConditionNode> conditionNodes) {
         this.assertConditionNodes(conditionNodes);
 
         // 查找匹配条件节点
@@ -79,9 +83,8 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-
-        // 调用条件分支执行逻辑
-        return this.getConditionNode(flowLongContext, execution, nodeModel);
+        // 判断路由节点
+        return this.getConditionNode(flowLongContext, execution, nodeModel.getRouteNodes());
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
