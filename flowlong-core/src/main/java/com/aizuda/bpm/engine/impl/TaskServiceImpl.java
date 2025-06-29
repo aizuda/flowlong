@@ -101,6 +101,11 @@ public class TaskServiceImpl implements TaskService {
     public FlwTask executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType) {
         FlwTask flwTask = this.getAllowedFlwTask(taskId, flowCreator, args, taskState);
 
+        // 触发器情况直接返回
+        if (PerformType.trigger.eq(flwTask.getPerformType())) {
+            return flwTask;
+        }
+
         // 完成暂存待审任务，设置流程实例状态为审批中
         if (TaskType.saveAsDraft.eq(flwTask.getTaskType())) {
             eventType = TaskEventType.start;
@@ -111,11 +116,6 @@ public class TaskServiceImpl implements TaskService {
         // 重新发起审批
         else if (PerformType.start.eq(flwTask.getPerformType()) && null != flwTask.getParentTaskId()) {
             eventType = TaskEventType.restart;
-        }
-        // 触发器情况直接移除任务
-        else if (PerformType.trigger.eq(flwTask.getPerformType())) {
-            taskDao.deleteById(flwTask.getId());
-            return flwTask;
         }
 
         // 迁移任务至历史表
@@ -442,6 +442,15 @@ public class TaskServiceImpl implements TaskService {
 
             // 任务监听器通知
             this.taskNotify(TaskEventType.trigger, () -> flwTask, null, nodeModel, execution.getFlowCreator());
+
+            // 触发器暂存草稿
+            if (execution.isSaveAsDraft()) {
+                // 不处理后续逻辑
+                return true;
+            }
+
+            // 触发器任务归档
+            this.moveToHisTaskTrigger(execution.getFlwTask(), execution.getFlowCreator());
 
             /*
              * 可能存在子节点，存在继续执行
@@ -1255,26 +1264,41 @@ public class TaskServiceImpl implements TaskService {
     public boolean executeFinishTrigger(NodeModel nodeModel, Execution execution, FlowCreator flowCreator) {
         if (execution.isSaveAsDraft()) {
             // 触发器暂存草稿
-            execution.setFlwTasks(this.saveTask(execution.getFlwTask(), PerformType.trigger, null, execution, nodeModel));
+            List<FlwTask> flwTasks = this.saveTask(execution.getFlwTask(), PerformType.trigger, null, execution, nodeModel);
+            execution.setFlwTask(flwTasks.get(0));
             return true;
         }
 
-        // 构建触发器历史任务
-        FlwHisTask hisTask = FlwHisTask.of(execution.getFlwTask());
-        hisTask.setTaskState(TaskState.complete);
-        hisTask.setFlowCreator(flowCreator);
-        hisTask.calculateDuration();
-        hisTask.setId(flowLongIdGenerator.getId(hisTask.getId()));
-        hisTaskDao.insert(hisTask);
+        // 触发器任务归档
+        if(this.moveToHisTaskTrigger(execution.getFlwTask(), flowCreator)) {
 
-        // 任务监听器通知
-        this.taskNotify(TaskEventType.trigger, () -> hisTask, null, nodeModel, flowCreator);
+            // 任务监听器通知
+            this.taskNotify(TaskEventType.trigger, execution::getFlwTask, null, nodeModel, flowCreator);
 
-        /*
-         * 可能存在子节点
-         */
-        nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            /*
+             * 可能存在子节点
+             */
+            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+        }
         return true;
+    }
+
+    /**
+     * 触发器任务归档
+     */
+    protected boolean moveToHisTaskTrigger(FlwTask flwTask, FlowCreator flowCreator) {
+        // 删除触发器任务
+        if (taskDao.deleteById(flwTask.getId())) {
+
+            // 构建触发器历史任务
+            FlwHisTask hisTask = FlwHisTask.of(flwTask);
+            hisTask.setTaskState(TaskState.complete);
+            hisTask.setFlowCreator(flowCreator);
+            hisTask.calculateDuration();
+            hisTask.setId(flowLongIdGenerator.getId(hisTask.getId()));
+            return hisTaskDao.insert(hisTask);
+        }
+        return false;
     }
 
     /**

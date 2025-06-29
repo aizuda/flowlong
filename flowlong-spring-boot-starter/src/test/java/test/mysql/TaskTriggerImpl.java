@@ -15,7 +15,7 @@ public class TaskTriggerImpl implements TaskTrigger {
 //        execution.setSaveAsDraft(true);
 //        boolean ok = finish.apply(execution);
 //        if (ok) {
-//            FlwTask flwTask = execution.getFlwTasks().get(0);
+//            FlwTask flwTask = execution.getFlwTask();
 //            if (null != flwTask) {
 //                Long flwTaskId = flwTask.getId();
 //                // 触发器任务ID保存到业务中，待业务执行完成调用 flowlongEngine.executeFinishTrigger 执行完成触发器任务，继续执行流程进入下一个节点。

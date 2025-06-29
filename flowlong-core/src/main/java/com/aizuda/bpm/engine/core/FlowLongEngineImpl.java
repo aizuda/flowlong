@@ -152,14 +152,14 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         }
 
         // 更新流程实例
-        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy(), fi -> fi.putAllVariable(args));
+        FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
         ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwInstance.getId());
 
         // 构建节点模型
         Execution execution = new Execution(this, processModel, flowCreator, flwInstance, flwInstance.variableToMap());
 
         // 传递父节点信息
-        execution.setFlwTask(flwTask);
+        execution.setFlwTask(flwTask.putAllVariable(args));
         return taskService().executeFinishTrigger(processModel.getNode(flwTask.getTaskKey()), execution, flowCreator);
     }
 
