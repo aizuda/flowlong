@@ -326,8 +326,8 @@ public interface FlowLongEngine {
      * <p>默认不校验是否重复抄送</p>
      *
      * @param taskModel   任务模型
-     * @param ccUserList  抄送任务分配到任务的人或角色列表
      * @param flwTask     当前任务
+     * @param ccUserList  抄送任务分配到任务的人或角色列表
      * @param flowCreator 任务创建者
      */
     boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
