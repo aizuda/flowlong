@@ -494,13 +494,10 @@ public class TaskServiceImpl implements TaskService {
 
     /**
      * 查看任务设置为已阅状态
-     *
-     * @param taskId    任务ID
-     * @param taskActor 任务参与者
      */
     @Override
-    public boolean viewTask(Long taskId, FlwTaskActor taskActor) {
-        if (taskActorDao.selectCountByTaskIdAndActorId(taskId, taskActor.getActorId()) > 0) {
+    public boolean viewTask(Long taskId, FlowCreator flowCreator) {
+        if (taskActorDao.selectCountByTaskIdAndActorId(taskId, flowCreator.getCreateId()) > 0) {
             /*
              * 设置任务为已阅状态
              */

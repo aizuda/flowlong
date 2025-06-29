@@ -136,11 +136,11 @@ public interface TaskService {
     /**
      * 查看任务设置为已阅状态
      *
-     * @param taskId    任务ID
-     * @param taskActor 任务参与者
+     * @param taskId      任务ID
+     * @param flowCreator 处理人员
      * @return true 成功 false 失败
      */
-    boolean viewTask(Long taskId, FlwTaskActor taskActor);
+    boolean viewTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 角色根据 任务ID 认领任务，删除其它任务参与者
