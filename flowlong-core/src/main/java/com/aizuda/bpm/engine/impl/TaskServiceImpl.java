@@ -909,7 +909,7 @@ public class TaskServiceImpl implements TaskService {
                                             Consumer<FlwHisTask> hisTaskConsumer) {
         Optional<List<FlwTask>> flwTasksOptional = Optional.empty();
         FlwHisTask hisTask = hisTaskDao.selectCheckById(hisTaskId);
-        if (null == hisTask || hisTask.startNode()) {
+        if (null == hisTask || (TaskType.withdraw == taskType && hisTask.startNode())) {
             // 任务不存在、发起节点撤回，直接返回
             return flwTasksOptional;
         }
