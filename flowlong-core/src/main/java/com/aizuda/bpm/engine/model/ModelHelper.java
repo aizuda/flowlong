@@ -147,9 +147,14 @@ public class ModelHelper {
             nextNodes.add(parentNode.getChildNode());
         } else if (parentNode.routeNode()) {
             // 路由分支
-            flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, parentNode)
-                    // 添加执行条件节点
-                    .ifPresent(t -> nextNodes.add(parentNode.getNode(t.getNodeKey())));
+            Optional<ConditionNode> cnOpt = flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, parentNode);
+            if (cnOpt.isPresent()) {
+                // 添加执行条件节点
+                nextNodes.add(parentNode.getNode(cnOpt.get().getNodeKey()));
+            } else {
+                // 返回子节点
+                nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, nodeModel.getChildNode()));
+            }
         }
         return nextNodes;
     }
@@ -373,7 +378,7 @@ public class ModelHelper {
                     // 自动拒绝节点配置错误
                     return 3;
                 }
-            } else if (nextNode.routeNode() && ObjectUtils.isEmpty(nextNode.getRouteNodes())) {
+            } else if (nextNode.routeNode() && (ObjectUtils.isEmpty(nextNode.getRouteNodes()) || routeNodeExistEmptyNodeExpression(nextNode))) {
                 // 路由节点必须配置错误（未配置路由分支）
                 return 4;
             } else if (nextNode.callProcessNode() && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
@@ -383,6 +388,23 @@ public class ModelHelper {
         }
         // 正确模型
         return 0;
+    }
+
+    /**
+     * 判断路由节点是否存在子节点且空条件节点表单式
+     * <p>
+     * 该配置无法执行到下一个节点，因此不允许存在这种情况存在。
+     * </p>
+     *
+     * @param routeNode 路由节点 {@link NodeModel}
+     * @return true 是 false 否
+     */
+    private static boolean routeNodeExistEmptyNodeExpression(NodeModel routeNode) {
+        NodeModel childNode = routeNode.getChildNode();
+        if (null != childNode) {
+            return routeNode.getRouteNodes().stream().anyMatch(t -> ObjectUtils.isEmpty(t.getConditionList()));
+        }
+        return false;
     }
 
     /**

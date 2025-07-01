@@ -118,8 +118,9 @@ public class FlwTask extends FlowEntity {
         this.performType = performType;
     }
 
-    public void putAllVariable(Map<String, Object> args) {
+    public FlwTask putAllVariable(Map<String, Object> args) {
         this.variable = FlowLongContext.putAllVariable(this.variable, args);
+        return this;
     }
 
     /**

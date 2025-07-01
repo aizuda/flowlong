@@ -42,7 +42,13 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        final List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+        // 判断条件节点
+        Optional<ConditionNode> cnOpt = this.getConditionNode(flowLongContext, execution, nodeModel.getConditionNodes());
+        assertIllegal(!cnOpt.isPresent());
+        return cnOpt;
+    }
+
+    public Optional<ConditionNode> getConditionNode(FlowLongContext flowLongContext, Execution execution, List<ConditionNode> conditionNodes) {
         this.assertConditionNodes(conditionNodes);
 
         // 查找匹配条件节点
@@ -79,9 +85,8 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
 
     @Override
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-
-        // 调用条件分支执行逻辑
-        return this.getConditionNode(flowLongContext, execution, nodeModel);
+        // 判断路由节点
+        return this.getConditionNode(flowLongContext, execution, nodeModel.getRouteNodes());
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution) {
@@ -90,9 +95,7 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
     }
 
     public Optional<ConditionNode> defaultConditionNode(List<ConditionNode> conditionNodes) {
-        Optional<ConditionNode> cnOpt = conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
-        assertIllegal(!cnOpt.isPresent());
-        return cnOpt;
+        return conditionNodes.stream().filter(t -> ObjectUtils.isEmpty(t.getConditionList())).findFirst();
     }
 
     public void assertConditionNodes(List<ConditionNode> conditionNodes) {

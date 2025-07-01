@@ -142,7 +142,7 @@ public class FlowLongContext {
             }
             return toJson(args);
         }
-        return null;
+        return variable;
     }
 
     private static FlowJsonHandler getFlowJsonHandler() {
@@ -213,7 +213,7 @@ public class FlowLongContext {
         if (banner) {
             System.out.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");
             System.out.println("├┤ │  │ │││││  │ │││││ ┬");
-            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.11");
+            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.12");
         }
 
         return this;

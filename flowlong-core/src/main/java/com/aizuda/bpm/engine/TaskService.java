@@ -97,7 +97,7 @@ public interface TaskService {
      * @param taskTye           任务类型，仅支持 jump rejectJump routeJump
      * @return 当前 flowCreator 所在的任务
      */
-    Optional<FlwTask> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskTye);
+    Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskTye);
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
         return executeJumpTask(taskId, nodeKey, flowCreator, args, executionFunction, TaskType.jump).isPresent();
@@ -136,11 +136,11 @@ public interface TaskService {
     /**
      * 查看任务设置为已阅状态
      *
-     * @param taskId    任务ID
-     * @param taskActor 任务参与者
+     * @param taskId      任务ID
+     * @param flowCreator 处理人员
      * @return true 成功 false 失败
      */
-    boolean viewTask(Long taskId, FlwTaskActor taskActor);
+    boolean viewTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 角色根据 任务ID 认领任务，删除其它任务参与者
@@ -263,7 +263,7 @@ public interface TaskService {
      * @param flowCreator 任务创建者
      * @return 拿回任务
      */
-    Optional<FlwTask> reclaimTask(Long taskId, FlowCreator flowCreator);
+    Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
@@ -272,7 +272,19 @@ public interface TaskService {
      * @param flowCreator 任务唤醒者
      * @return true 成功 false 失败
      */
-    boolean resume(Long instanceId, FlowCreator flowCreator);
+    default boolean resume(Long instanceId, FlowCreator flowCreator) {
+        return this.resume(instanceId, null, flowCreator);
+    }
+
+    /**
+     * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
+     *
+     * @param instanceId  历史实例ID
+     * @param nodeKey     节点key历史任务
+     * @param flowCreator 任务唤醒者
+     * @return true 成功 false 失败
+     */
+    boolean resume(Long instanceId, String nodeKey, FlowCreator flowCreator);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）
@@ -281,7 +293,7 @@ public interface TaskService {
      * @param flowCreator 任务创建者
      * @return Task 任务对象
      */
-    Optional<FlwTask> withdrawTask(Long taskId, FlowCreator flowCreator);
+    Optional<List<FlwTask>> withdrawTask(Long taskId, FlowCreator flowCreator);
 
     /**
      * 根据当前任务对象驳回至上一步处理
@@ -291,11 +303,21 @@ public interface TaskService {
      * @param args           任务参数
      * @return Task 任务对象
      */
-    Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args);
 
-    default Optional<FlwTask> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator) {
+    default Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator) {
         return rejectTask(currentFlwTask, flowCreator, null);
     }
+
+    /**
+     * 执行完成触发器操作流程继续往下执行
+     *
+     * @param nodeModel 节点模型 {@link NodeModel}
+     * @param execution 执行对象 {@link Execution}
+     * @param flowCreator 任务创建者
+     * @return true 成功 false 失败
+     */
+    boolean executeFinishTrigger(NodeModel nodeModel, Execution execution, FlowCreator flowCreator);
 
     /**
      * 根据 taskId、createBy 判断创建人createBy是否允许执行任务

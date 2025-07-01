@@ -36,7 +36,7 @@ public class TestReclaim extends MysqlTest {
 
                 // 拿回历史任务
                 flowLongEngine.taskService().reclaimTask(flwTask.getId(), testCreator)
-                        .ifPresent(t -> Assertions.assertEquals(flwTask.getTaskName(), t.getTaskName()));
+                        .ifPresent(fts -> fts.forEach(t -> Assertions.assertEquals(flwTask.getTaskName(), t.getTaskName())));
             }
         });
     }
