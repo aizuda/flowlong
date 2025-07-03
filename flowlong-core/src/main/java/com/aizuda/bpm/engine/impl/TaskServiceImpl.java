@@ -1325,17 +1325,14 @@ public class TaskServiceImpl implements TaskService {
         } else {
             flwTask.setParentTaskId(executionTask.getId());
         }
-        Map<String, Object> args = execution.getArgs();
-        // 审批期限非空，设置期望任务完成时间
-        Integer term = nodeModel.getTerm();
-        if (null != term && term > 0) {
-            flwTask.setExpireTime(DateUtils.toDate(DateUtils.now().plusHours(term)));
-            if (null == args) {
-                args = new HashMap<>();
+        // 超时自动审批
+        if (Objects.equals(true, nodeModel.getTermAuto())) {
+            // 审批期限非空，设置期望任务完成时间
+            Integer term = nodeModel.getTerm();
+            if (null != term && term > 0) {
+                flwTask.setExpireTime(DateUtils.toDate(DateUtils.now().plusHours(term)));
             }
-            args.put("termMode", nodeModel.getTermMode());
         }
-        flwTask.putAllVariable(args);
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;
