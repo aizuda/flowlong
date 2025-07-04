@@ -1447,6 +1447,7 @@ public class TaskServiceImpl implements TaskService {
         /*
          * 会签（票签）每个参与者生成一条任务
          */
+        Map<String, FlwTask> taskActorMap = new HashMap<>();
         taskActors.forEach(t -> {
             FlwTask newFlwTask = flwTask.cloneTask(null);
             newFlwTask.setId(flowLongIdGenerator.getId(newFlwTask.getId()));
@@ -1456,10 +1457,13 @@ public class TaskServiceImpl implements TaskService {
                 // 分配参与者
                 this.assignTask(newFlwTask.getInstanceId(), newFlwTask.getId(), assignActorType(actorType, t.getActorType()), t);
 
-                // 创建任务监听
-                this.taskNotify(execution.getTaskEventType(), () -> newFlwTask, Collections.singletonList(t), nodeModel, flowCreator);
+                // 参与者任务
+                taskActorMap.put(t.getActorId(), newFlwTask);
             }
         });
+
+        // 创建任务监听统一通知，避免独立通知异常、导致会签其它任务创建失败
+        taskActors.forEach(t -> this.taskNotify(execution.getTaskEventType(), () -> taskActorMap.get(t.getActorId()), Collections.singletonList(t), nodeModel, flowCreator));
 
         // 返回创建的任务列表
         return flwTasks;
