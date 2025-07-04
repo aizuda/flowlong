@@ -1168,9 +1168,8 @@ public class TaskServiceImpl implements TaskService {
                 // 下一个节点如果在并行分支，判断是否并行分支都执行结束
                 boolean _exec = true;
                 NodeModel ccNextNode = nextNodeOptional.get();
-                NodeModel _cnn = execution.getProcessModel().getNode(ccNextNode.getNodeKey());
-                if (_cnn.getParentNode().parallelNode()) {
-                    // 抄送节点独立占据一个分支或者存在执行任务
+                if (!ccNextNode.ccNode()) {
+                    // 下一节点非抄送节点独立占据一个分支或者存在执行任务
                     if (ccNextNode.getParentNode().parallelNode() || taskDao.selectCountByInstanceId(flwTask.getInstanceId()) > 0) {
                         _exec = false;
                     }
