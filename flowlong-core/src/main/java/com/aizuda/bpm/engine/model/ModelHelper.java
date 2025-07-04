@@ -186,7 +186,12 @@ public class ModelHelper {
         if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
             // 只是找下一个节点
             if (null == currentTask) {
-                return parentNode.getChildNode();
+                NodeModel childNode = parentNode.getChildNode();
+                if (null != childNode && Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
+                    // 父节点的下一个节点为当前节点，直接返回当前节点的子节点
+                    return nodeModel.getChildNode();
+                }
+                return childNode;
             }
             // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
             if (Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {

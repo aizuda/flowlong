@@ -1,0 +1,78 @@
+{
+  "name": "并行抄送测试",
+  "key": "parallelCC",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "childNode": {
+      "nodeName": "条件路由",
+      "nodeKey": "k002",
+      "type": 8,
+      "parallelNodes": [
+        {
+          "nodeName": "并行A",
+          "nodeKey": "k003",
+          "type": 1,
+          "childNode": {
+            "nodeName": "供应链管理员/战略采购部",
+            "nodeKey": "k004",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "李孟彬"
+              }
+            ],
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1
+          }
+        },
+        {
+          "nodeName": "并行B",
+          "nodeKey": "k005",
+          "type": 1,
+          "childNode": {
+            "nodeName": "平面设计师/信息部",
+            "nodeKey": "k006",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test002",
+                "name": "郑昊岳"
+              }
+            ],
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "抄送人",
+        "nodeKey": "k007",
+        "type": 2,
+        "setType": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "test003",
+            "name": "测试A"
+          }
+        ]
+      }
+    }
+  }
+}

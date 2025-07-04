@@ -61,6 +61,16 @@ public class TestParallelNode extends MysqlTest {
 
 
     @Test
+    public void testParallelCC() {
+        processId = this.deployByResource("test/parallelCC.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            this.executeTaskByKey(instance.getId(), testCreator, "k004");
+            this.executeTaskByKey(instance.getId(), test2Creator, "k006");
+        });
+    }
+
+
+    @Test
     public void testParallelJumpTask() {
         processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
