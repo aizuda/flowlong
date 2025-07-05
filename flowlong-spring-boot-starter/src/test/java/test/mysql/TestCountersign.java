@@ -6,6 +6,7 @@ package test.mysql;
 
 import com.aizuda.bpm.engine.QueryService;
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +31,7 @@ public class TestCountersign extends MysqlTest {
     @Test
     public void test() {
         // 启动指定流程定义ID启动流程实例
-        Map<String, Object> args = new HashMap<>();
-        args.put("day", 8);
-        args.put("assignee", testUser1);
-
-        // 启动指定流程定义ID启动流程实例
+        Map<String, Object> args = this.getArgs();
         flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 测试会签审批人001【审批】
@@ -115,6 +112,25 @@ public class TestCountersign extends MysqlTest {
                     Assertions.assertEquals(1, flwTaskActors.size())
             );
 
+        });
+    }
+
+    private Map<String, Object> getArgs() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("day", 8);
+        args.put("assignee", testUser1);
+        return args;
+    }
+
+    @Test
+    public void testAutoCompleteTask() {
+        // 启动指定流程定义ID启动流程实例
+        flowLongEngine.startInstanceById(processId, testCreator, getArgs()).flatMap(t -> flowLongEngine.queryService()
+                .getActiveTasksByInstanceId(t.getId())).ifPresent(fts -> {
+            flowLongEngine.autoCompleteTask(fts.get(0).getId(), testCreator);
+            FlwTask flwTask = fts.get(1);
+            flowLongEngine.queryService().getActiveTaskActorsByInstanceId(flwTask.getInstanceId())
+                    .ifPresent(t -> Assertions.assertEquals(flwTask.getId(), t.get(0).getTaskId()));
         });
     }
 }

@@ -367,9 +367,9 @@ public class TaskServiceImpl implements TaskService {
             hisTask.taskType(TaskType.agentAssist);
         }
 
-        // 会签情况处理其它任务 排除完成及自动跳过情况，自动跳过是当前任务归档非所有任务
+        // 会签情况处理其它任务 排除（自动）完成及自动跳过情况，自动跳过是当前任务归档非所有任务
         if (PerformType.countersign.eq(flwTask.getPerformType()) && TaskState.complete.ne(taskState.getValue())
-                && TaskState.autoJump.ne(taskState.getValue())) {
+                && TaskState.autoComplete.ne(taskState.getValue()) && TaskState.autoJump.ne(taskState.getValue())) {
             List<FlwTask> flwTaskList = taskDao.selectListByParentTaskId(flwTask.getParentTaskId());
             flwTaskList.forEach(t -> {
                 FlwHisTask ht = FlwHisTask.of(t);
