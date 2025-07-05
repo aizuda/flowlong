@@ -66,6 +66,12 @@ public class FlwHisInstanceDaoImpl implements FlwHisInstanceDao {
     }
 
     @Override
+    public Optional<List<FlwHisInstance>> selectListByParentInstanceId(Long parentInstanceId) {
+        return this.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
+                .eq(FlwHisInstance::getParentInstanceId, parentInstanceId)));
+    }
+
+    @Override
     public Optional<List<FlwHisInstance>> selectListByBusinessKey(String businessKey) {
         return this.ofNullable(hisInstanceMapper.selectList(Wrappers.<FlwHisInstance>lambdaQuery()
                 .eq(FlwHisInstance::getBusinessKey, businessKey)));

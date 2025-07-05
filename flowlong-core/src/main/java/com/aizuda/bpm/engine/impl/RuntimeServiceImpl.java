@@ -217,14 +217,29 @@ public class RuntimeServiceImpl implements RuntimeService {
     public boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator) {
         FlwHisInstance dbFhi = hisInstanceDao.selectById(instanceId);
         if (null != dbFhi) {
-            FlwHisInstance fhi = new FlwHisInstance();
-            fhi.setId(dbFhi.getId());
-            fhi.instanceState(InstanceState.suspend);
-            if (hisInstanceDao.updateById(fhi)) {
-                // 流程实例监听器通知
-                this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, null, flowCreator);
+            Assert.isTrue(null != dbFhi.getParentInstanceId(), "Sub processes are not allowed.");
+            // 挂起当前主流程
+            if (this.suspendInstance(dbFhi, flowCreator)) {
+                // 子流程挂起
+                hisInstanceDao.selectListByParentInstanceId(dbFhi.getParentInstanceId())
+                        .ifPresent(t -> t.forEach(f -> this.suspendInstance(f, flowCreator)));
                 return true;
             }
+        }
+        return false;
+    }
+
+    /**
+     * 流程实例挂起
+     */
+    protected boolean suspendInstance(FlwHisInstance dbFhi, FlowCreator flowCreator) {
+        FlwHisInstance fhi = new FlwHisInstance();
+        fhi.setId(dbFhi.getId());
+        fhi.instanceState(InstanceState.suspend);
+        if (hisInstanceDao.updateById(fhi)) {
+            // 流程实例监听器通知
+            this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, null, flowCreator);
+            return true;
         }
         return false;
     }

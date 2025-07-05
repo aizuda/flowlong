@@ -33,5 +33,7 @@ public interface FlwHisInstanceDao {
 
     Optional<List<FlwHisInstance>> selectListByProcessId(Long processId);
 
+    Optional<List<FlwHisInstance>> selectListByParentInstanceId(Long parentInstanceId);
+
     Optional<List<FlwHisInstance>> selectListByBusinessKey(String businessKey);
 }
