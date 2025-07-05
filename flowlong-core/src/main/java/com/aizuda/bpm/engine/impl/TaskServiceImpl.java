@@ -221,9 +221,6 @@ public class TaskServiceImpl implements TaskService {
                     ft.putAllVariable(args);
                     // 归档历史
                     this.moveToHisTask(ft, taskState, flowCreator);
-
-                    // 任务监听器通知
-                    this.taskNotify(taskEventType, () -> ft, null, nodeModel, flowCreator);
                 }
             }
         }
