@@ -418,6 +418,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             fhi.instanceState(InstanceState.destroy);
             fhi.putAllVariable(args);
             fhi.setId(instanceId);
+            fhi.calculateDuration();
             return hisInstanceDao.updateById(fhi);
         }
         return false;
