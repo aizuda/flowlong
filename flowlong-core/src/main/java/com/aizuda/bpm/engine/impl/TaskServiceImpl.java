@@ -493,9 +493,10 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public void updateTaskById(FlwTask flwTask, FlowCreator flowCreator) {
-        taskDao.updateById(flwTask);
-        // 任务监听器通知
-        this.taskNotify(TaskEventType.update, () -> flwTask, null, null, flowCreator);
+        if (taskDao.updateById(flwTask)) {
+            // 任务监听器通知
+            this.taskNotify(TaskEventType.update, () -> flwTask, null, null, flowCreator);
+        }
     }
 
     /**
