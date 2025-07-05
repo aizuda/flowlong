@@ -111,6 +111,15 @@ public interface RuntimeService {
     boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator);
 
     /**
+     * 激活流程实例 {@link InstanceState#active}
+     *
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
+     */
+    boolean activeInstanceById(Long instanceId, FlowCreator flowCreator);
+
+    /**
      * 流程实例拒绝审批强制终止（用于后续审核人员认为该审批不再需要继续，拒绝审批强行终止）
      *
      * @param instanceId     流程实例ID

@@ -215,14 +215,30 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public boolean suspendInstanceById(Long instanceId, FlowCreator flowCreator) {
+        return this.updateInstanceStateById(instanceId, InstanceState.suspend, flowCreator);
+    }
+
+    @Override
+    public boolean activeInstanceById(Long instanceId, FlowCreator flowCreator) {
+        return this.updateInstanceStateById(instanceId, InstanceState.active, flowCreator);
+    }
+
+    /**
+     * 根据流程实例ID更新流程实例状态
+     *
+     * @param instanceId 流程实例ID
+     * @param instanceState 流程实例状态
+     * @param flowCreator 流程创建者
+     */
+    protected boolean updateInstanceStateById(Long instanceId, InstanceState instanceState, FlowCreator flowCreator) {
         FlwHisInstance dbFhi = hisInstanceDao.selectById(instanceId);
         if (null != dbFhi) {
             Assert.isTrue(null != dbFhi.getParentInstanceId(), "Sub processes are not allowed.");
             // 挂起当前主流程
-            if (this.suspendInstance(dbFhi, flowCreator)) {
+            if (this.updateInstanceState(dbFhi, instanceState, flowCreator)) {
                 // 子流程挂起
-                hisInstanceDao.selectListByParentInstanceId(dbFhi.getParentInstanceId())
-                        .ifPresent(t -> t.forEach(f -> this.suspendInstance(f, flowCreator)));
+                hisInstanceDao.selectListByParentInstanceId(dbFhi.getParentInstanceId()).ifPresent(t ->
+                        t.forEach(f -> this.updateInstanceState(f, instanceState, flowCreator)));
                 return true;
             }
         }
@@ -230,15 +246,18 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     /**
-     * 流程实例挂起
+     * 更新流程实例状态
+     *
+     * @param dbFhi 数据库流程实例历史对象
+     * @param instanceState 流程实例状态
+     * @param flowCreator 流程创建者
      */
-    protected boolean suspendInstance(FlwHisInstance dbFhi, FlowCreator flowCreator) {
+    protected boolean updateInstanceState(FlwHisInstance dbFhi, InstanceState instanceState, FlowCreator flowCreator) {
         FlwHisInstance fhi = new FlwHisInstance();
         fhi.setId(dbFhi.getId());
-        fhi.instanceState(InstanceState.suspend);
-        if (hisInstanceDao.updateById(fhi)) {
+        if (hisInstanceDao.updateById(fhi.instanceState(instanceState))) {
             // 流程实例监听器通知
-            this.instanceNotify(InstanceEventType.suspend, () -> dbFhi, null, flowCreator);
+            this.instanceNotify(InstanceEventType.suspend, () -> dbFhi.instanceState(instanceState), null, flowCreator);
             return true;
         }
         return false;
