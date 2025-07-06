@@ -172,6 +172,9 @@ public class NodeModel implements ModelInstance, Serializable {
     private List<ConditionNode> routeNodes;
     /**
      * 审批提醒
+     * <p>
+     * 具体提醒时间加载 extendConfig 配置 remindTime 属性
+     * </p>
      */
     private Boolean remind;
     /**
@@ -227,7 +230,7 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String triggerType;
     /**
-     * 延时处理类型 1，固定时长 2，自动计算
+     * 延时处理类型 1，固定时长 2，自动计算 具体时间 extendConfig 配置 time 属性
      * <p>
      * 固定时长 "time": "1:m"
      * </p>
@@ -235,7 +238,7 @@ public class NodeModel implements ModelInstance, Serializable {
      * 自动计算 "time": "17:02:53"
      * </p>
      */
-    private String delayType;
+    private Integer delayType;
 
     /**
      * 执行节点

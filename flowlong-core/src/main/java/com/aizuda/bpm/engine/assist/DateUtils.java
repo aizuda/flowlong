@@ -7,6 +7,7 @@ package com.aizuda.bpm.engine.assist;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * 日期帮助类
@@ -77,12 +78,12 @@ public class DateUtils {
     }
 
     /**
-     * 解析定时器任务时间
+     * 解析延迟时间格式
      *
      * @param time 自定义触发时间
      * @return {@link Date}
      */
-    public static Date parseTimerTaskTime(String time) {
+    public static Date parseDelayTime(String time) {
         LocalDateTime expireTime = null;
         String[] timeArr = time.split(":");
         int l = timeArr.length;
@@ -103,5 +104,25 @@ public class DateUtils {
             expireTime = DateUtils.now().plusHours(hours).plusMinutes(minutes).plusSeconds(seconds);
         }
         return DateUtils.toDate(expireTime);
+    }
+
+    /**
+     * 从扩展配置中加载指定 key 延迟时间
+     *
+     * @param extendConfig 扩展配置
+     * @param checkEmpty   检查是否为空
+     */
+    public static Date loadDelayTime(Map<String, Object> extendConfig, String key, boolean checkEmpty) {
+        Date configTime = null;
+        if (null != extendConfig) {
+            String time = (String) extendConfig.get(key);
+            if (null != time) {
+                configTime = DateUtils.parseDelayTime(time);
+            }
+        }
+        if (checkEmpty) {
+            Assert.isEmpty(configTime, "Load config time error. key: " + key);
+        }
+        return configTime;
     }
 }

@@ -76,7 +76,7 @@ public class FlwTask extends FlowEntity {
      */
     protected Date expireTime;
     /**
-     * 提醒时间
+     * 提醒时间，存在定时器触发提醒，不存在任务创建监听的时候默认提醒一次
      */
     protected Date remindTime;
     /**
@@ -130,17 +130,7 @@ public class FlwTask extends FlowEntity {
      * @param checkEmpty   检查是否为空
      */
     public void loadExpireTime(Map<String, Object> extendConfig, boolean checkEmpty) {
-        Date expireTime = null;
-        if (null != extendConfig) {
-            String time = (String) extendConfig.get("time");
-            if (null != time) {
-                expireTime = DateUtils.parseTimerTaskTime(time);
-            }
-        }
-        if (checkEmpty) {
-            Assert.isEmpty(expireTime, "Timer task config error");
-        }
-        this.expireTime = expireTime;
+        this.expireTime = DateUtils.loadDelayTime(extendConfig, "time", checkEmpty);
     }
 
     /**

@@ -1330,6 +1330,8 @@ public class TaskServiceImpl implements TaskService {
                 flwTask.setExpireTime(DateUtils.toDate(DateUtils.now().plusHours(term)));
             }
         }
+        // 提醒时间
+        flwTask.setRemindTime(DateUtils.loadDelayTime(nodeModel.getExtendConfig(), "remindTime", false));
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;
