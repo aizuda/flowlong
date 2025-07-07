@@ -1242,15 +1242,16 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 7、触发器任务
              */
-            flwTask.loadExpireTime(nodeModel.getExtendConfig(), false);
-            if (null == flwTask.getExpireTime()) {
+            if (Objects.equals(1, nodeModel.getTriggerType())) {
                 // 立即触发器，直接执行
                 execution.setFlwTask(flwTask);
+                flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
                 // 使用默认触发器
                 Function<Execution, Boolean> finishFunction = (e) -> this.executeFinishTrigger(nodeModel, execution, execution.getFlowCreator());
                 nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution, finishFunction), finishFunction);
             } else {
                 // 定时触发器，等待执行
+                flwTask.loadExpireTime(nodeModel.getExtendConfig(), false);
                 flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
             }
         }
