@@ -132,6 +132,11 @@
         "typeOfApprove": 1,
         "extendConfig": {
           "formConfig": []
+        },
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk17358742884601",
+          "type": -1
         }
       }
     }

@@ -98,4 +98,22 @@ public class TestParallelNode extends MysqlTest {
 
         });
     }
+
+    @Test
+    public void testParallelJumpReject() {
+        processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            //分支1 审核
+            this.executeTaskByKey(instance.getId(), testCreator, "flk1736078360143");
+            //分支2 审核
+            this.executeTaskByKey(instance.getId(), test2Creator, "flk1736078362210");
+            //分支2 领导审核
+            this.executeTaskByKey(instance.getId(), test3Creator, "flk1736078364197");
+
+            //汇总后驳回任务到发起人
+            this.executeTask(instance.getId(), test3Creator, flwTask ->
+                    flowLongEngine.executeRejectTask(flwTask, "flk1735871288160", test3Creator, null));
+
+        });
+    }
 }

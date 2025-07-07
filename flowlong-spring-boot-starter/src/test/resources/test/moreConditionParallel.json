@@ -137,7 +137,7 @@
       ],
       "childNode": {
         "nodeName": "抄送人",
-        "nodeKey": "k005",
+        "nodeKey": "k006",
         "type": 2,
         "allowSelection": true,
         "remind": false,

@@ -116,9 +116,27 @@
         }
       ],
       "childNode": {
-        "nodeName": "结束",
-        "nodeKey": "flk17358742884601",
-        "type": -1
+        "nodeName": "副总监",
+        "nodeKey": "flk17358742881607",
+        "type": 1,
+        "setType": 1,
+        "nodeAssigneeList": [{
+          "id": "test003",
+          "name": "张三"
+        }],
+        "examineLevel": 1,
+        "examineMode": 1,
+        "directorLevel": 1,
+        "directorMode": 0,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk17358742884601",
+          "type": -1
+        }
       }
     }
   }

@@ -339,11 +339,17 @@ public class ModelHelper {
                 for (ConditionNode conditionNode : rootNodeModel.getParallelNodes()) {
                     nodeModels.addAll(getRootNodeAllChildNodes(conditionNode.getChildNode()));
                 }
+
+                // 并行节点子节点
+                nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
             } else if (rootNodeModel.inclusiveNode()) {
                 // 包容节点
                 for (ConditionNode conditionNode : rootNodeModel.getInclusiveNodes()) {
                     nodeModels.addAll(getRootNodeAllChildNodes(conditionNode.getChildNode()));
                 }
+
+                // 包容节点子节点
+                nodeModels.addAll(getRootNodeAllChildNodes(rootNodeModel.getChildNode()));
             } else {
                 // 普通节点
                 nodeModels.add(rootNodeModel);

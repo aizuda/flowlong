@@ -284,9 +284,20 @@ public class TestModel extends MysqlTest {
      */
     @Test
     public void testGetRootNodeAllChildNodes() {
+        // 条件分支
         ProcessModel processModel = getProcessModel("test/currentUsedNodeKeys.json");
         List<NodeModel> nodeModels = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
-        Assertions.assertEquals(8, nodeModels.size());
+        Assertions.assertEquals(11, nodeModels.size());
+
+        // 并行分支
+        ProcessModel parallelModel = getProcessModel("test/parallelJumpTask.json");
+        List<NodeModel> parallelNodeModels = ModelHelper.getRootNodeAllChildNodes(parallelModel.getNodeConfig());
+        Assertions.assertEquals(6, parallelNodeModels.size());
+
+        // 包容分支
+        ProcessModel inclusiveModel = getProcessModel("test/inclusiveProcess.json");
+        List<NodeModel> inclusiveNodeModels = ModelHelper.getRootNodeAllChildNodes(inclusiveModel.getNodeConfig());
+        Assertions.assertEquals(5, inclusiveNodeModels.size());
     }
 
     /**
