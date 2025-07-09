@@ -45,10 +45,10 @@ public class SpelFlowLongExpression implements FlowLongExpression {
         String operator = nodeExpression.getOperator();
         String field = nodeExpression.getField();
         if ("include".equalsIgnoreCase(operator)) {
-           return String.format("'%s'.contains(#%s)", value, field);
+            return "#" + field + ".contains('" + value + "')";
         }
         if ("notinclude".equalsIgnoreCase(operator)) {
-            return String.format("not '%s'.contains(#%s)", value, field);
+            return "not #" + field + ".contains('" + value + "')";
         }
         Object fieldValue = args.get(nodeExpression.getField());
         if (fieldValue instanceof String) {

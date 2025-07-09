@@ -19,7 +19,7 @@ public class TestSpelFlowLongExpression {
         assertNumericalValue("<", "9");
         assertNumericalValue("!=", "3");
         assertStringValue("==", "张三");
-        assertStringValue("include", "张");
+        assertStringValue("include", "飞龙工作流张三王五都说好用");
         assertStringValue("notinclude", "李");
     }
 

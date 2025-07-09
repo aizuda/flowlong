@@ -67,6 +67,6 @@ public interface FlowLongExpression {
         if (fieldValue instanceof String) {
             value = "'" + nodeExpression.getValue() + "'";
         }
-        return "#" + nodeExpression.getField() + nodeExpression.getOperator() + value;
+        return "#" + nodeExpression.getField() + " " + nodeExpression.getOperator() + " " + value;
     }
 }
