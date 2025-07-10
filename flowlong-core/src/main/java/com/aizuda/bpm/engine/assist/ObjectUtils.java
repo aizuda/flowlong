@@ -62,6 +62,10 @@ public class ObjectUtils {
         return Objects.equals(mapObj.getClass().getName(), "java.util.Collections$SingletonMap");
     }
 
+    public static boolean notEquals(Object a, Object b) {
+        return !Objects.equals(a, b);
+    }
+
     /**
      * 使用反射机制创建类的实例
      *

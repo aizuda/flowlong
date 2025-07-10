@@ -190,7 +190,7 @@ public class Execution implements Serializable {
         Optional<List<FlwInstance>> subProcessList = flowLongContext.getQueryService().getSubProcessByInstanceId(flwTask.getInstanceId());
         subProcessList.ifPresent(subProcesses -> subProcesses.forEach(process -> {
             ProcessModel otherModel = flowLongContext.getRuntimeService().getProcessModelByInstanceId(process.getId());
-            otherProcessKeys.addAll(new ArrayList<>(ModelHelper.getRootNodeAllChildNodes(otherModel.getNodeConfig()).stream().map(NodeModel::getNodeKey).collect(Collectors.toList())));
+            otherProcessKeys.addAll(ModelHelper.getRootNodeAllChildNodes(otherModel.getNodeConfig()).stream().map(NodeModel::getNodeKey).collect(Collectors.toList()));
             flowLongContext.getQueryService().getActiveTasksByInstanceId(process.getId()).ifPresent(flwTasks -> {
                 for (FlwTask ft : flwTasks) {
                     nodeKeys.add(ft.getTaskKey());

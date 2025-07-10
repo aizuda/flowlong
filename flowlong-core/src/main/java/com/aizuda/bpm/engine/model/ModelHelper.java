@@ -395,6 +395,9 @@ public class ModelHelper {
             } else if (nextNode.callProcessNode() && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
                 // 子流程节点配置错误（未选择子流程）
                 return 5;
+            } else if (nextNode.ccNode() && ObjectUtils.notEquals(true, nextNode.getAllowSelection()) && ObjectUtils.isEmpty(nextNode.getNodeAssigneeList())) {
+                // 抄送节点配置错误（未配置处理人，且不允许抄送自选）
+                return 6;
             }
         }
         // 正确模型
