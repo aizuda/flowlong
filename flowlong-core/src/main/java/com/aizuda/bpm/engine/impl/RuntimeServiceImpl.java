@@ -407,6 +407,12 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public boolean destroyByInstanceId(Long instanceId, Map<String, Object> args) {
+        FlwInstance flwInstance = instanceDao.selectById(instanceId);
+        if (null == flwInstance) {
+            // 不存在返回失败
+            return false;
+        }
+
         // 删除活动任务相关信息
         if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
 
@@ -415,6 +421,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
             // 更新作废状态
             FlwHisInstance fhi = new FlwHisInstance();
+            fhi.setCreateTime(flwInstance.getCreateTime());
             fhi.instanceState(InstanceState.destroy);
             fhi.putAllVariable(args);
             fhi.setId(instanceId);

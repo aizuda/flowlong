@@ -370,6 +370,7 @@ public class ModelHelper {
      * @param rootNodeModel 根节点模型
      * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3，自动拒绝节点配置错误
      * 4，路由节点必须配置错误（未配置路由分支） 5，子流程节点配置错误（未选择子流程）
+     * 6，抄送节点配置错误（未配置处理人，且不允许抄送自选）
      */
     public static int checkNodeModel(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
