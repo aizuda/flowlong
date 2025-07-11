@@ -686,4 +686,91 @@ public class ModelHelper {
             currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel, currentNodeKey));
         }
     }
+
+    /**
+     * 获取当前节点父条件节点所有子节点key列表
+     *
+     * @param nodeModel 当前节点
+     * @return 并行节点所有子节点key列表
+     */
+    public static List<String> getParentConditionNodeKeys(NodeModel nodeModel) {
+        if (null == nodeModel) {
+            return null;
+        }
+        NodeModel parentNodeModel = nodeModel.getParentNode();
+        if (null == parentNodeModel) {
+            return null;
+        }
+
+        // 不存在条件分支
+        List<ConditionNode> conditionNodes = getParentConditionNodes(parentNodeModel);
+        if (null == conditionNodes) {
+            return null;
+        }
+
+        // 条件节点子节点情况
+        if (conditionNodes.stream().anyMatch(t -> Objects.equals(nodeModel.getNodeKey(), t.getChildNode().getNodeKey()))) {
+            return null;
+        }
+
+        return getParentModeKeys(parentNodeModel, false);
+    }
+
+    private static List<ConditionNode> getParentConditionNodes(NodeModel nodeModel) {
+        // 条件分支
+        List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
+        if (null == conditionNodes) {
+            // 并行分支
+            conditionNodes = nodeModel.getParallelNodes();
+        }
+        if (null == conditionNodes) {
+            // 包容分支
+            conditionNodes = nodeModel.getInclusiveNodes();
+        }
+        return conditionNodes;
+    }
+
+    private static List<String> getParentModeKeys(NodeModel nodeModel, boolean innerNode) {
+        if (null == nodeModel) {
+            return null;
+        }
+
+        // 条件分支
+        List<ConditionNode> conditionNodes = getParentConditionNodes(nodeModel);
+
+        // 父节点的所有节点
+        List<String> nodeKeys = new ArrayList<>();
+        if (null == conditionNodes) {
+            // 普通节点处理
+            nodeKeys.add(nodeModel.getNodeKey());
+            List<String> childNodeKeys = getParentModeKeys(nodeModel.getChildNode(), innerNode);
+            if (null != childNodeKeys) {
+                nodeKeys.addAll(childNodeKeys);
+            }
+            return nodeKeys;
+        } else if (innerNode) {
+            // 内部节点的子节点
+            NodeModel childNode = nodeModel.getChildNode();
+            if (null != childNode) {
+                List<String> childNodeKeys = getParentModeKeys(childNode, true);
+                if (null != childNodeKeys) {
+                    nodeKeys.addAll(childNodeKeys);
+                }
+            }
+        }
+
+        // 条件节点处理
+        for (ConditionNode conditionNode : conditionNodes) {
+            NodeModel childNode = conditionNode.getChildNode();
+            if (null == childNode) {
+                continue;
+            }
+            // 条件节点子节点
+            List<String> childNodeKeys = getParentModeKeys(childNode, true);
+            if (null != childNodeKeys) {
+                nodeKeys.addAll(childNodeKeys);
+            }
+        }
+        return nodeKeys;
+    }
 }

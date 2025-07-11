@@ -354,4 +354,20 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals(size, allUsedNodeKeys.size());
     }
 
+    /**
+     * 测试并行模型节点key列表
+     */
+    @Test
+    public void testParallelModel() {
+        ProcessModel pm = getProcessModel("test/testParallelModel.json");
+        Assertions.assertEquals(2, ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752143889413")).size());
+        Assertions.assertEquals(8, ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752122771847")).size());
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752143874178")));
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752122665848")));
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752143870053")));
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752231842868")));
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752143910635")));
+        Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752231792602")));
+    }
+
 }
