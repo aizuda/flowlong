@@ -214,9 +214,13 @@ public class TaskServiceImpl implements TaskService {
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
         List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
         if (ObjectUtils.isNotEmpty(fts)) {
-            List<NodeModel> allChildNodes = ModelHelper.getRootNodeAllChildNodes(processModel.getNodeConfig());
+            List<String> allNextNodeKeys = ModelHelper.getAllNextConditionNodeKeys(nodeModel);
+            // 当前任务不在指定跳转节点条件之下归档所有任务
+            final String currentTaskKey = flwTask.getTaskKey();
+            boolean moveAll = allNextNodeKeys.stream().noneMatch(t -> Objects.equals(t, currentTaskKey));
             for (FlwTask ft : fts) {
-                if (allChildNodes.stream().anyMatch(n -> Objects.equals(n.getNodeKey(), ft.getTaskKey()))) {
+                // 归档所以或归档条件子节点任务
+                if (moveAll || allNextNodeKeys.stream().anyMatch(t -> Objects.equals(t, ft.getTaskKey()))) {
                     // 设置执行参数
                     ft.putAllVariable(args);
                     // 归档历史
@@ -1167,10 +1171,8 @@ public class TaskServiceImpl implements TaskService {
                 boolean _exec = true;
                 NodeModel ccNextNode = nextNodeOptional.get();
                 if (!ccNextNode.ccNode()) {
-                    // 下一节点非抄送节点独立占据一个分支或者存在执行任务
-                    if (ccNextNode.getParentNode().parallelNode() || taskDao.selectCountByInstanceId(flwTask.getInstanceId()) > 0) {
-                        _exec = false;
-                    }
+                    // 下一节点非抄送节点，是否允许执行下一个节点
+                    _exec = this.allowNextNodeExec(flwTask.getInstanceId(), ccNextNode.parentConditionNodeKeys());
                 }
                 if (_exec) {
                     // 执行下一个节点
@@ -1257,6 +1259,23 @@ public class TaskServiceImpl implements TaskService {
         }
 
         return flwTasks;
+    }
+
+    /**
+     * 是否允许下一个节点执行
+     *
+     * @param instanceId 实例ID
+     * @param parentConditionNodeKeys 所有父节点条件节点子节点key列表
+     * @return true 是 false 否
+     */
+    private boolean allowNextNodeExec(Long instanceId, List<String> parentConditionNodeKeys) {
+        if (null != parentConditionNodeKeys) {
+            List<FlwTask> flwTasks = taskDao.selectListByInstanceId(instanceId);
+            if (null != flwTasks) {
+                return flwTasks.stream().noneMatch(t -> parentConditionNodeKeys.contains(t.getTaskKey()));
+            }
+        }
+        return true;
     }
 
     public boolean executeFinishTrigger(NodeModel nodeModel, Execution execution, FlowCreator flowCreator) {

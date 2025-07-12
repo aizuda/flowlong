@@ -584,6 +584,13 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 获取所有父节点条件节点子节点key列表
+     */
+    public List<String> parentConditionNodeKeys() {
+        return ModelHelper.getParentConditionNodeKeys(this);
+    }
+
+    /**
      * 执行触发器
      *
      * @param execution {@link Execution}

@@ -292,7 +292,7 @@ public class TestModel extends MysqlTest {
         // 并行分支
         ProcessModel parallelModel = getProcessModel("test/parallelJumpTask.json");
         List<NodeModel> parallelNodeModels = ModelHelper.getRootNodeAllChildNodes(parallelModel.getNodeConfig());
-        Assertions.assertEquals(6, parallelNodeModels.size());
+        Assertions.assertEquals(7, parallelNodeModels.size());
 
         // 包容分支
         ProcessModel inclusiveModel = getProcessModel("test/inclusiveProcess.json");
@@ -368,6 +368,11 @@ public class TestModel extends MysqlTest {
         Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752231842868")));
         Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752143910635")));
         Assertions.assertNull(ModelHelper.getParentConditionNodeKeys(pm.getNode("flk1752231792602")));
+
+        // 测试获取下一个条件节点key列表
+        Assertions.assertEquals(1, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752231842868")).size());
+        Assertions.assertEquals(3, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752143870053")).size());
+        Assertions.assertEquals(9, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752122765848")).size());
     }
 
 }

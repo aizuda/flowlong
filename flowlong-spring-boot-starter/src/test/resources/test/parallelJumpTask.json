@@ -29,10 +29,6 @@
                 "name": "陈小辉"
               }
             ],
-            "nodeCandidate": {
-              "type": 1,
-              "assignees": []
-            },
             "examineLevel": 1,
             "directorLevel": 1,
             "selectMode": 1,
@@ -45,7 +41,37 @@
             "directorMode": 0,
             "typeOfApprove": 1,
             "rejectStrategy": 2,
-            "rejectStart": 1
+            "rejectStart": 1,
+            "childNode": {
+              "nodeName": "审核A",
+              "nodeKey": "flk1752285974508",
+              "type": 1,
+              "setType": 1,
+              "nodeAssigneeList": [
+                {
+                  "id": "test002",
+                  "name": "CEO"
+                }
+              ],
+              "examineLevel": 1,
+              "directorLevel": 1,
+              "selectMode": 1,
+              "termAuto": false,
+              "remind": false,
+              "term": 1,
+              "termMode": 1,
+              "examineMode": 1,
+              "approveSelf": 0,
+              "directorMode": 0,
+              "typeOfApprove": 1,
+              "allowCc": false,
+              "allowTransfer": false,
+              "allowAppendNode": false,
+              "allowRollback": false,
+              "rejectStrategy": 2,
+              "rejectStart": 1,
+              "delayType": 1
+            }
           }
         },
         {
@@ -54,7 +80,6 @@
           "type": 3,
           "priorityLevel": 2,
           "conditionMode": 1,
-          "conditionList": [],
           "childNode": {
             "nodeName": "分支2审核",
             "nodeKey": "flk1736078362210",
@@ -66,10 +91,6 @@
                 "name": "夏小华"
               }
             ],
-            "nodeCandidate": {
-              "type": 1,
-              "assignees": []
-            },
             "examineLevel": 1,
             "directorLevel": 1,
             "selectMode": 1,
@@ -91,10 +112,6 @@
                   "name": "CEO"
                 }
               ],
-              "nodeCandidate": {
-                "type": 1,
-                "assignees": []
-              },
               "examineLevel": 1,
               "directorLevel": 1,
               "selectMode": 1,

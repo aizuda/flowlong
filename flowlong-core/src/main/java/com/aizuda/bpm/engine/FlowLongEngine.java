@@ -300,8 +300,16 @@ public interface FlowLongEngine {
         return executeRejectTask(currentFlwTask, nodeKey, flowCreator, args, false);
     }
 
+    default Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator) {
+        return executeRejectTask(currentFlwTask, nodeKey, flowCreator, null);
+    }
+
     default Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
         return executeRejectTask(currentFlwTask, null, flowCreator, args, false);
+    }
+
+    default Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, FlowCreator flowCreator) {
+        return executeRejectTask(currentFlwTask, flowCreator, null);
     }
 
     /**

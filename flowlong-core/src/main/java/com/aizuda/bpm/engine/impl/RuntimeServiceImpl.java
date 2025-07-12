@@ -423,6 +423,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             FlwHisInstance fhi = new FlwHisInstance();
             fhi.setCreateTime(flwInstance.getCreateTime());
             fhi.instanceState(InstanceState.destroy);
+            fhi.setVariable(flwInstance.getVariable());
             fhi.putAllVariable(args);
             fhi.setId(instanceId);
             fhi.calculateDuration();
