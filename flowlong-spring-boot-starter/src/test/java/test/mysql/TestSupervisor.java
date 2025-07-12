@@ -22,10 +22,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TestSupervisor extends MysqlTest {
 
-    protected FlowCreator user1 = FlowCreator.of("1", "一级部门");
-    protected FlowCreator user2 = FlowCreator.of("2", "二级部门");
-    protected FlowCreator user3 = FlowCreator.of("3", "三级部门");
-    protected FlowCreator user4 = FlowCreator.of("4", "四级部门");
+    protected FlowCreator user1 = FlowCreator.of("1", "一级主管");
+    protected FlowCreator user2 = FlowCreator.of("2", "二级主管");
+    protected FlowCreator user3 = FlowCreator.of("3", "三级主管");
+    protected FlowCreator user4 = FlowCreator.of("4", "四级主管");
 
     @BeforeEach
     public void before() {
@@ -44,7 +44,7 @@ public class TestSupervisor extends MysqlTest {
                             return 1;
                         }
 
-                        // 2，部门
+                        // 2，主管
                         if (NodeSetType.department.eq(nodeModel.getSetType())) {
                             return 2;
                         }
@@ -58,9 +58,9 @@ public class TestSupervisor extends MysqlTest {
                             // 发起人审批，经过 isAllowed 验证合法，直接返回当前执行人
                             return Collections.singletonList(FlwTaskActor.ofFlowCreator(execution.getFlowCreator()));
                         }
-                        if (nodeModel.getType() == 1 && nodeModel.getSetType() == 7) {
+                        if (nodeModel.getType() == 1 && nodeModel.getSetType() == 2) {
                             /*
-                             * 审核人类型 1，指定成员 7，连续多级主管
+                             * 审核人类型 1，指定成员 2，连续多级主管
                              */
                             List<FlwTaskActor> flwTaskActors = new ArrayList<>();
                             flwTaskActors.add(FlwTaskActor.ofFlowCreator(user4));
@@ -91,22 +91,22 @@ public class TestSupervisor extends MysqlTest {
 
     @Test
     public void test() {
-        // 四级部门发起审批
+        // 四级主管发起审批
         Map<String, Object> args = new HashMap<>();
         args.put("day", 4);
         // 启动指定流程定义ID启动流程实例
         flowLongEngine.startInstanceById(processId, user4, args).ifPresent(instance -> {
 
-            /// 四级部门审核
+            // 四级主管审核
             this.executeActiveTasks(instance.getId(), user4);
 
-            // 三级部门审核
+            // 三级主管审核
             this.executeActiveTasks(instance.getId(), user3);
 
-            // 二级部门审核
+            // 二级主管审核
             this.executeActiveTasks(instance.getId(), user2);
 
-            // 一级部门审核
+            // 一级主管审核
             this.executeActiveTasks(instance.getId(), user1);
 
         });

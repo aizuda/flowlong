@@ -238,7 +238,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     protected Optional<List<FlwTask>> executeRejectTask(FlwTask currentFlwTask, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
-                                                  boolean termination, Supplier<Optional<List<FlwTask>>> terminateProcess) {
+                                                        boolean termination, Supplier<Optional<List<FlwTask>>> terminateProcess) {
 
         if (termination) {
             // 强制终止流程
@@ -449,7 +449,13 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.sort) {
             // 当前任务实际办理人
             String assigneeId = flowCreator.getCreateId();
-            if (NodeSetType.role.eq(nodeModel.getSetType()) || NodeSetType.department.eq(nodeModel.getSetType())) {
+            if (NodeSetType.supervisor.eq(nodeModel.getSetType())) {
+                // 主管
+                List<FlwHisTaskActor> htaList = flowLongContext.getQueryService().getHisTaskActorsByTaskIdAndActorId(flwTask.getId(), flowCreator.getCreateId());
+                if (ObjectUtils.isNotEmpty(htaList)) {
+                    assigneeId = htaList.get(0).getActorId();
+                }
+            } else if (NodeSetType.role.eq(nodeModel.getSetType()) || NodeSetType.department.eq(nodeModel.getSetType())) {
                 // 角色、部门 任务参与者
                 List<FlwHisTaskActor> htaList = flowLongContext.getQueryService().getHisTaskActorsByTaskIdAndActorId(flwTask.getId(), flowCreator.getCreateId());
                 if (ObjectUtils.isNotEmpty(htaList)) {

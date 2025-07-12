@@ -64,7 +64,7 @@
             "nodeName": "连续主管审批",
             "nodeKey": "k006",
             "type": 1,
-            "setType": 7,
+            "setType": 2,
             "nodeAssigneeList": [],
             "examineLevel": 1,
             "directorLevel": 1,
