@@ -165,12 +165,20 @@ public interface QueryService {
     List<FlwTaskActor> getTaskActorsByTaskIdAndActorId(Long taskId, String actorId);
 
     /**
-     * 根据任务ID获取历史任务参与者数组
+     * 根据任务ID获取历史任务参与者列表
      *
      * @param taskId 历史任务ID
-     * @return 当前活动任务参与者列表
+     * @return 当前历史任务参与者列表
      */
     List<FlwHisTaskActor> getHisTaskActorsByTaskId(Long taskId);
+
+    /**
+     * 根据流程实例ID获取历史任务参与者列表
+     *
+     * @param instanceId 流程实例ID
+     * @return 当前历史任务参与者列表
+     */
+    Optional<List<FlwHisTaskActor>> getHisTaskActorsByInstanceId(Long instanceId);
 
     /**
      * 根据任务ID获取历史任务参与者数组

@@ -127,6 +127,11 @@ public class QueryServiceImpl implements QueryService {
     }
 
     @Override
+    public Optional<List<FlwHisTaskActor>> getHisTaskActorsByInstanceId(Long instanceId) {
+        return Optional.of(hisTaskActorDao.selectListByInstanceId(instanceId));
+    }
+
+    @Override
     public List<FlwHisTaskActor> getHisTaskActorsByTaskIdAndActorId(Long taskId, String actorId) {
         return hisTaskActorDao.selectListByTaskIdAndActorId(taskId, actorId);
     }

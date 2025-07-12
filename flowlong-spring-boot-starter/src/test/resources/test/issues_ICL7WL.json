@@ -1,0 +1,150 @@
+{
+  "name": "任务死循环问题",
+  "key": "issues_ICL7WL",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "k001",
+    "type": 0,
+    "childNode": {
+      "nodeName": "供应链管理员/战略采购部",
+      "nodeKey": "k002",
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [{
+        "id": "test002",
+        "name": "李孟彬"
+      }],
+      "examineLevel": 1,
+      "examineMode": 1,
+      "directorLevel": 1,
+      "directorMode": 0,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 0,
+      "termMode": 1,
+      "childNode": {
+        "nodeName": "条件路由",
+        "nodeKey": "k003",
+        "type": 8,
+        "parallelNodes": [{
+          "nodeName": "并行A",
+          "type": 3,
+          "priorityLevel": 1,
+          "childNode": {
+            "nodeName": "法务专员/证券法务部",
+            "nodeKey": "k004",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [{
+              "id": "test003",
+              "name": "韦思宇"
+            }],
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1
+          }
+        }, {
+          "nodeName": "并行B",
+          "type": 3,
+          "priorityLevel": 2,
+          "childNode": {
+            "nodeName": "班长/并柜班",
+            "nodeKey": "k005",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [{
+              "id": "test002",
+              "name": "测试A"
+            }],
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1
+          }
+        }],
+        "childNode": {
+          "nodeName": "核价员/核算部",
+          "nodeKey": "k006",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [{
+            "id": "test002",
+            "name": "余云芸"
+          }],
+          "examineLevel": 1,
+          "examineMode": 1,
+          "directorLevel": 1,
+          "directorMode": 0,
+          "selectMode": 1,
+          "termAuto": false,
+          "term": 0,
+          "termMode": 1,
+          "childNode": {
+            "nodeName": "条件路由",
+            "nodeKey": "k007",
+            "type": 4,
+            "conditionNodes": [{
+              "nodeName": "条件1",
+              "type": 3,
+              "priorityLevel": 1,
+              "conditionList": [
+                [{
+                  "label": "内容包含1",
+                  "field": "content",
+                  "operator": "include",
+                  "value": "1"
+                }]
+              ],
+              "childNode": {
+                "nodeName": "抄送人",
+                "nodeKey": "k008",
+                "type": 2,
+                "setType": 1,
+                "nodeAssigneeList": [{
+                  "id": "test002",
+                  "name": "测试A"
+                }]
+              }
+            }, {
+              "nodeName": "条件2",
+              "type": 3,
+              "priorityLevel": 2,
+              "conditionList": [
+                [{
+                  "label": "内容不包含1",
+                  "field": "content",
+                  "operator": "notinclude",
+                  "value": "1"
+                }]
+              ],
+              "childNode": {
+                "nodeName": "抄送人",
+                "nodeKey": "k009",
+                "type": 2,
+                "setType": 1,
+                "nodeAssigneeList": [{
+                  "id": "test003",
+                  "name": "郑昊岳"
+                }]
+              }
+            }],
+            "childNode": {
+              "nodeName": "结束",
+              "nodeKey": "flk165000082000",
+              "type": -1
+            }
+          }
+        }
+      }
+    }
+  }
+}

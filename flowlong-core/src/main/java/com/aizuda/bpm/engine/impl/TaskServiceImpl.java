@@ -219,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
             final String currentTaskKey = flwTask.getTaskKey();
             boolean moveAll = allNextNodeKeys.stream().noneMatch(t -> Objects.equals(t, currentTaskKey));
             for (FlwTask ft : fts) {
-                // 归档所以或归档条件子节点任务
+                // 归档所有或归档条件子节点任务
                 if (moveAll || allNextNodeKeys.stream().anyMatch(t -> Objects.equals(t, ft.getTaskKey()))) {
                     // 设置执行参数
                     ft.putAllVariable(args);

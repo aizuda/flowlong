@@ -54,6 +54,12 @@ public class FlwHisTaskActorDaoImpl implements FlwHisTaskActorDao {
     }
 
     @Override
+    public List<FlwHisTaskActor> selectListByInstanceId(Long instanceId) {
+        return hisTaskActorMapper.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery()
+                .eq(FlwHisTaskActor::getInstanceId, instanceId));
+    }
+
+    @Override
     public List<FlwHisTaskActor> selectListByTaskId(Long taskId) {
         return hisTaskActorMapper.selectList(Wrappers.<FlwHisTaskActor>lambdaQuery()
                 .eq(FlwHisTaskActor::getTaskId, taskId));

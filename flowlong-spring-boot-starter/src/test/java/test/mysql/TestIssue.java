@@ -398,4 +398,33 @@ public class TestIssue extends MysqlTest {
         });
     }
 
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/ICL7WL">测试任务死循环问题</a>
+     */
+    @Test
+    public void issues_ICL7WL() {
+        final ProcessService processService = flowLongEngine.processService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_ICL7WL.json", testCreator, false);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            //李孟斌审批
+            this.executeTaskByKey(instance.getId(), test2Creator, "k002");
+            //韦思宇审批
+            this.executeTaskByKey(instance.getId(), test3Creator, "k004");
+            //并行测试A审批
+            this.executeTaskByKey(instance.getId(), test2Creator, "k005");
+
+            // 条件参数选择条件节点
+            Map<String, Object> args = new HashMap<>();
+            args.put("content", "1");
+
+            //余云芸审批
+            this.executeActiveTasks(instance.getId(), test2Creator, args);
+
+            flowLongEngine.queryService().getHisTaskActorsByInstanceId(instance.getId())
+                    .ifPresent(t -> Assertions.assertEquals(6, t.size()));
+        });
+    }
+
 }
