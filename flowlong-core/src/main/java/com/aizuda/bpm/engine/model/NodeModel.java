@@ -550,7 +550,7 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 模型未设置处理人，那么需要获取自定义参与者
              */
-            List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(this, execution);
+            List<FlwTaskActor> taskActors = execution.getProviderTaskActors(this);
             if (ObjectUtils.isNotEmpty(taskActors)) {
                 for (FlwTaskActor taskActor : taskActors) {
                     if (findTaskActor) {

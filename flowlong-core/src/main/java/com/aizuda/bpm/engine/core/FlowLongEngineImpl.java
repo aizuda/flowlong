@@ -464,7 +464,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             NodeAssignee nextNodeAssignee = nodeModel.nextNodeAssignee(execution, assigneeId);
             if (null != nextNodeAssignee) {
                 // 参与者类型
-                int actorType = execution.getTaskActorProvider().getActorType(nodeModel);
+                int actorType = execution.getProviderTaskActorType(nodeModel);
                 execution.setNextFlwTaskActor(FlwTaskActor.of(nextNodeAssignee, actorType));
                 return flowLongContext.createTask(execution, nodeModel);
             }

@@ -247,7 +247,7 @@ public class TaskServiceImpl implements TaskService {
             taskActorDao.insert(fta);
         } else {
             // 模型中获取参与者信息
-            taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
+            taskActors = execution.getProviderTaskActors(nodeModel);
             // 创建审批人
             PerformType performType = PerformType.get(nodeModel.getExamineMode());
             flwTasks.addAll(this.saveTask(createTask, performType, taskActors, execution, nodeModel));
@@ -1127,7 +1127,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 模型中获取参与者信息
-        List<FlwTaskActor> taskActors = execution.getTaskActorProvider().getTaskActors(nodeModel, execution);
+        List<FlwTaskActor> taskActors = execution.getProviderTaskActors(nodeModel);
         List<FlwTask> flwTasks = new ArrayList<>();
 
         // 处理流程任务
@@ -1422,14 +1422,14 @@ public class TaskServiceImpl implements TaskService {
 
         if (ObjectUtils.isEmpty(taskActors)) {
             // 非正常创建任务处理逻辑
-            if (execution.getTaskActorProvider().abnormal(flwTask, performType, taskActors, execution, nodeModel)) {
+            if (execution.abnormal(flwTask, performType, taskActors, nodeModel)) {
                 // 返回 true 继续执行
                 return flwTasks;
             }
         }
 
         // 参与者类型
-        int actorType = execution.getTaskActorProvider().getActorType(nodeModel);
+        int actorType = execution.getProviderTaskActorType(nodeModel);
 
         if (performType == PerformType.orSign) {
             /*
