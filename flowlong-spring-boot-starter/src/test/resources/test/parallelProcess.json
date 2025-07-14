@@ -1,6 +1,6 @@
 {
   "id": 10,
-  "key": "parallelNodes",
+  "key": "parallelProcess",
   "name": "测试并行分支",
   "nodeConfig": {
     "nodeName": "发起人",

@@ -84,7 +84,7 @@ public class TestParallelNode extends MysqlTest {
                 flowLongEngine.executeJumpTask(flwTask.getId(), "flk1736078362210", test3Creator);
 
                 flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId())
-                        .ifPresent(t -> Assertions.assertEquals(1, t.size()));
+                        .ifPresent(t -> Assertions.assertEquals(2, t.size()));
             });
 
             // 分支2审核跳转到发起人

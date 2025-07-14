@@ -1,6 +1,6 @@
 {
   "id": 10,
-  "key": "parallelNodes",
+  "key": "moreConditionParallel",
   "name": "请假审批",
   "nodeConfig": {
     "nodeName": "发起人",
