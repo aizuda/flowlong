@@ -349,4 +349,12 @@ public class Execution implements Serializable {
     protected TaskActorProvider getTaskActorProvider() {
         return engine.getContext().getTaskActorProvider();
     }
+
+    /**
+     * 清理动态提供审批参与者信息
+     */
+    public void cleanTaskActorProvider() {
+        this.providerTaskActorType = null;
+        this.providerTaskActors = null;
+    }
 }

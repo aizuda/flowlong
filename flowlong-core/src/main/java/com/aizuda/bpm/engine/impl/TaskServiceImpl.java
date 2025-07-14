@@ -160,7 +160,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
-                                             Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
+                                                   Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
         FlwTask flwTask = null;
         TaskEventType taskEventType = null;
         TaskState taskState = null;
@@ -908,7 +908,7 @@ public class TaskServiceImpl implements TaskService {
      * @return 任务参与者
      */
     protected Optional<List<FlwTask>> undoHisTask(Long hisTaskId, FlowCreator flowCreator, TaskType taskType,
-                                            Consumer<FlwHisTask> hisTaskConsumer) {
+                                                  Consumer<FlwHisTask> hisTaskConsumer) {
         Optional<List<FlwTask>> flwTasksOptional = Optional.empty();
         FlwHisTask hisTask = hisTaskDao.selectCheckById(hisTaskId);
         if (null == hisTask || (TaskType.withdraw == taskType && hisTask.startNode())) {
@@ -1128,6 +1128,10 @@ public class TaskServiceImpl implements TaskService {
 
         // 模型中获取参与者信息
         List<FlwTaskActor> taskActors = execution.getProviderTaskActors(nodeModel);
+        // 清空参与者信息
+        execution.cleanTaskActorProvider();
+
+        // 创建任务列表
         List<FlwTask> flwTasks = new ArrayList<>();
 
         // 处理流程任务
@@ -1287,7 +1291,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 触发器任务归档
-        if(this.moveToHisTaskTrigger(execution.getFlwTask(), flowCreator)) {
+        if (this.moveToHisTaskTrigger(execution.getFlwTask(), flowCreator)) {
 
             // 任务监听器通知
             this.taskNotify(TaskEventType.trigger, execution::getFlwTask, null, nodeModel, flowCreator);
