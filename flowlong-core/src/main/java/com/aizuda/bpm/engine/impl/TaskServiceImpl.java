@@ -916,6 +916,17 @@ public class TaskServiceImpl implements TaskService {
             return flwTasksOptional;
         }
 
+        // 触发器任务、定时器任务、抄送任务 情况
+        if (TaskType.trigger.eq(hisTask.getTaskType()) || TaskType.timer.eq(hisTask.getTaskType())
+                || TaskType.cc.eq(hisTask.getTaskType())) {
+            Long thisParentTaskId = hisTask.getParentTaskId();
+            if (null == thisParentTaskId) {
+                return flwTasksOptional;
+            }
+            // 撤回上一级任务
+            return this.undoHisTask(thisParentTaskId, flowCreator, taskType, hisTaskConsumer);
+        }
+
         // 回调处理函数
         if (null != hisTaskConsumer) {
             hisTaskConsumer.accept(hisTask);

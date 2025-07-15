@@ -5,36 +5,73 @@
     "nodeName": "发起人",
     "nodeKey": "k001",
     "type": 0,
-    "nodeAssigneeList": [],
     "childNode": {
-      "nodeName": "延时触发器",
+      "nodeName": "人事审批",
       "nodeKey": "k002",
-      "type": 7,
-      "extendConfig": {
-        "time": "7:d",
-        "args": "执行 json 参数",
-        "trigger": "test.mysql.TaskTriggerImpl"
-      },
+      "type": 1,
+      "setType": 1,
+      "nodeAssigneeList": [
+        {
+          "tenantId": "1000",
+          "id": "test002",
+          "name": "测试002"
+        }
+      ],
+      "examineLevel": 1,
+      "examineMode": 1,
+      "directorLevel": 1,
+      "directorMode": 0,
+      "selectMode": 1,
+      "term": 0,
+      "termMode": 1,
+      "typeOfApprove": 1,
+      "rejectStrategy": 3,
+      "rejectStart": 1,
+      "remind": false,
+      "allowTransfer": true,
+      "allowAppendNode": true,
+      "allowRollback": true,
+      "approveSelf": 0,
       "childNode": {
-        "nodeName": "人事审批",
-        "nodeKey": "k003",
-        "type": 1,
-        "setType": 1,
-        "nodeAssigneeList": [
-          {
-            "tenantId": "1000",
-            "id": "test002",
-            "name": "测试002"
-          }
-        ],
-        "examineLevel": 1,
-        "directorLevel": 1,
-        "selectMode": 1,
-        "termAuto": false,
-        "term": 0,
-        "termMode": 1,
-        "examineMode": 1,
-        "directorMode": 0
+        "nodeName": "触发器",
+        "nodeKey": "flk1752571403215",
+        "type": 7,
+        "extendConfig": {
+          "time": "7:d",
+          "args": "执行 json 参数",
+          "trigger": "test.mysql.TaskTriggerImpl"
+        },
+        "childNode": {
+          "nodeName": "CEO审批",
+          "nodeKey": "k003",
+          "type": 1,
+          "setType": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "test001",
+              "name": "CEO"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "remind": false,
+          "term": 0,
+          "termMode": 1,
+          "examineMode": 1,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "childNode": {
+            "nodeName": "结束",
+            "nodeKey": "flk165000082000",
+            "type": -1
+          },
+          "typeOfApprove": 1,
+          "rejectStrategy": 2,
+          "rejectStart": 1,
+          "delayType": "1"
+        }
       }
     }
   }
