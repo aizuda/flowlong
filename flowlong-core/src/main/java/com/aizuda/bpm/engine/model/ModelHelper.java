@@ -709,7 +709,8 @@ public class ModelHelper {
         }
 
         // 条件节点子节点情况
-        if (conditionNodes.stream().anyMatch(t -> Objects.equals(nodeModel.getNodeKey(), t.getChildNode().getNodeKey()))) {
+        if (conditionNodes.stream().anyMatch(t -> null != t.getChildNode() &&
+                Objects.equals(nodeModel.getNodeKey(), t.getChildNode().getNodeKey()))) {
             return null;
         }
 

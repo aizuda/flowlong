@@ -103,14 +103,14 @@ public class TestParallelNode extends MysqlTest {
     public void testParallelJumpReject() {
         processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
-            //分支1 审核
+            // 分支1 审核
             this.executeTaskByKey(instance.getId(), testCreator, "flk1736078360143");
-            //分支2 审核
+            // 分支2 审核
             this.executeTaskByKey(instance.getId(), test2Creator, "flk1736078362210");
-            //分支2 领导审核
+            // 分支2 领导审核
             this.executeTaskByKey(instance.getId(), test3Creator, "flk1736078364197");
 
-            //汇总后驳回任务到发起人
+            // 汇总后驳回任务到发起人
             this.executeTask(instance.getId(), test3Creator, flwTask ->
                     flowLongEngine.executeRejectTask(flwTask, "flk1735871288160", test3Creator));
 
@@ -121,12 +121,12 @@ public class TestParallelNode extends MysqlTest {
     public void testParallelJumpNodeKey() {
         processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
-            //分支1 审核
+            // 分支1 审核
             this.executeTaskByKey(instance.getId(), testCreator, "flk1736078360143");
-            //分支2 审核
+            // 分支2 审核
             this.executeTaskByKey(instance.getId(), test2Creator, "flk1736078362210");
 
-            //分支1 审核A 驳回任务到 分支1 审核 不影响分支 2 的任务
+            // 分支1 审核A 驳回任务到 分支1 审核 不影响分支 2 的任务
             this.executeTask(instance.getId(), test2Creator, flwTask ->
                     flowLongEngine.executeRejectTask(flwTask, "flk1736078360143", test2Creator));
 

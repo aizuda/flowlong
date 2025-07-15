@@ -427,4 +427,32 @@ public class TestIssue extends MysqlTest {
         });
     }
 
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/ICMHBR">测试条件分支抄送问题</a>
+     */
+    @Test
+    public void issues_ICMHBR() {
+        processId = this.deployByResource("test/parallelJumpTask.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            // 分支1 审核
+            this.executeTaskByKey(instance.getId(), testCreator, "flk1736078360143");
+            // 分支1 CEO审核
+            this.executeTaskByKey(instance.getId(), test2Creator, "flk1752285974508");
+
+            // 分支2 审核
+            this.executeTaskByKey(instance.getId(), test2Creator, "flk1736078362210");
+            // 分支2 领导审核
+            this.executeTaskByKey(instance.getId(), test3Creator, "flk1736078364197");
+
+            // 副总监审核
+            Map<String, Object> args = new HashMap<>();
+            args.put("age", 20);
+            this.executeActiveTasks(instance.getId(), test3Creator, args);
+
+            // 判断存在执行记录
+            flowLongEngine.queryService().getHisTaskActorsByInstanceId(instance.getId())
+                    .ifPresent(t -> Assertions.assertEquals(7, t.size()));
+        });
+    }
+
 }

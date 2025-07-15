@@ -292,7 +292,7 @@ public class TestModel extends MysqlTest {
         // 并行分支
         ProcessModel parallelModel = getProcessModel("test/parallelJumpTask.json");
         List<NodeModel> parallelNodeModels = ModelHelper.getRootNodeAllChildNodes(parallelModel.getNodeConfig());
-        Assertions.assertEquals(7, parallelNodeModels.size());
+        Assertions.assertEquals(9, parallelNodeModels.size());
 
         // 包容分支
         ProcessModel inclusiveModel = getProcessModel("test/inclusiveProcess.json");
