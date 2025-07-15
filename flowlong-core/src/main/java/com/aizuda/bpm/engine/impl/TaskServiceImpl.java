@@ -755,7 +755,7 @@ public class TaskServiceImpl implements TaskService {
     public boolean resume(Long instanceId, String nodeKey, FlowCreator flowCreator) {
         FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
         if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) ||
-                (InstanceState.reject.ne(fhi.getInstanceState()) && InstanceState.revoke.ne(fhi.getInstanceState()))) {
+                (null == nodeKey && InstanceState.reject.ne(fhi.getInstanceState()) && InstanceState.revoke.ne(fhi.getInstanceState()))) {
             return false;
         }
 
