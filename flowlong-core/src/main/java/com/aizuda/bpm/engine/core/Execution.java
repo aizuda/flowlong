@@ -55,16 +55,6 @@ public class Execution implements Serializable {
      */
     private FlwInstance parentFlwInstance;
     /**
-     * 动态提供审批参与者类型
-     * <p>如果已经存在，避免多次获取</p>
-     */
-    private Integer providerTaskActorType;
-    /**
-     * 动态提供审批参与者列表
-     * <p>如果已经存在，避免多次获取</p>
-     */
-    private List<FlwTaskActor> providerTaskActors;
-    /**
      * 下一个审批参与者
      */
     private FlwTaskActor nextFlwTaskActor;
@@ -319,7 +309,7 @@ public class Execution implements Serializable {
      * @return 返回 true 不再创建任务，返回 false 解决异常补充回写 taskActors 信息
      */
     public boolean abnormal(FlwTask flwTask, PerformType performType, List<FlwTaskActor> taskActors, NodeModel nodeModel) {
-        return getTaskActorProvider().abnormal(flwTask, performType, taskActors, this, nodeModel);
+        return this.getTaskActorProvider().abnormal(flwTask, performType, taskActors, this, nodeModel);
     }
 
     /**
@@ -328,10 +318,7 @@ public class Execution implements Serializable {
      * @param nodeModel 节点模型
      */
     public Integer getProviderTaskActorType(NodeModel nodeModel) {
-        if (null == providerTaskActorType) {
-            providerTaskActorType = getTaskActorProvider().getActorType(nodeModel);
-        }
-        return providerTaskActorType;
+        return this.getTaskActorProvider().getActorType(nodeModel);
     }
 
     /**
@@ -340,21 +327,11 @@ public class Execution implements Serializable {
      * @param nodeModel 节点模型
      */
     public List<FlwTaskActor> getProviderTaskActors(NodeModel nodeModel) {
-        if (null == providerTaskActors) {
-            providerTaskActors = getTaskActorProvider().getTaskActors(nodeModel, this);
-        }
-        return providerTaskActors;
+        return this.getTaskActorProvider().getTaskActors(nodeModel, this);
     }
 
     protected TaskActorProvider getTaskActorProvider() {
         return engine.getContext().getTaskActorProvider();
     }
 
-    /**
-     * 清理动态提供审批参与者信息
-     */
-    public void cleanTaskActorProvider() {
-        this.providerTaskActorType = null;
-        this.providerTaskActors = null;
-    }
 }
