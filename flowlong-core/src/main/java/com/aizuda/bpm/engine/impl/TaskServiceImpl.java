@@ -1139,8 +1139,6 @@ public class TaskServiceImpl implements TaskService {
 
         // 模型中获取参与者信息
         List<FlwTaskActor> taskActors = execution.getProviderTaskActors(nodeModel);
-        // 清空参与者信息
-        execution.cleanTaskActorProvider();
 
         // 创建任务列表
         List<FlwTask> flwTasks = new ArrayList<>();
