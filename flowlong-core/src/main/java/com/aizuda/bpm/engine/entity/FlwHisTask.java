@@ -50,9 +50,8 @@ public class FlwHisTask extends FlwTask {
      */
     protected Long duration;
 
-    public FlwHisTask setTaskState(TaskState taskState) {
-        this.taskState = taskState.getValue();
-        return this;
+    public FlwHisTask taskState(TaskState taskState) {
+        return this.setTaskState(taskState.getValue());
     }
 
     public FlwHisTask setTaskState(Integer taskState) {
@@ -62,7 +61,7 @@ public class FlwHisTask extends FlwTask {
     }
 
     public static FlwHisTask of(FlwTask flwTask, TaskState taskState) {
-        return of(flwTask).setTaskState(taskState);
+        return of(flwTask).taskState(taskState);
     }
 
     public static FlwHisTask of(FlwTask flwTask) {
