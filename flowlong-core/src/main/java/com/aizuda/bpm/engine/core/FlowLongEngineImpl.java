@@ -449,12 +449,18 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         if (performType == PerformType.sort) {
             // 当前任务实际办理人
             String assigneeId = flowCreator.getCreateId();
-            if (NodeSetType.supervisor.eq(nodeModel.getSetType()) || NodeSetType.role.eq(nodeModel.getSetType())
-                    || NodeSetType.department.eq(nodeModel.getSetType())) {
+            boolean isSupervisor = NodeSetType.supervisor.eq(nodeModel.getSetType());
+            if (isSupervisor || NodeSetType.role.eq(nodeModel.getSetType()) || NodeSetType.department.eq(nodeModel.getSetType())) {
                 // 主管、角色、部门 任务参与者
                 List<FlwHisTaskActor> htaList = flowLongContext.getQueryService().getHisTaskActorsByTaskIdAndActorId(flwTask.getId(), flowCreator.getCreateId());
                 if (ObjectUtils.isNotEmpty(htaList)) {
-                    assigneeId = htaList.get(0).getActorId();
+                    if (isSupervisor) {
+                        // 主管直接获取当具体前参与者
+                        assigneeId = htaList.get(0).getActorId();
+                    } else {
+                        // 角色、部门 获取当前认领人员
+                        assigneeId = htaList.get(0).getAgentId();
+                    }
                 }
             } else if (TaskType.transfer.getValue() == flwTask.getTaskType()) {
                 assigneeId = flwTask.getAssignorId();
