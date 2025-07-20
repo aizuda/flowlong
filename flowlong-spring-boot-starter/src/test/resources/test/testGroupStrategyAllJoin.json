@@ -1,0 +1,128 @@
+{
+  "key": "testGroupStrategyAllJoin",
+  "name": "测试分组审批全部参与策略",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1752830222211",
+    "type": 0,
+    "childNode": {
+      "nodeName": "或签审核",
+      "nodeKey": "flk1752905323490",
+      "type": 1,
+      "setType": 3,
+      "groupStrategy": 1,
+      "nodeAssigneeList": [
+        {
+          "id": "role005",
+          "name": "部门领导"
+        },
+        {
+          "id": "role006",
+          "name": "测试人员"
+        }
+      ],
+      "examineLevel": 1,
+      "directorLevel": 1,
+      "selectMode": 1,
+      "termAuto": false,
+      "remind": false,
+      "term": 1,
+      "termMode": 1,
+      "examineMode": 3,
+      "approveSelf": 0,
+      "directorMode": 0,
+      "typeOfApprove": 1,
+      "extendConfig": {
+        "remindTime": "1:m"
+      },
+      "allowCc": false,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "rejectStrategy": 2,
+      "rejectStart": 1,
+      "delayType": 1,
+      "childNode": {
+        "nodeName": "顺序签审核",
+        "nodeKey": "flk1752830262547",
+        "type": 1,
+        "setType": 3,
+        "groupStrategy": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "role004",
+            "name": "考勤管理员"
+          },
+          {
+            "id": "role003",
+            "name": "财务总监"
+          }
+        ],
+        "examineLevel": 1,
+        "examineMode": 1,
+        "directorLevel": 1,
+        "directorMode": 0,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 1,
+        "termMode": 1,
+        "typeOfApprove": 1,
+        "rejectStrategy": 2,
+        "rejectStart": 1,
+        "remind": false,
+        "allowTransfer": false,
+        "allowAppendNode": false,
+        "allowRollback": false,
+        "allowCc": false,
+        "approveSelf": 0,
+        "delayType": 1,
+        "extendConfig": {
+          "remindTime": "1:m"
+        },
+        "childNode": {
+          "nodeName": "会签审核",
+          "nodeKey": "flk1752905291205",
+          "type": 1,
+          "setType": 3,
+          "groupStrategy": 1,
+          "nodeAssigneeList": [
+            {
+              "id": "role002",
+              "name": "技术总监"
+            },
+            {
+              "id": "role001",
+              "name": "CEO"
+            }
+          ],
+          "examineLevel": 1,
+          "directorLevel": 1,
+          "selectMode": 1,
+          "termAuto": false,
+          "remind": false,
+          "term": 1,
+          "termMode": 1,
+          "examineMode": 2,
+          "approveSelf": 0,
+          "directorMode": 0,
+          "typeOfApprove": 1,
+          "extendConfig": {
+            "remindTime": "1:m"
+          },
+          "allowCc": false,
+          "allowTransfer": false,
+          "allowAppendNode": false,
+          "allowRollback": false,
+          "rejectStrategy": 2,
+          "rejectStart": 1,
+          "delayType": 1,
+          "childNode": {
+            "nodeName": "结束",
+            "nodeKey": "flk1752830122211",
+            "type": -1
+          }
+        }
+      }
+    }
+  }
+}

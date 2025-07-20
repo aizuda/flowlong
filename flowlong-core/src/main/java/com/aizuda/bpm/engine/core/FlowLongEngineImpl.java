@@ -454,8 +454,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 // 主管、角色、部门 任务参与者
                 List<FlwHisTaskActor> htaList = flowLongContext.getQueryService().getHisTaskActorsByTaskIdAndActorId(flwTask.getId(), flowCreator.getCreateId());
                 if (ObjectUtils.isNotEmpty(htaList)) {
-                    if (isSupervisor) {
-                        // 主管直接获取当具体前参与者
+                    if (isSupervisor || nodeModel.allJoinGroupStrategy()) {
+                        // 主管直接获取当具体前参与者，分组策略全部人员参与审批
                         assigneeId = htaList.get(0).getActorId();
                     } else {
                         // 角色、部门 获取当前认领人员

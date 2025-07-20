@@ -42,24 +42,21 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
 
     @Override
     public Integer getActorType(NodeModel nodeModel) {
+        // 非全部人员参与审批分组策略
+        if (!nodeModel.allJoinGroupStrategy()) {
+
+            // 1，角色
+            if (NodeSetType.role.eq(nodeModel.getSetType())) {
+                return 1;
+            }
+
+            // 2，部门
+            if (NodeSetType.department.eq(nodeModel.getSetType())) {
+                return 2;
+            }
+        }
+
         // 0，用户
-        if (NodeSetType.specifyMembers.eq(nodeModel.getSetType())
-                || NodeSetType.initiatorThemselves.eq(nodeModel.getSetType())
-                || NodeSetType.initiatorSelected.eq(nodeModel.getSetType())) {
-            return 0;
-        }
-
-        // 1，角色
-        if (NodeSetType.role.eq(nodeModel.getSetType())) {
-            return 1;
-        }
-
-        // 2，部门
-        if (NodeSetType.department.eq(nodeModel.getSetType())) {
-            return 2;
-        }
-
-        // 其它类型可以实现该类重写
         return 0;
     }
 }

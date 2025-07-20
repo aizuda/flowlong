@@ -30,6 +30,21 @@ public abstract class TestFlowLong {
      */
     protected String testUser3 = "test003";
 
+    /**
+     * 测试用户4
+     */
+    protected String testUser4 = "test004";
+
+    /**
+     * 测试用户5
+     */
+    protected String testUser5 = "test005";
+
+    /**
+     * 测试用户6
+     */
+    protected String testUser6 = "test006";
+
     @Autowired
     protected FlowLongEngine flowLongEngine;
 

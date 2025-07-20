@@ -28,6 +28,9 @@ public class MysqlTest extends TestFlowLong {
     protected FlowCreator testCreator = FlowCreator.of(testUser1, "测试001");
     protected FlowCreator test2Creator = FlowCreator.of(testUser2, "测试002");
     protected FlowCreator test3Creator = FlowCreator.of(testUser3, "测试003");
+    protected FlowCreator test4Creator = FlowCreator.of(testUser4, "测试004");
+    protected FlowCreator test5Creator = FlowCreator.of(testUser5, "测试005");
+    protected FlowCreator test6Creator = FlowCreator.of(testUser6, "测试006");
 
     /**
      * 执行当前活跃用户
