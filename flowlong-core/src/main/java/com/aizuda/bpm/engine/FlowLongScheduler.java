@@ -75,14 +75,20 @@ public abstract class FlowLongScheduler {
                         if (null != flwTask.getRemindRepeat()) {
                             remindRepeat += flwTask.getRemindRepeat();
                         }
-                        temp.setRemindRepeat(remindRepeat);
-                        // 2，调用提醒接口
-                        TaskReminder taskReminder = context.getTaskReminder();
-                        Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
-                        Date nextRemindTime = taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
-                        if (null != nextRemindTime) {
-                            temp.setRemindTime(nextRemindTime);
+                        if (remindRepeat > remindParam.getMaximum()) {
+                            // 超过最大提醒次数，不再提醒
+                            remindRepeat = -1;
+                        } else {
+                            // 2，调用提醒接口
+                            TaskReminder taskReminder = context.getTaskReminder();
+                            Assert.isNull(taskReminder, "Please make sure to implement the interface TaskReminder");
+                            Date nextRemindTime = taskReminder.remind(context, flwTask.getInstanceId(), flwTask);
+                            if (null != nextRemindTime) {
+                                temp.setRemindTime(nextRemindTime);
+                            }
                         }
+                        // 3，设置已提醒次数
+                        temp.setRemindRepeat(remindRepeat);
                         taskService.updateTaskById(temp, this.getAutoFlowCreator());
                     }
                     /*

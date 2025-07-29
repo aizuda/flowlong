@@ -32,5 +32,9 @@ public class RemindParam {
      * 工作时间设置，格式为 8:00-18:00
      */
     private String workTime;
+    /**
+     * 最大默认提醒次数，默认 999
+     */
+    private int maximum = 999;
 
 }

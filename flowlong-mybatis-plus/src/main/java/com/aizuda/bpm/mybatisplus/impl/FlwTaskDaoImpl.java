@@ -109,9 +109,8 @@ public class FlwTaskDaoImpl implements FlwTaskDao {
 
     @Override
     public List<FlwTask> selectListTimeoutOrRemindTasks(Date currentDate) {
-        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery()
-                .le(FlwTask::getExpireTime, currentDate)
-                .or().le(FlwTask::getRemindTime, currentDate));
+        return taskMapper.selectList(Wrappers.<FlwTask>lambdaQuery().le(FlwTask::getExpireTime, currentDate)
+                .or(t -> t.le(FlwTask::getRemindTime, currentDate).gt(FlwTask::getRemindRepeat, 0)));
     }
 
     @Override
