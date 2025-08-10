@@ -118,8 +118,8 @@ public class TaskServiceImpl implements TaskService {
             eventType = TaskEventType.restart;
         }
 
-        // 迁移任务至历史表
-        this.moveToHisTask(flwTask, taskState, flowCreator);
+        // 设置执行参数，迁移任务至历史表
+        this.moveToHisTask(flwTask.putAllVariable(args), taskState, flowCreator);
 
         // 任务监听器通知
         this.taskNotify(eventType, () -> flwTask, null, null, flowCreator);
@@ -221,10 +221,8 @@ public class TaskServiceImpl implements TaskService {
             for (FlwTask ft : fts) {
                 // 归档所有或归档条件子节点任务
                 if (moveAll || allNextNodeKeys.stream().anyMatch(t -> Objects.equals(t, ft.getTaskKey()))) {
-                    // 设置执行参数
-                    ft.putAllVariable(args);
-                    // 归档历史
-                    this.moveToHisTask(ft, taskState, flowCreator);
+                    // 设置执行参数，归档历史
+                    this.moveToHisTask(ft.putAllVariable(args), taskState, flowCreator);
                 }
             }
         }
