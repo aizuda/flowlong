@@ -113,7 +113,7 @@ public abstract class FlowLongScheduler {
                             Integer termMode = nodeModel.getTermMode();
                             if (null == termMode) {
                                 // 执行超时
-                                context.getRuntimeService().timeout(flwTask.getInstanceId());
+                                context.getRuntimeService().timeout(flwTask.getInstanceId(), flwTask, this.getAutoFlowCreator());
                             } else if (Objects.equals(termMode, 0)) {
                                 // 自动通过
                                 if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {
