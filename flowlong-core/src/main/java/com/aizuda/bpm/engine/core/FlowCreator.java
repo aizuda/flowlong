@@ -4,6 +4,7 @@
  */
 package com.aizuda.bpm.engine.core;
 
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -45,6 +46,10 @@ public class FlowCreator implements Serializable {
     public FlowCreator tenantId(String tenantId) {
         this.tenantId = tenantId;
         return this;
+    }
+
+    public static FlowCreator of(FlwTaskActor fta) {
+        return of(fta.getTenantId(), fta.getActorId(), fta.getActorName());
     }
 
     public static FlowCreator of(String createId, String createBy) {
