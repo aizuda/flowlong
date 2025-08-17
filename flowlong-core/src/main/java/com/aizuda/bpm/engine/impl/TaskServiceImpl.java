@@ -587,6 +587,7 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param taskId               任务ID
      * @param taskType             任务类型
+     * @param taskEventType        任务事件类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
      * @param args                 任务参数
@@ -594,7 +595,7 @@ public class TaskServiceImpl implements TaskService {
      * @return true 成功 false 失败
      */
     @Override
-    public boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators,
+    public boolean assigneeTask(Long taskId, TaskType taskType, TaskEventType taskEventType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators,
                                 Map<String, Object> args, Function<FlwTask, Boolean> check) {
         // 受理任务权限验证
         FlwTaskActor flwTaskActor = this.getAllowedFlwTaskActor(taskId, flowCreator);
@@ -649,12 +650,6 @@ public class TaskServiceImpl implements TaskService {
         // 更新任务
         taskDao.updateById(flwTask);
 
-        TaskEventType taskEventType = TaskEventType.transfer;
-        if (taskType == TaskType.delegate) {
-            taskEventType = TaskEventType.delegate;
-        } else if (taskType == TaskType.agent) {
-            taskEventType = TaskEventType.agent;
-        }
         // 任务监听器通知
         this.taskNotify(taskEventType, () -> {
             dbFlwTask.taskType(taskType);

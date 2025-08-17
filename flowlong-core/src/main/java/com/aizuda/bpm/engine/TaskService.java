@@ -170,7 +170,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators, Map<String, Object> args) {
-        return this.assigneeTask(taskId, TaskType.agent, flowCreator, agentFlowCreators, args, null);
+        return this.assigneeTask(taskId, TaskType.agent, TaskEventType.agent, flowCreator, agentFlowCreators, args, null);
     }
 
     default boolean agentTask(Long taskId, FlowCreator flowCreator, List<FlowCreator> agentFlowCreators) {
@@ -187,7 +187,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator, Map<String, Object> args) {
-        return this.assigneeTask(taskId, TaskType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), args, null);
+        return this.assigneeTask(taskId, TaskType.transfer, TaskEventType.transfer, flowCreator, Collections.singletonList(assigneeFlowCreator), args, null);
     }
 
     default boolean transferTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
@@ -216,7 +216,7 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator, Map<String, Object> args) {
-        return this.assigneeTask(taskId, TaskType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), args, null);
+        return this.assigneeTask(taskId, TaskType.delegate, TaskEventType.delegate, flowCreator, Collections.singletonList(assigneeFlowCreator), args, null);
     }
 
     default boolean delegateTask(Long taskId, FlowCreator flowCreator, FlowCreator assigneeFlowCreator) {
@@ -228,18 +228,19 @@ public interface TaskService {
      *
      * @param taskId               任务ID
      * @param taskType             任务类型
+     * @param taskEventType        任务事件类型
      * @param flowCreator          任务参与者
      * @param assigneeFlowCreators 指定办理人列表
      * @param args                 任务参数
      * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
      */
-    boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Map<String, Object> args, Function<FlwTask, Boolean> check);
+    boolean assigneeTask(Long taskId, TaskType taskType, TaskEventType taskEventType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators, Map<String, Object> args, Function<FlwTask, Boolean> check);
 
-    default boolean assigneeTask(Long taskId, TaskType taskType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
+    default boolean assigneeTask(Long taskId, TaskType taskType, TaskEventType taskEventType, FlowCreator flowCreator, List<FlowCreator> assigneeFlowCreators) {
 
         // 校验存在重复分配抛出异常
-        return this.assigneeTask(taskId, taskType, flowCreator, assigneeFlowCreators, null, t -> {
+        return this.assigneeTask(taskId, taskType, taskEventType, flowCreator, assigneeFlowCreators, null, t -> {
             if (ObjectUtils.isNotEmpty(t.getAssignorId())) {
                 Assert.illegal("Do not allow duplicate assign , taskId = " + taskId);
             }
