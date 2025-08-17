@@ -649,8 +649,14 @@ public class TaskServiceImpl implements TaskService {
         // 更新任务
         taskDao.updateById(flwTask);
 
+        TaskEventType taskEventType = TaskEventType.transfer;
+        if (taskType == TaskType.delegate) {
+            taskEventType = TaskEventType.delegate;
+        } else if (taskType == TaskType.agent) {
+            taskEventType = TaskEventType.agent;
+        }
         // 任务监听器通知
-        this.taskNotify(TaskEventType.assignment, () -> {
+        this.taskNotify(taskEventType, () -> {
             dbFlwTask.taskType(taskType);
             dbFlwTask.setAssignorId(flwTask.getAssignorId());
             dbFlwTask.setAssignor(flwTask.getAssignor());

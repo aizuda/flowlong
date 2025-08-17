@@ -44,9 +44,17 @@ public enum TaskEventType {
      */
     createCc,
     /**
-     * 分配
+     * 代理
      */
-    assignment,
+    agent,
+    /**
+     * 转办、
+     */
+    transfer,
+    /**
+     * 委派
+     */
+    delegate,
     /**
      * 委派任务解决
      */
