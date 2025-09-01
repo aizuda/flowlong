@@ -144,7 +144,7 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      */
     public FlwProcess checkState() {
         if (Objects.equals(0, this.processState)) {
-            Assert.illegal("指定的流程定义[id=" + this.id + ",processVersion=" + this.processVersion + "]为非活动状态");
+            Assert.illegal("process [id=" + this.id + ",processVersion=" + this.processVersion + "] inactive state");
         }
         return this;
     }

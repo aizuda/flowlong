@@ -233,7 +233,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     protected boolean updateInstanceStateById(Long instanceId, InstanceState instanceState, FlowCreator flowCreator) {
         FlwHisInstance dbFhi = hisInstanceDao.selectById(instanceId);
         if (null != dbFhi) {
-            Assert.isTrue(null != dbFhi.getParentInstanceId(), "Sub processes are not allowed.");
+            Long parentInstanceId = dbFhi.getParentInstanceId();
+            if (null != parentInstanceId) {
+                Assert.illegal("Sub processes are not allowed. parentInstanceId=" + parentInstanceId);
+            }
             // 挂起当前主流程
             if (this.updateInstanceState(dbFhi, instanceState, flowCreator)) {
                 // 子流程挂起

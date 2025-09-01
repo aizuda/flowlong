@@ -209,7 +209,9 @@ public class TaskServiceImpl implements TaskService {
 
         // 非发起节点和审批节点不允许跳转
         TaskType taskType = TaskType.get(nodeModel.getType());
-        Assert.illegal(TaskType.major != taskType && TaskType.approval != taskType, "not allow jumping nodes");
+        if (TaskType.major != taskType && TaskType.approval != taskType) {
+            Assert.illegal("not allow jumping nodes, nodeKey=" + nodeKey);
+        }
 
         // 获取当前执行实例的所有正在执行的任务，强制终止跳到指定节点的所有子节点任务
         List<FlwTask> fts = taskDao.selectListByInstanceId(flwTask.getInstanceId());
@@ -495,7 +497,7 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskById(FlwTask flwTask, FlowCreator flowCreator) {
         if (taskDao.updateById(flwTask)) {
             // 任务监听器通知
-            this.taskNotify(TaskEventType.update, () -> flwTask, null, null, flowCreator);
+            this.taskNotify(TaskEventType.update, () -> taskDao.selectById(flwTask.getId()), null, null, flowCreator);
         }
     }
 
@@ -539,7 +541,7 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = taskDao.selectCheckById(taskId);
         FlwTaskActor taskActor = this.isAllowed(flwTask, flowCreator.getCreateId());
         if (null == taskActor) {
-            Assert.illegal("当前执行用户ID [" + flowCreator.getCreateBy() + "] 不允许认领任务 [taskId=" + taskId + "]");
+            Assert.illegal("Current executing user [" + flowCreator.getCreateBy() + "] claiming tasks is not allowed [taskId=" + taskId + "]");
         }
 
         // 删除任务参与者
