@@ -376,6 +376,7 @@ public class TaskServiceImpl implements TaskService {
                 ht.setFlowCreator(flowCreator);
                 ht.calculateDuration();
                 ht.setTaskType(hisTask.getTaskType());
+                ht.putAllVariable(hisTask.variableMap());
                 hisTaskDao.insert(ht);
             });
             List<Long> taskIds = flwTaskList.stream().map(FlwTask::getId).collect(Collectors.toList());
