@@ -137,7 +137,11 @@ public enum TaskType {
     /**
      * 自动拒绝
      */
-    autoReject(31);
+    autoReject(31),
+    /**
+     * 触发器跳转
+     */
+    triggerJump(32);
 
     private final int value;
 

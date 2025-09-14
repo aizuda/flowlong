@@ -76,7 +76,11 @@ public enum TaskState {
     /**
      * 路由跳转
      */
-    routeJump(13);
+    routeJump(13),
+    /**
+     * 触发器跳转
+     */
+    triggerJump(14);
 
     private final int value;
 

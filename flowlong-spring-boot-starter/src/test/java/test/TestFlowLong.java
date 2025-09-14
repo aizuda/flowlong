@@ -7,6 +7,7 @@ package test;
 import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 /**
  * 测试流程引擎抽象类
@@ -44,6 +45,9 @@ public abstract class TestFlowLong {
      * 测试用户6
      */
     protected String testUser6 = "test006";
+
+    @Autowired
+    protected ApplicationContext applicationContext;
 
     @Autowired
     protected FlowLongEngine flowLongEngine;

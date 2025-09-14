@@ -92,12 +92,26 @@ public class Execution implements Serializable {
      */
     private boolean saveAsDraft = false;
     /**
+     * 结束跳转
+     */
+    private boolean finishJump = false;
+    /**
      * 指定任务事件类型
      */
     private TaskEventType taskEventType;
 
     public TaskEventType getTaskEventType() {
         return null == taskEventType ? TaskEventType.create : taskEventType;
+    }
+
+    public Execution saveAsDraft() {
+        this.saveAsDraft = true;
+        return this;
+    }
+
+    public Execution finishJump() {
+        this.finishJump = true;
+        return this;
     }
 
     /**
@@ -158,6 +172,20 @@ public class Execution implements Serializable {
      */
     public Execution createSubExecution(Execution execution, ProcessModel processModel, String parentNodeName) {
         return new Execution(execution, processModel, parentNodeName);
+    }
+
+    /**
+     * 判断参数条件值是否一致
+     *
+     * @param key 参数关键字
+     * @param value 参数值
+     * @return true 一致 false 不一致
+     */
+    public boolean argsEquals(String key, String value) {
+        if (null != args) {
+            return Objects.equals(value, args.get(key));
+        }
+        return false;
     }
 
     /**
