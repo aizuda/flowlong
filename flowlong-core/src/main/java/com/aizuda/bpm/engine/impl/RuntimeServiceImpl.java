@@ -448,13 +448,26 @@ public class RuntimeServiceImpl implements RuntimeService {
             selectNode = selectNode.getParentNode();
         }
         if (null != selectNode.getConditionNodes()) {
-            // 如果直接跟着条件节点，找到分支作为父节点
-            for (ConditionNode conditionNode : selectNode.getConditionNodes()) {
-                NodeModel conditionChildNode = conditionNode.getChildNode();
-                if (Objects.equals(conditionChildNode.getNodeKey(), appendTaskKey)) {
-                    nodeModel.setChildNode(conditionChildNode);
-                    conditionNode.setChildNode(nodeModel);
-                    break;
+            boolean findIt = false;
+            NodeModel childNode = selectNode.getChildNode();
+            if (null != childNode && Objects.equals(childNode.getNodeKey(), appendTaskKey)) {
+                // 为直接子节点情况
+                nodeModel.setChildNode(childNode.getChildNode());
+                selectNode.setChildNode(nodeModel);
+                findIt = true;
+            }
+            if (!findIt) {
+                // 如果直接跟着条件节点，找到分支作为父节点
+                for (ConditionNode conditionNode : selectNode.getConditionNodes()) {
+                    NodeModel conditionChildNode = conditionNode.getChildNode();
+                    if (null == conditionChildNode) {
+                        continue;
+                    }
+                    if (Objects.equals(conditionChildNode.getNodeKey(), appendTaskKey)) {
+                        nodeModel.setChildNode(conditionChildNode);
+                        conditionNode.setChildNode(nodeModel);
+                        break;
+                    }
                 }
             }
         } else {

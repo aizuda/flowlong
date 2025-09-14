@@ -1,6 +1,5 @@
 package test.mysql;
 
-import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
