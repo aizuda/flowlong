@@ -70,7 +70,7 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param flwTask 当前所在执行任务
      */
-    protected void updateCurrentNode(FlwTask flwTask) {
+    protected void updateCurrentNode(FlwTask flwTask, InstanceState instanceState) {
         FlwInstance flwInstance = new FlwInstance();
         flwInstance.setId(flwTask.getInstanceId());
         flwInstance.setCurrentNodeName(flwTask.getTaskName());
@@ -84,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
         flwHisInstance.setCurrentNodeKey(flwInstance.getCurrentNodeKey());
         flwHisInstance.setLastUpdateBy(flwInstance.getLastUpdateBy());
         flwHisInstance.setLastUpdateTime(flwInstance.getLastUpdateTime());
-        hisInstanceDao.updateById(flwHisInstance);
+        hisInstanceDao.updateById(flwHisInstance.instanceState(instanceState));
     }
 
     /**
@@ -261,7 +261,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 更新当前节点
-        this.updateCurrentNode(createTask);
+        this.updateCurrentNode(createTask, null);
 
         // 任务监听器通知
         this.taskNotify(taskEventType, execution::getFlwTask, taskActors, nodeModel, flowCreator);
@@ -928,7 +928,7 @@ public class TaskServiceImpl implements TaskService {
                                                   Consumer<FlwHisTask> hisTaskConsumer) {
         Optional<List<FlwTask>> flwTasksOptional = Optional.empty();
         FlwHisTask hisTask = hisTaskDao.selectCheckById(hisTaskId);
-        if (null == hisTask || (TaskType.withdraw == taskType && hisTask.startNode())) {
+        if (null == hisTask) {
             // 任务不存在、发起节点撤回，直接返回
             return flwTasksOptional;
         }
@@ -949,16 +949,19 @@ public class TaskServiceImpl implements TaskService {
             hisTaskConsumer.accept(hisTask);
         }
 
+        InstanceState instanceState = null;
         // 撤回历史任务
         if (hisTask.startNode()) {
-            // 如果直接撤回到发起人，构建发起人关联信息
-            FlwTask flwTask = hisTask.undoTask(taskType);
+            // 如果直接撤回到发起人（设置为暂存状态），构建发起人关联信息
+            FlwTask flwTask = hisTask.undoTask(TaskType.saveAsDraft);
             flwTask.setId(flowLongIdGenerator.getId(flwTask.getId()));
             if (taskDao.insert(flwTask)) {
                 flwTasksOptional = Optional.of(Collections.singletonList(flwTask));
                 FlwTaskActor fta = FlwTaskActor.ofFlwTask(flwTask);
                 fta.setId(flowLongIdGenerator.getId(fta.getId()));
-                taskActorDao.insert(fta);
+                if (taskActorDao.insert(fta)) {
+                    instanceState = InstanceState.saveAsDraft;
+                }
             }
         } else {
             if (PerformType.countersign.eq(hisTask.getPerformType())) {
@@ -1013,7 +1016,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 更新当前执行节点信息
-        this.updateCurrentNode(hisTask);
+        this.updateCurrentNode(hisTask, instanceState);
         return flwTasksOptional;
     }
 
@@ -1165,7 +1168,7 @@ public class TaskServiceImpl implements TaskService {
 
         // 更新当前执行节点信息，抄送节点除外
         if (!TaskType.cc.eq(nodeType)) {
-            this.updateCurrentNode(flwTask);
+            this.updateCurrentNode(flwTask, null);
         }
 
         if (TaskType.major.eq(nodeType)) {

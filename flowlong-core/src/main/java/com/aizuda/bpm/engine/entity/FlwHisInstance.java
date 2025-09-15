@@ -45,7 +45,9 @@ public class FlwHisInstance extends FlwInstance {
     }
 
     public FlwHisInstance instanceState(InstanceState instanceState) {
-        this.instanceState = instanceState.getValue();
+        if (null != instanceState) {
+            this.instanceState = instanceState.getValue();
+        }
         return this;
     }
 
