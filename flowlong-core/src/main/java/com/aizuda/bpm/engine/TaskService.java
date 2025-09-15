@@ -9,6 +9,7 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.*;
+import com.aizuda.bpm.engine.entity.FlwHisTask;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeAssignee;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -230,7 +232,7 @@ public interface TaskService {
      * @param taskType             任务类型
      * @param taskEventType        任务事件类型
      * @param flowCreator          任务参与者
-     * @param assigneeFlowCreators 指定办理人列表
+     * @param assigneeFlowCreators 指定办理人列表（业务层需要校验排查再次分配给已存在审批者）
      * @param args                 任务参数
      * @param check                校验函数，可以根据 dbFlwTask.getAssignorId() 是否存在判断为重发分配
      * @return true 成功 false 失败
@@ -262,9 +264,14 @@ public interface TaskService {
      *
      * @param taskId      任务ID（当前节点的父任务ID属于历史任务）
      * @param flowCreator 任务创建者
+     * @param assertConsumer 断言处理函数
      * @return 拿回任务
      */
-    Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator);
+    Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator, BiConsumer<FlwHisTask, Integer> assertConsumer);
+
+    default Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator) {
+        return this.reclaimTask(taskId, flowCreator, null);
+    }
 
     /**
      * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）

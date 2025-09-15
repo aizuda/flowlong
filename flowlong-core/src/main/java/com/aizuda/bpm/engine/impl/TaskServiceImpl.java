@@ -20,9 +20,7 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 /**
@@ -733,29 +731,48 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * 拿回任务异常断言
+     */
+    protected void reclaimTaskAssert(BiConsumer<FlwHisTask, Integer> assertConsumer,
+                             FlwHisTask fht, Integer code, String errorMessage) {
+        if (null != assertConsumer) {
+            assertConsumer.accept(fht, code);
+        } else {
+            Assert.illegal(errorMessage);
+        }
+    }
+
+    /**
      * 拿回任务、根据历史任务ID撤回下一个节点的任务、恢复历史任务
      */
     @Override
-    public Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator) {
+    public Optional<List<FlwTask>> reclaimTask(Long taskId, FlowCreator flowCreator, BiConsumer<FlwHisTask, Integer> assertConsumer) {
 
         // 下面执行撤回逻辑
-        Optional<List<FlwTask>> flwTasksOptional = this.undoHisTask(taskId, flowCreator, TaskType.reclaim, hisTask -> {
-            boolean checkReclaim = true;
+        Optional<List<FlwTask>> flwTasksOptional = this.undoHisTask(taskId, flowCreator, TaskType.reclaim, fht -> {
+            // 默认检查一次
+            if (null != assertConsumer) {
+                assertConsumer.accept(fht, 0);
+            }
             // 顺序签或会签情况，判断存在未执行并行任务不检查允许拿回
-            if (PerformType.sort.eq(hisTask.getPerformType()) || PerformType.countersign.eq(hisTask.getPerformType())) {
-                checkReclaim = taskDao.selectCountByParentTaskId(hisTask.getParentTaskId()) < 1;
+            boolean checkReclaim = true;
+            if (PerformType.sort.eq(fht.getPerformType()) || PerformType.countersign.eq(fht.getPerformType())) {
+                checkReclaim = taskDao.selectCountByParentTaskId(fht.getParentTaskId()) < 1;
             }
-            if (checkReclaim) {
+            if (checkReclaim && 0L == taskDao.selectCountByParentTaskId(taskId)) {
                 // 当前任务子任务已经执行完成不允许撤回
-                Assert.isTrue(taskDao.selectCountByParentTaskId(taskId) == 0, "Do not allow reclaim task");
+                this.reclaimTaskAssert(assertConsumer, fht, 1, "Do not allow reclaim task");
             }
-
-            List<FlwTask> flwTaskList = taskDao.selectListByInstanceId(hisTask.getInstanceId());
-            Assert.isEmpty(flwTaskList, "No approval tasks found");
+            List<FlwTask> flwTaskList = taskDao.selectListByInstanceId(fht.getInstanceId());
+            if (null == flwTaskList || flwTaskList.isEmpty()) {
+                this.reclaimTaskAssert(assertConsumer, fht, 2, "No approval tasks found");
+            }
             FlwTask existFlwTask = flwTaskList.get(0);
             if (!PerformType.countersign.eq(existFlwTask.getPerformType())) {
                 // 非会签情况
-                Assert.isFalse(Objects.equals(existFlwTask.getParentTaskId(), taskId), "Do not allow cross level reclaim task");
+                if (!Objects.equals(existFlwTask.getParentTaskId(), taskId)) {
+                    this.reclaimTaskAssert(assertConsumer, fht, 3, "Do not allow cross level reclaim task");
+                }
             }
             flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
         });
