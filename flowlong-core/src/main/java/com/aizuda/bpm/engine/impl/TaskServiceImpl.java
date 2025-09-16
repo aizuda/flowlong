@@ -20,7 +20,10 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -248,14 +251,14 @@ public class TaskServiceImpl implements TaskService {
         } else {
             // 模型中获取参与者信息
             taskActors = execution.getProviderTaskActors(nodeModel);
-            // 创建审批人
-            PerformType performType;
-            if (TaskType.trigger == taskType) {
-                performType = PerformType.trigger;
+            if (Objects.equals(taskType, TaskType.trigger)) {
+                // 执行任务触发器
+                this.executeTaskTrigger(nodeModel, execution, flwTasks, createTask, taskActors);
             } else {
-                performType = PerformType.get(nodeModel.getExamineMode());
+                // 创建审批人
+                PerformType performType = PerformType.get(nodeModel.getExamineMode());
+                flwTasks.addAll(this.saveTask(createTask, performType, taskActors, execution, nodeModel));
             }
-            flwTasks.addAll(this.saveTask(createTask, performType, taskActors, execution, nodeModel));
         }
 
         // 更新当前节点
@@ -734,7 +737,7 @@ public class TaskServiceImpl implements TaskService {
      * 拿回任务异常断言
      */
     protected void reclaimTaskAssert(BiConsumer<FlwHisTask, Integer> assertConsumer,
-                             FlwHisTask fht, Integer code, String errorMessage) {
+                                     FlwHisTask fht, Integer code, String errorMessage) {
         if (null != assertConsumer) {
             assertConsumer.accept(fht, code);
         } else {
@@ -1294,21 +1297,29 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 7、触发器任务
              */
-            if (Objects.equals(1, nodeModel.getTriggerType())) {
-                // 立即触发器，直接执行
-                execution.setFlwTask(flwTask);
-                flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
-                // 使用默认触发器
-                Function<Execution, Boolean> finishFunction = (e) -> this.executeFinishTrigger(nodeModel, execution, execution.getFlowCreator());
-                nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution, finishFunction), finishFunction);
-            } else {
-                // 定时触发器，等待执行
-                flwTask.loadExpireTime(nodeModel.getExtendConfig(), false);
-                flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
-            }
+            this.executeTaskTrigger(nodeModel, execution, flwTasks, flwTask, taskActors);
         }
 
         return flwTasks;
+    }
+
+    /**
+     * 执行任务触发器
+     */
+    protected void executeTaskTrigger(NodeModel nodeModel, Execution execution, List<FlwTask> flwTasks,
+                                      FlwTask flwTask, List<FlwTaskActor> taskActors) {
+        if (Objects.equals(1, nodeModel.getTriggerType())) {
+            // 立即触发器，直接执行
+            execution.setFlwTask(flwTask);
+            flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
+            // 使用默认触发器
+            Function<Execution, Boolean> finishFunction = (e) -> this.executeFinishTrigger(nodeModel, execution, execution.getFlowCreator());
+            nodeModel.executeTrigger(execution, () -> taskTrigger.execute(nodeModel, execution, finishFunction), finishFunction);
+        } else {
+            // 定时触发器，等待执行
+            flwTask.loadExpireTime(nodeModel.getExtendConfig(), false);
+            flwTasks.addAll(this.saveTask(flwTask, PerformType.trigger, taskActors, execution, nodeModel));
+        }
     }
 
     /**

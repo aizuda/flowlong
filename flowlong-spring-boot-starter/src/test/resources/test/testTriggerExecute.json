@@ -1,6 +1,6 @@
 {
-  "key": "testTrigger",
-  "name": "测试触发器任务",
+  "key": "testTriggerExecute",
+  "name": "测试立即执行触发器",
   "nodeConfig": {
     "nodeName": "发起人",
     "nodeKey": "k001",
@@ -36,9 +36,8 @@
         "nodeName": "触发器",
         "nodeKey": "cf001",
         "type": 7,
+        "triggerType": 1,
         "extendConfig": {
-          "time": "7:d",
-          "args": "执行 json 参数",
           "trigger": "test.mysql.TaskTriggerImpl"
         },
         "childNode": {

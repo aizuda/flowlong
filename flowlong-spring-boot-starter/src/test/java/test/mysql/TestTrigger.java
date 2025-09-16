@@ -43,7 +43,7 @@ public class TestTrigger extends MysqlTest {
 
             // 发起人跳到触发器
             this.executeActiveTasks(instance.getId(), flwTask ->
-                    flowLongEngine.executeJumpTask(flwTask.getId(), "flk1752571403215", testCreator));
+                    flowLongEngine.executeJumpTask(flwTask.getId(), "cf001", testCreator));
 
 
             // 模拟自动完成定时触发器任务
