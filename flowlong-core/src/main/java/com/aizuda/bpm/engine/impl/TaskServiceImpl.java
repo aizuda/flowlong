@@ -1260,9 +1260,9 @@ public class TaskServiceImpl implements TaskService {
             if (null == flwProcess) {
                 Assert.illegal("No found flwProcess, callProcess=" + callProcess);
             }
-            // 启动子流程，任务归档历史
+            // 启动子流程（传递当前任务参数），任务归档历史
             final long instanceId = flwTask.getInstanceId();
-            execution.getEngine().startProcessInstance(flwProcess, flowCreator, null, false, () -> {
+            execution.getEngine().startProcessInstance(flwProcess, flowCreator, execution.getArgs(), false, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 if (nodeModel.callAsync()) {
                     // 设置优先级为 1 异步子流程

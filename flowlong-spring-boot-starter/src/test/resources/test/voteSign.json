@@ -25,17 +25,17 @@
         "nodeAssigneeList": [
           {
             "id": "test001",
-            "name": "青苗",
+            "name": "CEO",
             "weight": 30
           },
           {
             "id": "test002",
-            "name": "咩咩",
+            "name": "杨小风",
             "weight": 35
           },
           {
             "id": "test003",
-            "name": "聂秋秋",
+            "name": "夏小华",
             "weight": 35
           }
         ],
