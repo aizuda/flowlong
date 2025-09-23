@@ -4,6 +4,8 @@
  */
 package com.aizuda.bpm.engine.model;
 
+import com.aizuda.bpm.engine.FlowConstants;
+import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.ModelInstance;
 import com.aizuda.bpm.engine.TaskTrigger;
 import com.aizuda.bpm.engine.assist.Assert;
@@ -17,12 +19,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * JSON BPM 节点
@@ -278,9 +278,20 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行包容分支
              */
-            flowLongContext.getFlowConditionHandler()
-                    .getInclusiveNodes(flowLongContext, execution, this)
-                    .ifPresent(t -> t.forEach(s -> this.executeConditionNode(flowLongContext, execution, s)));
+            Optional<List<ConditionNode>> cnOpt = flowLongContext.getFlowConditionHandler()
+                    .getInclusiveNodes(flowLongContext, execution, this);
+            if (cnOpt.isPresent()) {
+                List<ConditionNode> cnList = cnOpt.get();
+                int j = cnList.size();
+                for (int i = 0; i < j; i++) {
+                    if (i + 1 == j) {
+                        // 标记最后一个满足条件节点
+                        FlowDataTransfer.put(FlowConstants.processLastConditionNode, 1);
+                    }
+                    // 执行满足条件分支
+                    this.executeConditionNode(flowLongContext, execution, cnList.get(i));
+                }
+            }
             return true;
         }
 
@@ -634,6 +645,36 @@ public class NodeModel implements ModelInstance, Serializable {
         }
         Assert.isFalse(flag, "trigger execute error");
         return flag;
+    }
+
+    /**
+     * 判断抄送任务是否允许执行下一个节点
+     */
+    public boolean ccExecNextNode(NodeModel ccNextNode) {
+        boolean _exec = true;
+        // 非直属子节点情况判断分支问题
+        if (!Objects.equals(this.nodeKey, ccNextNode.getParentNode().getNodeKey())) {
+            // 直接父节点为并行分支或包容分支情况处理
+            NodeModel parentNode = this.getParentNode();
+            if (TaskType.parallelBranch.eq(parentNode.getType())) {
+                // 并行分支
+                List<ConditionNode> parallelNodes = parentNode.getParallelNodes();
+                if (null != parallelNodes) {
+                    // 最后一个并行节点执行下一步
+                    NodeModel parallelChildNode = parallelNodes.get(parallelNodes.size() - 1).getChildNode();
+                    if (null != parallelChildNode) {
+                        _exec = Objects.equals(this.nodeKey, parallelChildNode.getNodeKey());
+                    }
+                }
+            } else if (TaskType.inclusiveBranch.eq(parentNode.getType())) {
+                // 包容分支，为最后一个满足条件节点执行下一步
+                _exec = Objects.equals(1, FlowDataTransfer.get(FlowConstants.processLastConditionNode));
+                if (_exec) {
+                    FlowDataTransfer.removeByKey(FlowConstants.processLastConditionNode);
+                }
+            }
+        }
+        return _exec;
     }
 
     /**

@@ -36,4 +36,9 @@ public interface FlowConstants {
      */
     String processSpecifyConditionNodeKey = "flwProcessSpecifyConditionNodeKey";
 
+    /**
+     * 流程满足条件最后的节点 KEY
+     */
+    String processLastConditionNode = "processLastConditionNode";
+
 }

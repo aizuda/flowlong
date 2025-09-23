@@ -1220,11 +1220,11 @@ public class TaskServiceImpl implements TaskService {
              */
             Optional<NodeModel> nextNodeOptional = nodeModel.nextNode();
             if (nextNodeOptional.isPresent()) {
-                // 下一个节点如果在并行分支，判断是否并行分支都执行结束
-                boolean _exec = true;
                 NodeModel ccNextNode = nextNodeOptional.get();
-                if (!ccNextNode.ccNode()) {
-                    // 下一节点非抄送节点，是否允许执行下一个节点
+                // 下一个节点如果在并行分支、包容分支，判断是否继续执行
+                boolean _exec = nodeModel.ccExecNextNode(ccNextNode);
+                if (_exec) {
+                    // 下一节点非直属节点，判断是否允许执行下一个节点
                     _exec = this.allowNextNodeExec(flwTask.getInstanceId(), ccNextNode.parentConditionNodeKeys());
                 }
                 if (_exec) {
