@@ -306,6 +306,19 @@ public class RuntimeServiceImpl implements RuntimeService {
                                     InstanceState instanceState, TaskEventType eventType) {
         FlwInstance flwInstance = instanceDao.selectById(instanceId);
         if (null == flwInstance) {
+            // 流程审批完成，用户执行撤销完成
+            if (InstanceEventType.revokeComplete == instanceEventType) {
+                FlwHisInstance hisInstance = hisInstanceDao.selectById(instanceId);
+                if (null != hisInstance) {
+                    FlwHisInstance fhi = new FlwHisInstance();
+                    fhi.setId(hisInstance.getId());
+                    if (hisInstanceDao.updateById(fhi.instanceState(InstanceState.revoke))) {
+                        // 流程实例监听器通知
+                        this.instanceNotify(instanceEventType, () -> hisInstance, null, flowCreator);
+                        return true;
+                    }
+                }
+            }
             return false;
         }
 
