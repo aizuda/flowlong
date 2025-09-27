@@ -256,6 +256,7 @@ public class TaskServiceImpl implements TaskService {
                 this.executeTaskTrigger(nodeModel, execution, flwTasks, createTask, taskActors);
             } else {
                 // 创建审批人
+                createTask.taskType(taskType);
                 PerformType performType = PerformType.get(nodeModel.getExamineMode());
                 flwTasks.addAll(this.saveTask(createTask, performType, taskActors, execution, nodeModel));
             }
