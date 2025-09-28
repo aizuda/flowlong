@@ -25,6 +25,7 @@ import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -460,7 +461,18 @@ public class RuntimeServiceImpl implements RuntimeService {
             // 前置追溯父节点
             selectNode = selectNode.getParentNode();
         }
-        if (null != selectNode.getConditionNodes()) {
+
+        // 条件分支
+        List<ConditionNode> conditionNodes = selectNode.getConditionNodes();
+        if (null == conditionNodes) {
+            // 并行分支
+            conditionNodes = selectNode.getParallelNodes();
+            if (null == conditionNodes) {
+                // 包容分支
+                conditionNodes = selectNode.getInclusiveNodes();
+            }
+        }
+        if (null != conditionNodes) {
             boolean findIt = false;
             NodeModel childNode = selectNode.getChildNode();
             if (null != childNode && Objects.equals(childNode.getNodeKey(), appendTaskKey)) {
@@ -471,7 +483,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             }
             if (!findIt) {
                 // 如果直接跟着条件节点，找到分支作为父节点
-                for (ConditionNode conditionNode : selectNode.getConditionNodes()) {
+                for (ConditionNode conditionNode : conditionNodes) {
                     NodeModel conditionChildNode = conditionNode.getChildNode();
                     if (null == conditionChildNode) {
                         continue;
