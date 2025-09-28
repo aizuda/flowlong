@@ -768,17 +768,15 @@ public class TaskServiceImpl implements TaskService {
                 this.reclaimTaskAssert(assertConsumer, fht, 1, "Do not allow reclaim task");
             }
             List<FlwTask> flwTaskList = taskDao.selectListByInstanceId(fht.getInstanceId());
+            if (null != flwTaskList) {
+                flwTaskList = flwTaskList.stream().filter(t -> Objects.equals(t.getParentTaskId(), taskId)).collect(Collectors.toList());
+            }
             if (null == flwTaskList || flwTaskList.isEmpty()) {
                 this.reclaimTaskAssert(assertConsumer, fht, 2, "No approval tasks found");
             }
-            FlwTask existFlwTask = flwTaskList.get(0);
-            if (!PerformType.countersign.eq(existFlwTask.getPerformType())) {
-                // 非会签情况
-                if (!Objects.equals(existFlwTask.getParentTaskId(), taskId)) {
-                    this.reclaimTaskAssert(assertConsumer, fht, 3, "Do not allow cross level reclaim task");
-                }
+            if (flwTaskList != null) {
+                flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
             }
-            flwTaskList.forEach(flwTask -> this.moveToHisTask(flwTask, TaskState.revoke, flowCreator));
         });
 
         // 任务监听器通知
