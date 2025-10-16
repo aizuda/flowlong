@@ -203,7 +203,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
-        FlwHisInstance fhi = FlwHisInstance.of(flwInstance, saveAsDraft ? InstanceState.saveAsDraft : InstanceState.active);
+        FlwHisInstance fhi = FlwHisInstance.of(flwInstance, saveAsDraft ? InstanceState.saveAsDraft : InstanceState.active, false);
         if (hisInstanceDao.insert(fhi)) {
 
             // 保存扩展流程实例
@@ -348,7 +348,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         if (taskService.forceCompleteAllTask(flwInstance.getId(), currentFlwTask, flowCreator, instanceState, eventType)) {
 
             // 更新历史实例设置状态为终止
-            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState);
+            FlwHisInstance flwHisInstance = FlwHisInstance.of(flwInstance, instanceState, true);
             hisInstanceDao.updateById(flwHisInstance);
 
             // 删除实例

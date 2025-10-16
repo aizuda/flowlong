@@ -56,7 +56,7 @@ public class FlwHisInstance extends FlwInstance {
         this.instanceState = instanceState;
     }
 
-    public static FlwHisInstance of(FlwInstance fi, InstanceState instanceState) {
+    public static FlwHisInstance of(FlwInstance fi, InstanceState instanceState, boolean calculateDuration) {
         FlwHisInstance his = new FlwHisInstance();
         his.id = fi.getId();
         his.tenantId = fi.getTenantId();
@@ -75,7 +75,7 @@ public class FlwHisInstance extends FlwInstance {
         his.lastUpdateBy = fi.getLastUpdateBy();
         his.lastUpdateTime = fi.getLastUpdateTime();
         his.instanceState = instanceState.getValue();
-        if (InstanceState.active != instanceState) {
+        if (calculateDuration) {
             his.calculateDuration();
         }
         return his;
