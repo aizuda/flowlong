@@ -313,6 +313,20 @@ public interface FlowLongEngine {
     }
 
     /**
+     * 执行唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
+     *
+     * @param instanceId  历史实例ID
+     * @param flowCreator 任务唤醒者
+     * @param args        任务参数
+     * @return true 成功 false 失败
+     */
+    boolean executeResumeTask(Long instanceId, FlowCreator flowCreator, Map<String, Object> args);
+
+    default boolean executeResumeTask(Long instanceId, FlowCreator flowCreator) {
+        return this.executeResumeTask(instanceId, flowCreator, null);
+    }
+
+    /**
      * 根据已有任务、参与者创建新的任务
      * <p>
      * 适用于动态转派，动态协办等处理且流程图中不体现节点情况

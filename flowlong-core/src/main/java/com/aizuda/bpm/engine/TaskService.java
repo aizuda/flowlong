@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.FlwHisTask;
+import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.NodeAssignee;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -278,21 +280,10 @@ public interface TaskService {
      *
      * @param instanceId  历史实例ID
      * @param flowCreator 任务唤醒者
+     * @param execFunc 执行函数
      * @return true 成功 false 失败
      */
-    default boolean resume(Long instanceId, FlowCreator flowCreator) {
-        return this.resume(instanceId, null, flowCreator);
-    }
-
-    /**
-     * 唤醒撤回或拒绝终止历史任务（只有实例发起人可操作）
-     *
-     * @param instanceId  历史实例ID
-     * @param nodeKey     节点key历史任务
-     * @param flowCreator 任务唤醒者
-     * @return true 成功 false 失败
-     */
-    boolean resume(Long instanceId, String nodeKey, FlowCreator flowCreator);
+    boolean resume(Long instanceId, FlowCreator flowCreator, BiFunction<FlwInstance, String, Boolean> execFunc);
 
     /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）

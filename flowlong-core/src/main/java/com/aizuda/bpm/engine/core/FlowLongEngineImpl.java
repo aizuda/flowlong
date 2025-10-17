@@ -299,6 +299,19 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
+    public boolean executeResumeTask(Long instanceId, FlowCreator flowCreator, Map<String, Object> args) {
+        return taskService().resume(instanceId, flowCreator, (flwInstance, nodeKey) -> {
+            ProcessModel processModel = runtimeService().getProcessModelByInstanceId(instanceId);
+            NodeModel nodeModel = processModel.getNode(nodeKey);
+
+            // 构建节点模型
+            Execution execution = new Execution(this, processModel, flowCreator, flwInstance, args);
+            execution.setTaskEventType(TaskEventType.resume);
+           return nodeModel.execute(flowLongContext, execution);
+        });
+    }
+
+    @Override
     public List<FlwTask> createNewTask(Long taskId, TaskType taskType, PerformType performType, List<FlwTaskActor> taskActors,
                                        FlowCreator flowCreator, Map<String, Object> args) {
         return taskService().createNewTask(taskId, taskType, performType, taskActors, flowCreator, flwTask -> {
