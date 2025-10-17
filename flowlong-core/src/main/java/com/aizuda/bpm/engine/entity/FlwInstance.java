@@ -6,7 +6,6 @@ package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.InstancePriority;
-import com.aizuda.bpm.engine.core.enums.InstanceState;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
