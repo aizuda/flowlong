@@ -477,7 +477,7 @@ public class RuntimeServiceImpl implements RuntimeService {
             NodeModel childNode = selectNode.getChildNode();
             if (null != childNode && Objects.equals(childNode.getNodeKey(), appendTaskKey)) {
                 // 为直接子节点情况
-                nodeModel.setChildNode(childNode.getChildNode());
+                nodeModel.setChildNode(childNode);
                 selectNode.setChildNode(nodeModel);
                 findIt = true;
             }

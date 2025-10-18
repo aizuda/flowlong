@@ -1,0 +1,121 @@
+{
+  "key": "bxfzhjq",
+  "name": "测试并行分支后加签",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1760704576058",
+    "type": 0,
+    "childNode": {
+      "nodeName": "并行路由",
+      "nodeKey": "flk1760704586879",
+      "type": 8,
+      "parallelNodes": [
+        {
+          "nodeName": "并行分支1",
+          "nodeKey": "flk17607045868791",
+          "type": 3,
+          "priorityLevel": 1,
+          "childNode": {
+            "nodeName": "审核A",
+            "nodeKey": "flk1760704590778",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "CEO"
+              }
+            ],
+            "nodeCandidate": {
+              "type": 0
+            },
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "remind": false,
+            "approveSelf": 0,
+            "delayType": 1
+          }
+        },
+        {
+          "nodeName": "并行分支2",
+          "nodeKey": "flk17607045868792",
+          "type": 3,
+          "priorityLevel": 2,
+          "childNode": {
+            "nodeName": "审核B",
+            "nodeKey": "flk1760704592124",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test002",
+                "name": "夏小华"
+              }
+            ],
+            "nodeCandidate": {
+              "type": 0
+            },
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "remind": false,
+            "approveSelf": 0,
+            "delayType": 1
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "审核C",
+        "nodeKey": "flk1760704594155",
+        "type": 1,
+        "setType": 4,
+        "nodeAssigneeList": [
+          {
+            "id": "test003",
+            "name": "杨小凤"
+          }
+        ],
+        "examineLevel": 1,
+        "examineMode": 1,
+        "directorLevel": 1,
+        "directorMode": 0,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "typeOfApprove": 1,
+        "rejectStrategy": 2,
+        "rejectStart": 1,
+        "remind": false,
+        "allowTransfer": true,
+        "allowAppendNode": true,
+        "allowRollback": true,
+        "allowCc": true,
+        "approveSelf": 0,
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk17607045760581",
+          "type": -1
+        },
+        "delayType": 1
+      }
+    }
+  }
+}

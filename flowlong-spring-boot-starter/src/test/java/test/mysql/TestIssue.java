@@ -141,7 +141,7 @@ public class TestIssue extends MysqlTest {
             put("go", "abc");
         }}).ifPresent(instance -> {
             FlwInstance flwInstance = flowLongEngine.queryService().getInstance(instance.getId());
-            Assertions.assertEquals(flwInstance.variableToMap().get("hi"), 123);
+            Assertions.assertEquals(123, flwInstance.variableToMap().get("hi"));
 
             /*
              * 领导审批，debug 查看 {@link NodeModel#execute 方法 arg 参数是否传递}
@@ -150,6 +150,45 @@ public class TestIssue extends MysqlTest {
                 put("hi", 678);// 会覆盖实例参数 123
                 put("day", 8);
             }});
+        });
+    }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/ID284C">测试并行分支后加签</a>
+     */
+    @Test
+    public void testID284C() {
+        final ProcessService processService = flowLongEngine.processService();
+        final QueryService queryService = flowLongEngine.queryService();
+
+        // 部署流程
+        Long processId = processService.deployByResource("test/issues_ID284C.json", testCreator, false);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+
+            // 执行并行分支1
+            this.executeTask(instance.getId(), testCreator);
+
+            // 执行并行分支2
+            this.executeTask(instance.getId(), test2Creator);
+
+            // 审核C（加签）
+            final String addNodeKey = "k0001";
+            queryService.getActiveTasksByInstanceId(instance.getId()).flatMap(flwTasks -> flwTasks.stream()
+                    .filter(t -> Objects.equals("审核C", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
+                NodeModel nodeModel = new NodeModel();
+                nodeModel.setNodeName("前置加签");
+                nodeModel.setNodeKey(addNodeKey);
+                nodeModel.setType(1);
+                nodeModel.setSetType(1);
+                nodeModel.setExamineMode(1);
+                nodeModel.setNodeAssigneeList(Collections.singletonList(NodeAssignee.ofFlowCreator(testCreator)));
+                flowLongEngine.executeAppendNodeModel(flwTask.getId(), nodeModel, test3Creator, true);
+            });
+
+            // 验证加签子节点为执行加签节点
+            FlwExtInstance extInstance = queryService.getExtInstance(instance.getId());
+            NodeModel nodeModel = extInstance.model().getNode(addNodeKey);
+            Assertions.assertEquals("审核C", nodeModel.getChildNode().getNodeName());
         });
     }
 
@@ -171,18 +210,18 @@ public class TestIssue extends MysqlTest {
         args.put("money", 500);
         args.put("fl", 1);
         args.put("ftlb", 1);
-        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(flwInstance -> {
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
 
             // 部门经理
             FlowCreator shiYong = FlowCreator.of("370000197405268159", "石勇");
-            this.executeTask(flwInstance.getId(), shiYong, flwTask -> flowLongEngine.executeTask(flwTask.getId(), shiYong));
+            this.executeTask(instance.getId(), shiYong, flwTask -> flowLongEngine.executeTask(flwTask.getId(), shiYong));
 
             // 人资部薪资专员
             FlowCreator weiLei = FlowCreator.of("410000199512025445", "魏磊");
-            this.executeTask(flwInstance.getId(), weiLei, flwTask -> flowLongEngine.executeTask(flwTask.getId(), weiLei));
+            this.executeTask(instance.getId(), weiLei, flwTask -> flowLongEngine.executeTask(flwTask.getId(), weiLei));
 
             // 总裁办主任（加签）
-            queryService.getActiveTasksByInstanceId(flwInstance.getId()).flatMap(flwTasks -> flwTasks.stream()
+            queryService.getActiveTasksByInstanceId(instance.getId()).flatMap(flwTasks -> flwTasks.stream()
                     .filter(t -> Objects.equals("总裁办主任", t.getTaskName())).findFirst()).ifPresent(flwTask -> {
                 NodeModel nodeModel = new NodeModel();
                 nodeModel.setNodeName("人工选择，多人并审");
@@ -196,7 +235,7 @@ public class TestIssue extends MysqlTest {
             });
 
             // 加签节点（审批）
-            queryService.getActiveTasksByInstanceId(flwInstance.getId()).ifPresent(flwTasks -> {
+            queryService.getActiveTasksByInstanceId(instance.getId()).ifPresent(flwTasks -> {
                 FlwTask flwTask = flwTasks.get(0);
                 queryService.getTaskActorsByTaskId(flwTask.getId()).forEach(a -> {
                     if ("汤强".equals(a.getActorName())) {
