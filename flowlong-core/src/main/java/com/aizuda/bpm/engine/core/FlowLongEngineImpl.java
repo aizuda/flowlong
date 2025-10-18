@@ -205,7 +205,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskTye) {
+    public Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, TaskType taskType) {
         // 执行任务跳转归档
         return taskService().executeJumpTask(taskId, nodeKey, flowCreator, args, flwTask -> {
             FlwInstance flwInstance = this.getFlwInstance(flwTask.getInstanceId(), flowCreator.getCreateBy());
@@ -220,7 +220,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             // 传递父节点信息
             execution.setFlwTask(flwTask);
             return execution;
-        }, taskTye);
+        }, taskType);
     }
 
     @Override

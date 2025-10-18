@@ -100,8 +100,9 @@ public class FlwTask extends FlowEntity {
         return FlowLongContext.fromJson(this.variable, Map.class);
     }
 
-    public void taskType(TaskType taskType) {
+    public FlwTask taskType(TaskType taskType) {
         this.taskType = taskType.getValue();
+        return this;
     }
 
     public void setTaskType(Integer taskType) {

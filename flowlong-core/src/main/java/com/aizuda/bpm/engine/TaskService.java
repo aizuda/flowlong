@@ -98,10 +98,10 @@ public interface TaskService {
      * @param args              任务参数
      * @param nodeKey           跳转至目标节点key
      * @param executionFunction 执行函数
-     * @param taskTye           任务类型，仅支持 jump rejectJump routeJump
+     * @param taskType           任务类型，仅支持 jump rejectJump routeJump
      * @return 当前 flowCreator 所在的任务
      */
-    Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskTye);
+    Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction, TaskType taskType);
 
     default boolean executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args, Function<FlwTask, Execution> executionFunction) {
         return executeJumpTask(taskId, nodeKey, flowCreator, args, executionFunction, TaskType.jump).isPresent();

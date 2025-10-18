@@ -158,29 +158,29 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     public Optional<List<FlwTask>> executeJumpTask(Long taskId, String nodeKey, FlowCreator flowCreator, Map<String, Object> args,
-                                                   Function<FlwTask, Execution> executionFunction, TaskType taskTye) {
+                                                   Function<FlwTask, Execution> executionFunction, TaskType taskType) {
         FlwTask flwTask = null;
         TaskEventType taskEventType = null;
         TaskState taskState = null;
-        if (taskTye == TaskType.jump) {
+        if (taskType == TaskType.jump) {
             taskEventType = TaskEventType.jump;
             taskState = TaskState.jump;
-        } else if (taskTye == TaskType.rejectJump) {
+        } else if (taskType == TaskType.rejectJump) {
             taskEventType = TaskEventType.rejectJump;
             taskState = TaskState.rejectJump;
-        } else if (taskTye == TaskType.reApproveJump) {
+        } else if (taskType == TaskType.reApproveJump) {
             taskEventType = TaskEventType.reApproveJump;
             taskState = TaskState.reApproveJump;
-        } else if (taskTye == TaskType.routeJump) {
+        } else if (taskType == TaskType.routeJump) {
             taskEventType = TaskEventType.routeJump;
             taskState = TaskState.routeJump;
-        } else if (taskTye == TaskType.triggerJump) {
+        } else if (taskType == TaskType.triggerJump) {
             taskEventType = TaskEventType.triggerJump;
             taskState = TaskState.triggerJump;
         }
 
         // 驳回重新审批跳转或者路由跳转，当前任务已被执行需查历史
-        if (taskTye == TaskType.reApproveJump || taskTye == TaskType.routeJump || taskTye == TaskType.triggerJump) {
+        if (taskType == TaskType.reApproveJump || taskType == TaskType.routeJump || taskType == TaskType.triggerJump) {
             // 获取历史任务
             flwTask = hisTaskDao.selectCheckById(taskId);
         }
@@ -209,8 +209,9 @@ public class TaskServiceImpl implements TaskService {
         Assert.isNull(nodeModel, "根据节点key[" + nodeKey + "]无法找到节点模型");
 
         // 非发起节点和审批节点不允许跳转
-        TaskType taskType = TaskType.get(nodeModel.getType());
-        if (TaskType.major != taskType && TaskType.approval != taskType && TaskType.trigger != taskType) {
+        TaskType currentNodeTaskType = TaskType.get(nodeModel.getType());
+        if (TaskType.major != currentNodeTaskType && TaskType.approval != currentNodeTaskType
+                && TaskType.trigger != currentNodeTaskType) {
             Assert.illegal("not allow jumping nodes, nodeKey=" + nodeKey);
         }
 
@@ -235,8 +236,9 @@ public class TaskServiceImpl implements TaskService {
 
         // 设置任务类型为跳转
         FlwTask createTask = this.createTaskBase(nodeModel, execution);
-        if (TaskType.major == taskType) {
+        if (TaskType.major == currentNodeTaskType) {
             // 发起节点，创建发起任务，分配发起人
+            createTask.taskType(taskType);
             createTask.performType(PerformType.start);
             createTask.setId(flowLongIdGenerator.getId(createTask.getId()));
             Assert.isFalse(taskDao.insert(createTask), "failed to create initiation task");
@@ -248,14 +250,13 @@ public class TaskServiceImpl implements TaskService {
         } else {
             // 模型中获取参与者信息
             taskActors = execution.getProviderTaskActors(nodeModel);
-            if (Objects.equals(taskType, TaskType.trigger)) {
+            if (TaskType.trigger == currentNodeTaskType) {
                 // 执行任务触发器
                 this.executeTaskTrigger(nodeModel, execution, flwTasks, createTask, taskActors);
             } else {
                 // 创建审批人
-                createTask.taskType(taskType);
                 PerformType performType = PerformType.get(nodeModel.getExamineMode());
-                flwTasks.addAll(this.saveTask(createTask, performType, taskActors, execution, nodeModel));
+                flwTasks.addAll(this.saveTask(createTask.taskType(taskType), performType, taskActors, execution, nodeModel));
             }
         }
 
