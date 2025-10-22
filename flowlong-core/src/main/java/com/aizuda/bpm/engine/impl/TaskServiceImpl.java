@@ -788,8 +788,9 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean resume(Long instanceId, FlowCreator flowCreator, BiFunction<FlwInstance, String, Boolean> execFunc) {
         FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
-        if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) ||
-                (InstanceState.reject.ne(fhi.getInstanceState()) && InstanceState.revoke.ne(fhi.getInstanceState()))) {
+        if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) || (InstanceState.reject.ne(fhi.getInstanceState())
+                        && InstanceState.revoke.ne(fhi.getInstanceState()) && InstanceState.timeout.ne(fhi.getInstanceState())
+                        && InstanceState.terminate.ne(fhi.getInstanceState()) && InstanceState.autoReject.ne(fhi.getInstanceState()))) {
             return false;
         }
 
