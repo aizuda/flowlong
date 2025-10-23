@@ -5,6 +5,7 @@
 package com.aizuda.bpm.engine;
 
 import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -66,7 +67,7 @@ public abstract class FlowLongScheduler {
                     /*
                      * 任务提醒
                      */
-                    if (null != flwTask.getRemindTime()) {
+                    if (null != flwTask.getRemindTime() && DateUtils.getCurrentDate().after(flwTask.getRemindTime())) {
                         // 1，更新提醒次数加 1 次
                         FlwTask temp = new FlwTask();
                         temp.setId(flwTask.getId());
@@ -93,7 +94,7 @@ public abstract class FlowLongScheduler {
                     /*
                      * 任务超时
                      */
-                    if (null != flwTask.getExpireTime()) {
+                    if (null != flwTask.getExpireTime() && DateUtils.getCurrentDate().after(flwTask.getExpireTime())) {
                         // 定时器任务或触发器任务直接执行通过
                         if (TaskType.timer.eq(flwTask.getTaskType()) || TaskType.trigger.eq(flwTask.getTaskType())) {
                             if (!flowLongEngine.autoCompleteTask(flwTask.getId(), this.getAutoFlowCreator())) {

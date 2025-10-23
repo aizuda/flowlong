@@ -1368,7 +1368,9 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         // 提醒时间
-        flwTask.setRemindTime(DateUtils.loadDelayTime(nodeModel.getExtendConfig(), "remindTime", false));
+        if (Objects.equals(true, nodeModel.getRemind())) {
+            flwTask.setRemindTime(DateUtils.loadDelayTime(nodeModel.getExtendConfig(), "remindTime", false));
+        }
         flwTask.setRemindRepeat(0);
         flwTask.setViewed(0);
         return flwTask;
