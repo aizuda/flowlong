@@ -847,12 +847,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
+    public Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType) {
         Assert.isTrue(currentFlwTask.startNode(), "上一步任务ID为空，无法驳回至上一步处理");
         final Long instanceId = currentFlwTask.getInstanceId();
 
         // 执行任务驳回
-        this.executeTask(currentFlwTask.getId(), flowCreator, args, TaskState.reject, TaskEventType.reject);
+        this.executeTask(currentFlwTask.getId(), flowCreator, args, taskState, eventType);
 
         // 或签 结束其它任务
         final Integer performType = currentFlwTask.getPerformType();

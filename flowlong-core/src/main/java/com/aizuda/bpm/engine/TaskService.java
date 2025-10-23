@@ -300,9 +300,15 @@ public interface TaskService {
      * @param currentFlwTask 当前任务对象
      * @param flowCreator    任务创建者
      * @param args           任务参数
+     * @param taskState      任务状态
+     * @param eventType      任务执行事件类型
      * @return Task 任务对象
      */
-    Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args);
+    Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args, TaskState taskState, TaskEventType eventType);
+
+    default Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator, Map<String, Object> args) {
+        return this.rejectTask(currentFlwTask, flowCreator, args, TaskState.reject, TaskEventType.reject);
+    }
 
     default Optional<List<FlwTask>> rejectTask(FlwTask currentFlwTask, FlowCreator flowCreator) {
         return rejectTask(currentFlwTask, flowCreator, null);

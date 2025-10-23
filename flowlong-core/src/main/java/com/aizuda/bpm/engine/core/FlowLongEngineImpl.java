@@ -197,7 +197,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean autoRejectTask(FlwTask flwTask, Map<String, Object> args, FlowCreator flowCreator) {
-        Optional<List<FlwTask>> flwTasksOptional = taskService().rejectTask(flwTask, flowCreator, args);
+        Optional<List<FlwTask>> flwTasksOptional = taskService().rejectTask(flwTask, flowCreator, args, TaskState.autoReject, TaskEventType.autoReject);
         if (log.isDebugEnabled()) {
             log.debug("Auto reject taskId={}", flwTask.getId());
         }
