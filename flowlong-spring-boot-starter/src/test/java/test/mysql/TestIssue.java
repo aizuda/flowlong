@@ -510,4 +510,32 @@ public class TestIssue extends MysqlTest {
 
         });
     }
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/ID35L8">测试并发发起流程问题</a>
+     */
+    @Test
+    public void issues_ID35L8() throws InterruptedException {
+        this.deployByResource("test/testAutoSkip.json", test6Creator);
+
+        // 多线程并发启动
+        int concurrentCount = 100;
+        Thread[] threads = new Thread[concurrentCount];
+        // 创建并启动10个线程
+        for (int i = 0; i < concurrentCount; i++) {
+            final int threadId = i;
+            threads[i] = new Thread(() -> {
+                System.out.println("线程" + threadId + "开始执行: " + System.currentTimeMillis());
+                flowLongEngine.startInstanceByProcessKey("testAutoSkip", test6Creator);
+            });
+            threads[i].start();
+        }
+
+        // 等待所有线程执行完毕
+        for (Thread t: threads) {
+            t.join();
+        }
+
+        System.out.println("所有线程执行完毕");
+    }
 }
