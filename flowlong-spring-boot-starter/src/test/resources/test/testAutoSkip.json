@@ -1,5 +1,5 @@
 {
-  "key": "autoSkip",
+  "key": "testAutoSkip",
   "name": "自动跳过审批",
   "nodeConfig": {
     "nodeName": "发起人",
