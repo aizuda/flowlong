@@ -5,9 +5,12 @@
 package test.mysql;
 
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.exception.FlowLongException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,12 +46,17 @@ public class TestCountersignReject extends MysqlTest {
                 // 执行审批
                 this.flowLongEngine.executeTask(flwTask.getId(), testCreator);
 
-                // 执行拿回
-                taskService.reclaimTask(flwTask.getId(), testCreator);
+                // 并行任务不允许拿回执行异常
+                Assertions.assertThrows(FlowLongException.class, new Executable() {
+
+                    @Override
+                    public void execute() throws Throwable {
+                        taskService.reclaimTask(flwTask.getId(), testCreator);
+                    }
+                });
             });
 
             // 会签全部审批完成
-            this.executeTask(instance.getId(), testCreator);
             this.executeTask(instance.getId(), test3Creator);
 
             // 拒绝审批
