@@ -1209,9 +1209,10 @@ public class TaskServiceImpl implements TaskService {
             String[] callProcessArr = callProcess.split(":");
             ProcessService processService = execution.getEngine().processService();
             FlwProcess flwProcess;
-            if (Objects.equals(2, callProcessArr.length)) {
+            if (callProcessArr.length > 1) {
                 flwProcess = processService.getProcessById(Long.valueOf(callProcessArr[0]));
             } else {
+                // 根据流程 KEY 获取流程实例（用于测试模型）
                 flwProcess = processService.getProcessByKey(flowCreator.getTenantId(), callProcessArr[0]);
             }
             if (null == flwProcess) {
