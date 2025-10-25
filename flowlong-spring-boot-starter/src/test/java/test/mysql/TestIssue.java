@@ -494,4 +494,20 @@ public class TestIssue extends MysqlTest {
         });
     }
 
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/ID3HZW">测试参数值为null的变量合并异常问题</a>
+     */
+    @Test
+    public void issues_ID3HZW() {
+        processId = this.deployByResource("test/testJumpTaskActor.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            executeTask(instance.getId(), testCreator, flwTask -> {
+                flowLongEngine.executeTask(flwTask.getId(), testCreator, new HashMap<String, Object>() {{
+                    put("username", "飞龙");
+                    put("address", null);
+                }});
+            });
+
+        });
+    }
 }
