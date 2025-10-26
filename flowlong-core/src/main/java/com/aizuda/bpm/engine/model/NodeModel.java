@@ -247,6 +247,15 @@ public class NodeModel implements ModelInstance, Serializable {
     private Integer delayType;
 
     /**
+     * 是否保存权重
+     * <p>兼容模型设计错误导致权重误存</p>
+     */
+    public boolean saveWeight() {
+        // 票签，保留权重
+        return Objects.equals(4, this.examineMode);
+    }
+
+    /**
      * 执行节点
      *
      * @param flowLongContext 流程引擎上下文

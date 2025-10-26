@@ -164,8 +164,9 @@ public class FlwTaskActor implements Serializable {
         return of(tenantId, actorId, actorName, 2, null);
     }
 
-    public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType) {
-        return of(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(), actorType, nodeAssignee.getWeight());
+    public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType, boolean saveWeight) {
+        return of(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(),
+                actorType, saveWeight ? nodeAssignee.getWeight() : null);
     }
 
     public static FlwTaskActor of(Long taskId, FlwHisTaskActor t) {

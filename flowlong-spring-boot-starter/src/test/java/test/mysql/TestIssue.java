@@ -521,7 +521,7 @@ public class TestIssue extends MysqlTest {
         // 多线程并发启动
         int concurrentCount = 100;
         Thread[] threads = new Thread[concurrentCount];
-        // 创建并启动10个线程
+        // 创建并启动 concurrentCount 个线程
         for (int i = 0; i < concurrentCount; i++) {
             final int threadId = i;
             threads[i] = new Thread(() -> {

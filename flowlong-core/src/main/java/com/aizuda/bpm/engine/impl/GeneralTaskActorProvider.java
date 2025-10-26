@@ -32,8 +32,9 @@ public class GeneralTaskActorProvider implements TaskActorProvider {
         if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
             final Integer actorType = this.getActorType(nodeModel);
             if (null != actorType) {
+                boolean saveWeight = nodeModel.saveWeight();
                 for (NodeAssignee nodeAssignee : nodeModel.getNodeAssigneeList()) {
-                    flwTaskActors.add(FlwTaskActor.of(nodeAssignee, actorType));
+                    flwTaskActors.add(FlwTaskActor.of(nodeAssignee, actorType, saveWeight));
                 }
             }
         }
