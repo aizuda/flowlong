@@ -173,39 +173,37 @@ public class ModelHelper {
             return null;
         }
 
-        // 如果当前节点不是条件分支的子节点、而是条件审批的子节点
         if (parentNode.conditionNode()) {
+            // 如果当前节点不是条件分支的子节点、而是条件审批的子节点
             NodeModel childNode = parentNode.getChildNode();
             if (null != childNode && !Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
                 // 条件执行节点，返回子节点
                 return childNode;
             }
-        }
-
-        // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
-        if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
-            // 只是找下一个节点
+        } else if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
+            // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
             if (null == currentTask) {
+                // 只是找下一个节点
                 NodeModel childNode = parentNode.getChildNode();
-                if (null != childNode && Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
-                    // 父节点的下一个节点为当前节点，直接返回当前节点的子节点
-                    return nodeModel.getChildNode();
+                if (null != childNode) {
+                    if (Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
+                        // 父节点的下一个节点为当前节点，直接返回当前节点的子节点
+                        return nodeModel.getChildNode();
+                    }
+                    return childNode;
                 }
-                return childNode;
-            }
-            // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
-            if (Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
+            } else if (Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
+                // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
                 NodeModel childNode = parentNode.getChildNode();
-                if (null != childNode && Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
-                    // 父节点的子节点是当前节点，执行结束
-                    return null;
+                if (null != childNode) {
+                    if (Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
+                        // 父节点的子节点是当前节点，执行结束
+                        return null;
+                    }
+                    // 分支执行结束，执行子节点
+                    return childNode;
                 }
-                // 分支执行结束，执行子节点
-                return childNode;
             }
-
-            // 分支未执行完
-            return null;
         }
 
         // 往上继续找下一个执行节点
