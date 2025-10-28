@@ -53,6 +53,8 @@ public class SpelFlowLongExpression implements FlowLongExpression {
         Object fieldValue = args.get(nodeExpression.getField());
         if (fieldValue instanceof String) {
             value = "'" + value + "'";
+        } else if (fieldValue instanceof Long) {
+            value += "L";
         }
         return "#" + field + " " + operator + " " + value;
     }
