@@ -113,6 +113,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         Assert.isNull(flwInstance, "not found instance");
         FlwInstance fi = function.apply(flwInstance);
         fi.setId(instanceId);
+        fi.setVariable(flwInstance.getVariable());
         fi.putAllVariable(args);
         return instanceDao.updateById(fi);
     }
