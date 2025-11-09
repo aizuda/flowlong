@@ -423,11 +423,6 @@ ALTER TABLE "flw_his_instance" ADD CONSTRAINT "flw_his_instance_process_id_fkey"
 ALTER TABLE "flw_his_task" ADD CONSTRAINT "flw_his_task_instance_id_fkey" FOREIGN KEY ("instance_id") REFERENCES "flw_his_instance" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- ----------------------------
--- Foreign Keys structure for table flw_his_task_actor
--- ----------------------------
-ALTER TABLE "flw_his_task_actor" ADD CONSTRAINT "flw_his_task_actor_task_id_fkey" FOREIGN KEY ("task_id") REFERENCES "flw_his_task" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- ----------------------------
 -- Foreign Keys structure for table flw_instance
 -- ----------------------------
 ALTER TABLE "flw_instance" ADD CONSTRAINT "flw_instance_process_id_fkey" FOREIGN KEY ("process_id") REFERENCES "flw_process" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -436,8 +431,3 @@ ALTER TABLE "flw_instance" ADD CONSTRAINT "flw_instance_process_id_fkey" FOREIGN
 -- Foreign Keys structure for table flw_task
 -- ----------------------------
 ALTER TABLE "flw_task" ADD CONSTRAINT "flw_task_instance_id_fkey" FOREIGN KEY ("instance_id") REFERENCES "flw_instance" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
-
--- ----------------------------
--- Foreign Keys structure for table flw_task_actor
--- ----------------------------
-ALTER TABLE "flw_task_actor" ADD CONSTRAINT "flw_task_actor_task_id_fkey" FOREIGN KEY ("task_id") REFERENCES "flw_task" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;

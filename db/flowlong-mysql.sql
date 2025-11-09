@@ -118,8 +118,7 @@ CREATE TABLE `flw_his_task_actor`
     `agent_type`  int          COMMENT '代理人类型 0，代理 1，被代理 2，认领角色 3，认领部门',
     `extend`      text COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX         `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE,
-    CONSTRAINT `fk_his_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_his_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    INDEX         `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '历史任务参与者表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -197,8 +196,7 @@ CREATE TABLE `flw_task_actor`
     `agent_type`  int          COMMENT '代理人类型 0，代理 1，被代理 2，认领角色 3，认领部门',
     `extend`      text COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX         `idx_task_actor_task_id`(`task_id` ASC) USING BTREE,
-    CONSTRAINT `fk_task_actor_task_id` FOREIGN KEY (`task_id`) REFERENCES `flw_task` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    INDEX         `idx_task_actor_task_id`(`task_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务参与者表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
