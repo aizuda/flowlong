@@ -179,4 +179,9 @@ public class ProcessServiceImpl implements ProcessService {
         // 删除部署流程流程信息
         processDao.deleteById(id);
     }
+
+    @Override
+    public boolean removeById(Long id) {
+        return processDao.deleteById(id);
+    }
 }

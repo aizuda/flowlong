@@ -137,4 +137,12 @@ public interface ProcessService {
      * @param id 流程定义ID
      */
     void cascadeRemove(Long id);
+
+    /**
+     * 根据流程定义ID删除流程定义（不删除该流程产生的其它历史数据）
+     *
+     * @param id 流程定义ID
+     * @return true 成功 false 失败
+     */
+    boolean removeById(Long id);
 }
