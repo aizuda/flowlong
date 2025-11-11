@@ -551,6 +551,15 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 判断是否为触发器节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean triggerNode() {
+        return TaskType.trigger.eq(type);
+    }
+
+    /**
      * 判断是否为全部人员参与审批分组策略
      *
      * @return true 是 false 否
