@@ -263,6 +263,9 @@ public class TaskServiceImpl implements TaskService {
         // 更新当前节点
         this.updateCurrentNode(createTask, null);
 
+        // 设置跳转后返回的任务列表
+        execution.addTasks(flwTasks);
+
         // 任务监听器通知
         this.taskNotify(taskEventType, execution::getFlwTask, taskActors, nodeModel, flowCreator);
         return Optional.of(flwTasks);
