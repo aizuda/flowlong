@@ -116,7 +116,7 @@ CREATE TABLE `flw_his_task_actor`
     `weight`      int COMMENT '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人',
     `agent_id`    varchar(100) COMMENT '代理人ID',
     `agent_type`  int          COMMENT '代理人类型 0，代理 1，被代理 2，认领角色 3，认领部门',
-    `extend`      text COMMENT '扩展json',
+    `ext`         text COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX         `idx_his_task_actor_task_id`(`task_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '历史任务参与者表' ROW_FORMAT = Dynamic;
@@ -194,7 +194,7 @@ CREATE TABLE `flw_task_actor`
     `weight`      int COMMENT '权重，票签任务时，该值为不同处理人员的分量比例，代理任务时，该值为 1 时为代理人',
     `agent_id`    varchar(100) COMMENT '代理人ID',
     `agent_type`  int          COMMENT '代理人类型 0，代理 1，被代理 2，认领角色 3，认领部门',
-    `extend`      text COMMENT '扩展json',
+    `ext`         text COMMENT '扩展json',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX         `idx_task_actor_task_id`(`task_id` ASC) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4  COMMENT = '任务参与者表' ROW_FORMAT = Dynamic;

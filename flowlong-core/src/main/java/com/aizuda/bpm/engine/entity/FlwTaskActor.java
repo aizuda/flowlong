@@ -86,7 +86,7 @@ public class FlwTaskActor implements Serializable {
     /**
      * 扩展json
      */
-    protected String extend;
+    protected String ext;
 
     /**
      * 是否为代理人
@@ -114,7 +114,7 @@ public class FlwTaskActor implements Serializable {
         flwTaskActor.setAgentType(1);
         Map<String, Object> map = new HashMap<>();
         map.put("createBy", flowCreator.getCreateBy());
-        flwTaskActor.setExtendOf(map);
+        flwTaskActor.setExtOf(map);
         return flwTaskActor;
     }
 
@@ -125,7 +125,7 @@ public class FlwTaskActor implements Serializable {
         Map<String, Object> map = new HashMap<>();
         map.put("actorType", agentTaskActor.getActorType());
         map.put("actorName", agentTaskActor.getActorName());
-        flwTaskActor.setExtendOf(map);
+        flwTaskActor.setExtOf(map);
         return flwTaskActor;
     }
 
@@ -197,11 +197,11 @@ public class FlwTaskActor implements Serializable {
         taskActor.setWeight(hta.getWeight());
         taskActor.setAgentId(hta.getAgentId());
         taskActor.setAgentType(hta.getAgentType());
-        taskActor.setExtend(hta.getExtend());
+        taskActor.setExt(hta.getExt());
         return taskActor;
     }
 
-    public void setExtendOf(Object object) {
-        this.extend = FlowLongContext.toJson(object);
+    public void setExtOf(Object object) {
+        this.ext = FlowLongContext.toJson(object);
     }
 }

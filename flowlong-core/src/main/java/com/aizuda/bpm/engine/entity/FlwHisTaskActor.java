@@ -59,7 +59,7 @@ public class FlwHisTaskActor extends FlwTaskActor {
         his.setActorType(taskActor.getActorType());
         his.setAgentId(taskActor.getAgentId());
         his.setAgentType(taskActor.getAgentType());
-        his.setExtend(taskActor.getExtend());
+        his.setExt(taskActor.getExt());
         return his;
     }
 }
