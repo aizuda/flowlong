@@ -215,7 +215,7 @@ public class FlowLongContext {
         if (banner) {
             System.out.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");
             System.out.println("├┤ │  │ │││││  │ │││││ ┬");
-            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.1.19");
+            System.out.println("└  ┴─┘└─┘└┴┘┴─┘└─┘┘└┘└─┘  1.2.0");
         }
 
         return this;
