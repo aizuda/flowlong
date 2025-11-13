@@ -63,6 +63,13 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean callAsync;
     /**
+     * 调用外部 AI 智能体业务
+     * <p>
+     * 用于存储外部AI智能体相关配置ID等唯一标识
+     * </p>
+     */
+    private String callAi;
+    /**
      * 任务关联的表单url
      */
     private String actionUrl;

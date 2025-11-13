@@ -50,6 +50,13 @@ public class ConditionNode implements Serializable {
      */
     private List<List<NodeExpression>> conditionList;
     /**
+     * 调用外部 AI 智能体业务
+     * <p>
+     * 用于存储外部AI智能体相关配置ID等唯一标识
+     * </p>
+     */
+    private String callAi;
+    /**
      * 子节点
      */
     private NodeModel childNode;
