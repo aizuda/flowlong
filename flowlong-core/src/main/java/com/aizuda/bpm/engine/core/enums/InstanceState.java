@@ -38,7 +38,7 @@ public enum InstanceState {
      */
     active(0),
     /**
-     * 审批通过
+     * 审批完成
      */
     complete(1),
     /**
