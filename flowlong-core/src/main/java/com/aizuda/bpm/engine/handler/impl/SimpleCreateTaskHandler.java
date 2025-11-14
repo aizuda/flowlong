@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
+import com.aizuda.bpm.engine.handler.FlowAiHandler;
 import com.aizuda.bpm.engine.model.NodeModel;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +44,17 @@ public class SimpleCreateTaskHandler implements CreateTaskHandler {
         try {
             List<FlwTask> flwTasks = execution.getEngine().taskService().createTask(nodeModel, execution);
             if (null != flwTasks) {
+                // 设置当前创建任务列表
                 execution.addTasks(flwTasks);
+
+                // 执行 AI智能体 审批逻辑
+                if (null != nodeModel.getCallAi()) {
+                    FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
+                    if (null != flowAiHandler) {
+                        // 执行处理器
+                        return flowAiHandler.handle(flowLongContext, execution, nodeModel);
+                    }
+                }
             }
             return true;
         } catch (Exception e) {

@@ -15,6 +15,16 @@ import java.util.Map;
 public interface FlowAiHandler {
 
     /**
+     * 执行AI审批处理
+     *
+     * @param flowLongContext {@link FlowLongContext}
+     * @param execution {@link Execution}
+     * @param nodeModel {@link NodeModel}
+     * @return true 成功 false 失败
+     */
+    boolean handle(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel);
+
+    /**
      * 获取AI分析后的参数内容
      *
      * @param flowLongContext {@link FlowLongContext}

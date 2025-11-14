@@ -96,10 +96,12 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
     public Map<String, Object> getRouteArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
         // 获取执行参数内容
         Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
-        // 参数交由 AI智能体 处理分析
-        FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
-        if (null != flowAiHandler) {
-            args = flowAiHandler.getArgs(flowLongContext, execution, nodeModel, args);
+        if (null != nodeModel.getCallAi()) {
+            // 参数交由 AI智能体 处理分析
+            FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
+            if (null != flowAiHandler) {
+                args = flowAiHandler.getArgs(flowLongContext, execution, nodeModel, args);
+            }
         }
         return args;
     }
