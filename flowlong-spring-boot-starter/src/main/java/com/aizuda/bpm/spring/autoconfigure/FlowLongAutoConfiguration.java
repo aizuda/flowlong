@@ -11,6 +11,7 @@ import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
 import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
+import com.aizuda.bpm.engine.handler.FlowAiHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
 import com.aizuda.bpm.engine.impl.*;
 import com.aizuda.bpm.engine.listener.InstanceListener;
@@ -120,6 +121,7 @@ public class FlowLongAutoConfiguration {
                                            @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
+                                           @Autowired(required = false) FlowAiHandler flowAiHandler,
                                            @Autowired(required = false) ConditionNodeHandler conditionNodeHandler,
                                            @Autowired(required = false) TaskCreateInterceptor taskCreateInterceptor,
                                            @Autowired(required = false) CreateTaskHandler createTaskHandler,
@@ -139,6 +141,7 @@ public class FlowLongAutoConfiguration {
         flc.setFlowLongExpression(flowLongExpression);
         flc.setTaskAccessStrategy(taskAccessStrategy);
         flc.setTaskActorProvider(taskActorProvider);
+        flc.setFlowAiHandler(flowAiHandler);
         flc.setConditionNodeHandler(conditionNodeHandler);
         flc.setTaskCreateInterceptor(taskCreateInterceptor);
         flc.setCreateTaskHandler(createTaskHandler);

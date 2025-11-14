@@ -9,6 +9,7 @@ import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.CreateTaskHandler;
+import com.aizuda.bpm.engine.handler.FlowAiHandler;
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
 import com.aizuda.bpm.engine.handler.impl.SimpleConditionNodeHandler;
 import com.aizuda.bpm.engine.handler.impl.SimpleCreateTaskHandler;
@@ -40,6 +41,11 @@ public class FlowLongContext {
     private RuntimeService runtimeService;
     private TaskService taskService;
     private FlowLongExpression flowLongExpression;
+
+    /**
+     * 流程AI智能体处理器
+     */
+    private FlowAiHandler flowAiHandler;
 
     /**
      * 流程任务创建处理器

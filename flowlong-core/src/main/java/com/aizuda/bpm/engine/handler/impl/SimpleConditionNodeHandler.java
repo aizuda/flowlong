@@ -12,6 +12,7 @@ import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
+import com.aizuda.bpm.engine.handler.FlowAiHandler;
 import com.aizuda.bpm.engine.model.ConditionNode;
 import com.aizuda.bpm.engine.model.NodeModel;
 
@@ -79,7 +80,8 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         }
 
         // 根据正则条件节点选择
-        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+        Map<String, Object> args = this.getRouteArgs(flowLongContext, execution, nodeModel);
+        // 执行表单式判断，匹配执行节点
         FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
         return conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
                 .filter(t -> flowLongExpression.eval(t.getConditionList(), args)).findFirst();
@@ -89,6 +91,17 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
         // 判断路由节点
         return this.getConditionNode(flowLongContext, execution, nodeModel, nodeModel.getRouteNodes());
+    }
+
+    public Map<String, Object> getRouteArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
+        // 获取执行参数内容
+        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+        // 参数交由 AI智能体 处理分析
+        FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
+        if (null != flowAiHandler) {
+            args = flowAiHandler.getArgs(flowLongContext, execution, nodeModel, args);
+        }
+        return args;
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
