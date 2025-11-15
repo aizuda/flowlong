@@ -1,0 +1,101 @@
+{
+  "id": 1200001,
+  "key": "aiHandle",
+  "name": "测试AI处理器",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1720532353915",
+    "type": 0,
+    "childNode": {
+      "nodeName": "条件路由",
+      "nodeKey": "flk1763170906838",
+      "callAi": "ai0001",
+      "type": 4,
+      "conditionNodes": [
+        {
+          "nodeName": "条件1",
+          "nodeKey": "flk17631709068381",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionMode": 1,
+          "conditionList": [
+            [
+              {
+                "label": "day",
+                "field": "day",
+                "operator": ">",
+                "value": "3",
+                "type": "custom"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "审核A",
+            "nodeKey": "flk1763170909065",
+            "callAi": "ai0002",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "0",
+                "name": "CEO"
+              }
+            ],
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "delayType": 1
+          }
+        },
+        {
+          "nodeName": "默认条件",
+          "nodeKey": "flk1763170906838_default",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionMode": 1
+        }
+      ],
+      "childNode": {
+        "nodeName": "审核B",
+        "nodeKey": "flk1763170912185",
+        "type": 1,
+        "setType": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "0",
+            "name": "CEO"
+          }
+        ],
+        "examineLevel": 1,
+        "directorLevel": 1,
+        "selectMode": 1,
+        "termAuto": false,
+        "remind": false,
+        "term": 0,
+        "termMode": 1,
+        "examineMode": 1,
+        "approveSelf": 0,
+        "directorMode": 0,
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk165000082000",
+          "type": -1
+        },
+        "typeOfApprove": 1,
+        "rejectStrategy": 2,
+        "rejectStart": 1,
+        "delayType": 1
+      }
+    }
+  }
+}

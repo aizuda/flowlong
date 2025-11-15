@@ -36,6 +36,7 @@ import java.util.Map;
 @Getter
 @Setter
 public class FlowLongContext {
+    private FlowLongEngine flowLongEngine;
     private ProcessService processService;
     private QueryService queryService;
     private RuntimeService runtimeService;
@@ -217,6 +218,7 @@ public class FlowLongContext {
             log.info("FlowLongEngine be found {}", configEngine.getClass());
         }
         configEngine.configure(this);
+        this.flowLongEngine = configEngine;
 
         if (banner) {
             System.out.println("┌─┐┬  ┌─┐┬ ┬┬  ┌─┐┌┐┌┌─┐");

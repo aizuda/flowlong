@@ -66,6 +66,11 @@ public class MysqlConfig extends FlowLongAutoConfiguration {
     }
 
     @Bean
+    public TestAiHandler aiHandler() {
+        return new TestAiHandler();
+    }
+
+    @Bean
     public TestTaskAccessStrategy taskAccessStrategy() {
         return new TestTaskAccessStrategy();
     }
