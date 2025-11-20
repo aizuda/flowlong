@@ -403,7 +403,7 @@ public class TaskServiceImpl implements TaskService {
         } else if (PerformType.orSign.eq(flwTask.getPerformType())) {
             // 或签情况处理
             for (FlwTaskActor fta : taskActors) {
-                if (Objects.equals(flowCreator.getCreateId(), fta.getActorId())) {
+                if (Objects.equals(flowCreator.getCreateId(), fta.getActorId()) && 0 == fta.getActorType()) {
                     // 找到审批任务参与者归档
                     taskActors = Collections.singletonList(fta);
                 } else {
