@@ -1,3 +1,7 @@
+/*
+ * Copyright 2023-2025 Licensed under the Dual Licensing
+ * website: https://aizuda.com
+ */
 package com.aizuda.bpm.solon.autoconfigure;
 
 import com.aizuda.bpm.engine.dao.*;
@@ -7,6 +11,17 @@ import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
 
+/**
+ * FlowLong MybatisPlus 加载配置处理类
+ *
+ * <p>
+ * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
+ * </p>
+ *
+ * @author hubin
+ * @author noear
+ * @since 1.0
+ */
 @Configuration
 public class FlowLongMybatisPlusConfiguration {
 

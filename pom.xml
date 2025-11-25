@@ -21,9 +21,9 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <spring-boot.version>2.7.0</spring-boot.version>
-        <mybatis.plus-version>3.5.8</mybatis.plus-version>
+        <mybatis.plus-version>3.5.12</mybatis.plus-version>
         <mysql.version>8.0.32</mysql.version>
-        <solon.version>3.0.1</solon.version>
+        <solon.version>3.7.2</solon.version>
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
         <lombok.version>1.18.30</lombok.version>
