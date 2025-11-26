@@ -4,10 +4,13 @@ dependencies {
     api project(":flowlong-mybatis-plus")
 
     implementation("org.noear:solon-lib:${solonVersion}")
-    implementation("org.noear:solon.scheduling:${solonVersion}")
-    implementation("com.googlecode.aviator:aviator:3.0.1")
+    implementation("org.noear:solon-expression:${solonVersion}")
 
     compileOnly("com.baomidou:mybatis-plus-core")
+
+    testImplementation("org.noear:solon-test:${solonVersion}")
+    testImplementation("com.baomidou:mybatis-plus-solon-plugin:${mybatis.plus-version}")
+    testImplementation("mysql:mysql-connector-java")
 }
 
 compileJava {

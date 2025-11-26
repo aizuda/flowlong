@@ -5,11 +5,11 @@
 package com.aizuda.bpm.solon.adaptive;
 
 import com.aizuda.bpm.engine.handler.FlowJsonHandler;
-import org.noear.snack.ONode;
+import org.noear.snack4.ONode;
 import org.noear.solon.annotation.Component;
 
 /**
- * Solon Snack3 JSON 解析处理器接口适配
+ * Solon Snack JSON 解析处理器接口适配
  *
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
@@ -19,15 +19,23 @@ import org.noear.solon.annotation.Component;
  * @since 1.0
  */
 @Component
-public class SolonFlowJsonHandler implements FlowJsonHandler {
+public class FlowSnackjsonHandler implements FlowJsonHandler {
 
     @Override
     public String toJson(Object object) {
-        return ONode.stringify(object);
+        if (null == object) {
+            return null;
+        }
+
+        return ONode.serialize(object);
     }
 
     @Override
     public <T> T fromJson(String jsonString, Class<T> clazz) {
+        if (null == jsonString || null == clazz) {
+            return null;
+        }
+
         return ONode.deserialize(jsonString, clazz);
     }
 }

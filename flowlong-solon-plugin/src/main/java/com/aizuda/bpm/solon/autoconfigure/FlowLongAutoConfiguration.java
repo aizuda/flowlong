@@ -18,14 +18,16 @@ import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.solon.adaptive.SolonFlowJsonHandler;
-import com.aizuda.bpm.solon.adaptive.SolonFlowLongExpression;
+import com.aizuda.bpm.solon.adaptive.FlowSnackjsonHandler;
+import com.aizuda.bpm.solon.adaptive.SnelFlowLongExpression;
+import com.aizuda.bpm.solon.event.EventInstanceListener;
+import com.aizuda.bpm.solon.event.EventTaskListener;
 import org.noear.solon.annotation.Bean;
 import org.noear.solon.annotation.Condition;
 import org.noear.solon.annotation.Configuration;
 import org.noear.solon.annotation.Inject;
-import org.noear.solon.scheduling.ScheduledAnno;
-import org.noear.solon.scheduling.scheduled.manager.IJobManager;
+//import org.noear.solon.scheduling.ScheduledAnno;
+//import org.noear.solon.scheduling.scheduled.manager.IJobManager;
 
 /**
  * 配置处理类
@@ -79,9 +81,15 @@ public class FlowLongAutoConfiguration {
     }
 
     @Bean
+    @Condition(onMissingBean = JobLock.class)
+    public JobLock jobLock() {
+        return new LocalLock();
+    }
+
+    @Bean
     @Condition(onMissingBean = FlowLongExpression.class)
     public FlowLongExpression flowLongExpression() {
-        return new SolonFlowLongExpression();
+        return new SnelFlowLongExpression();
     }
 
     @Bean
@@ -89,7 +97,6 @@ public class FlowLongAutoConfiguration {
     public TaskAccessStrategy taskAccessStrategy() {
         return new GeneralAccessStrategy();
     }
-
 
     @Bean
     @Condition(onMissingBean = TaskActorProvider.class)
@@ -105,15 +112,9 @@ public class FlowLongAutoConfiguration {
 
     @Bean
     @Condition(onMissingBean = FlowLongContext.class)
-    public FlowLongContext flowLongContext(ProcessService processService,
-                                           QueryService queryService,
-                                           RuntimeService runtimeService,
-                                           TaskService taskService,
-                                           FlowLongExpression flowLongExpression,
-                                           TaskAccessStrategy taskAccessStrategy,
-                                           TaskActorProvider taskActorProvider,
-                                           FlowLongEngine flowLongEngine,
-                                           FlowLongProperties flp,
+    public FlowLongContext flowLongContext(ProcessService processService, QueryService queryService, RuntimeService runtimeService,
+                                           TaskService taskService, FlowLongExpression flowLongExpression, TaskAccessStrategy taskAccessStrategy,
+                                           TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine, FlowLongProperties flp,
                                            @Inject(required = false) FlowCache flowCache,
                                            @Inject(required = false) ProcessModelParser processModelParser,
                                            @Inject(required = false) FlowJsonHandler flowJsonHandler,
@@ -126,7 +127,7 @@ public class FlowLongAutoConfiguration {
 
         // 静态注入 Jackson 解析 JSON 处理器
         if (null == flowJsonHandler) {
-            flowJsonHandler = new SolonFlowJsonHandler();
+            flowJsonHandler = new FlowSnackjsonHandler();
         }
         FlowLongContext.setFlowJsonHandler(flowJsonHandler);
         // 注入 FlowLong 上下文
@@ -147,31 +148,51 @@ public class FlowLongAutoConfiguration {
         return flc.build(flowLongEngine, flp.isBanner());
     }
 
+    /**
+     * 注入自定义 TaskListener 实现该方法不再生效
+     *
+     * @return {@link EventTaskListener}
+     */
     @Bean
-    @Condition(onMissingBean = JobLock.class)
-    public JobLock jobLock() {
-        return new LocalLock();
+    @Condition(onMissingBean = EventTaskListener.class,
+            onExpression = "${flowlong.eventing.task:false} == true")
+    public EventTaskListener taskListener() {
+        return new EventTaskListener();
     }
 
+    /**
+     * 注入自定义 InstanceListener 实现该方法不再生效
+     *
+     * @return {@link EventInstanceListener}
+     */
     @Bean
-    public void scheduler(FlowLongEngine flowLongEngine,
-                          FlowLongProperties properties,
-                          @Inject(required = false) TaskReminder taskReminder,
-                          JobLock jobLock,
-                          IJobManager jobManager) {
-        if (taskReminder == null) {
-            return;
-        }
-        FlowLongScheduler flowLongScheduler = new FlowLongScheduler() {
-        };
-        flowLongScheduler.setFlowLongEngine(flowLongEngine);
-        flowLongScheduler.setRemindParam(properties.getRemind());
-        flowLongScheduler.setJobLock(jobLock);
-        //注册 job（不再需要返回了）
-        jobManager.jobAdd("flowlong",
-                new ScheduledAnno().cron(flowLongScheduler.getRemindParam().getCron()), ctx -> {
-                    flowLongScheduler.remind();
-                });
-
+    @Condition(onMissingBean = EventInstanceListener.class,
+            onExpression = "${flowlong.eventing.instance:false} == true")
+    public EventInstanceListener instanceListener() {
+        return new EventInstanceListener();
     }
+
+    /// /////////////
+
+//    @Bean
+//    public void scheduler(FlowLongEngine flowLongEngine,
+//                          FlowLongProperties properties,
+//                          @Inject(required = false) TaskReminder taskReminder,
+//                          JobLock jobLock,
+//                          IJobManager jobManager) {
+//        if (taskReminder == null) {
+//            return;
+//        }
+//        FlowLongScheduler flowLongScheduler = new FlowLongScheduler() {
+//        };
+//        flowLongScheduler.setFlowLongEngine(flowLongEngine);
+//        flowLongScheduler.setRemindParam(properties.getRemind());
+//        flowLongScheduler.setJobLock(jobLock);
+//        //注册 job（不再需要返回了）
+//        jobManager.jobAdd("flowlong",
+//                new ScheduledAnno().cron(flowLongScheduler.getRemindParam().getCron()), ctx -> {
+//                    flowLongScheduler.remind();
+//                });
+//
+//    }
 }

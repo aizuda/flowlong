@@ -13,10 +13,6 @@
     <artifactId>flowlong-solon-plugin</artifactId>
     <description>flowLong mybatis-plus solon plugin</description>
 
-    <properties>
-        <solon.version>3.0.1</solon.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>com.aizuda</groupId>
@@ -26,26 +22,46 @@
         <dependency>
             <groupId>org.noear</groupId>
             <artifactId>solon-lib</artifactId>
-            <scope>compile</scope>
             <version>${solon.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.noear</groupId>
-            <artifactId>solon-scheduling</artifactId>
-            <scope>compile</scope>
+            <artifactId>solon-expression</artifactId>
             <version>${solon.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.googlecode.aviator</groupId>
-            <artifactId>aviator</artifactId>
-            <scope>compile</scope>
-            <version>3.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-core</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+            <version>${mybatis.plus-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-solon-plugin</artifactId>
+            <version>${mybatis.plus-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.noear</groupId>
+            <artifactId>solon-test</artifactId>
+            <scope>test</scope>
+            <version>${solon.version}</version>
         </dependency>
     </dependencies>
 
