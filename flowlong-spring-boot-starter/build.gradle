@@ -1,7 +1,7 @@
 description "flowLong mybatis-plus spring-boot starter"
 
 dependencies {
-    api project(":flowlong-mybatis-plus")
+    api project(":flowlong-spring-boot-autoconfigure")
 
     implementation("com.baomidou:mybatis-plus-boot-starter")
 
@@ -13,6 +13,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-json")
     testImplementation("org.springframework:spring-jdbc")
-    testImplementation("com.baomidou:mybatis-plus-extension")
+    testImplementation("com.baomidou:mybatis-plus-jsqlparser:${mybatisPlusVersion}")
     testImplementation("mysql:mysql-connector-java")
 }

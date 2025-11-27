@@ -2,7 +2,8 @@
 buildscript {
     ext {
         springBootVersion = "2.7.0"
-        mybatisPlusVersion = "3.5.12"
+        springBoot4Version = "4.0.0"
+        mybatisPlusVersion = "3.5.14"
         solonVersion = "3.7.2"
     }
 
@@ -72,9 +73,6 @@ subprojects {
         annotationProcessor("org.projectlombok:lombok")
         testAnnotationProcessor("org.projectlombok:lombok")
         testCompileOnly("org.projectlombok:lombok")
-
-        // junit
-        testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     }
 
     // 编译环境 JDK-1.8+

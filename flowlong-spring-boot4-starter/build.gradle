@@ -1,0 +1,16 @@
+description "flowLong mybatis-plus spring-boot starter"
+
+compileJava {
+    options.release = 17
+}
+
+dependencies {
+    api project(":flowlong-spring-boot-autoconfigure")
+
+    implementation("com.baomidou:mybatis-plus-spring-boot4-starter:${mybatisPlusVersion}")
+
+    compileOnly("org.springframework.boot:spring-boot-starter-web:${springBoot4Version}")
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure:${springBoot4Version}")
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBoot4Version}")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springBoot4Version}")
+}

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @MapperScan("com.aizuda.bpm.mybatisplus.mapper")
-public class FlowLongMybatisPlusConfiguration {
+public class MybatisPlusConfiguration {
 
     @Bean
     @ConditionalOnMissingBean

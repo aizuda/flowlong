@@ -18,11 +18,9 @@ import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.scheduling.JobLock;
 import com.aizuda.bpm.engine.scheduling.LocalLock;
-import com.aizuda.bpm.spring.adaptive.FlowJacksonHandler;
 import com.aizuda.bpm.spring.adaptive.SpelFlowLongExpression;
 import com.aizuda.bpm.spring.event.EventInstanceListener;
 import com.aizuda.bpm.spring.event.EventTaskListener;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -31,6 +29,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * spring boot starter 启动自动配置处理类
@@ -121,7 +120,7 @@ public class FlowLongAutoConfiguration {
                                            TaskActorProvider taskActorProvider, FlowLongEngine flowLongEngine, FlowLongProperties flp,
                                            @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
-                                           @Autowired(required = false) FlowJsonHandler flowJsonHandler,
+                                           @Autowired(required = false) FlowJsonHandler flowJsonHandler, ObjectMapper objectMapper,
                                            @Autowired(required = false) FlowAiHandler flowAiHandler,
                                            @Autowired(required = false) ConditionNodeHandler conditionNodeHandler,
                                            @Autowired(required = false) TaskCreateInterceptor taskCreateInterceptor,
@@ -130,7 +129,7 @@ public class FlowLongAutoConfiguration {
                                            @Autowired(required = false) TaskTrigger taskTrigger) {
         // 静态注入 Jackson 解析 JSON 处理器
         if (null == flowJsonHandler) {
-            flowJsonHandler = new FlowJacksonHandler();
+            flowJsonHandler = new FlowJacksonHandler(objectMapper);
         }
         FlowLongContext.setFlowJsonHandler(flowJsonHandler);
         // 注入 FlowLong 上下文

@@ -9,7 +9,7 @@ dependencies {
     compileOnly("com.baomidou:mybatis-plus-core")
 
     testImplementation("org.noear:solon-test:${solonVersion}")
-    testImplementation("com.baomidou:mybatis-plus-solon-plugin:${mybatis.plus-version}")
+    testImplementation("com.baomidou:mybatis-plus-solon-plugin:${mybatisPlusVersion}")
     testImplementation("mysql:mysql-connector-java")
 }
 
