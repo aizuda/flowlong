@@ -28,7 +28,7 @@
     <dependencies>
         <dependency>
             <groupId>com.aizuda</groupId>
-            <artifactId>flowlong-mybatis-plus</artifactId>
+            <artifactId>flowlong-spring-boot-autoconfigure</artifactId>
         </dependency>
 
         <dependency>
@@ -61,7 +61,7 @@
 
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-extension</artifactId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
             <version>${mybatis.plus-version}</version>
             <scope>test</scope>
         </dependency>
