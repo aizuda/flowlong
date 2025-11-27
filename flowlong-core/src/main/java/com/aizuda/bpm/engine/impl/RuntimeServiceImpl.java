@@ -66,8 +66,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 创建活动实例
      */
     @Override
-    public FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel,
-                                      boolean saveAsDraft, Supplier<FlwInstance> supplier) {
+    public FlwInstance createInstance(FlwProcess flwProcess, FlowCreator flowCreator, Map<String, Object> args, NodeModel nodeModel, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         FlwInstance flwInstance = null;
         if (null != supplier) {
             flwInstance = supplier.get();
@@ -75,7 +74,7 @@ public class RuntimeServiceImpl implements RuntimeService {
         if (null == flwInstance) {
             flwInstance = new FlwInstance();
         }
-        flwInstance.setCreateTime(DateUtils.getCurrentDate());
+        flwInstance.setCreateTime(FlowLongContext.currentDate());
         flwInstance.setFlowCreator(flowCreator);
         flwInstance.setCurrentNodeName(nodeModel.getNodeName());
         flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());

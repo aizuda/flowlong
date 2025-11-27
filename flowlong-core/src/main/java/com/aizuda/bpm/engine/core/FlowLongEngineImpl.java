@@ -6,7 +6,6 @@ package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.assist.Assert;
-import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.*;
@@ -369,7 +368,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwInstance flwInstance = queryService().getInstance(instanceId);
         Assert.isNull(flwInstance, "process instance [ id=" + instanceId + " ] completed or not present");
         flwInstance.setLastUpdateBy(updateBy);
-        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        flwInstance.setLastUpdateTime(FlowLongContext.currentDate());
         if (null != instanceConsumer) {
             instanceConsumer.accept(flwInstance);
         }

@@ -171,7 +171,7 @@ public class FlwTask extends FlowEntity {
         newFlwTask.setViewed(viewed);
         newFlwTask.setCreateId(createId);
         newFlwTask.setCreateBy(createBy);
-        newFlwTask.setCreateTime(DateUtils.getCurrentDate());
+        newFlwTask.setCreateTime(FlowLongContext.currentDate());
         return newFlwTask;
     }
 }

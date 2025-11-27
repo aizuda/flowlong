@@ -10,6 +10,7 @@ import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
+import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.entity.*;
@@ -74,7 +75,7 @@ public class TaskServiceImpl implements TaskService {
         flwInstance.setCurrentNodeName(flwTask.getTaskName());
         flwInstance.setCurrentNodeKey(flwTask.getTaskKey());
         flwInstance.setLastUpdateBy(flwTask.getCreateBy());
-        flwInstance.setLastUpdateTime(DateUtils.getCurrentDate());
+        flwInstance.setLastUpdateTime(FlowLongContext.currentDate());
         instanceDao.updateById(flwInstance);
         FlwHisInstance flwHisInstance = new FlwHisInstance();
         flwHisInstance.setId(flwInstance.getId());
@@ -1349,7 +1350,7 @@ public class TaskServiceImpl implements TaskService {
     protected FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
         FlwTask flwTask = new FlwTask();
         flwTask.setFlowCreator(execution.getFlowCreator());
-        flwTask.setCreateTime(DateUtils.getCurrentDate());
+        flwTask.setCreateTime(FlowLongContext.currentDate());
         flwTask.setInstanceId(execution.getFlwInstance().getId());
         flwTask.setTaskName(nodeModel.getNodeName());
         flwTask.setTaskKey(nodeModel.getNodeKey());

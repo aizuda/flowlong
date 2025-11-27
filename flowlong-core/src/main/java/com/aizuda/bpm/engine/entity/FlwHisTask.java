@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.entity;
 
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
+import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.TaskState;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import com.aizuda.bpm.engine.model.NodeModel;
@@ -121,7 +122,7 @@ public class FlwHisTask extends FlwTask {
      * 计算流程实例处理耗时
      */
     public void calculateDuration() {
-        this.finishTime = DateUtils.getCurrentDate();
+        this.finishTime = FlowLongContext.currentDate();
         this.duration = DateUtils.calculateDateDifference(this.createTime, this.finishTime);
     }
 }

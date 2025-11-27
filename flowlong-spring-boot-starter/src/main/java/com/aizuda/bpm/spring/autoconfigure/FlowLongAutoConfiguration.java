@@ -9,10 +9,8 @@ import com.aizuda.bpm.engine.cache.FlowCache;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.FlowLongEngineImpl;
 import com.aizuda.bpm.engine.dao.*;
-import com.aizuda.bpm.engine.handler.ConditionNodeHandler;
-import com.aizuda.bpm.engine.handler.CreateTaskHandler;
-import com.aizuda.bpm.engine.handler.FlowAiHandler;
-import com.aizuda.bpm.engine.handler.FlowJsonHandler;
+import com.aizuda.bpm.engine.handler.*;
+import com.aizuda.bpm.engine.handler.impl.SimpleFlowCreateTimeHandler;
 import com.aizuda.bpm.engine.impl.*;
 import com.aizuda.bpm.engine.listener.InstanceListener;
 import com.aizuda.bpm.engine.listener.TaskListener;
@@ -22,7 +20,6 @@ import com.aizuda.bpm.spring.adaptive.FlowJacksonHandler;
 import com.aizuda.bpm.spring.adaptive.SpelFlowLongExpression;
 import com.aizuda.bpm.spring.event.EventInstanceListener;
 import com.aizuda.bpm.spring.event.EventTaskListener;
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -122,6 +119,7 @@ public class FlowLongAutoConfiguration {
                                            @Autowired(required = false) FlowCache flowCache,
                                            @Autowired(required = false) ProcessModelParser processModelParser,
                                            @Autowired(required = false) FlowJsonHandler flowJsonHandler,
+                                           @Autowired(required = false) FlowCreateTimeHandler flowCreateTimeHandler,
                                            @Autowired(required = false) FlowAiHandler flowAiHandler,
                                            @Autowired(required = false) ConditionNodeHandler conditionNodeHandler,
                                            @Autowired(required = false) TaskCreateInterceptor taskCreateInterceptor,
@@ -133,6 +131,11 @@ public class FlowLongAutoConfiguration {
             flowJsonHandler = new FlowJacksonHandler();
         }
         FlowLongContext.setFlowJsonHandler(flowJsonHandler);
+        // 静态注入流程创建时间处理器
+        if (null == flowCreateTimeHandler) {
+            flowCreateTimeHandler = new SimpleFlowCreateTimeHandler();
+        }
+        FlowLongContext.setFlowCreateTimeHandler(flowCreateTimeHandler);
         // 注入 FlowLong 上下文
         FlowLongContext flc = new FlowLongContext(flowCache, processModelParser);
         flc.setProcessService(processService);
