@@ -107,7 +107,7 @@ public class FlwHisInstance extends FlwInstance {
      * 计算流程实例处理耗时
      */
     public void calculateDuration() {
-        this.endTime = FlowLongContext.currentDate();
+        this.endTime = FlowLongContext.getFlowCreateTimeHandler().getFinishTime(this.id, null);
         this.duration = DateUtils.calculateDateDifference(this.createTime, this.endTime);
     }
 }

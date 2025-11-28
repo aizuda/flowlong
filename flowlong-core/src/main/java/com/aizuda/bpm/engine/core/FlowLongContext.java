@@ -17,7 +17,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -120,14 +119,13 @@ public class FlowLongContext {
     /**
      * 流程创建时间处理器
      */
-    @Setter
+    @Getter
     private static FlowCreateTimeHandler flowCreateTimeHandler;
 
-    /**
-     * 当前流程创建时间
-     */
-    public static Date currentDate() {
-        return flowCreateTimeHandler.getCurrentDate();
+    public static void setFlowCreateTimeHandler(FlowCreateTimeHandler fctHandler) {
+        if (null == flowCreateTimeHandler) {
+            flowCreateTimeHandler = fctHandler;
+        }
     }
 
     /**

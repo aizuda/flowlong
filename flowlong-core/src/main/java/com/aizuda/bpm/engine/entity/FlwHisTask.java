@@ -4,6 +4,7 @@
  */
 package com.aizuda.bpm.engine.entity;
 
+import com.aizuda.bpm.engine.FlowLongIdGenerator;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -112,8 +113,8 @@ public class FlwHisTask extends FlwTask {
      *
      * @return 任务对象
      */
-    public FlwTask undoTask(TaskType taskType) {
-        FlwTask flwTask = this.cloneTask(this.createId, this.createBy);
+    public FlwTask undoTask(FlowLongIdGenerator flowLongIdGenerator, TaskType taskType) {
+        FlwTask flwTask = this.cloneTask(flowLongIdGenerator, this.createId, this.createBy);
         flwTask.taskType(taskType);
         return flwTask;
     }
@@ -122,7 +123,7 @@ public class FlwHisTask extends FlwTask {
      * 计算流程实例处理耗时
      */
     public void calculateDuration() {
-        this.finishTime = FlowLongContext.currentDate();
+        this.finishTime = FlowLongContext.getFlowCreateTimeHandler().getFinishTime(this.instanceId, this.id);
         this.duration = DateUtils.calculateDateDifference(this.createTime, this.finishTime);
     }
 }

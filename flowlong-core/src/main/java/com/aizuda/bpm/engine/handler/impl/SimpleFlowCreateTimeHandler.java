@@ -22,7 +22,12 @@ import java.util.Date;
 public class SimpleFlowCreateTimeHandler implements FlowCreateTimeHandler {
 
     @Override
-    public Date getCurrentDate() {
+    public Date getCurrentTime(Long instanceId, Long taskId) {
+        return DateUtils.getCurrentDate();
+    }
+
+    @Override
+    public Date getFinishTime(Long instanceId, Long taskId) {
         return DateUtils.getCurrentDate();
     }
 }

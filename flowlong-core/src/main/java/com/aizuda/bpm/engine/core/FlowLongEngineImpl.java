@@ -368,7 +368,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         FlwInstance flwInstance = queryService().getInstance(instanceId);
         Assert.isNull(flwInstance, "process instance [ id=" + instanceId + " ] completed or not present");
         flwInstance.setLastUpdateBy(updateBy);
-        flwInstance.setLastUpdateTime(FlowLongContext.currentDate());
+        flwInstance.setLastUpdateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(instanceId, null));
         if (null != instanceConsumer) {
             instanceConsumer.accept(flwInstance);
         }

@@ -4,6 +4,7 @@
  */
 package com.aizuda.bpm.engine.entity;
 
+import com.aizuda.bpm.engine.FlowLongIdGenerator;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -143,8 +144,8 @@ public class FlwTask extends FlowEntity {
         return Objects.equals(0L, this.parentTaskId);
     }
 
-    public FlwTask cloneTask(FlwHisTaskActor hta) {
-        FlwTask ft = this.cloneTask(createId, createBy);
+    public FlwTask cloneTask(FlowLongIdGenerator flowLongIdGenerator, FlwHisTaskActor hta) {
+        FlwTask ft = this.cloneTask(flowLongIdGenerator, createId, createBy);
         if (null != hta) {
             ft.setCreateId(hta.getActorId());
             ft.setCreateBy(hta.getActorName());
@@ -152,8 +153,9 @@ public class FlwTask extends FlowEntity {
         return ft;
     }
 
-    public FlwTask cloneTask(String createId, String createBy) {
+    public FlwTask cloneTask(FlowLongIdGenerator flowLongIdGenerator, String createId, String createBy) {
         FlwTask newFlwTask = new FlwTask();
+        newFlwTask.setId(flowLongIdGenerator.getId(null));
         newFlwTask.setTenantId(tenantId);
         newFlwTask.setInstanceId(instanceId);
         newFlwTask.setParentTaskId(parentTaskId);
@@ -171,7 +173,7 @@ public class FlwTask extends FlowEntity {
         newFlwTask.setViewed(viewed);
         newFlwTask.setCreateId(createId);
         newFlwTask.setCreateBy(createBy);
-        newFlwTask.setCreateTime(FlowLongContext.currentDate());
+        newFlwTask.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(instanceId, newFlwTask.getId()));
         return newFlwTask;
     }
 }

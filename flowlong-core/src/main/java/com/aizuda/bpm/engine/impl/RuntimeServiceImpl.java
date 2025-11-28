@@ -74,12 +74,8 @@ public class RuntimeServiceImpl implements RuntimeService {
         if (null == flwInstance) {
             flwInstance = new FlwInstance();
         }
-        flwInstance.setCreateTime(FlowLongContext.currentDate());
-        flwInstance.setFlowCreator(flowCreator);
         flwInstance.setCurrentNodeName(nodeModel.getNodeName());
         flwInstance.setCurrentNodeKey(nodeModel.getNodeKey());
-        flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
-        flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         flwInstance.setProcessId(flwProcess.getId());
         flwInstance.putAllVariable(args);
 
@@ -198,6 +194,10 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, boolean saveAsDraft, FlowCreator flowCreator) {
         // 保存流程实例
         flwInstance.setId(flowLongIdGenerator.getId(flwInstance.getId()));
+        flwInstance.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(flwInstance.getId(), null));
+        flwInstance.setFlowCreator(flowCreator);
+        flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
+        flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
         instanceDao.insert(flwInstance);
 
         // 保存历史实例设置为活的状态
