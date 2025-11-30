@@ -1,5 +1,15 @@
 # 更新日志
 
+## [v1.2.1] 2025.11.30
+
+- feat: 新增流程AI智能体处理器 FlowAiHandler
+- feat: 支持穿越时空控制时间能力（补历史审批）
+- feat: 新增支持 spring boot 4.0
+- opt: 优化Spel表达式支持集合包含不包含判断情况
+- opt: 优化调整实例状态注释说明
+- opt: 优化flowlong-solon-plugin适配
+- fixed: 修复或签归档解决角色ID和用户ID一致异常问题
+
 ## [v1.2.0] 2025.11.12
 
 - feat: 新增不删除流程历史仅删除流程定义方法
