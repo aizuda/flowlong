@@ -28,6 +28,8 @@ public class TestFlowCreateTimeHandler implements FlowCreateTimeHandler {
                 if (null != setTime && null != instanceId) {
                     // 缓存实例指定时间
                     instanceIdMap.put(instanceId, setTime);
+                    // 移除传递参数
+                    FlowDataTransfer.removeByKey(TestCreateTime.setFlowCreateTime);
                 }
             }
         }
@@ -36,6 +38,9 @@ public class TestFlowCreateTimeHandler implements FlowCreateTimeHandler {
 
     @Override
     public Date getFinishTime(Long instanceId, Long taskId) {
+        if (null == instanceId) {
+            return DateUtils.getCurrentDate();
+        }
         String setTime = instanceIdMap.get(instanceId);
         if (null != setTime && null == taskId) {
             // 实例完成，删除缓存记录
