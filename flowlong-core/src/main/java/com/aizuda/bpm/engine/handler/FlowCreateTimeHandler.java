@@ -4,6 +4,8 @@
  */
 package com.aizuda.bpm.engine.handler;
 
+import com.aizuda.bpm.engine.core.enums.ExecuteType;
+
 import java.util.Date;
 
 /**
@@ -22,10 +24,11 @@ public interface FlowCreateTimeHandler {
     /**
      * 获取当前时间，用于设置创建时间或更新时间
      *
+     * @param executeType 工作流执行类型 {@link ExecuteType}
      * @param instanceId 流程实例ID
      * @param taskId 审批任务ID（不存在为流程实例调用情况）
      */
-    Date getCurrentTime(Long instanceId, Long taskId);
+    Date getCurrentTime(ExecuteType executeType, Long instanceId, Long taskId);
 
     /**
      * 获取完成时间，用于设置流程实例结束时间或任务完成时间

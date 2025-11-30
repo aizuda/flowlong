@@ -5,6 +5,7 @@
 package com.aizuda.bpm.engine.handler.impl;
 
 import com.aizuda.bpm.engine.assist.DateUtils;
+import com.aizuda.bpm.engine.core.enums.ExecuteType;
 import com.aizuda.bpm.engine.handler.FlowCreateTimeHandler;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ import java.util.Date;
 public class SimpleFlowCreateTimeHandler implements FlowCreateTimeHandler {
 
     @Override
-    public Date getCurrentTime(Long instanceId, Long taskId) {
+    public Date getCurrentTime(ExecuteType executeType, Long instanceId, Long taskId) {
         return DateUtils.getCurrentDate();
     }
 

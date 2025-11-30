@@ -8,6 +8,7 @@ import com.aizuda.bpm.engine.FlowLongIdGenerator;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.FlowLongContext;
+import com.aizuda.bpm.engine.core.enums.ExecuteType;
 import com.aizuda.bpm.engine.core.enums.PerformType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 import lombok.Getter;
@@ -173,7 +174,7 @@ public class FlwTask extends FlowEntity {
         newFlwTask.setViewed(viewed);
         newFlwTask.setCreateId(createId);
         newFlwTask.setCreateBy(createBy);
-        newFlwTask.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(instanceId, newFlwTask.getId()));
+        newFlwTask.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.task, instanceId, newFlwTask.getId()));
         return newFlwTask;
     }
 }

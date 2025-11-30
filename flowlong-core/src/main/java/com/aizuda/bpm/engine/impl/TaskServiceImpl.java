@@ -75,7 +75,7 @@ public class TaskServiceImpl implements TaskService {
         flwInstance.setCurrentNodeName(flwTask.getTaskName());
         flwInstance.setCurrentNodeKey(flwTask.getTaskKey());
         flwInstance.setLastUpdateBy(flwTask.getCreateBy());
-        flwInstance.setLastUpdateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(flwInstance.getId(), null));
+        flwInstance.setLastUpdateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.instance, flwInstance.getId(), null));
         instanceDao.updateById(flwInstance);
         FlwHisInstance flwHisInstance = new FlwHisInstance();
         flwHisInstance.setId(flwInstance.getId());
@@ -1347,7 +1347,7 @@ public class TaskServiceImpl implements TaskService {
         FlwTask flwTask = new FlwTask();
         flwTask.setId(flowLongIdGenerator.getId(null));
         flwTask.setFlowCreator(execution.getFlowCreator());
-        flwTask.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(flwInstance.getId(), flwTask.getId()));
+        flwTask.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.task, flwInstance.getId(), flwTask.getId()));
         flwTask.setInstanceId(flwInstance.getId());
         flwTask.setTaskName(nodeModel.getNodeName());
         flwTask.setTaskKey(nodeModel.getNodeKey());

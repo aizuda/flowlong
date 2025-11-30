@@ -10,10 +10,7 @@ import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
-import com.aizuda.bpm.engine.core.enums.InstanceEventType;
-import com.aizuda.bpm.engine.core.enums.InstanceState;
-import com.aizuda.bpm.engine.core.enums.TaskEventType;
-import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.dao.FlwExtInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwHisInstanceDao;
 import com.aizuda.bpm.engine.dao.FlwInstanceDao;
@@ -194,7 +191,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     public void saveInstance(FlwInstance flwInstance, FlwProcess flwProcess, boolean saveAsDraft, FlowCreator flowCreator) {
         // 保存流程实例
         flwInstance.setId(flowLongIdGenerator.getId(flwInstance.getId()));
-        flwInstance.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(flwInstance.getId(), null));
+        flwInstance.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.instance, flwInstance.getId(), null));
         flwInstance.setFlowCreator(flowCreator);
         flwInstance.setLastUpdateBy(flwInstance.getCreateBy());
         flwInstance.setLastUpdateTime(flwInstance.getCreateTime());
@@ -202,6 +199,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 保存历史实例设置为活的状态
         FlwHisInstance fhi = FlwHisInstance.of(flwInstance, saveAsDraft ? InstanceState.saveAsDraft : InstanceState.active, false);
+        fhi.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.instance, flwInstance.getId(), null));
         if (hisInstanceDao.insert(fhi)) {
 
             // 保存扩展流程实例
