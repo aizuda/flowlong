@@ -10,6 +10,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -44,18 +45,26 @@ public class SpelFlowLongExpression implements FlowLongExpression {
         String value = nodeExpression.getValue();
         String operator = nodeExpression.getOperator();
         String field = nodeExpression.getField();
-        if ("include".equalsIgnoreCase(operator)) {
-            return "#" + field + ".contains('" + value + "')";
-        }
-        if ("notinclude".equalsIgnoreCase(operator)) {
-            return "not #" + field + ".contains('" + value + "')";
-        }
         Object fieldValue = args.get(nodeExpression.getField());
         if (fieldValue instanceof String) {
+            // 字符串
+            if (this.include(operator)) {
+                return "#" + field + ".contains('" + value + "')";
+            } else if (this.notInclude(operator)) {
+                return "not #" + field + ".contains('" + value + "')";
+            }
             value = "'" + value + "'";
         } else if (fieldValue instanceof Long) {
             value += "L";
+        } else if (fieldValue instanceof Collection) {
+            // 集合情况
+            if (this.include(operator)) {
+                return "T(java.util.Arrays).asList(#" + field + ").contains('" + value + "')";
+            } else if (this.notInclude(operator)) {
+                return "not T(java.util.Arrays).asList(#" + field + ").contains('" + value + "')";
+            }
         }
+        // 其它
         return "#" + field + " " + operator + " " + value;
     }
 }

@@ -69,4 +69,12 @@ public interface FlowLongExpression {
         }
         return "#" + nodeExpression.getField() + " " + nodeExpression.getOperator() + " " + value;
     }
+
+    default boolean include(String value) {
+        return "include".equalsIgnoreCase(value);
+    }
+
+    default boolean notInclude(String value) {
+        return "notinclude".equalsIgnoreCase(value);
+    }
 }

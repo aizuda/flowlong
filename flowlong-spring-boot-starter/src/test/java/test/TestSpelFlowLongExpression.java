@@ -5,6 +5,7 @@ import com.aizuda.bpm.spring.adaptive.SpelFlowLongExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,4 +72,30 @@ public class TestSpelFlowLongExpression {
         }
         return expression.eval(Collections.singletonList(Collections.singletonList(nodeExpression)), args);
     }
+
+    @Test
+    public void testArrayContains() {
+        // 测试数组包含
+        NodeExpression nodeExpression = new NodeExpression();
+        nodeExpression.setLabel("标签检查");
+        nodeExpression.setField("tags");  // 假设这是一个数组字段
+        nodeExpression.setOperator("include");  // 自定义操作符表示包含
+        nodeExpression.setValue("important");
+
+        Map<String, Object> args = new HashMap<>();
+        Assertions.assertFalse(this.eval(nodeExpression, args));
+
+        args.put("tags", Arrays.asList("normal", "important", "urgent"));
+        Assertions.assertTrue(this.eval(nodeExpression, args));
+
+        // 测试数组不包含
+        NodeExpression nodeExpression2 = new NodeExpression();
+        nodeExpression2.setLabel("标签检查");
+        nodeExpression2.setField("tags");
+        nodeExpression2.setOperator("notinclude");  // 自定义操作符表示不包含
+        nodeExpression2.setValue("critical");
+
+        Assertions.assertTrue(this.eval(nodeExpression2, args));
+    }
+
 }
