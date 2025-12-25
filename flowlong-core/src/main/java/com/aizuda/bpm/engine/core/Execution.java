@@ -16,6 +16,7 @@ import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import com.aizuda.bpm.engine.model.ModelHelper;
+import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 import lombok.Getter;
@@ -356,6 +357,15 @@ public class Execution implements Serializable {
      */
     public List<FlwTaskActor> getProviderTaskActors(NodeModel nodeModel) {
         return this.getTaskActorProvider().getTaskActors(nodeModel, this);
+    }
+
+    /**
+     * 动态获取分配到任务的处理者列表
+     *
+     * @param nodeModel 节点模型
+     */
+    public List<NodeAssignee> getProviderNodeAssignees(NodeModel nodeModel) {
+        return this.getTaskActorProvider().getNodeAssigneeList(nodeModel, this);
     }
 
     protected TaskActorProvider getTaskActorProvider() {

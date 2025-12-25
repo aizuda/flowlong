@@ -59,9 +59,20 @@ public interface TaskActorProvider {
      *
      * @param nodeModel 节点模型
      * @param execution 执行对象
-     * @return 参与者数组
+     * @return 参与者列表
      */
     List<FlwTaskActor> getTaskActors(NodeModel nodeModel, Execution execution);
+
+    /**
+     * 动态获取分配到任务的处理者列表
+     *
+     * @param nodeModel 节点模型
+     * @param execution 执行对象
+     * @return 参与者列表
+     */
+    default List<NodeAssignee> getNodeAssigneeList(NodeModel nodeModel, Execution execution) {
+        return nodeModel.getNodeAssigneeList();
+    }
 
     /**
      * 非正常创建任务处理逻辑，默认抛出异常

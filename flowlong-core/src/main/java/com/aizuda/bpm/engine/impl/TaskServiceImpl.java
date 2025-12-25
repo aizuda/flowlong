@@ -1169,7 +1169,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 2，抄送任务
              */
-            this.createCcTask(nodeModel, flwTask, nodeModel.getNodeAssigneeList(), execution.getFlowCreator());
+            this.createCcTask(nodeModel, flwTask, execution.getProviderNodeAssignees(nodeModel), execution.getFlowCreator());
 
             /*
              * 可能存在子节点
