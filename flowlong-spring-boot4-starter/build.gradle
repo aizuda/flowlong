@@ -4,13 +4,19 @@ compileJava {
     options.release = 17
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBoot4Version}"
+    }
+}
+
 dependencies {
     api project(":flowlong-spring-boot-autoconfigure")
 
     implementation("com.baomidou:mybatis-plus-spring-boot4-starter:${mybatisPlusVersion}")
 
-    compileOnly("org.springframework.boot:spring-boot-starter-web:${springBoot4Version}")
-    compileOnly("org.springframework.boot:spring-boot-autoconfigure:${springBoot4Version}")
-    compileOnly("org.springframework.boot:spring-boot-configuration-processor:${springBoot4Version}")
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${springBoot4Version}")
+    compileOnly("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("org.springframework.boot:spring-boot-autoconfigure")
+    compileOnly("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 }
