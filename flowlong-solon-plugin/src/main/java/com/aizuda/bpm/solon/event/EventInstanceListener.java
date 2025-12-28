@@ -25,6 +25,7 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 public class EventInstanceListener implements InstanceListener {
+
     @Override
     public boolean notify(InstanceEventType eventType, Supplier<FlwHisInstance> supplier, NodeModel nodeModel, FlowCreator flowCreator) {
         InstanceEvent instanceEvent = new InstanceEvent();

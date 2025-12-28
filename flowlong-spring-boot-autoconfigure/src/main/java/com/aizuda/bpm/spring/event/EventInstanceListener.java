@@ -15,7 +15,9 @@ import java.util.function.Supplier;
 
 /**
  * Spring boot Event 异步实例监听处理器
- *
+ * <p>
+ * 重写该监听器并注入容器，可实现接口监听和事件推送并存
+ * </p>
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负
  * </p>

@@ -27,6 +27,7 @@ import java.util.function.Supplier;
  * @since 1.0
  */
 public class EventTaskListener implements TaskListener {
+
     @Override
     public boolean notify(TaskEventType eventType, Supplier<FlwTask> supplier, List<FlwTaskActor> taskActors,
                           NodeModel nodeModel, FlowCreator flowCreator) {
