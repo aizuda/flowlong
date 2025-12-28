@@ -498,6 +498,11 @@ public class RuntimeServiceImpl implements RuntimeService {
         }
 
         // 更新最新模型
+        this.updateModelContent(flwExtInstance, processModel);
+    }
+
+    protected void updateModelContent(FlwExtInstance flwExtInstance, ProcessModel processModel) {
+        // 更新最新模型
         FlwExtInstance temp = new FlwExtInstance();
         temp.setId(flwExtInstance.getId());
         temp.setModelContent(FlowLongContext.toJson(processModel.cleanParentNode()));
@@ -505,5 +510,25 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 使缓存失效
         FlowLongContext.invalidateProcessModel(flwExtInstance.modelCacheKey());
+    }
+
+    @Override
+    public boolean removeNodeModel(Long instanceId, String nodeKey, Function<NodeModel, Boolean> checkFunc) {
+        FlwExtInstance flwExtInstance = extInstanceDao.selectById(instanceId);
+        if (null != flwExtInstance) {
+            // 删除指定节点，非临时节点不允许操作
+            ProcessModel processModel = flwExtInstance.model();
+            NodeModel selectNode = processModel.getNode(nodeKey);
+            if (null != selectNode && checkFunc.apply(selectNode)) {
+                NodeModel parentNode = selectNode.getParentNode();
+                NodeModel childNode = selectNode.getChildNode();
+                parentNode.setChildNode(childNode);
+                childNode.setParentNode(parentNode);
+                // 更新最新模型
+                this.updateModelContent(flwExtInstance, processModel);
+                return true;
+            }
+        }
+        return false;
     }
 }

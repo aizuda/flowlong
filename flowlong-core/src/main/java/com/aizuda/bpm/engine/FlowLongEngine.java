@@ -380,4 +380,12 @@ public interface FlowLongEngine {
     default boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, boolean beforeAfter) {
         return executeAppendNodeModel(taskId, nodeModel, flowCreator, null, beforeAfter);
     }
+
+    /**
+     * 执行删除临时节点模型
+     *
+     * @param instanceId 流程实例ID
+     * @param nodeKey 节点KEY
+     */
+    boolean executeRemoveNodeModel(Long instanceId, String nodeKey);
 }

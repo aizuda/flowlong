@@ -49,6 +49,13 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private String nodeKey;
     /**
+     * 节点状态 {@link NodeState}
+     * <p>
+     * 0，初始建模节点 1，临时节点（允许加签、减签）
+     * </p>
+     */
+    private Integer nodeState;
+    /**
      * 调用外部流程 {@link FlwProcess}
      * <p>
      * 实际业务存储格式 processId:processName 流程ID名称冒号拼接内容
@@ -396,6 +403,17 @@ public class NodeModel implements ModelInstance, Serializable {
             // 查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
             this.nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));
         }
+    }
+
+    /**
+     * 节点状态设置
+     *
+     * @param nodeState ｛@link NodeState｝
+     * @return 模型节点
+     */
+    public NodeModel state(NodeState nodeState) {
+        this.nodeState = nodeState.getValue();
+        return this;
     }
 
     /**

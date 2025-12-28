@@ -345,7 +345,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     @Override
     public boolean executeAppendNodeModel(Long taskId, NodeModel nodeModel, FlowCreator flowCreator, Map<String, Object> args, boolean beforeAfter) {
         // 追加指定节点模型
-        runtimeService().appendNodeModel(taskId, nodeModel, beforeAfter);
+        runtimeService().appendNodeModel(taskId, nodeModel.state(NodeState.temp), beforeAfter);
 
         // 前置加签、执行任务并跳转到指定节点
         if (beforeAfter) {
@@ -354,6 +354,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
 
         // 后置加签无需处理任务流转，当前正常任务审批后进入后置加签节点模型
         return true;
+    }
+
+    @Override
+    public boolean executeRemoveNodeModel(Long instanceId, String nodeKey) {
+        return runtimeService().removeNodeModel(instanceId, nodeKey, e -> NodeState.temp.eq(e.getNodeState()));
     }
 
     /**

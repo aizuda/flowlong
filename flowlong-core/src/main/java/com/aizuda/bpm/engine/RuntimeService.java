@@ -230,4 +230,13 @@ public interface RuntimeService {
      * @param beforeAfter true 前置 false 后置
      */
     void appendNodeModel(Long taskId, NodeModel nodeModel, boolean beforeAfter);
+
+    /**
+     * 删除节点模型某个临时节点
+     *
+     * @param instanceId 流程实例ID
+     * @param nodeKey 节点KEY
+     * @param checkFunc 节点检查函数
+     */
+    boolean removeNodeModel(Long instanceId, String nodeKey, Function<NodeModel, Boolean> checkFunc);
 }
