@@ -173,11 +173,18 @@ public class ProcessServiceImpl implements ProcessService {
      */
     @Override
     public void cascadeRemove(Long id) {
-        // 删除与流程相关的实例
-        runtimeService.cascadeRemoveByProcessId(id);
+        FlwProcess flwProcess = processDao.selectById(id);
+        if (null != flwProcess) {
+            // 删除存在的流程定义及历史版本相关数据
+            processDao.selectListByProcessKey(flwProcess.getTenantId(), flwProcess.getProcessKey()).ifPresent(ps -> ps.forEach(p -> {
 
-        // 删除部署流程流程信息
-        processDao.deleteById(id);
+                // 删除与流程相关的实例
+                runtimeService.cascadeRemoveByProcessId(p.getId());
+
+                // 删除部署流程流程信息
+                processDao.deleteById(p.getId());
+            }));
+        }
     }
 
     @Override

@@ -7,6 +7,7 @@ package com.aizuda.bpm.engine.dao;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 流程定义数据访问层接口
@@ -31,4 +32,6 @@ public interface FlwProcessDao {
     FlwProcess selectById(Long id);
 
     List<FlwProcess> selectListByProcessKeyAndVersion(String tenantId, String processKey, Integer version);
+
+    Optional<List<FlwProcess>> selectListByProcessKey(String tenantId, String processKey);
 }

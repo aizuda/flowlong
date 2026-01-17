@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 流程定义数据访问层接口实现类
@@ -67,5 +68,13 @@ public class FlwProcessDaoImpl implements FlwProcessDao {
             lqw.orderByDesc(FlwProcess::getProcessVersion);
         }
         return processMapper.selectList(lqw);
+    }
+
+    @Override
+    public Optional<List<FlwProcess>> selectListByProcessKey(String tenantId, String processKey) {
+        LambdaQueryWrapper<FlwProcess> lqw = Wrappers.lambdaQuery();
+        lqw.eq(null != tenantId, FlwProcess::getTenantId, tenantId);
+        lqw.eq(FlwProcess::getProcessKey, processKey);
+        return Optional.ofNullable(processMapper.selectList(lqw));
     }
 }
