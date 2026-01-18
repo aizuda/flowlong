@@ -573,8 +573,16 @@ public class TaskServiceImpl implements TaskService {
         // 插入当前用户ID作为唯一参与者
         fta.setId(flowLongIdGenerator.getId(fta.getId()));
         if (taskActorDao.insert(fta)) {
-            // 任务监听器通知
-            this.taskNotify(eventType, () -> flwTask, Collections.singletonList(fta), null, flowCreator);
+            // 修改任务认领人为创建人创建时间
+            FlwTask newFlwTask = new FlwTask();
+            newFlwTask.setId(fta.getId());
+            newFlwTask.setCreateId(flowCreator.getCreateId());
+            newFlwTask.setCreateBy(flowCreator.getCreateBy());
+            newFlwTask.setCreateTime(new Date());
+            if (taskDao.updateById(newFlwTask)) {
+                // 任务监听器通知
+                this.taskNotify(eventType, () -> flwTask, Collections.singletonList(fta), null, flowCreator);
+            }
         }
         return flwTask;
     }
