@@ -1,0 +1,242 @@
+{
+  "key": "testNextChildNodes02",
+  "name": "测试获取子节点02",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1766969661236",
+    "type": 0,
+    "extendConfig": {
+      "formConfig": [
+        {
+          "label": "手机号",
+          "id": "17669696572556pjK",
+          "opera": "1"
+        }
+      ]
+    },
+    "childNode": {
+      "nodeName": "条件路由",
+      "nodeKey": "flk1768636062704",
+      "type": 4,
+      "conditionNodes": [
+        {
+          "nodeName": "条件1",
+          "nodeKey": "flk17686360627041",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionList": [
+            [
+              {
+                "label": "num",
+                "field": "num",
+                "operator": ">",
+                "value": "3",
+                "type": "form"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "主管审批",
+            "nodeKey": "flk1768707100202",
+            "type": 1,
+            "setType": 2,
+            "nodeAssigneeList": [],
+            "nodeCandidate": {
+              "type": 0,
+              "assignees": []
+            },
+            "examineLevel": 1,
+            "directorLevel": 1,
+            "selectMode": 1,
+            "termAuto": false,
+            "remind": false,
+            "term": 0,
+            "termMode": 1,
+            "examineMode": 1,
+            "approveSelf": 0,
+            "directorMode": 0,
+            "childNode": {
+              "nodeName": "触发器",
+              "nodeKey": "flk1768707083575",
+              "type": 7,
+              "delayType": 1,
+              "triggerType": 1,
+              "extendConfig": {
+                "time": "",
+                "args": "",
+                "trigger": ""
+              },
+              "childNode": {
+                "nodeName": "审核A",
+                "nodeKey": "flk1768636135092",
+                "type": 1,
+                "setType": 1,
+                "nodeAssigneeList": [
+                  {
+                    "id": "0",
+                    "name": "CEO"
+                  }
+                ],
+                "nodeCandidate": {
+                  "type": 0
+                },
+                "examineLevel": 1,
+                "examineMode": 1,
+                "directorLevel": 1,
+                "directorMode": 0,
+                "selectMode": 1,
+                "termAuto": false,
+                "term": 0,
+                "termMode": 1,
+                "typeOfApprove": 1,
+                "rejectStrategy": 2,
+                "rejectStart": 1,
+                "remind": false,
+                "allowTransfer": true,
+                "allowAppendNode": true,
+                "allowRollback": true,
+                "allowCc": true,
+                "approveSelf": 0,
+                "extendConfig": {
+                  "formConfig": [
+                    {
+                      "label": "数字",
+                      "id": "1768636050901Wqk2",
+                      "opera": "1"
+                    }
+                  ]
+                },
+                "childNode": {
+                  "nodeName": "条件路由",
+                  "nodeKey": "flk1768636080837",
+                  "type": 4,
+                  "conditionNodes": [
+                    {
+                      "nodeName": "条件1",
+                      "nodeKey": "flk17686360808371",
+                      "type": 3,
+                      "priorityLevel": 1,
+                      "conditionList": [
+                        [
+                          {
+                            "label": "num",
+                            "field": "num",
+                            "operator": "==",
+                            "value": "5",
+                            "type": "form"
+                          }
+                        ]
+                      ],
+                      "childNode": {
+                        "nodeName": "审核B",
+                        "nodeKey": "flk1768636083320",
+                        "type": 1,
+                        "setType": 2,
+                        "nodeCandidate": {
+                          "type": 0
+                        },
+                        "examineLevel": 1,
+                        "examineMode": 1,
+                        "directorLevel": 1,
+                        "directorMode": 0,
+                        "selectMode": 1,
+                        "termAuto": false,
+                        "term": 0,
+                        "termMode": 1,
+                        "typeOfApprove": 1,
+                        "rejectStrategy": 2,
+                        "rejectStart": 1,
+                        "remind": false,
+                        "approveSelf": 0,
+                        "extendConfig": {
+                          "formConfig": [
+                            {
+                              "label": "数字",
+                              "id": "1768636050901Wqk2",
+                              "opera": "1"
+                            }
+                          ]
+                        },
+                        "delayType": 1
+                      }
+                    },
+                    {
+                      "nodeName": "默认条件",
+                      "nodeKey": "flk1768636080837_default",
+                      "type": 3,
+                      "priorityLevel": 2
+                    }
+                  ]
+                },
+                "delayType": 1
+              }
+            },
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "delayType": 1,
+            "extendConfig": {
+              "formConfig": [
+                {
+                  "label": "数字",
+                  "id": "1768636050901Wqk2",
+                  "opera": "1"
+                }
+              ]
+            },
+            "local_actionUrl": []
+          }
+        },
+        {
+          "nodeName": "默认条件",
+          "nodeKey": "flk1768636062704_default",
+          "type": 3,
+          "priorityLevel": 2
+        }
+      ],
+      "childNode": {
+        "nodeName": "审核C",
+        "nodeKey": "flk1766969663616",
+        "type": 1,
+        "setType": 1,
+        "nodeAssigneeList": [
+          {
+            "id": "1778236187025342466",
+            "name": "夏小华"
+          }
+        ],
+        "nodeCandidate": {
+          "type": 0
+        },
+        "examineLevel": 1,
+        "examineMode": 1,
+        "directorLevel": 1,
+        "directorMode": 0,
+        "selectMode": 1,
+        "termAuto": false,
+        "term": 0,
+        "termMode": 1,
+        "typeOfApprove": 1,
+        "rejectStrategy": 2,
+        "rejectStart": 1,
+        "remind": false,
+        "approveSelf": 0,
+        "extendConfig": {
+          "formConfig": [
+            {
+              "label": "数字",
+              "id": "1768636050901Wqk2",
+              "opera": "1"
+            }
+          ]
+        },
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk17669696612361",
+          "type": -1
+        },
+        "delayType": 1
+      }
+    }
+  }
+}

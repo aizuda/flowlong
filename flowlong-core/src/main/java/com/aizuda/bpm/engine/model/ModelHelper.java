@@ -155,6 +155,13 @@ public class ModelHelper {
                 // 返回子节点
                 nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, nodeModel.getChildNode()));
             }
+        } else if (parentNode.approvalOrMajor() || parentNode.triggerNode()) {
+            // 审批或触发器节点的子节点，为上一个递归查找节点
+            NodeModel parentChildNode = parentNode.getChildNode();
+            if (Objects.equals(parentChildNode.getNodeKey(), nodeModel.getNodeKey())) {
+                // 继续查找上级节点
+                return getChildNode(flowLongContext, execution, rootNodeModel, parentNode);
+            }
         }
         return nextNodes;
     }

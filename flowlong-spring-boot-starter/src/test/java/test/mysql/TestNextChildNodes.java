@@ -75,4 +75,14 @@ public class TestNextChildNodes extends TestModel {
             consumer.accept(nodeModels);
         }
     }
+
+    @Test
+    public void testNextChildNodes02() {
+        ProcessModel processModel = getProcessModel("test/testNextChildNodes02.json");
+        processModel.buildParentNode(processModel.getNodeConfig());
+
+        assertEquals("flk1766969663616", "flk1768636083320", processModel, new HashMap<String, Object>() {{
+            put("num", 5);
+        }});
+    }
 }
