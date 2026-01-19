@@ -4,6 +4,7 @@
  */
 package com.aizuda.bpm.engine.core;
 
+import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.FlowLongEngine;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
@@ -130,14 +131,19 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      */
     @Override
     public boolean executeTask(Long taskId, FlowCreator flowCreator, Map<String, Object> args) {
-        // 完成任务，并且构造执行对象
-        FlwTask flwTask = taskService().complete(taskId, flowCreator, ObjectUtils.getArgs(args));
-        if (log.isDebugEnabled()) {
-            log.debug("Execute complete taskId={}", taskId);
+        try {
+            // 完成任务，并且构造执行对象
+            FlwTask flwTask = taskService().complete(taskId, flowCreator, ObjectUtils.getArgs(args));
+            if (log.isDebugEnabled()) {
+                log.debug("Execute complete taskId={}", taskId);
+            }
+            return afterDoneTask(flowCreator, flwTask, args, execution ->
+                    // 执行节点模型
+                    execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey()));
+        } finally {
+            // 数据传输对象线程变量释放
+            FlowDataTransfer.remove();
         }
-        return afterDoneTask(flowCreator, flwTask, args, execution ->
-                // 执行节点模型
-                execution.executeNodeModel(flowLongContext, execution.getFlwTask().getTaskKey()));
     }
 
     /**
