@@ -72,12 +72,12 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 调用外部 AI 智能体业务
      * <p>
-     * 用于存储外部AI智能体相关配置ID等唯一标识
+     * 用于存储外部 AI 智能体相关配置ID等唯一标识
      * </p>
      */
     private String callAi;
     /**
-     * 任务关联的表单url
+     * 任务关联的表单 url
      */
     private String actionUrl;
     /**
@@ -259,6 +259,40 @@ public class NodeModel implements ModelInstance, Serializable {
      * </p>
      */
     private Integer delayType;
+
+    // ==================== AI 配置相关方法 ====================
+
+    /**
+     * 获取 AI 配置对象
+     *
+     * @return {@link AiConfig} AI 配置，不存在返回 null
+     */
+    @SuppressWarnings("unchecked")
+    public AiConfig getAiConfig() {
+        if (null == extendConfig) {
+            return null;
+        }
+        Object aiConfigObj = extendConfig.get("aiConfig");
+        if (aiConfigObj instanceof AiConfig) {
+            return (AiConfig) aiConfigObj;
+        }
+        if (aiConfigObj instanceof Map) {
+            // 将 Map 转换为 AiConfig 对象
+            Map<String, Object> configMap = (Map<String, Object>) aiConfigObj;
+            AiConfig aiConfig = new AiConfig();
+            aiConfig.setAgentId((String) configMap.get("agentId"));
+            aiConfig.setPromptTemplate((String) configMap.get("promptTemplate"));
+            aiConfig.setConfidenceThreshold((Double) configMap.get("confidenceThreshold"));
+            aiConfig.setTimeoutSeconds((Integer) configMap.get("timeoutSeconds"));
+            aiConfig.setFallbackStrategy((String) configMap.get("fallbackStrategy"));
+            aiConfig.setAsyncMode((Boolean) configMap.get("asyncMode"));
+            aiConfig.setMaxRetries((Integer) configMap.get("maxRetries"));
+            aiConfig.setOutputMapping((Map<String, String>) configMap.get("outputMapping"));
+            aiConfig.setModelParams((Map<String, Object>) configMap.get("modelParams"));
+            return aiConfig;
+        }
+        return null;
+    }
 
     /**
      * 是否保存权重

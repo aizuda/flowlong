@@ -64,7 +64,15 @@ public enum InstanceState {
     /**
      * 自动拒绝
      */
-    autoReject(7);
+    autoReject(7),
+    /**
+     * AI 处理中（异步等待 AI 响应）
+     */
+    aiProcessing(8),
+    /**
+     * AI 人工复核（AI 置信度低，等待人工确认）
+     */
+    aiManualReview(9);
 
     private final int value;
 

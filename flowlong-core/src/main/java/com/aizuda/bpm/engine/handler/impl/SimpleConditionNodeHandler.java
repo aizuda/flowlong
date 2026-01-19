@@ -66,7 +66,7 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
     public Optional<ConditionNode> matchConditionNode(FlowLongContext flowLongContext, Execution execution,
                                                       NodeModel nodeModel, List<ConditionNode> conditionNodes) {
 
-        // 根据指定条件节点选择
+        // 1. 根据指定条件节点选择
         String conditionNodeKey = FlowDataTransfer.get(FlowConstants.processSpecifyConditionNodeKey);
         if (null != conditionNodeKey) {
             // 清理指定节点参数
@@ -79,31 +79,37 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
             }
         }
 
-        // 根据正则条件节点选择
-        Map<String, Object> args = this.getRouteArgs(flowLongContext, execution, nodeModel);
-        // 执行表单式判断，匹配执行节点
+        // 获取节点执行参数
+        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
+
+        // 2. AI 智能路由决策（优先于规则判断）
+        if (null != nodeModel.getCallAi()) {
+            FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
+            if (null != flowAiHandler) {
+                String aiDecidedNodeKey = flowAiHandler.decideRoute(flowLongContext, execution, nodeModel, args);
+                if (null != aiDecidedNodeKey) {
+                    Optional<ConditionNode> aiNodeOptional = conditionNodes.stream()
+                            .filter(t -> Objects.equals(t.getNodeKey(), aiDecidedNodeKey))
+                            .findFirst();
+                    if (aiNodeOptional.isPresent()) {
+                        return aiNodeOptional;
+                    }
+                }
+            }
+        }
+
+        // 3. 根据正则条件节点选择
         FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
         return conditionNodes.stream().sorted(Comparator.comparing(ConditionNode::getPriorityLevel))
-                .filter(t -> flowLongExpression.eval(t.getConditionList(), args)).findFirst();
+                // 执行表单式判断，匹配执行节点
+                .filter(t -> flowLongExpression.eval(t.getConditionList(), args))
+                .findFirst();
     }
 
     @Override
     public Optional<ConditionNode> getRouteNode(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
         // 判断路由节点
         return this.getConditionNode(flowLongContext, execution, nodeModel, nodeModel.getRouteNodes());
-    }
-
-    public Map<String, Object> getRouteArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
-        // 获取执行参数内容
-        Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
-        if (null != nodeModel.getCallAi()) {
-            // 参数交由 AI智能体 处理分析
-            FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
-            if (null != flowAiHandler) {
-                args = flowAiHandler.getArgs(flowLongContext, execution, nodeModel, args);
-            }
-        }
-        return args;
     }
 
     public Map<String, Object> getArgs(FlowLongContext flowLongContext, Execution execution, NodeModel nodeModel) {
@@ -128,10 +134,33 @@ public class SimpleConditionNodeHandler implements ConditionNodeHandler {
         final List<ConditionNode> inclusiveNodes = nodeModel.getInclusiveNodes();
         this.assertConditionNodes(inclusiveNodes);
 
-        // 根据正则条件节点选择
-        FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
+        // 获取节点执行参数
         Map<String, Object> args = this.getArgs(flowLongContext, execution, nodeModel);
-        List<ConditionNode> cnsOpt = inclusiveNodes.stream().filter(t -> flowLongExpression.eval(t.getConditionList(), args)).collect(Collectors.toList());
+
+        // 1. AI 智能包容分支决策（优先于规则判断）
+        if (null != nodeModel.getCallAi()) {
+            FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
+            if (null != flowAiHandler) {
+                List<String> aiDecidedNodeKeys = flowAiHandler.decideInclusiveRoutes(flowLongContext, execution, nodeModel, args);
+                if (ObjectUtils.isNotEmpty(aiDecidedNodeKeys)) {
+                    // 根据 AI 决策的 NodeKey 列表筛选包容节点
+                    List<ConditionNode> aiNodes = inclusiveNodes.stream()
+                            .filter(t -> aiDecidedNodeKeys.contains(t.getNodeKey()))
+                            .collect(Collectors.toList());
+                    if (!aiNodes.isEmpty()) {
+                        return Optional.of(aiNodes);
+                    }
+                }
+            }
+        }
+
+        // 2. 根据 SpEL 条件表达式选择
+        FlowLongExpression flowLongExpression = flowLongContext.checkFlowLongExpression();
+        List<ConditionNode> cnsOpt = inclusiveNodes.stream()
+                .filter(t -> flowLongExpression.eval(t.getConditionList(), args))
+                .collect(Collectors.toList());
+
+        // 3. 未发现满足条件分支，使用默认分支
         if (ObjectUtils.isEmpty(cnsOpt)) {
             cnsOpt = Collections.singletonList(defaultConditionNode(inclusiveNodes).get());
         }

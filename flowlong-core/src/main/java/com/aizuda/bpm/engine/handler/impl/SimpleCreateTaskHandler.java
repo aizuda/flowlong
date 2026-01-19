@@ -50,10 +50,11 @@ public class SimpleCreateTaskHandler implements CreateTaskHandler {
                 // 执行 AI智能体 审批逻辑
                 if (null != nodeModel.getCallAi()) {
                     FlowAiHandler flowAiHandler = flowLongContext.getFlowAiHandler();
-                    if (null != flowAiHandler) {
-                        // 执行处理器
-                        return flowAiHandler.handle(flowLongContext, execution, nodeModel);
+                    if (null == flowAiHandler) {
+                        log.warn("AI node [{}] configured but FlowAiHandler not found, skip AI processing", nodeModel.getNodeKey());
+                        return true;
                     }
+                    return flowAiHandler.handle(flowLongContext, execution, nodeModel);
                 }
             }
             return true;
