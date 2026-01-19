@@ -253,12 +253,12 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         ProcessModel processModel = extInstance.model();
         NodeModel nodeModel = processModel.getNode(currentFlwTask.getTaskKey());
 
-        if (Objects.equals(1, nodeModel.getRejectStrategy())) {
+        if (RejectStrategy.TO_INITIATOR.eq(nodeModel.getRejectStrategy())) {
             // 驳回策略 1，驳回到发起人
             return this.executeJumpTask(currentFlwTask.getId(), processModel.getNodeConfig().getNodeKey(), flowCreator, args, TaskType.rejectJump);
         }
 
-        if (Objects.equals(4, nodeModel.getRejectStrategy())) {
+        if (RejectStrategy.TERMINATE_APPROVAL.eq(nodeModel.getRejectStrategy())) {
             // 驳回策略 4，终止审批流程
             return terminateProcess.get();
         }
@@ -272,7 +272,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                 return this.executeJumpTask(currentFlwTask.getId(), parentNode.parentApprovalNode().getNodeKey(), flowCreator, args, TaskType.rejectJump);
             }
 
-            if (Objects.equals(5, nodeModel.getRejectStrategy())) {
+            if (RejectStrategy.TO_PARENT_NODE.eq(nodeModel.getRejectStrategy())) {
                 // 驳回策略 5，驳回到模型父节点
                 return this.executeJumpTask(currentFlwTask.getId(), parentNode.getNodeKey(), flowCreator, args, TaskType.rejectJump);
             }
