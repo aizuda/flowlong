@@ -76,10 +76,21 @@ public class ModelHelper {
                     .ifPresent(t -> {
                         NodeModel _childNode = t.getChildNode();
                         if (null != _childNode) {
-                            nextNodes.add(_childNode);
+                            if (_childNode.approvalOrMajor()) {
+                                // 审批节点
+                                nextNodes.add(_childNode);
+                            } else {
+                                // 其它节点情况
+                                nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, _childNode));
+                            }
                         } else if (null != childNode.getChildNode()) {
                             // 默认条件，找下一个审批节点
                             nextNodes.addAll(getNextChildNodes(flowLongContext, execution, rootNodeModel, childNode.getChildNode()));
+                        } else {
+                            List<NodeModel> _parentChildNode = getChildNode(flowLongContext, execution, rootNodeModel, childNode);
+                            if (ObjectUtils.isNotEmpty(_parentChildNode)) {
+                                nextNodes.addAll(_parentChildNode);
+                            }
                         }
                     });
         } else if (childNode.parallelNode()) {

@@ -84,5 +84,23 @@ public class TestNextChildNodes extends TestModel {
         assertEquals("flk1766969663616", "flk1768636083320", processModel, new HashMap<String, Object>() {{
             put("num", 5);
         }});
+
+        assertEquals("flk1766969663616", "flk1768636135092", processModel, new HashMap<String, Object>() {{
+            put("num", 6);
+        }});
+    }
+
+    @Test
+    public void testNextChildNodes03() {
+        ProcessModel processModel = getProcessModel("test/testNextChildNodes03.json");
+        processModel.buildParentNode(processModel.getNodeConfig());
+
+        assertEquals("flk1768636083320", "flk1766969661236", processModel, new HashMap<String, Object>() {{
+            put("num", 5);
+        }});
+
+        assertEquals("flk1766969663616", "flk1766969661236", processModel, new HashMap<String, Object>() {{
+            put("num", 6);
+        }});
     }
 }

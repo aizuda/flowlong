@@ -5,15 +5,6 @@
     "nodeName": "发起人",
     "nodeKey": "flk1766969661236",
     "type": 0,
-    "extendConfig": {
-      "formConfig": [
-        {
-          "label": "手机号",
-          "id": "17669696572556pjK",
-          "opera": "1"
-        }
-      ]
-    },
     "childNode": {
       "nodeName": "条件路由",
       "nodeKey": "flk1768636062704",
