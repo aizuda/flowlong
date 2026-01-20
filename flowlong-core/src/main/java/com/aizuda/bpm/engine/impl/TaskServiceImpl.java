@@ -565,8 +565,13 @@ public class TaskServiceImpl implements TaskService {
             Assert.illegal("Current executing user [" + flowCreator.getCreateBy() + "] claiming tasks is not allowed [taskId=" + taskId + "]");
         }
 
-        // 删除任务参与者
-        taskActorDao.deleteById(taskActor.getId());
+        if (PerformType.orSign.eq(flwTask.getPerformType())) {
+            // 或签认领，删除指定任务的参与者角色
+            taskActorDao.deleteByTaskId(flwTask.getId());
+        } else {
+            // 删除任务参与者
+            taskActorDao.deleteById(taskActor.getId());
+        }
 
         FlwTaskActor fta = FlwTaskActor.ofAgent(agentType, flowCreator, flwTask, taskActor);
 
