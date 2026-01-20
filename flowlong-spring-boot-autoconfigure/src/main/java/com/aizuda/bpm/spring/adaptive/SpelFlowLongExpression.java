@@ -58,10 +58,11 @@ public class SpelFlowLongExpression implements FlowLongExpression {
             value += "L";
         } else if (fieldValue instanceof Collection) {
             // 集合情况
-            if (this.include(operator)) {
-                return "T(java.util.Arrays).asList(#" + field + ").contains('" + value + "')";
-            } else if (this.notInclude(operator)) {
+            if (this.notInclude(operator)) {
                 return "not T(java.util.Arrays).asList(#" + field + ").contains('" + value + "')";
+            } else {
+                // 其它情况视为包含
+                return "T(java.util.Arrays).asList(#" + field + ").contains('" + value + "')";
             }
         }
         // 其它
