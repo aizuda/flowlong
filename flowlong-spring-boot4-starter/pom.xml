@@ -10,7 +10,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>flowlong-spring-boot-starter</artifactId>
+    <artifactId>flowlong-spring-boot4-starter</artifactId>
     <description>flowlong spring boot starter</description>
 
     <dependencyManagement>
