@@ -12,16 +12,16 @@
         <module>flowlong-mybatis-plus</module>
         <module>flowlong-solon-plugin</module>
         <module>flowlong-solon-example</module>
-        <module>flowlong-spring-boot4-starter</module>
         <module>flowlong-spring-boot-autoconfigure</module>
-        <module>flowlong-spring-boot-starter</module>
         <module>flowlong-spring-boot-example</module>
+        <module>flowlong-spring-boot-starter</module>
+        <module>flowlong-spring-boot4-starter</module>
     </modules>
 
     <properties>
         <revision>1.2.2</revision>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <spring-boot.version>2.7.0</spring-boot.version>
         <spring-boot4.version>4.0.0</spring-boot4.version>
         <mybatis.plus-version>3.5.14</mybatis.plus-version>
