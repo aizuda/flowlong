@@ -29,6 +29,7 @@
         <dependency>
             <groupId>com.aizuda</groupId>
             <artifactId>flowlong-spring-boot-autoconfigure</artifactId>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
