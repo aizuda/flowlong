@@ -250,10 +250,9 @@ public class TestModel extends MysqlTest {
         nodeModel.setType(1);
         nodeModel.setSetType(1);
         nodeModel.setExamineMode(1);
-        NodeAssignee nodeAssignee = new NodeAssignee();
-        nodeAssignee.setId(flowCreator.getCreateId());
-        nodeAssignee.setName(flowCreator.getCreateBy());
-        nodeModel.setNodeAssigneeList(Collections.singletonList(nodeAssignee));
+        nodeModel.setNodeAssigneeList(Collections.singletonList(
+                NodeAssignee.ofFlowCreator(flowCreator)
+        ));
         return nodeModel;
     }
 

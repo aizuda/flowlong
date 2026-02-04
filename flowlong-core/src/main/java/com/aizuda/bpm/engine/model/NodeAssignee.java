@@ -6,8 +6,7 @@ package com.aizuda.bpm.engine.model;
 
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -24,6 +23,9 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class NodeAssignee implements Serializable {
     /**
      * 租户ID
@@ -47,19 +49,19 @@ public class NodeAssignee implements Serializable {
     private Map<String, Object> extendConfig;
 
     public static NodeAssignee of(FlwTaskActor flwTaskActor) {
-        NodeAssignee nodeAssignee = new NodeAssignee();
-        nodeAssignee.setTenantId(flwTaskActor.getTenantId());
-        nodeAssignee.setId(flwTaskActor.getActorId());
-        nodeAssignee.setName(flwTaskActor.getActorName());
-        nodeAssignee.setWeight(flwTaskActor.getWeight());
-        return nodeAssignee;
+        return NodeAssignee.builder()
+                .tenantId(flwTaskActor.getTenantId())
+                .id(flwTaskActor.getActorId())
+                .name(flwTaskActor.getActorName())
+                .weight(flwTaskActor.getWeight())
+                .build();
     }
 
     public static NodeAssignee ofFlowCreator(FlowCreator flowCreator) {
-        NodeAssignee nodeAssignee = new NodeAssignee();
-        nodeAssignee.setTenantId(flowCreator.getTenantId());
-        nodeAssignee.setId(flowCreator.getCreateId());
-        nodeAssignee.setName(flowCreator.getCreateBy());
-        return nodeAssignee;
+        return NodeAssignee.builder()
+                .tenantId(flowCreator.getTenantId())
+                .id(flowCreator.getCreateId())
+                .name(flowCreator.getCreateBy())
+                .build();
     }
 }

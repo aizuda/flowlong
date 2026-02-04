@@ -51,10 +51,9 @@ public class TestReloadProcessModel extends MysqlTest {
         Map<String, Object> assigneeMap = new HashMap<>();
         DynamicAssignee dynamicAssignee = DynamicAssignee.builder();
         dynamicAssignee.setType(1);
-        NodeAssignee nodeAssignee = new NodeAssignee();
-        nodeAssignee.setId(flowCreator.getCreateId());
-        nodeAssignee.setName(flowCreator.getCreateBy());
-        dynamicAssignee.setAssigneeList(Collections.singletonList(nodeAssignee));
+        dynamicAssignee.setAssigneeList(Collections.singletonList(
+                NodeAssignee.ofFlowCreator(flowCreator)
+        ));
         assigneeMap.put(nodeKey, dynamicAssignee);
         FlowDataTransfer.dynamicAssignee(assigneeMap);
 
