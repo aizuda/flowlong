@@ -386,7 +386,8 @@ public class ModelHelper {
      * @param rootNodeModel 根节点模型
      * @return 0，正常 1，存在重复节点KEY 2，自动通过节点配置错误 3，自动拒绝节点配置错误
      * 4，路由节点必须配置错误（未配置路由分支） 5，子流程节点配置错误（未选择子流程）
-     * 6，抄送节点配置错误（未配置处理人，且不允许抄送自选） 7，指定成员审批（未配置处理人员）
+     * 6，抄送指定人员（未配置处理人员，且不允许抄送自选） 61，抄送指定角色（未选择角色） 62，抄送发起人自选（未选择默认处理人员）
+     * 7，指定成员审批（未配置处理人员） 71，指定角色审批（未选择角色） 72，发起人自选（未选择默认处理人员）
      */
     public static int checkNodeModel(NodeModel rootNodeModel) {
         List<NodeModel> allNextNodes = getRootNodeAllChildNodes(rootNodeModel);
@@ -396,10 +397,19 @@ public class ModelHelper {
                 // 节点KEY重复
                 return 1;
             }
-            if (TaskType.approval.eq(nextNode.getType()) && NodeSetType.specifyMembers.eq(nextNode.getSetType())
-                    && ObjectUtils.isEmpty(nextNode.getNodeAssigneeList())) {
-                // 指定成员审批（未配置处理人员）
-                return 7;
+            if (TaskType.approval.eq(nextNode.getType()) && ObjectUtils.isEmpty(nextNode.getNodeAssigneeList())) {
+                if (NodeSetType.specifyMembers.eq(nextNode.getSetType())) {
+                    // 指定成员审批（未配置处理人员）
+                    return 7;
+                }
+                if (NodeSetType.role.eq(nextNode.getSetType())) {
+                    // 指定角色审批（未选择角色）
+                    return 71;
+                }
+                if (NodeSetType.initiatorSelected.eq(nextNode.getSetType())) {
+                    // 发起人自选（未选择默认处理人员）
+                    return 72;
+                }
             } else if (TaskType.autoPass.eq(nextNode.getType())) {
                 if (!inConditionNode(nextNode) || null != nextNode.getChildNode()) {
                     // 自动通过节点配置错误
@@ -416,9 +426,19 @@ public class ModelHelper {
             } else if (nextNode.callProcessNode() && ObjectUtils.isEmpty(nextNode.getCallProcess())) {
                 // 子流程节点配置错误（未选择子流程）
                 return 5;
-            } else if (nextNode.ccNode() && ObjectUtils.notEquals(true, nextNode.getAllowSelection()) && ObjectUtils.isEmpty(nextNode.getNodeAssigneeList())) {
-                // 抄送节点配置错误（未配置处理人员，且不允许抄送自选）
-                return 6;
+            } else if (nextNode.ccNode() && ObjectUtils.isEmpty(nextNode.getNodeAssigneeList())) {
+                if (NodeSetType.specifyMembers.eq(nextNode.getSetType()) && ObjectUtils.notEquals(true, nextNode.getAllowSelection())) {
+                    // 抄送指定人员（未配置处理人员，且不允许抄送自选）
+                    return 6;
+                }
+                if (NodeSetType.role.eq(nextNode.getSetType())) {
+                    // 抄送指定角色（未选择角色）
+                    return 61;
+                }
+                if (NodeSetType.initiatorSelected.eq(nextNode.getSetType())) {
+                    // 抄送发起人自选（未选择默认处理人员）
+                    return 62;
+                }
             }
         }
         // 正确模型
