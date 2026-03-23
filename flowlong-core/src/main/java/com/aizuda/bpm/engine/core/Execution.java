@@ -303,11 +303,11 @@ public class Execution implements Serializable {
     /**
      * 重启流程实例（从当前所在节点currentNode位置开始）
      *
-     * @param id             流程定义ID
-     * @param currentNodeKey 当前所在节点key
+     * @param instanceId     流程实例 ID
+     * @param currentNodeKey 当前所在节点 key
      */
-    public void restartProcessInstance(Long id, String currentNodeKey) {
-        engine.restartProcessInstance(id, currentNodeKey, this);
+    public void restartProcessInstance(Long instanceId, String currentNodeKey) {
+        engine.restartProcessInstance(instanceId, currentNodeKey, this);
     }
 
     /**

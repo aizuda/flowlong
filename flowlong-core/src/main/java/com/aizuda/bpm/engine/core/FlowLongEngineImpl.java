@@ -94,9 +94,9 @@ public class FlowLongEngineImpl implements FlowLongEngine {
      * 重启流程实例（从当前所在节点currentNode位置开始）
      */
     @Override
-    public void restartProcessInstance(Long id, String currentNodeKey, Execution execution) {
-        FlwProcess process = processService().getProcessById(id);
-        NodeModel nodeModel = process.model().getNode(currentNodeKey);
+    public void restartProcessInstance(Long instanceId, String currentNodeKey, Execution execution) {
+        FlwExtInstance extInstance = queryService().getExtInstance(instanceId);
+        NodeModel nodeModel = extInstance.model().getNode(currentNodeKey);
         if (null != nodeModel) {
             boolean exec = false;
             FlwInstance fi = execution.getFlwInstance();
