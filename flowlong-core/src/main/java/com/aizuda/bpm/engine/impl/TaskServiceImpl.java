@@ -232,14 +232,16 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
+        InstanceState instanceState = null;
         List<FlwTask> flwTasks = new ArrayList<>();
         List<FlwTaskActor> taskActors = new ArrayList<>();
 
         // 设置任务类型为跳转
         FlwTask createTask = this.createTaskBase(nodeModel, execution);
         if (TaskType.major == currentNodeTaskType) {
-            // 发起节点，创建发起任务，分配发起人
-            createTask.taskType(taskType);
+            // 发起节点，创建发起任务，分配发起人（设置为草稿状态）
+            instanceState = InstanceState.saveAsDraft;
+            createTask.taskType(TaskType.saveAsDraft);
             createTask.performType(PerformType.start);
             Assert.isFalse(taskDao.insert(createTask), "failed to create initiation task");
             flwTasks.add(createTask);
@@ -261,7 +263,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         // 更新当前节点
-        this.updateCurrentNode(createTask, null);
+        this.updateCurrentNode(createTask, instanceState);
 
         // 设置跳转后返回的任务列表
         execution.addTasks(flwTasks);
@@ -1356,7 +1358,7 @@ public class TaskServiceImpl implements TaskService {
      *
      * @param nodeModel 节点模型
      * @param execution 执行对象
-     * @return Task任务对象
+     * @return Task 任务对象
      */
     protected FlwTask createTaskBase(NodeModel nodeModel, Execution execution) {
         FlwInstance flwInstance = execution.getFlwInstance();
