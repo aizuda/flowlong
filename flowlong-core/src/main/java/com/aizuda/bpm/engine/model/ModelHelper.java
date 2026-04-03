@@ -69,6 +69,11 @@ public class ModelHelper {
 
     private static List<NodeModel> getNextChildNodes(FlowLongContext flowLongContext, Execution execution, NodeModel rootNodeModel, NodeModel childNode) {
         List<NodeModel> nextNodes = new ArrayList<>();
+        if (null == childNode) {
+            // 其它不存在子节点情况，返回空集合
+            return nextNodes;
+        }
+
         if (childNode.conditionNode()) {
             // 条件节点
             flowLongContext.getFlowConditionHandler().getConditionNode(flowLongContext, execution, childNode)
