@@ -516,8 +516,8 @@ public class ModelHelper {
                 // 存在多个条件表达式为空
                 return 1;
             }
-            if (j > 1) {
-                // 存在多个子节点为空
+            if (j > 1 && null == nodeModel.getChildNode()) {
+                // 存在多个子节点为空（条件路由有公共子节点时，允许多个分支没有自己的子节点）
                 return 2;
             }
             for (ConditionNode conditionNode : conditionNodes) {
