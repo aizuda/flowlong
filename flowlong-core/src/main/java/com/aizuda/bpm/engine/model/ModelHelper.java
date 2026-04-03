@@ -696,15 +696,17 @@ public class ModelHelper {
                     // 条件节点子节点
                     getChildAllUsedNodeKeys(currentUsedNodeKeys, flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey);
                 } else if (rootNodeModel.routeNode()) {
+                    NodeModel routeNextNode = rootNodeModel.getChildNode();
                     // 路由节点
                     currentUsedNodeKeys.add(rootNodeModel.getNodeKey());
                     Optional<ConditionNode> opt = flowLongContext.getFlowConditionHandler().getRouteNode(flowLongContext, execution, rootNodeModel);
                     if (opt.isPresent()) {
                         // 添加执行条件节点
-                        currentUsedNodeKeys.add(opt.get().getNodeKey());
-                    } else if (null != rootNodeModel.getChildNode()) {
+                        routeNextNode = rootNodeModel.getNode(opt.get().getNodeKey());
+                    }
+                    if (null != routeNextNode) {
                         // 获取路由分支子节点
-                        currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, rootNodeModel.getChildNode(), currentNodeKey));
+                        currentUsedNodeKeys.addAll(getAllUsedNodeKeys(flowLongContext, execution, routeNextNode, currentNodeKey));
                     }
                 } else {
 
