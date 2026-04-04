@@ -21,10 +21,7 @@ import com.aizuda.bpm.engine.model.ModelHelper;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -319,19 +316,37 @@ public class RuntimeServiceImpl implements RuntimeService {
             return false;
         }
 
-        final Long parentInstanceId = flwInstance.getParentInstanceId();
-        if (null != parentInstanceId) {
-            // 找到主流程去执行完成逻辑
-            this.forceComplete(parentInstanceId, currentFlwTask, flowCreator, instanceEventType, instanceState, eventType);
-        } else {
-            // 结束所有子流程实例
-            instanceDao.selectListByParentInstanceId(flwInstance.getId()).ifPresent(f -> f.forEach(t ->
-                    this.forceCompleteAll(t, currentFlwTask, flowCreator, instanceEventType, instanceState, eventType)));
-        }
-
-        // 结束当前流程实例
-        this.forceCompleteAll(flwInstance, currentFlwTask, flowCreator, instanceEventType, instanceState, eventType);
+        // 关闭所有流程实例
+        FlwInstance parentInstance = this.getTopParentInstance(flwInstance);
+        this.collectAllInstance(parentInstance).forEach(fi ->
+                this.forceCompleteAll(fi, currentFlwTask, flowCreator, instanceEventType, instanceState, eventType));
         return true;
+    }
+
+    /**
+     * 获取最顶部流程实例
+     */
+    protected FlwInstance getTopParentInstance(FlwInstance flwInstance) {
+        FlwInstance parentInstance = flwInstance;
+        Long parentInstanceId = parentInstance.getParentInstanceId();
+        if (null != parentInstanceId) {
+            parentInstance = instanceDao.selectById(parentInstanceId);
+            if (null != parentInstance) {
+                return getTopParentInstance(parentInstance);
+            }
+        }
+        return parentInstance;
+    }
+
+    /**
+     * 获取所有流程实例
+     */
+    protected List<FlwInstance> collectAllInstance(FlwInstance flwInstance) {
+        List<FlwInstance> fiList = new ArrayList<>();
+        fiList.add(flwInstance);
+        instanceDao.selectListByParentInstanceId(flwInstance.getId()).ifPresent(fis ->
+                fis.forEach(fi -> fiList.addAll(collectAllInstance(fi))));
+        return fiList;
     }
 
     /**
