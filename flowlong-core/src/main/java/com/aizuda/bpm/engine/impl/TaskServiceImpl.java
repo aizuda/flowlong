@@ -919,7 +919,8 @@ public class TaskServiceImpl implements TaskService {
                 hisTaskDao.selectListByInstanceIdAndCallInstanceId(currentInstanceId, ht.getInstanceId()).ifPresent(hts -> {
                     FlwHisTask fht = hts.get(0);
                     if (null != fht) {
-                        this.undoHisTask(fht.getId(), flowCreator, TaskType.reject, null);
+                        // 更新当前执行节点信息
+                        this.updateCurrentNode(fht,null);
                     }
                 });
             }
@@ -1254,6 +1255,7 @@ public class TaskServiceImpl implements TaskService {
             }
             // 启动子流程（传递当前任务参数），任务归档历史
             final long instanceId = flwTask.getInstanceId();
+            FlwHisTask flwHisTask = FlwHisTask.of(flwTask);
             execution.getEngine().startProcessInstance(flwProcess, flowCreator, execution.getArgs(), false, () -> {
                 FlwInstance flwInstance = new FlwInstance();
                 if (nodeModel.callAsync()) {
@@ -1265,10 +1267,8 @@ public class TaskServiceImpl implements TaskService {
                 return flwInstance;
             }).ifPresent(instance -> {
                 // 归档历史
-                FlwHisTask flwHisTask = FlwHisTask.ofCallInstance(nodeModel, instance);
-                flwHisTask.setId(flowLongIdGenerator.getId(flwHisTask.getId()));
-                if (hisTaskDao.insert(flwHisTask)) {
-                    // 追加子流程实例ID
+                if (hisTaskDao.insert(FlwHisTask.ofCallInstance(flwHisTask, instance))) {
+                    // 追加子流程实例 ID
                     nodeModel.setCallProcess(nodeModel.getCallProcess() + ":" + instance.getId());
                     // 主流程监听
                     this.taskNotify(TaskEventType.callProcess, () -> flwHisTask, null, nodeModel, flowCreator);
@@ -1706,4 +1706,29 @@ public class TaskServiceImpl implements TaskService {
         return true;
     }
 
+    @Override
+    public boolean subprocessRollback(FlwInstance flwInstance, FlowCreator flowCreator) {
+        // 撤回子流程任务
+        Optional<List<FlwHisTask>> fhsOpt = hisTaskDao.selectListByInstanceIdAndCallInstanceId(flwInstance.getParentInstanceId(), flwInstance.getId());
+        if (fhsOpt.isPresent()) {
+            FlwHisTask fht = fhsOpt.get().get(0);
+            if (null != fht) {
+                // 删除子流程任务及参与者，保留历史数据
+                List<Long> instanceIds = Collections.singletonList(flwInstance.getId());
+                taskActorDao.deleteByInstanceIds(instanceIds);
+                taskDao.deleteByInstanceIds(instanceIds);
+
+                // 设置为删除完成状态
+                FlwHisInstance fhi = new FlwHisInstance();
+                fhi.setId(flwInstance.getId());
+                fhi.setLastUpdateBy(flowCreator.getCreateBy());
+                fhi.setLastUpdateTime(DateUtils.getCurrentDate());
+                hisInstanceDao.updateById(fhi.instanceState(InstanceState.reject));
+
+                // 撤回调用子流程节点的父节点任务
+                return this.undoHisTask(fht.getParentTaskId(), flowCreator, TaskType.reject, null).isPresent();
+            }
+        }
+        return false;
+    }
 }

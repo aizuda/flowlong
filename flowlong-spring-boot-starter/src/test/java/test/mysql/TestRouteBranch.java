@@ -42,7 +42,7 @@ public class TestRouteBranch extends MysqlTest {
 
             List<FlwTask> flwTaskList = flowLongEngine.queryService().getTasksByInstanceId(instance.getId());
             Assertions.assertEquals(flwTaskList.get(0).getTaskKey(), day == 8 ? "k005" : "k008");
-            flowLongEngine.runtimeService().cascadeRemoveByInstanceId(instance.getId());
+            flowLongEngine.runtimeService().cascadeRemoveByInstanceId(instance.getId(), testCreator);
         });
     }
 }

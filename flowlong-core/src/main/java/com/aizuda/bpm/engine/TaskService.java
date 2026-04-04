@@ -449,4 +449,11 @@ public interface TaskService {
      * @param instanceIds 流程实例ID列表
      */
     boolean cascadeRemoveByInstanceIds(List<Long> instanceIds);
+
+    /**
+     * 子流程回退到主流程
+     *
+     * @param flwInstance 子流程实例
+     */
+    boolean subprocessRollback(FlwInstance flwInstance, FlowCreator flowCreator);
 }

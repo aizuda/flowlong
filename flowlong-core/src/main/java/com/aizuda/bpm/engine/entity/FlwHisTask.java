@@ -90,18 +90,14 @@ public class FlwHisTask extends FlwTask {
         return hisTask;
     }
 
-    public static FlwHisTask ofCallInstance(NodeModel nodeModel, FlwInstance instance) {
-        FlwHisTask flwHisTask = new FlwHisTask();
+    public static FlwHisTask ofCallInstance(FlwHisTask flwHisTask, FlwInstance instance) {
         flwHisTask.setTenantId(instance.getTenantId());
         flwHisTask.setCreateId(instance.getCreateId());
         flwHisTask.setCreateBy(instance.getCreateBy());
         flwHisTask.setCreateTime(instance.getCreateTime());
         flwHisTask.setInstanceId(instance.getParentInstanceId());
-        flwHisTask.setTaskName(nodeModel.getNodeName());
-        flwHisTask.setTaskKey(nodeModel.getNodeKey());
         flwHisTask.setCallProcessId(instance.getProcessId());
         flwHisTask.setCallInstanceId(instance.getId());
-        flwHisTask.setTaskType(nodeModel.getType());
         return flwHisTask;
     }
 

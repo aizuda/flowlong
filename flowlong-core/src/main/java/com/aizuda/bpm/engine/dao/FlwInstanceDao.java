@@ -33,6 +33,10 @@ public interface FlwInstanceDao {
 
     FlwInstance selectById(Long id);
 
+    default Optional<FlwInstance> selectOptById(Long id) {
+        return Optional.of(this.selectById(id));
+    }
+
     Optional<List<FlwInstance>> selectListByParentInstanceId(Long parentInstanceId);
 
     Optional<List<FlwInstance>> selectListByBusinessKey(String businessKey);

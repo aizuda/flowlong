@@ -318,7 +318,7 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 关闭所有流程实例
         FlwInstance parentInstance = this.getTopParentInstance(flwInstance);
-        this.collectAllInstance(parentInstance).forEach(fi ->
+        this.collectAllInstances(parentInstance).forEach(fi ->
                 this.forceCompleteAll(fi, currentFlwTask, flowCreator, instanceEventType, instanceState, eventType));
         return true;
     }
@@ -341,11 +341,11 @@ public class RuntimeServiceImpl implements RuntimeService {
     /**
      * 获取所有流程实例
      */
-    protected List<FlwInstance> collectAllInstance(FlwInstance flwInstance) {
+    protected List<FlwInstance> collectAllInstances(FlwInstance flwInstance) {
         List<FlwInstance> fiList = new ArrayList<>();
         fiList.add(flwInstance);
         instanceDao.selectListByParentInstanceId(flwInstance.getId()).ifPresent(fis ->
-                fis.forEach(fi -> fiList.addAll(collectAllInstance(fi))));
+                fis.forEach(fi -> fiList.addAll(collectAllInstances(fi))));
         return fiList;
     }
 
@@ -398,7 +398,7 @@ public class RuntimeServiceImpl implements RuntimeService {
      * 删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_his_instance, flw_ext_instance, flw_instance
      * </p>
      *
-     * @param processId 流程ID
+     * @param processId 流程 ID
      */
     @Override
     public void cascadeRemoveByProcessId(Long processId) {
@@ -419,18 +419,44 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public void cascadeRemoveByInstanceId(Long instanceId) {
-        // 删除活动任务相关信息
-        if (taskService.cascadeRemoveByInstanceIds(Collections.singletonList(instanceId))) {
-            // 删除扩展实例
-            extInstanceDao.deleteById(instanceId);
+    public void cascadeRemoveByInstanceId(Long instanceId, FlowCreator flowCreator) {
+        instanceDao.selectOptById(instanceId).ifPresent(fi -> {
 
-            // 删除历史实例
-            hisInstanceDao.deleteById(instanceId);
+            // 为子流程情况，撤回父流程节点
+            if (null != fi.getParentInstanceId()) {
+                taskService.subprocessRollback(fi, flowCreator);
+            } else {
+                // 删除所有主流程相关实例
+                FlwInstance parentInstance = this.getTopParentInstance(fi);
+                List<Long> hiIds = this.collectAllHisInstanceIds(parentInstance.getId());
 
-            // 删除实例
-            instanceDao.deleteById(instanceId);
-        }
+                // 删除活动任务相关信息
+                if (taskService.cascadeRemoveByInstanceIds(hiIds)) {
+                    hiIds.forEach(t -> {
+
+                        // 删除扩展实例
+                        extInstanceDao.deleteById(t);
+
+                        // 删除历史实例
+                        hisInstanceDao.deleteById(t);
+
+                        // 删除实例
+                        instanceDao.deleteById(t);
+                    });
+                }
+            }
+        });
+    }
+
+    /**
+     * 获取所有流程历史实例 ID
+     */
+    protected List<Long> collectAllHisInstanceIds(Long piId) {
+        List<Long> fhiList = new ArrayList<>();
+        fhiList.add(piId);
+        hisInstanceDao.selectListByParentInstanceId(piId).ifPresent(t ->
+                t.forEach(fi -> fhiList.addAll(collectAllHisInstanceIds(fi.getId()))));
+        return fhiList;
     }
 
     @Override

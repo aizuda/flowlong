@@ -207,8 +207,9 @@ public interface RuntimeService {
      * 级联删除表 flw_his_task_actor, flw_his_task, flw_task_actor, flw_task, flw_instance, flw_his_instance
      *
      * @param instanceId 流程实例ID
+     * @param flowCreator 处理人员
      */
-    void cascadeRemoveByInstanceId(Long instanceId);
+    void cascadeRemoveByInstanceId(Long instanceId, FlowCreator flowCreator);
 
     /**
      * 根据 流程实例ID 作废流程
