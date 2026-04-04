@@ -809,9 +809,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public boolean resume(Long instanceId, FlowCreator flowCreator, BiFunction<FlwInstance, String, Boolean> execFunc) {
         FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
-        if (null == fhi || !Objects.equals(fhi.getCreateBy(), flowCreator.getCreateBy()) || (InstanceState.reject.ne(fhi.getInstanceState())
-                        && InstanceState.revoke.ne(fhi.getInstanceState()) && InstanceState.timeout.ne(fhi.getInstanceState())
-                        && InstanceState.terminate.ne(fhi.getInstanceState()) && InstanceState.autoReject.ne(fhi.getInstanceState()))) {
+        if (null == fhi) {
             return false;
         }
 
@@ -822,6 +820,11 @@ public class TaskServiceImpl implements TaskService {
             FlwHisInstance temp = new FlwHisInstance();
             temp.setId(instanceId);
             hisInstanceDao.updateById(temp.instanceState(InstanceState.active));
+        }
+
+        if (null == execFunc) {
+            // 无需处理执行函数
+            return true;
         }
 
         // 执行唤醒
@@ -903,10 +906,24 @@ public class TaskServiceImpl implements TaskService {
             }
         }
 
-
         // 撤回至上一级任务
         Long parentTaskId = currentFlwTask.getParentTaskId();
-        Optional<List<FlwTask>> flwTasksOptional = this.undoHisTask(parentTaskId, flowCreator, TaskType.reject, null);
+        Optional<List<FlwTask>> flwTasksOptional = this.undoHisTask(parentTaskId, flowCreator, TaskType.reject, ht -> {
+            // 实例ID 不一致，为子流程情况
+            Long currentInstanceId = currentFlwTask.getInstanceId();
+            if (!Objects.equals(currentInstanceId, ht.getInstanceId())) {
+                // 恢复子流程实例
+                this.resume(ht.getInstanceId(), flowCreator, null);
+
+                // 撤回子流程任务
+                hisTaskDao.selectListByInstanceIdAndCallInstanceId(currentInstanceId, ht.getInstanceId()).ifPresent(hts -> {
+                    FlwHisTask fht = hts.get(0);
+                    if (null != fht) {
+                        this.undoHisTask(fht.getId(), flowCreator, TaskType.reject, null);
+                    }
+                });
+            }
+        });
 
         // 任务监听器通知
         flwTasksOptional.ifPresent(fts -> fts.forEach(ft -> this.taskNotify(TaskEventType.recreate, () -> ft, null, null, flowCreator)));
