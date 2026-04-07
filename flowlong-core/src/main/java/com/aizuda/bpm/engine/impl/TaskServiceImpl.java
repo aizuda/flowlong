@@ -317,6 +317,10 @@ public class TaskServiceImpl implements TaskService {
 
         // 迁移 task 信息到 flw_his_task
         FlwHisTask hisTask = FlwHisTask.of(flwTask, taskState);
+        if (TaskType.saveAsDraft.eq(flwTask.getTaskType())) {
+            // 草稿状态任务归档为主办原始状态
+            flwTask.taskType(TaskType.major);
+        }
         hisTask.setFlowCreator(flowCreator);
         hisTask.calculateDuration();
 

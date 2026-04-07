@@ -142,7 +142,7 @@ public class FlwTask extends FlowEntity {
      * @return true 是 false 非
      */
     public boolean startNode() {
-        return Objects.equals(0L, this.parentTaskId);
+        return TaskType.saveAsDraft.eq(this.taskType);
     }
 
     public FlwTask cloneTask(FlowLongIdGenerator flowLongIdGenerator, FlwHisTaskActor hta) {
