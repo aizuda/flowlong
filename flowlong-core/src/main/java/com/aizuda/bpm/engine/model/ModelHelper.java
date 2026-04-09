@@ -601,6 +601,11 @@ public class ModelHelper {
                     if (null != thisNodeModel) {
                         DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
                         thisNodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
+                        // 设置新的审核人类型
+                        Integer type = dynamicAssignee.getType();
+                        if (null != type) {
+                            thisNodeModel.setSetType(type);
+                        }
                     }
                 }
             });
