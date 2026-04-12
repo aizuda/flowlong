@@ -14,6 +14,7 @@ import com.aizuda.bpm.engine.core.enums.NodeSetType;
 import com.aizuda.bpm.engine.core.enums.TaskType;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -595,23 +596,30 @@ public class ModelHelper {
         if (ObjectUtils.isNotEmpty(modelData)) {
 
             // 追加动态分配处理人员
+            AtomicInteger change = new AtomicInteger();
             modelData.forEach((key, value) -> {
                 if (value instanceof DynamicAssignee) {
-                    NodeModel thisNodeModel = processModel.getNode(key);
-                    if (null != thisNodeModel) {
-                        DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
-                        thisNodeModel.setNodeAssigneeList(dynamicAssignee.getAssigneeList());
-                        // 设置新的审核人类型
-                        Integer type = dynamicAssignee.getType();
-                        if (null != type) {
-                            thisNodeModel.setSetType(type);
+                    DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
+                    List<NodeAssignee> assigneeList =  dynamicAssignee.getAssigneeList();
+                    if (ObjectUtils.isNotEmpty(assigneeList)) {
+                        NodeModel thisNodeModel = processModel.getNode(key);
+                        if (null != thisNodeModel) {
+                            change.getAndIncrement();
+                            thisNodeModel.setNodeAssigneeList(assigneeList);
+                            // 设置新的审核人类型
+                            Integer type = dynamicAssignee.getType();
+                            if (null != type && type > 0) {
+                                thisNodeModel.setSetType(type);
+                            }
                         }
                     }
                 }
             });
 
             // 更新模型
-            consumer.accept(processModel);
+            if (change.get() > 0) {
+                consumer.accept(processModel);
+            }
 
             // 删除动态分配处理人员参数
             FlowDataTransfer.removeByKey(FlowConstants.processDynamicAssignee);
