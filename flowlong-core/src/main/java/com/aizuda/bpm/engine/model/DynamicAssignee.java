@@ -27,9 +27,9 @@ public class DynamicAssignee {
      */
     private List<NodeAssignee> assigneeList;
     /**
-     * 分配类型  0，用户 1，角色 2，部门 该属性决定 assigneeList 属性是分配到人还是角色
+     * 分配类型  1，指定成员 2，主管 3，角色 等该属性决定 assigneeList 属性是分配到人还是角色
      * <p>
-     * 需要与参数 {@link com.aizuda.bpm.engine.entity.FlwTaskActor#actorType} 值保持一致
+     * 需要与参数 {@link com.aizuda.bpm.engine.core.enums.NodeSetType} 值保持一致
      * </p>
      */
     private Integer type;
