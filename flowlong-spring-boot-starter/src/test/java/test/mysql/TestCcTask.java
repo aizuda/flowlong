@@ -4,14 +4,13 @@
  */
 package test.mysql;
 
-import com.aizuda.bpm.engine.model.NodeAssignee;
+import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * 测试抄送节点跟条件分支
@@ -31,10 +30,10 @@ public class TestCcTask extends MysqlTest {
             this.executeActiveTasks(instance.getId(), flwTask -> {
 
                 // 手动创建抄送任务
-                List<NodeAssignee> ccUserList = new ArrayList<>();
-                ccUserList.add(NodeAssignee.ofFlowCreator(test2Creator));
-                ccUserList.add(NodeAssignee.ofFlowCreator(test3Creator));
-                Assertions.assertTrue(flowLongEngine.createCcTask(flwTask, ccUserList, testCreator));
+                Assertions.assertTrue(flowLongEngine.createCcTask(flwTask, Arrays.asList(
+                        FlwTaskActor.of(test2Creator, flwTask),
+                        FlwTaskActor.of(test2Creator, flwTask)
+                ), testCreator));
 
                 // 执行节点
                 flowLongEngine.executeTask(flwTask.getId(), testCreator);

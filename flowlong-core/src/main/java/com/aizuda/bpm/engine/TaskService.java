@@ -369,10 +369,10 @@ public interface TaskService {
      *
      * @param taskModel   任务模型
      * @param flwTask     当前任务
-     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param taskActors  抄送任务分配到任务参与者列表
      * @param flowCreator 任务创建者
      */
-    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
+    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<FlwTaskActor> taskActors, FlowCreator flowCreator);
 
     /**
      * 获取超时或者提醒的任务

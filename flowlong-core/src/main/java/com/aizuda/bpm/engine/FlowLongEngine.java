@@ -349,17 +349,17 @@ public interface FlowLongEngine {
      *
      * @param taskModel   任务模型
      * @param flwTask     当前任务
-     * @param ccUserList  抄送任务分配到任务的人或角色列表
+     * @param taskActors  抄送任务分配到任务参与者列表
      * @param flowCreator 任务创建者
      */
-    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator);
+    boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<FlwTaskActor> taskActors, FlowCreator flowCreator);
 
     /**
      * 创建抄送任务
      */
-    default boolean createCcTask(FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
+    default boolean createCcTask(FlwTask flwTask, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {
         ProcessModel processModel = runtimeService().getProcessModelByInstanceId(flwTask.getInstanceId());
-        return this.createCcTask(processModel.getNode(flwTask.getTaskKey()), flwTask, ccUserList, flowCreator);
+        return this.createCcTask(processModel.getNode(flwTask.getTaskKey()), flwTask, taskActors, flowCreator);
     }
 
     /**

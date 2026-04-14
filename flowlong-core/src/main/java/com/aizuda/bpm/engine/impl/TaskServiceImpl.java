@@ -1081,8 +1081,8 @@ public class TaskServiceImpl implements TaskService {
      * @param flowCreator 任务创建者
      */
     @Override
-    public boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<NodeAssignee> ccUserList, FlowCreator flowCreator) {
-        if (ObjectUtils.isEmpty(ccUserList)) {
+    public boolean createCcTask(NodeModel taskModel, FlwTask flwTask, List<FlwTaskActor> taskActors, FlowCreator flowCreator) {
+        if (ObjectUtils.isEmpty(taskActors)) {
             return false;
         }
 
@@ -1111,8 +1111,10 @@ public class TaskServiceImpl implements TaskService {
 
         // 历史任务参与者数据入库
         List<FlwTaskActor> htaList = new ArrayList<>();
-        for (NodeAssignee nodeUser : ccUserList) {
-            FlwHisTaskActor hta = FlwHisTaskActor.ofNodeAssignee(nodeUser, fht.getInstanceId(), fht.getId());
+        for (FlwTaskActor fta : taskActors) {
+            FlwHisTaskActor hta = FlwHisTaskActor.of(fta);
+            hta.setInstanceId(fht.getInstanceId());
+            hta.setTaskId(fht.getId());
             hta.setId(flowLongIdGenerator.getId(hta.getId()));
             hta.setWeight(6);
             if (hisTaskActorDao.insert(hta)) {
@@ -1209,7 +1211,7 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 2，抄送任务
              */
-            this.createCcTask(nodeModel, flwTask, execution.getProviderNodeAssignees(nodeModel), execution.getFlowCreator());
+            this.createCcTask(nodeModel, flwTask, execution.getProviderTaskActors(nodeModel), execution.getFlowCreator());
 
             /*
              * 可能存在子节点
