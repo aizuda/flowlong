@@ -1360,8 +1360,16 @@ public class TaskServiceImpl implements TaskService {
                 return true;
             }
 
-            // 执行后续节点
-            nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
+            // 执行后续节点，判断当前正在执行任务节点 key
+            List<String> currentTaskKeys = null;
+            FlwTask flwTask = execution.getFlwTask();
+            if (null != flwTask) {
+                List<FlwTask> flwTasks = taskDao.selectListByInstanceId(flwTask.getInstanceId());
+                if (null != flwTasks) {
+                    currentTaskKeys = flwTasks.stream().map(FlwTask::getTaskKey).collect(Collectors.toList());
+                }
+            }
+            nodeModel.nextNode(currentTaskKeys).ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         }
         return true;
     }

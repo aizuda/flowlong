@@ -525,14 +525,14 @@ public class NodeModel implements ModelInstance, Serializable {
     /**
      * 下一个执行节点
      *
-     * @param currentTask 当前任务
+     * @param currentTaskKeys 当前任务所在节点 KEY 列表
      * @return 模型节点
      */
-    public Optional<NodeModel> nextNode(List<String> currentTask) {
+    public Optional<NodeModel> nextNode(List<String> currentTaskKeys) {
         NodeModel nextNode = this.getChildNode();
         if (null == nextNode) {
             // 如果当前节点完成，并且该节点为条件节点，找到主干执行节点继续执行
-            nextNode = ModelHelper.findNextNode(this, currentTask);
+            nextNode = ModelHelper.findNextNode(this, currentTaskKeys);
         }
         return Optional.ofNullable(nextNode);
     }
