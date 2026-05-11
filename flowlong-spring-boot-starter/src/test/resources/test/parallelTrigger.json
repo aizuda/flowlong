@@ -1,0 +1,64 @@
+{
+  "id": 1105,
+  "key": "parallelTrigger",
+  "name": "测试并行触发器",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1778379709389",
+    "type": 0,
+    "childNode": {
+      "nodeName": "并行路由",
+      "nodeKey": "flk1778379735878",
+      "type": 8,
+      "parallelNodes": [
+        {
+          "nodeName": "并行分支 1",
+          "nodeKey": "flk1778379735878-1",
+          "type": 3,
+          "priorityLevel": 1,
+          "childNode": {
+            "nodeName": "触发器",
+            "nodeKey": "flk1778379741654",
+            "type": 7,
+            "extendConfig": {
+              "trigger": "test.mysql.trigger.ParallelTriggerService"
+            },
+            "triggerType": 1,
+            "delayType": 1
+          }
+        },
+        {
+          "nodeName": "并行分支 2",
+          "nodeKey": "flk1778379735878-2",
+          "type": 3,
+          "priorityLevel": 2,
+          "childNode": {
+            "nodeName": "触发器",
+            "nodeKey": "flk1778379743305",
+            "type": 7,
+            "extendConfig": {
+              "trigger": "test.mysql.trigger.ParallelTriggerService"
+            },
+            "triggerType": 1,
+            "delayType": 1
+          }
+        }
+      ],
+      "childNode": {
+        "nodeName": "触发器",
+        "nodeKey": "flk1778379739382",
+        "type": 7,
+        "extendConfig": {
+          "trigger": "test.mysql.trigger.ParallelTriggerFinishService"
+        },
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk1778379609389",
+          "type": -1
+        },
+        "triggerType": 1,
+        "delayType": 1
+      }
+    }
+  }
+}

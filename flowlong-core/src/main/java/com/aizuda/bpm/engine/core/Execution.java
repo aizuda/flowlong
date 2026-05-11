@@ -97,6 +97,14 @@ public class Execution implements Serializable {
      */
     private boolean finishJump = false;
     /**
+     * 当前在并行节点中
+     */
+    private boolean parallelNode = false;
+    /**
+     * 多分支情况最后一个分支
+     */
+    private boolean lastBranch = false;
+    /**
      * 指定任务事件类型
      */
     private TaskEventType taskEventType;

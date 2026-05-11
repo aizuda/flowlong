@@ -328,8 +328,12 @@ public class NodeModel implements ModelInstance, Serializable {
             /*
              * 执行并行分支
              */
-            for (ConditionNode parallelNode : parallelNodes) {
-                parallelNode.getChildNode().execute(flowLongContext, execution);
+            execution.setParallelNode(true);
+            int pns = parallelNodes.size();
+            int last = pns - 1;
+            for (int i = 0; i < pns; i++) {
+                execution.setLastBranch(i == last);
+                parallelNodes.get(i).getChildNode().execute(flowLongContext, execution);
             }
             return true;
         }

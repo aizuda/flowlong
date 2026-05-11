@@ -1354,6 +1354,13 @@ public class TaskServiceImpl implements TaskService {
             /*
              * 可能存在子节点
              */
+            NodeModel childNodeModel = nodeModel.getChildNode();
+            if (null == childNodeModel && execution.isParallelNode() && !execution.isLastBranch()) {
+                // 不存在直接子节点，在并行分支中且非最后一个分支直接返回成功
+                return true;
+            }
+
+            // 执行后续节点
             nodeModel.nextNode().ifPresent(nextNode -> nextNode.execute(execution.getEngine().getContext(), execution));
         }
         return true;
