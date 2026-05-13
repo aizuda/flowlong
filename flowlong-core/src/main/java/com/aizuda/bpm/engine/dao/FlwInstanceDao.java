@@ -34,7 +34,7 @@ public interface FlwInstanceDao {
     FlwInstance selectById(Long id);
 
     default Optional<FlwInstance> selectOptById(Long id) {
-        return Optional.of(this.selectById(id));
+        return Optional.ofNullable(this.selectById(id));
     }
 
     Optional<List<FlwInstance>> selectListByParentInstanceId(Long parentInstanceId);
