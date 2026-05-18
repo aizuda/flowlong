@@ -21,6 +21,7 @@ import lombok.ToString;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -112,17 +113,24 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
      * @param flowLongContext 流程引擎上下文
      * @param flowCreator     流程实例任务创建者
      * @param saveAsDraft     暂存草稿
+     * @param checkNodeModel  检查节点模型消费者
      * @param function        流程执行对象处理函数
      * @return 流程实例
      */
     public Optional<FlwInstance> executeStartModel(FlowLongContext flowLongContext, FlowCreator flowCreator, boolean saveAsDraft,
-                                                   Function<NodeModel, Execution> function) {
+                                                   Consumer<NodeModel> checkNodeModel, Function<NodeModel, Execution> function) {
         FlwInstance flwInstance = null;
         if (null != this.modelContent) {
             NodeModel nodeModel = this.model().getNodeConfig();
             Assert.isNull(nodeModel, "流程定义[processName=" + this.processName + ", processVersion=" + this.processVersion + "]没有开始节点");
             Assert.isFalse(flowLongContext.getTaskActorProvider().isAllowed(nodeModel, flowCreator), "No permission to execute");
-            Assert.isTrue(ModelHelper.checkNodeModel(nodeModel) > 0, "process nodeModel config error");
+            if (null == checkNodeModel) {
+                // 执行默认模型校验
+                Assert.isTrue(ModelHelper.checkNodeModel(nodeModel) > 0, "process nodeModel config error");
+            } else {
+                // 执行自定义模型校验
+                checkNodeModel.accept(nodeModel);
+            }
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
             // 暂存草稿

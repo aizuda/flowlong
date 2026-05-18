@@ -13,13 +13,13 @@ import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwProcess;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
-import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -82,17 +82,18 @@ public interface FlowLongEngine {
     /**
      * 根据流程定义ID，创建人ID，参数列表启动流程实例
      *
-     * @param id          流程定义ID
+     * @param id          流程定义 ID
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @param saveAsDraft 暂存草稿
+     * @param checkNodeModel 检查节点模型消费者
      * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier);
+    Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft) {
-        return this.startInstanceById(id, flowCreator, args, saveAsDraft, null);
+        return this.startInstanceById(id, flowCreator, args, saveAsDraft, null, null);
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args) {
@@ -100,7 +101,7 @@ public interface FlowLongEngine {
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey, boolean saveAsDraft) {
-        return this.startInstanceById(id, flowCreator, null, saveAsDraft, () -> FlwInstance.of(businessKey));
+        return this.startInstanceById(id, flowCreator, null, saveAsDraft, null, () -> FlwInstance.of(businessKey));
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey) {
@@ -108,7 +109,7 @@ public interface FlowLongEngine {
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, boolean saveAsDraft) {
-        return this.startInstanceById(id, flowCreator, null, saveAsDraft, null);
+        return this.startInstanceById(id, flowCreator, null, saveAsDraft, null, null);
     }
 
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator) {
@@ -118,18 +119,19 @@ public interface FlowLongEngine {
     /**
      * 根据流程名称、版本号、创建人、参数列表启动流程实例
      *
-     * @param processKey  流程定义key
+     * @param processKey  流程定义 key
      * @param version     版本号
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @param saveAsDraft 暂存草稿
+     * @param checkNodeModel 检查节点模型消费者
      * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier);
+    Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft) {
-        return this.startInstanceByProcessKey(processKey, version, flowCreator, args, saveAsDraft, null);
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, args, saveAsDraft, null, null);
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args) {
@@ -137,7 +139,7 @@ public interface FlowLongEngine {
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey, boolean saveAsDraft) {
-        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, saveAsDraft, () -> FlwInstance.of(businessKey));
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, saveAsDraft, null, () -> FlwInstance.of(businessKey));
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey) {
@@ -145,7 +147,7 @@ public interface FlowLongEngine {
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, boolean saveAsDraft) {
-        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, saveAsDraft, null);
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, saveAsDraft, null, null);
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator) {
@@ -167,10 +169,15 @@ public interface FlowLongEngine {
      * @param flowCreator 流程实例任务创建者
      * @param args        参数列表
      * @param saveAsDraft 暂存草稿
+     * @param checkNodeModel 检查节点模型消费者
      * @param supplier    初始化流程实例提供者
      * @return {@link FlwInstance} 流程实例
      */
-    Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier);
+    Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
+
+    default Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
+        return this.startProcessInstance(process, flowCreator, args, saveAsDraft, null, supplier);
+    }
 
     /**
      * 重启流程实例（从当前所在节点currentNode位置开始）
