@@ -92,6 +92,10 @@ public interface FlowLongEngine {
      */
     Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
 
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
+        return this.startInstanceById(id, flowCreator, args, saveAsDraft, null, supplier);
+    }
+
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft) {
         return this.startInstanceById(id, flowCreator, args, saveAsDraft, null, null);
     }
