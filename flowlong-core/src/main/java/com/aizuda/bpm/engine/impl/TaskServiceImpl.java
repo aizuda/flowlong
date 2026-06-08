@@ -16,7 +16,6 @@ import com.aizuda.bpm.engine.dao.*;
 import com.aizuda.bpm.engine.entity.*;
 import com.aizuda.bpm.engine.listener.TaskListener;
 import com.aizuda.bpm.engine.model.ModelHelper;
-import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 import com.aizuda.bpm.engine.model.ProcessModel;
 
@@ -133,13 +132,22 @@ public class TaskServiceImpl implements TaskService {
         List<FlwTask> flwTasks = taskDao.selectListByInstanceId(instanceId);
         if (null != flwTasks) {
             TaskState taskState = TaskState.of(instanceState);
-            flwTasks.forEach(t -> {
+            List<Long> parentTaskIds = new LinkedList<>();
+            for (FlwTask t: flwTasks) {
+                if (parentTaskIds.contains(t.getParentTaskId())) {
+                    // 已经执行会签节点跳出循环
+                    continue;
+                }
+                if (PerformType.countersign.eq(t.getPerformType())) {
+                    // 记录会签节点执行情况，避免归档异常
+                    parentTaskIds.add(t.getParentTaskId());
+                }
                 if (null != currentFlwTask && Objects.equals(t.getId(), currentFlwTask.getId())) {
                     // 设置新增参数变量
                     t.putAllVariable(currentFlwTask.variableMap());
                 }
                 this.forceCompleteTask(t, flowCreator, taskState, eventType);
-            });
+            }
         }
         // 当前任务监听器通知
         if (null != currentFlwTask) {
