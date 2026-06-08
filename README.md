@@ -24,8 +24,11 @@ FlowLong🐉飞龙工作流
 # 💎特别用户
 
 <p>
-  <a href="http://boot.aizuda.com/?from=mp" target="_blank">
+  <a href="http://boot.aizuda.com/?from=flowlong" target="_blank">
    <img alt="AiZuDa-Logo" src="https://foruda.gitee.com/images/1715955628416785121/954c16ef_12260.png" width="220px" height="80px">
+  </a>
+  <a href="http://apipig.aizuda.com/?from=flowlong" target="_blank">
+   <img alt="AiZuDa-Logo" src="https://foruda.gitee.com/images/1780817190825464732/410b4c54_12260.png" width="220px" height="80px">
   </a>
 </p>
 

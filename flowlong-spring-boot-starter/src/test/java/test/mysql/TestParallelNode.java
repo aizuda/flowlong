@@ -1,8 +1,13 @@
 package test.mysql;
 
+import com.aizuda.bpm.engine.QueryService;
 import com.aizuda.bpm.engine.assist.Assert;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * 并行分支测试
@@ -133,6 +138,23 @@ public class TestParallelNode extends MysqlTest {
             // 判断当前还存在2个任务
             flowLongEngine.queryService().getActiveTasksByInstanceId(instance.getId())
                     .ifPresent(t -> Assertions.assertEquals(2, t.size()));
+        });
+    }
+
+    @Test
+    public void testParallelDelayTask() {
+        processId = this.deployByResource("test/parallelDelayTask.json", testCreator);
+        flowLongEngine.startInstanceById(processId, testCreator, new HashMap<String, Object>() {{
+            put("test", "123");
+        }}).ifPresent(instance -> {
+            QueryService queryService = this.flowLongEngine.queryService();
+            List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instance.getId());
+            flwTaskList.stream().filter(flwTask -> flwTask.getTaskKey().equals("flk1780911066779"))
+                    // 执行延迟任务
+                    .findFirst().ifPresent(t -> flowLongEngine.autoCompleteTask(t.getId()));
+
+            // 判断待执行延迟任务
+            Assertions.assertEquals("flk1780911059445", queryService.getTasksByInstanceId(instance.getId()).get(0).getTaskKey());
         });
     }
 }

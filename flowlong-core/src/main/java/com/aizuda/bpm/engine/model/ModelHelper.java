@@ -216,16 +216,22 @@ public class ModelHelper {
                     }
                     return childNode;
                 }
-            } else if (Collections.disjoint(currentTask, getAllNextConditionNodeKeys(parentNode))) {
-                // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
-                NodeModel childNode = parentNode.getChildNode();
-                if (null != childNode) {
-                    if (Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
-                        // 父节点的子节点是当前节点，执行结束
-                        return null;
+            } else {
+                List<String> nextNodeKeys = getAllNextConditionNodeKeys(parentNode);
+                if (Collections.disjoint(currentTask, nextNodeKeys)) {
+                    // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
+                    NodeModel childNode = parentNode.getChildNode();
+                    if (null != childNode) {
+                        if (Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
+                            // 父节点的子节点是当前节点，执行结束
+                            return null;
+                        }
+                        // 分支执行结束，执行子节点
+                        return childNode;
                     }
-                    // 分支执行结束，执行子节点
-                    return childNode;
+                } else if (parentNode.parallelNode()) {
+                    // 并行分支存在未执行完节点
+                    return null;
                 }
             }
         }
