@@ -7,6 +7,8 @@ package test.mysql;
 import com.aizuda.bpm.engine.ProcessService;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.entity.FlwProcess;
+import com.aizuda.bpm.engine.model.NodeModel;
+import com.aizuda.bpm.engine.model.ProcessModel;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -93,6 +95,26 @@ public class TestSubProcess extends MysqlTest {
         // Assertions.assertTrue(processService.undeploy(processId));
     }
 
+    /**
+     * 测试流程的级联删除
+     */
+    @Test
+    public void redeployProcessModel() {
+        String subProcessNodeKey = "k007";
+        flowLongEngine.startInstanceById(processId, this.getFlowCreator()).ifPresent(instance -> {
+            Long instanceId = instance.getId();
+            Assertions.assertTrue(flowLongEngine.redeployProcessModel(instanceId, processModel -> {
+                NodeModel nodeModel = processModel.getNode(subProcessNodeKey);
+                // 这里可以动态设置新的子流程
+                nodeModel.setCallProcess(nodeModel.getCallProcess() + ":工作交接");
+                return processModel;
+            }));
+
+            ProcessModel processModel = flowLongEngine.runtimeService().getProcessModelByInstanceId(instanceId);
+            NodeModel subProcessNodeModel = processModel.getNode(subProcessNodeKey);
+            Assertions.assertEquals(2, subProcessNodeModel.getCallProcess().split(":").length);
+        });
+    }
 
     /**
      * 测试流程的级联删除

@@ -6,6 +6,7 @@ package com.aizuda.bpm.engine.core;
 
 import com.aizuda.bpm.engine.FlowDataTransfer;
 import com.aizuda.bpm.engine.FlowLongEngine;
+import com.aizuda.bpm.engine.RuntimeService;
 import com.aizuda.bpm.engine.assist.Assert;
 import com.aizuda.bpm.engine.assist.ObjectUtils;
 import com.aizuda.bpm.engine.core.enums.*;
@@ -89,6 +90,22 @@ public class FlowLongEngineImpl implements FlowLongEngine {
             }
             return new Execution(this, process.model(true), flowCreator, flwInstance, args);
         });
+    }
+
+    /**
+     * 根据流程实例ID重新部署当前实例流程模型
+     */
+    @Override
+    public boolean redeployProcessModel(Long instanceId, Function<ProcessModel, ProcessModel> processModelFunction) {
+        if (null !=  instanceId && null != processModelFunction) {
+            RuntimeService runtimeService = this.runtimeService();
+            ProcessModel processModel = runtimeService.getProcessModelByInstanceId(instanceId);
+            if (null != processModel) {
+                // 更新流程模型
+                return runtimeService.updateInstanceModelById(instanceId, processModelFunction.apply(processModel));
+            }
+        }
+        return false;
     }
 
     /**

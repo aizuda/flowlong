@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -182,6 +183,15 @@ public interface FlowLongEngine {
     default Optional<FlwInstance> startProcessInstance(FlwProcess process, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         return this.startProcessInstance(process, flowCreator, args, saveAsDraft, null, supplier);
     }
+
+    /**
+     * 根据流程实例ID重新部署当前实例流程模型
+     *
+     * @param instanceId            实例ID
+     * @param processModelFunction  当前实例流程模型处理函数
+     * @return true 成功 false 失败
+     */
+    boolean redeployProcessModel(Long instanceId, Function<ProcessModel, ProcessModel> processModelFunction);
 
     /**
      * 重启流程实例（从当前所在节点currentNode位置开始）
