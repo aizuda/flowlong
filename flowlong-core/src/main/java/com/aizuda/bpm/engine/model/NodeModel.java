@@ -642,6 +642,15 @@ public class NodeModel implements ModelInstance, Serializable {
     }
 
     /**
+     * 判断是否为审批提醒节点
+     *
+     * @return true 是 false 否
+     */
+    public boolean remindNode() {
+        return Boolean.TRUE.equals(remind);
+    }
+
+    /**
      * 判断是否为结束节点
      *
      * @return true 是 false 否
