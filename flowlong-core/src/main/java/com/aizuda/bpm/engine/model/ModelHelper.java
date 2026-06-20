@@ -207,15 +207,8 @@ public class ModelHelper {
         } else if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
             // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
             if (null == currentTask) {
-                // 只是找下一个节点
-                NodeModel childNode = parentNode.getChildNode();
-                if (null != childNode) {
-                    if (Objects.equals(childNode.getNodeKey(), nodeModel.getNodeKey())) {
-                        // 父节点的下一个节点为当前节点，直接返回当前节点的子节点
-                        return nodeModel.getChildNode();
-                    }
-                    return childNode;
-                }
+                // 只是找下一个执行节点
+                return findNextExecuteNode(nodeModel.getNodeKey(), parentNode);
             } else {
                 List<String> nextNodeKeys = getAllNextConditionNodeKeys(parentNode);
                 if (Collections.disjoint(currentTask, nextNodeKeys)) {
@@ -238,6 +231,34 @@ public class ModelHelper {
 
         // 往上继续找下一个执行节点
         return findNextNode(parentNode, currentTask);
+    }
+
+    /**
+     * 递归查找下一个执行节点
+     *
+     * @param currentNodeKey 当前所在节点
+     * @param parentNodeModel 父节点
+     * @return 流程节点模型
+     */
+    public static NodeModel findNextExecuteNode(String currentNodeKey, NodeModel parentNodeModel) {
+        if (null != parentNodeModel) {
+            NodeModel childNodeModel = getParentNotNullChildNode(parentNodeModel);
+            List<String> nodeKeys = getAllNextConditionNodeKeys(childNodeModel);
+            if (nodeKeys.contains(currentNodeKey)) {
+                // 父节点的子节点包含当前节点继续查找
+                return findNextExecuteNode(currentNodeKey, parentNodeModel.getParentNode());
+            }
+            return childNodeModel;
+        }
+        return null;
+    }
+
+    private static NodeModel getParentNotNullChildNode(NodeModel parentNodeModel) {
+        NodeModel childNodeModel = parentNodeModel.getChildNode();
+        if (null == childNodeModel) {
+            return getParentNotNullChildNode(parentNodeModel.getParentNode());
+        }
+        return childNodeModel;
     }
 
     /**
@@ -309,11 +330,17 @@ public class ModelHelper {
                 for (ConditionNode conditionNode : nodeModel.getParallelNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
+
+                // 并行节点子节点
+                nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
             } else if (nodeModel.inclusiveNode()) {
                 // 包容节点
                 for (ConditionNode conditionNode : nodeModel.getInclusiveNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
+
+                // 包容节点子节点
+                nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
             } else {
                 if (!nodeModel.ccNode()) {
                     // 非抄送节点

@@ -1,0 +1,261 @@
+{
+  "key": "testParallel02Model",
+  "name": "测试并行02模型",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1781576030374",
+    "type": 0,
+    "childNode": {
+      "nodeName": "审核A",
+      "nodeKey": "flk1781577711522",
+      "type": 1,
+      "setType": 5,
+      "examineLevel": 1,
+      "examineMode": 1,
+      "groupStrategy": 0,
+      "directorLevel": 1,
+      "directorMode": 0,
+      "selectMode": 1,
+      "termAuto": false,
+      "term": 1,
+      "termMode": 1,
+      "typeOfApprove": 1,
+      "rejectStrategy": 2,
+      "rejectStart": 1,
+      "remind": false,
+      "allowTransfer": false,
+      "allowAppendNode": false,
+      "allowRollback": false,
+      "allowCc": false,
+      "approveSelf": 0,
+      "extendConfig": {
+        "remindTime": "1:m"
+      },
+      "childNode": {
+        "nodeName": "条件路由",
+        "nodeKey": "flk1781582839485",
+        "type": 4,
+        "conditionNodes": [
+          {
+            "nodeName": "条件 1",
+            "nodeKey": "flk1781582839485-1",
+            "type": 3,
+            "priorityLevel": 1,
+            "conditionList": [
+              [
+                {
+                  "label": "1",
+                  "field": "1",
+                  "operator": "==",
+                  "value": "0",
+                  "type": "custom"
+                }
+              ]
+            ],
+            "childNode": {
+              "nodeName": "自动通过",
+              "nodeKey": "flk1781583030677",
+              "type": 30
+            }
+          },
+          {
+            "nodeName": "默认条件",
+            "nodeKey": "flk1781582839485-default",
+            "type": 3,
+            "priorityLevel": 2,
+            "childNode": {
+              "nodeName": "并行路由",
+              "nodeKey": "flk1781582870365",
+              "type": 8,
+              "parallelNodes": [
+                {
+                  "nodeName": "并行分支 1",
+                  "nodeKey": "flk1781582870365-1",
+                  "type": 3,
+                  "priorityLevel": 1,
+                  "childNode": {
+                    "nodeName": "审核人",
+                    "nodeKey": "flk1781582877253",
+                    "type": 1,
+                    "setType": 5,
+                    "examineLevel": 1,
+                    "examineMode": 1,
+                    "groupStrategy": 0,
+                    "directorLevel": 1,
+                    "directorMode": 0,
+                    "selectMode": 1,
+                    "termAuto": false,
+                    "term": 1,
+                    "termMode": 1,
+                    "typeOfApprove": 1,
+                    "rejectStrategy": 2,
+                    "rejectStart": 1,
+                    "remind": false,
+                    "allowTransfer": false,
+                    "allowAppendNode": false,
+                    "allowRollback": false,
+                    "allowCc": false,
+                    "approveSelf": 0,
+                    "extendConfig": {
+                      "remindTime": "1:m"
+                    },
+                    "delayType": 1
+                  }
+                },
+                {
+                  "nodeName": "并行分支 2",
+                  "nodeKey": "flk1781582870365-2",
+                  "type": 3,
+                  "priorityLevel": 2,
+                  "childNode": {
+                    "nodeName": "并行路由",
+                    "nodeKey": "flk1781582928869",
+                    "type": 8,
+                    "parallelNodes": [
+                      {
+                        "nodeName": "并行分支 1",
+                        "nodeKey": "flk1781582928869-1",
+                        "type": 3,
+                        "priorityLevel": 1,
+                        "childNode": {
+                          "nodeName": "审核人并行1",
+                          "nodeKey": "flk1781582953605",
+                          "type": 1,
+                          "setType": 5,
+                          "examineLevel": 1,
+                          "examineMode": 1,
+                          "groupStrategy": 0,
+                          "directorLevel": 1,
+                          "directorMode": 0,
+                          "selectMode": 1,
+                          "termAuto": false,
+                          "term": 1,
+                          "termMode": 1,
+                          "typeOfApprove": 1,
+                          "rejectStrategy": 2,
+                          "rejectStart": 1,
+                          "remind": false,
+                          "allowTransfer": false,
+                          "allowAppendNode": false,
+                          "allowRollback": false,
+                          "allowCc": false,
+                          "approveSelf": 0,
+                          "extendConfig": {
+                            "remindTime": "1:m"
+                          },
+                          "delayType": 1
+                        }
+                      },
+                      {
+                        "nodeName": "并行分支 2",
+                        "nodeKey": "flk1781582928869-2",
+                        "type": 3,
+                        "priorityLevel": 2,
+                        "childNode": {
+                          "nodeName": "审核人并行2",
+                          "nodeKey": "flk1781582966462",
+                          "type": 1,
+                          "setType": 5,
+                          "examineLevel": 1,
+                          "examineMode": 1,
+                          "groupStrategy": 0,
+                          "directorLevel": 1,
+                          "directorMode": 0,
+                          "selectMode": 1,
+                          "termAuto": false,
+                          "term": 1,
+                          "termMode": 1,
+                          "typeOfApprove": 1,
+                          "rejectStrategy": 2,
+                          "rejectStart": 1,
+                          "remind": false,
+                          "allowTransfer": false,
+                          "allowAppendNode": false,
+                          "allowRollback": false,
+                          "allowCc": false,
+                          "approveSelf": 0,
+                          "extendConfig": {
+                            "remindTime": "1:m"
+                          },
+                          "delayType": 1
+                        }
+                      },
+                      {
+                        "nodeName": "并行分支 3",
+                        "nodeKey": "flk1781582942077-3",
+                        "type": 3,
+                        "priorityLevel": 3,
+                        "childNode": {
+                          "nodeName": "审核人并行3",
+                          "nodeKey": "flk1781582987381",
+                          "type": 1,
+                          "setType": 5,
+                          "examineLevel": 1,
+                          "examineMode": 1,
+                          "groupStrategy": 0,
+                          "directorLevel": 1,
+                          "directorMode": 0,
+                          "selectMode": 1,
+                          "termAuto": false,
+                          "term": 1,
+                          "termMode": 1,
+                          "typeOfApprove": 1,
+                          "rejectStrategy": 2,
+                          "rejectStart": 1,
+                          "remind": false,
+                          "allowTransfer": false,
+                          "allowAppendNode": false,
+                          "allowRollback": false,
+                          "allowCc": false,
+                          "approveSelf": 0,
+                          "extendConfig": {
+                            "remindTime": "1:m"
+                          },
+                          "delayType": 1
+                        }
+                      }
+                    ],
+                    "childNode": {
+                      "nodeName": "审核人磁力",
+                      "nodeKey": "flk1781582997333",
+                      "type": 1,
+                      "setType": 5,
+                      "examineLevel": 1,
+                      "examineMode": 1,
+                      "groupStrategy": 0,
+                      "directorLevel": 1,
+                      "directorMode": 0,
+                      "selectMode": 1,
+                      "termAuto": false,
+                      "term": 1,
+                      "termMode": 1,
+                      "typeOfApprove": 1,
+                      "rejectStrategy": 2,
+                      "rejectStart": 1,
+                      "remind": false,
+                      "allowTransfer": false,
+                      "allowAppendNode": false,
+                      "allowRollback": false,
+                      "allowCc": false,
+                      "approveSelf": 0,
+                      "extendConfig": {
+                        "remindTime": "1:m"
+                      },
+                      "delayType": 1
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "childNode": {
+          "nodeName": "结束",
+          "nodeKey": "flk1781575930371",
+          "type": -1
+        }
+      },
+      "delayType": 1
+    }
+  }
+}

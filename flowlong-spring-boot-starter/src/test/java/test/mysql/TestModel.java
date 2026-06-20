@@ -374,4 +374,26 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals(9, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752122765848")).size());
     }
 
+    /**
+     * 测试并行02模型节点key列表
+     */
+    @Test
+    public void testParallel02Model() {
+        ProcessModel pm = getProcessModel("test/testParallel02Model.json");
+        Assertions.assertEquals(5, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1781582870365")).size());
+
+        // 测试获取下一个节点为结束节点
+        NodeModel nextNodeModel = ModelHelper.findNextNode(pm.getNode("flk1781582997333"), null);
+        Assertions.assertNotNull(nextNodeModel);
+        Assertions.assertEquals("flk1781575930371", nextNodeModel.getNodeKey());
+        NodeModel nextNodeModel01 = ModelHelper.findNextNode(pm.getNode("flk1781582877253"), null);
+        Assertions.assertNotNull(nextNodeModel01);
+        Assertions.assertEquals("flk1781575930371", nextNodeModel01.getNodeKey());
+
+        // 下一个节点为并行分支子节点
+        NodeModel nextNodeModel02 = ModelHelper.findNextNode(pm.getNode("flk1781582953605"), null);
+        Assertions.assertNotNull(nextNodeModel02);
+        Assertions.assertEquals("flk1781582997333", nextNodeModel02.getNodeKey());
+    }
+
 }
