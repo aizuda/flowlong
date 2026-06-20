@@ -133,14 +133,14 @@ public class FlwProcess extends FlowEntity implements ProcessModelCache {
             }
             // 回调执行创建实例
             Execution execution = function.apply(nodeModel);
+            // 当前执行实例（克隆一个对象，避免后续执行导致实例丢失）
+            flwInstance = execution.getFlwInstance().clone();
             // 暂存草稿
             execution.setSaveAsDraft(saveAsDraft);
             // 重新渲染逻辑节点
             nodeModel = execution.getProcessModel().getNodeConfig();
             // 创建首个审批任务
             flowLongContext.createTask(execution, nodeModel);
-            // 当前执行实例
-            flwInstance = execution.getFlwInstance();
         }
         return Optional.ofNullable(flwInstance);
     }

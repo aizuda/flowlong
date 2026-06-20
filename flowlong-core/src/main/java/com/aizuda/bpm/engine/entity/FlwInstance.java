@@ -27,7 +27,7 @@ import java.util.Map;
 @Getter
 @Setter
 @ToString
-public class FlwInstance extends FlowEntity {
+public class FlwInstance extends FlowEntity implements Cloneable {
     /**
      * 流程定义ID
      */
@@ -100,5 +100,14 @@ public class FlwInstance extends FlowEntity {
 
     public void putAllVariable(Map<String, Object> args) {
         this.variable = FlowLongContext.putAllVariable(this.variable, args);
+    }
+
+    @Override
+    public FlwInstance clone() {
+        try {
+            return (FlwInstance) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }
