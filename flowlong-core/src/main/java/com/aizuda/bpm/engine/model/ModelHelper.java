@@ -187,10 +187,10 @@ public class ModelHelper {
      * 递归查找下一个执行节点
      *
      * @param nodeModel   当前节点
-     * @param currentTask 当前任务列表
+     * @param currentTasks 当前任务列表
      * @return 流程节点模型
      */
-    public static NodeModel findNextNode(NodeModel nodeModel, List<String> currentTask) {
+    public static NodeModel findNextNode(NodeModel nodeModel, List<String> currentTasks) {
         NodeModel parentNode = nodeModel.getParentNode();
         if (null == parentNode || TaskType.major.eq(parentNode.getType())) {
             // 递归至发起节点，流程结束
@@ -206,12 +206,12 @@ public class ModelHelper {
             }
         } else if (parentNode.parallelNode() || parentNode.inclusiveNode()) {
             // 判断当前节点为并行分支或包容分支，需要判断当前并行是否走完
-            if (null == currentTask) {
+            if (ObjectUtils.isEmpty(currentTasks)) {
                 // 只是找下一个执行节点
                 return findNextExecuteNode(nodeModel.getNodeKey(), parentNode);
             } else {
                 List<String> nextNodeKeys = getAllNextConditionNodeKeys(parentNode);
-                if (Collections.disjoint(currentTask, nextNodeKeys)) {
+                if (Collections.disjoint(currentTasks, nextNodeKeys)) {
                     // 找到另外的分支，看是否列表有执行，有就不能返回 childNode
                     NodeModel childNode = parentNode.getChildNode();
                     if (null != childNode) {
@@ -230,7 +230,7 @@ public class ModelHelper {
         }
 
         // 往上继续找下一个执行节点
-        return findNextNode(parentNode, currentTask);
+        return findNextNode(parentNode, currentTasks);
     }
 
     /**
