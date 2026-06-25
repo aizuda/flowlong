@@ -540,10 +540,46 @@ public class TestIssue extends MysqlTest {
         }
 
         // 等待所有线程执行完毕
-        for (Thread t: threads) {
+        for (Thread t : threads) {
             t.join();
         }
 
         System.out.println("所有线程执行完毕");
+    }
+
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/IJU6OD">并行节点中加上抄送问题</a>
+     */
+    @Test
+    public void issues_IJU6OD() throws InterruptedException {
+        Long processId = flowLongEngine.processService().deployByResource("test/issues_IJU6OD.json", testCreator, false);
+        flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
+            QueryService queryService = this.flowLongEngine.queryService();
+            List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instance.getId());
+            for (FlwTask flwTask: flwTaskList) {
+                if (Objects.equals("flk1782392485827", flwTask.getTaskKey())) {
+                    // 模拟执行，并行分支1 会签： 李小广，陈小辉
+                    queryService.getActiveTaskActorsByTaskId(flwTask.getId()).ifPresent(ftaList -> {
+                        if (Objects.equals("李小广", ftaList.get(0).getActorName())) {
+                            flowLongEngine.executeTask(flwTask.getId(), testCreator);
+                        } else {
+                            // 陈小辉
+                            flowLongEngine.executeTask(flwTask.getId(), test2Creator);
+                        }
+                    });
+                } else {
+                    // 模拟执行，并行分支2
+                    flowLongEngine.executeTask(flwTask.getId(), test3Creator);
+                }
+            }
+            // 校验执行结果
+            queryService.getHisTasksByInstanceId(instance.getId()).ifPresent(flwHisTasks -> {
+                // 存在 5个 执行任务
+                Assertions.assertEquals(5, flwHisTasks.size());
+                // 存在抄送任务
+                Assertions.assertTrue(flwHisTasks.stream().anyMatch(t -> Objects.equals("flk1782392490177", t.getTaskKey())));
+            });
+        });
     }
 }
