@@ -14,6 +14,7 @@ import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowLongContext;
 import com.aizuda.bpm.engine.core.enums.*;
 import com.aizuda.bpm.engine.entity.FlwProcess;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -431,13 +433,23 @@ public class NodeModel implements ModelInstance, Serializable {
      * @param conditionNode   {@link ConditionNode}
      */
     public void executeConditionNode(FlowLongContext flowLongContext, Execution execution, ConditionNode conditionNode) {
-        NodeModel childNode = conditionNode.getChildNode();
-        if (null == childNode) {
-            // 当前条件节点无执行节点，进入当前执行条件节点的下一个节点
-            childNode = this.getChildNode();
-        }
+        NodeModel childNode = ModelHelper.getConditionChildNode(this, conditionNode);
         if (null != childNode) {
-            childNode.execute(flowLongContext, execution);
+            AtomicBoolean execute = new AtomicBoolean(true);
+            NodeModel parentNode = childNode.getParentNode();
+            if (parentNode.parallelNode()) {
+                // 如果父节点是并行分支，查看是否全部任务执行完成
+                flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId()).ifPresent(flwTasks -> {
+                    FlwTask flwTask = execution.getFlwTask();
+                    if (flwTasks.size() > 1 || (null != flwTask && Objects.equals(flwTask.getTaskKey(), flwTasks.get(0).getTaskKey()))) {
+                        execute.set(false);
+                    }
+                });
+            }
+            // 执行下一个节点
+            if (execute.get()) {
+                childNode.execute(flowLongContext, execution);
+            }
         } else {
             // 查看是否存在其他的节点 fix https://gitee.com/aizuda/flowlong/issues/I9O8GV
             this.nextNode().ifPresent(nodeModel -> nodeModel.execute(flowLongContext, execution));

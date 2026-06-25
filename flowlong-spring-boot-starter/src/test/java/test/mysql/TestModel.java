@@ -396,4 +396,28 @@ public class TestModel extends MysqlTest {
         Assertions.assertEquals("flk1781582997333", nextNodeModel02.getNodeKey());
     }
 
+    /**
+     * 测试无子节点条件节点
+     */
+    @Test
+    public void testNoNodeCondition() {
+        ProcessModel pm = getProcessModel("test/noNodeCondition.json");
+
+        // 获取无节点条件节点
+        NodeModel nodeModel = ModelHelper.getNodeModel("flk1782215554267", pm.getNodeConfig());
+        nodeModel.nextNode().ifPresent(nextNodeModel -> {
+            Assertions.assertTrue(nextNodeModel.conditionNode());
+            List<ConditionNode> conditionNodes = nextNodeModel.getConditionNodes();
+            for (ConditionNode conditionNode : conditionNodes) {
+                NodeModel childNode = ModelHelper.getConditionChildNode(nextNodeModel, conditionNode);
+                if (Objects.equals("flk17822156059191", conditionNode.getNodeKey())) {
+                    Assertions.assertEquals("flk1782215671977", childNode.getNodeKey());
+                    Assertions.assertNotNull(childNode);
+                } else {
+                    Assertions.assertEquals("flk1782358900972", childNode.getNodeKey());
+                }
+            }
+        });
+    }
+
 }

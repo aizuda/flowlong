@@ -262,6 +262,21 @@ public class ModelHelper {
     }
 
     /**
+     * 获取条件节点的子节点（不存在直接节点找真实下一个执行节点）
+     *
+     * @param conditionNodeModel 条件节点模型
+     * @param conditionNode 具体所在条件节点
+     * @return 子节点
+     */
+    public static NodeModel getConditionChildNode(NodeModel conditionNodeModel, ConditionNode conditionNode) {
+        NodeModel childNode = conditionNode.getChildNode();
+        if (null == childNode) {
+            childNode = findNextExecuteNode(conditionNodeModel.getNodeKey(), conditionNodeModel.getParentNode());
+        }
+        return childNode;
+    }
+
+    /**
      * 获取所有上一个节点key，只包含发起节点和审批节点（非直接所在条件分支排除在外）
      *
      * @param nodeModel 当前节点
@@ -315,6 +330,8 @@ public class ModelHelper {
         List<String> nodeKeys = new ArrayList<>();
         if (null != nodeModel) {
             if (nodeModel.conditionNode()) {
+                // 条件节点
+                nodeKeys.add(nodeModel.getNodeKey());
                 List<ConditionNode> conditionNodes = nodeModel.getConditionNodes();
                 if (ObjectUtils.isNotEmpty(conditionNodes)) {
                     for (ConditionNode conditionNode : conditionNodes) {
@@ -327,6 +344,7 @@ public class ModelHelper {
                 nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
             } else if (nodeModel.parallelNode()) {
                 // 并行节点
+                nodeKeys.add(nodeModel.getNodeKey());
                 for (ConditionNode conditionNode : nodeModel.getParallelNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
@@ -335,6 +353,7 @@ public class ModelHelper {
                 nodeKeys.addAll(getAllNextConditionNodeKeys(nodeModel.getChildNode()));
             } else if (nodeModel.inclusiveNode()) {
                 // 包容节点
+                nodeKeys.add(nodeModel.getNodeKey());
                 for (ConditionNode conditionNode : nodeModel.getInclusiveNodes()) {
                     nodeKeys.addAll(getAllNextConditionNodeKeys(conditionNode.getChildNode()));
                 }
@@ -633,7 +652,7 @@ public class ModelHelper {
             modelData.forEach((key, value) -> {
                 if (value instanceof DynamicAssignee) {
                     DynamicAssignee dynamicAssignee = (DynamicAssignee) value;
-                    List<NodeAssignee> assigneeList =  dynamicAssignee.getAssigneeList();
+                    List<NodeAssignee> assigneeList = dynamicAssignee.getAssigneeList();
                     if (ObjectUtils.isNotEmpty(assigneeList)) {
                         NodeModel thisNodeModel = processModel.getNode(key);
                         if (null != thisNodeModel) {
