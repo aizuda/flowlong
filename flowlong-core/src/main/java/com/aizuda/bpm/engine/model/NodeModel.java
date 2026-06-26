@@ -439,12 +439,8 @@ public class NodeModel implements ModelInstance, Serializable {
             NodeModel parentNode = childNode.getParentNode();
             if (parentNode.parallelNode()) {
                 // 如果父节点是并行分支，查看是否全部任务执行完成
-                flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId()).ifPresent(flwTasks -> {
-                    FlwTask flwTask = execution.getFlwTask();
-                    if (flwTasks.size() > 1 || (null != flwTask && Objects.equals(flwTask.getTaskKey(), flwTasks.get(0).getTaskKey()))) {
-                        execute.set(false);
-                    }
-                });
+                flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId())
+                        .ifPresent(flwTasks -> execute.set(flwTasks.isEmpty()));
             }
             // 执行下一个节点
             if (execute.get()) {

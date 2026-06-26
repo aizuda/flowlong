@@ -370,8 +370,8 @@ public class TestModel extends MysqlTest {
 
         // 测试获取下一个条件节点key列表
         Assertions.assertEquals(1, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752231842868")).size());
-        Assertions.assertEquals(3, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752143870053")).size());
-        Assertions.assertEquals(9, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752122765848")).size());
+        Assertions.assertEquals(4, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752143870053")).size());
+        Assertions.assertEquals(14, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1752122765848")).size());
     }
 
     /**
@@ -380,7 +380,7 @@ public class TestModel extends MysqlTest {
     @Test
     public void testParallel02Model() {
         ProcessModel pm = getProcessModel("test/testParallel02Model.json");
-        Assertions.assertEquals(5, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1781582870365")).size());
+        Assertions.assertEquals(7, ModelHelper.getAllNextConditionNodeKeys(pm.getNode("flk1781582870365")).size());
 
         // 测试获取下一个节点为结束节点
         NodeModel nextNodeModel = ModelHelper.findNextNode(pm.getNode("flk1781582997333"), null);
