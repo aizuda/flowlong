@@ -335,7 +335,13 @@ public class NodeModel implements ModelInstance, Serializable {
             int last = pns - 1;
             for (int i = 0; i < pns; i++) {
                 execution.setLastBranch(i == last);
-                parallelNodes.get(i).getChildNode().execute(flowLongContext, execution);
+                NodeModel childNode = parallelNodes.get(i).getChildNode();
+                if (null != childNode) {
+                    childNode.execute(flowLongContext, execution);
+                } else if (execution.isLastBranch()) {
+                    // 最后一个分支无子节点执行上层节点的子节点
+                    this.getChildNode().execute(flowLongContext, execution);
+                }
             }
             return true;
         }
@@ -438,9 +444,13 @@ public class NodeModel implements ModelInstance, Serializable {
             AtomicBoolean execute = new AtomicBoolean(true);
             NodeModel parentNode = childNode.getParentNode();
             if (parentNode.parallelNode()) {
-                // 如果父节点是并行分支，查看是否全部任务执行完成
-                flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId())
-                        .ifPresent(flwTasks -> execute.set(flwTasks.isEmpty()));
+                if (execution.isLastBranch()) {
+                    // 如果父节点是并行分支且最后一个执行分支，查看是否全部任务执行完成
+                    flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId())
+                            .ifPresent(flwTasks -> execute.set(flwTasks.isEmpty()));
+                } else {
+                    execute.set(false);
+                }
             }
             // 执行下一个节点
             if (execute.get()) {
