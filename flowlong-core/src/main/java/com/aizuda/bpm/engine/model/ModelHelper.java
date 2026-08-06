@@ -886,4 +886,18 @@ public class ModelHelper {
         }
         return nodeKeys;
     }
+
+    /**
+     * 获取所有并行分支子节点列表
+     *
+     * @param parallelNodes 并行分支节点
+     * @return true 是 false 否
+     */
+    public static List<String> getAllParallelChildNodeKeys(List<ConditionNode> parallelNodes) {
+        List<String> allChildKeys = new ArrayList<>();
+        for (ConditionNode conditionNode : parallelNodes) {
+            allChildKeys.addAll(ModelHelper.getAllNextConditionNodeKeys(conditionNode.getChildNode()));
+        }
+        return allChildKeys;
+    }
 }

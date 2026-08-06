@@ -442,14 +442,28 @@ public class NodeModel implements ModelInstance, Serializable {
         NodeModel childNode = ModelHelper.getConditionChildNode(this, conditionNode);
         if (null != childNode) {
             AtomicBoolean execute = new AtomicBoolean(true);
-            NodeModel parentNode = childNode.getParentNode();
-            if (parentNode.parallelNode()) {
-                if (execution.isLastBranch()) {
-                    // 如果父节点是并行分支且最后一个执行分支，查看是否全部任务执行完成
+            if (execution.isParallelNode() && !execution.isLastBranch()) {
+                // 当前正在执行并行分支且非最后一个分支，不允许执行后续节点
+                execute.set(false);
+            } else {
+                // 其它并行分支情况
+                NodeModel parentNode = childNode.getParentNode();
+                if (parentNode.parallelNode()) {
+                    // 获取所有待执行任务
                     flowLongContext.getQueryService().getActiveTasksByInstanceId(execution.getFlwInstance().getId())
-                            .ifPresent(flwTasks -> execute.set(flwTasks.isEmpty()));
-                } else {
-                    execute.set(false);
+                            .ifPresent(flwTasks -> {
+                                boolean flag = true;
+                                if (!flwTasks.isEmpty()) {
+                                    // 获取所有并行分支子节点key列表
+                                    List<String> allNodeKeys = ModelHelper.getAllParallelChildNodeKeys(parentNode.getParallelNodes());
+                                    if (flwTasks.stream().anyMatch(ft -> allNodeKeys.contains(ft.getTaskKey()))) {
+                                        // 存在分支任务不允许执行下一个节点
+                                        flag = false;
+                                    }
+                                }
+                                // 执行下一个节点
+                                execute.set(flag);
+                            });
                 }
             }
             // 执行下一个节点
