@@ -3,7 +3,7 @@ buildscript {
     ext {
         springBootVersion = "2.7.0"
         springBoot4Version = "4.0.0"
-        mybatisPlusVersion = "3.5.14"
+        mybatisPlusVersion = "3.5.17"
         solonVersion = "3.7.2"
     }
 
@@ -18,7 +18,7 @@ buildscript {
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.32.0")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.37.0")
     }
 }
 
@@ -58,6 +58,7 @@ subprojects {
 
             // orm db
             dependency("com.baomidou:mybatis-plus-boot-starter:${mybatisPlusVersion}")
+            dependency("com.baomidou:mybatis-plus-core:${mybatisPlusVersion}")
             dependency("com.baomidou:mybatis-plus-core:${mybatisPlusVersion}")
 
         }
