@@ -287,6 +287,20 @@ public class RuntimeServiceImpl implements RuntimeService {
         return this.forceComplete(instanceId, currentFlwTask, flowCreator, InstanceEventType.rejectComplete, InstanceState.terminate, TaskEventType.terminate);
     }
 
+    @Override
+    public boolean reviewInstance(Long instanceId, FlowCreator flowCreator) {
+        // 仅允许重审已结束且存在发起任务的流程实例
+        if (null != instanceDao.selectById(instanceId)) {
+            return false;
+        }
+        FlwHisTask startTask = queryService.getStartTaskByInstanceId(instanceId);
+        if (null == startTask) {
+            return false;
+        }
+        return taskService.resume(instanceId, flowCreator, (flwInstance, nodeKey) ->
+                taskService.withdrawTask(startTask.getId(), flowCreator).isPresent());
+    }
+
     /**
      * 强制完成流程实例
      *

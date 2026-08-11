@@ -5,12 +5,16 @@
 package test.mysql;
 
 import com.aizuda.bpm.engine.TaskService;
+import com.aizuda.bpm.engine.core.enums.InstanceState;
+import com.aizuda.bpm.engine.core.enums.TaskType;
+import com.aizuda.bpm.engine.entity.FlwTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -84,6 +88,20 @@ class TestSimpleProcess extends MysqlTest {
             // 条件路由子审批【审批】 抄送 结束
             this.executeTask(instance.getId(), testCreator);
 
+            // 重审已结束实例，恢复至发起人暂存待审
+            Assertions.assertNull(flowLongEngine.queryService().getInstance(instance.getId()));
+            Assertions.assertTrue(flowLongEngine.runtimeService().reviewInstance(instance.getId(), testCreator));
+            Assertions.assertNotNull(flowLongEngine.queryService().getInstance(instance.getId()));
+            Assertions.assertTrue(InstanceState.saveAsDraft.eq(flowLongEngine.queryService()
+                    .getHistInstance(instance.getId()).getInstanceState()));
+
+            List<FlwTask> flwTasks = flowLongEngine.queryService().getTasksByInstanceId(instance.getId());
+            Assertions.assertEquals(1, flwTasks.size());
+            FlwTask flwTask = flwTasks.get(0);
+            Assertions.assertTrue(TaskType.saveAsDraft.eq(flwTask.getTaskType()));
+            Assertions.assertEquals(testCreator.getCreateId(), flowLongEngine.queryService()
+                    .getTaskActorsByTaskId(flwTask.getId()).get(0).getActorId());
+            Assertions.assertFalse(flowLongEngine.runtimeService().reviewInstance(instance.getId(), testCreator));
         });
     }
 }

@@ -181,6 +181,15 @@ public interface RuntimeService {
     }
 
     /**
+     * 重审已结束的流程实例，恢复实例并将当前任务退回发起人暂存待审
+     *
+     * @param instanceId  流程实例ID
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
+     */
+    boolean reviewInstance(Long instanceId, FlowCreator flowCreator);
+
+    /**
      * 更新流程实例
      *
      * @param flwInstance 流程实例对象

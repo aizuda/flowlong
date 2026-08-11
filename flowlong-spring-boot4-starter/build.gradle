@@ -1,6 +1,11 @@
 description "flowLong mybatis-plus spring-boot starter"
 
-compileJava {
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
     options.release = 17
 }
 
@@ -21,6 +26,7 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 compileJava.dependsOn(processResources)
