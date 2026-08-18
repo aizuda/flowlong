@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 流程缓存简单实现类
+ * <p>如果存在大量流程或分布式场景建议使用 Caffeine【单体】 Redis【分布式】实现 FlowCache 替换该实现类</p>
  *
  * <p>
  * <a href="https://aizuda.com">官网</a>尊重知识产权，不允许非法使用，后果自负

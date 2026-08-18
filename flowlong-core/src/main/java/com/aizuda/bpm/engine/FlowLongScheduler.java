@@ -54,11 +54,11 @@ public abstract class FlowLongScheduler {
      * 流程提醒处理
      */
     public void remind() {
+        if (!jobLock.tryLock()) {
+            log.info("[FlowLong] Scheduling is already running, just return.");
+            return;
+        }
         try {
-            if (!jobLock.tryLock()) {
-                log.info("[FlowLong] Scheduling is already running, just return.");
-                return;
-            }
             FlowLongContext context = flowLongEngine.getContext();
             TaskService taskService = context.getTaskService();
             List<FlwTask> flwTaskList = taskService.getTimeoutOrRemindTasks();
