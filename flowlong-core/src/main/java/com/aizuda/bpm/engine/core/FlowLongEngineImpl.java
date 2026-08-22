@@ -381,8 +381,8 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     }
 
     @Override
-    public boolean executeRemoveNodeModel(Long instanceId, String nodeKey) {
-        return runtimeService().removeNodeModel(instanceId, nodeKey, e -> NodeState.temp.eq(e.getNodeState()));
+    public boolean executeRemoveNodeModel(Long instanceId, String nodeKey, FlowCreator flowCreator) {
+        return runtimeService().removeNodeModel(instanceId, nodeKey, flowCreator, e -> NodeState.temp.eq(e.getNodeState()));
     }
 
     /**

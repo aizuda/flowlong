@@ -6,7 +6,6 @@ package com.aizuda.bpm.engine.impl;
 
 import com.aizuda.bpm.engine.*;
 import com.aizuda.bpm.engine.assist.Assert;
-import com.aizuda.bpm.engine.assist.DateUtils;
 import com.aizuda.bpm.engine.core.Execution;
 import com.aizuda.bpm.engine.core.FlowCreator;
 import com.aizuda.bpm.engine.core.FlowLongContext;
@@ -568,7 +567,7 @@ public class RuntimeServiceImpl implements RuntimeService {
     }
 
     @Override
-    public boolean removeNodeModel(Long instanceId, String nodeKey, Function<NodeModel, Boolean> checkFunc) {
+    public boolean removeNodeModel(Long instanceId, String nodeKey, FlowCreator flowCreator, Function<NodeModel, Boolean> checkFunc) {
         FlwExtInstance flwExtInstance = extInstanceDao.selectById(instanceId);
         if (null != flwExtInstance) {
             // 删除指定节点，非临时节点不允许操作
@@ -581,7 +580,9 @@ public class RuntimeServiceImpl implements RuntimeService {
                 childNode.setParentNode(parentNode);
                 // 更新最新模型
                 this.updateModelContent(flwExtInstance, processModel);
-                return true;
+
+                // 删除节点任务指定实例ID和任务Key节点恢复父任务节点
+                return taskService.resumeParentTaskByInstanceIdAndTaskKey(instanceId, nodeKey, flowCreator);
             }
         }
         return false;

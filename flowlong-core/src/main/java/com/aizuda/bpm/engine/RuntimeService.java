@@ -246,7 +246,8 @@ public interface RuntimeService {
      *
      * @param instanceId 流程实例ID
      * @param nodeKey 节点KEY
+     * @param flowCreator 处理人员
      * @param checkFunc 节点检查函数
      */
-    boolean removeNodeModel(Long instanceId, String nodeKey, Function<NodeModel, Boolean> checkFunc);
+    boolean removeNodeModel(Long instanceId, String nodeKey, FlowCreator flowCreator, Function<NodeModel, Boolean> checkFunc);
 }

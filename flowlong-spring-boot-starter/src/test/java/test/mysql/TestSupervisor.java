@@ -71,7 +71,7 @@ public class TestSupervisor extends MysqlTest {
                         }
                         if (ObjectUtils.isNotEmpty(nodeModel.getNodeAssigneeList())) {
                             if (NodeSetType.role.eq(nodeModel.getSetType())) {
-                                return nodeModel.getNodeAssigneeList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName()))
+                                return nodeModel.getNodeAssigneeList().stream().map(t -> FlwTaskActor.ofRole(t.getTenantId(), t.getId(), t.getName(), t.getWeight()))
                                         .collect(Collectors.toList());
                             }
 

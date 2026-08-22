@@ -388,7 +388,7 @@ public interface FlowLongEngine {
      *
      * @param taskId      当前任务ID
      * @param nodeModel   加签节点模型
-     * @param flowCreator 任务创建者
+     * @param flowCreator 处理人员
      * @param args        任务参数
      * @param beforeAfter true 前置 false 后置
      * @return true 成功 false 失败
@@ -407,6 +407,8 @@ public interface FlowLongEngine {
      *
      * @param instanceId 流程实例ID
      * @param nodeKey 节点KEY
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
      */
-    boolean executeRemoveNodeModel(Long instanceId, String nodeKey);
+    boolean executeRemoveNodeModel(Long instanceId, String nodeKey, FlowCreator flowCreator);
 }

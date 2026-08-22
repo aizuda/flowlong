@@ -191,12 +191,16 @@ public class TestIssue extends MysqlTest {
             Assertions.assertEquals("审核C", nodeModel.getChildNode().getNodeName());
 
             // 执行减签操作，模型中无法找到临时追加节点
-            Assertions.assertTrue(flowLongEngine.executeRemoveNodeModel(instance.getId(), addNodeKey));
+            Assertions.assertTrue(flowLongEngine.executeRemoveNodeModel(instance.getId(), addNodeKey, testCreator));
             FlwExtInstance extInstance2 = queryService.getExtInstance(instance.getId());
             Assertions.assertNull(extInstance2.model().getNode(addNodeKey));
 
+            // 撤回任务到 test003 处理阶段
+            queryService.getActiveTaskActorsByInstanceId(instance.getId()).ifPresent(flwTaskActors ->
+                    Assertions.assertEquals(test3Creator.getCreateId(), flwTaskActors.get(0).getActorId()));
+
             // 测试删除非临时节点
-            Assertions.assertFalse(flowLongEngine.executeRemoveNodeModel(instance.getId(), "flk1760704590778"));
+            Assertions.assertFalse(flowLongEngine.executeRemoveNodeModel(instance.getId(), "flk1760704590778", testCreator));
         });
     }
 

@@ -133,7 +133,7 @@ public class TaskServiceImpl implements TaskService {
         if (null != flwTasks) {
             TaskState taskState = TaskState.of(instanceState);
             List<Long> parentTaskIds = new LinkedList<>();
-            for (FlwTask t: flwTasks) {
+            for (FlwTask t : flwTasks) {
                 if (parentTaskIds.contains(t.getParentTaskId())) {
                     // 已经执行会签节点跳出循环
                     continue;
@@ -317,7 +317,7 @@ public class TaskServiceImpl implements TaskService {
     protected boolean moveToHisTask(FlwTask flwTask, TaskState taskState, FlowCreator flowCreator) {
         // 获取当前所有处理人员
         List<FlwTaskActor> taskActors = taskActorDao.selectListByTaskId(flwTask.getId());
-        if (taskState != TaskState.autoComplete && taskState != TaskState.autoReject  && taskState != TaskState.rejectEnd
+        if (taskState != TaskState.autoComplete && taskState != TaskState.autoReject && taskState != TaskState.rejectEnd
                 && taskState != TaskState.autoJump && ObjectUtils.isEmpty(taskActors)) {
             // 非自动处理，不存在处理人，不再继续执行
             return true;
@@ -857,6 +857,24 @@ public class TaskServiceImpl implements TaskService {
         return execFunc.apply(fi, fhi.getCurrentNodeKey());
     }
 
+    @Override
+    public boolean resumeParentTaskByInstanceIdAndTaskKey(Long instanceId, String taskKey, FlowCreator flowCreator) {
+        List<FlwTask> flwTasks = taskDao.selectListByInstanceIdAndTaskKey(instanceId, taskKey);
+        if (ObjectUtils.isNotEmpty(flwTasks)) {
+            List<Long> flwTaskIds = flwTasks.stream().map(FlowEntity::getId).collect(Collectors.toList());
+            // 删除所有任务及参与者
+            if (taskActorDao.deleteByInstanceIdAndTaskIds(instanceId, flwTaskIds)
+                    && taskDao.deleteByIds(flwTaskIds)) {
+                // 恢复到父任务
+                return this.withdrawTask(flwTasks.get(0).getParentTaskId(), flowCreator).isPresent();
+            }
+            // 恢复操作失败
+            return false;
+        }
+        // 不存在任务逻辑成功
+        return true;
+    }
+
     /**
      * 撤回指定的任务
      */
@@ -946,7 +964,7 @@ public class TaskServiceImpl implements TaskService {
                     FlwHisTask fht = hts.get(0);
                     if (null != fht) {
                         // 更新当前执行节点信息
-                        this.updateCurrentNode(fht,null);
+                        this.updateCurrentNode(fht, null);
                     }
                 });
             }

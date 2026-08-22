@@ -295,6 +295,17 @@ public interface TaskService {
     boolean resume(Long instanceId, FlowCreator flowCreator, BiFunction<FlwInstance, String, Boolean> execFunc);
 
     /**
+     * 指定实例ID和任务Key节点恢复父任务节点
+     * <p>当前任务key对应任务信息会被删除，用于临时节点减签场景</p>
+     *
+     * @param instanceId 流程实例ID
+     * @param taskKey    任务KEY
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
+     */
+    boolean resumeParentTaskByInstanceIdAndTaskKey(Long instanceId, String taskKey, FlowCreator flowCreator);
+
+    /**
      * 根据任务ID、创建人撤回任务（该任务后续任务未执行前有效）
      *
      * @param taskId      待撤回历史任务ID
