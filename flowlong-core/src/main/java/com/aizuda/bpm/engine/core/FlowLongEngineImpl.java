@@ -471,7 +471,7 @@ public class FlowLongEngineImpl implements FlowLongEngine {
                     return true;
                 } else {
                     // 投票完成关闭投票状态，进入下一个节点
-                    Assert.isFalse(taskService().completeActiveTasksByInstanceId(instanceId, flowCreator),
+                    Assert.isFalse(taskService().completeOtherVoteSignActiveTasks(instanceId, flwTask.getTaskKey(), flowCreator),
                             "Failed to close voting status");
                 }
             }

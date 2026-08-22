@@ -13,7 +13,6 @@ import com.aizuda.bpm.engine.entity.FlwHisTask;
 import com.aizuda.bpm.engine.entity.FlwInstance;
 import com.aizuda.bpm.engine.entity.FlwTask;
 import com.aizuda.bpm.engine.entity.FlwTaskActor;
-import com.aizuda.bpm.engine.model.NodeAssignee;
 import com.aizuda.bpm.engine.model.NodeModel;
 
 import java.util.Collections;
@@ -128,6 +127,16 @@ public interface TaskService {
      * @return true 成功 false 失败
      */
     boolean completeActiveTasksByInstanceId(Long instanceId, FlowCreator flowCreator);
+
+    /**
+     * 完成其它票签激活任务
+     *
+     * @param instanceId 实例ID
+     * @param taskKey 任务Key
+     * @param flowCreator 处理人员
+     * @return true 成功 false 失败
+     */
+    boolean completeOtherVoteSignActiveTasks(Long instanceId, String taskKey, FlowCreator flowCreator);
 
     /**
      * 更新任务对象

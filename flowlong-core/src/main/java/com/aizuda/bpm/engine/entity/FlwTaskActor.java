@@ -149,19 +149,23 @@ public class FlwTaskActor implements Serializable {
     }
 
     public static FlwTaskActor ofNodeAssignee(NodeAssignee nodeAssignee) {
-        return ofUser(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName());
+        return ofUser(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(), nodeAssignee.getWeight());
     }
 
     public static FlwTaskActor ofUser(String tenantId, String actorId, String actorName) {
-        return of(tenantId, actorId, actorName, 0, null);
+        return ofUser(tenantId, actorId, actorName, null);
     }
 
-    public static FlwTaskActor ofRole(String tenantId, String actorId, String actorName) {
-        return of(tenantId, actorId, actorName, 1, null);
+    public static FlwTaskActor ofUser(String tenantId, String actorId, String actorName, Integer weight) {
+        return of(tenantId, actorId, actorName, 0, weight);
     }
 
-    public static FlwTaskActor ofDepartment(String tenantId, String actorId, String actorName) {
-        return of(tenantId, actorId, actorName, 2, null);
+    public static FlwTaskActor ofRole(String tenantId, String actorId, String actorName, Integer weight) {
+        return of(tenantId, actorId, actorName, 1, weight);
+    }
+
+    public static FlwTaskActor ofDepartment(String tenantId, String actorId, String actorName, Integer weight) {
+        return of(tenantId, actorId, actorName, 2, weight);
     }
 
     public static FlwTaskActor of(NodeAssignee nodeAssignee, Integer actorType, boolean saveWeight) {

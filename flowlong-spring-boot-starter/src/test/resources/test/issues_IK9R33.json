@@ -1,0 +1,130 @@
+{
+  "key": "inclusiveTestIssue",
+  "name": "包容分支测试流程",
+  "nodeConfig": {
+    "nodeName": "发起人",
+    "nodeKey": "flk1784798787849",
+    "type": 0,
+    "childNode": {
+      "nodeName": "包容路由",
+      "nodeKey": "flk1787280749483",
+      "type": 9,
+      "inclusiveNodes": [
+        {
+          "nodeName": "包容条件1",
+          "nodeKey": "flk17872807494831",
+          "type": 3,
+          "priorityLevel": 1,
+          "conditionList": [
+            [
+              {
+                "label": "input_7368",
+                "field": "input_7368",
+                "operator": "include",
+                "value": "1",
+                "type": "form"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "审核人",
+            "nodeKey": "flk1787280789918",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test001",
+                "name": "夏小华",
+                "weight": 30
+              },
+              {
+                "id": "test002",
+                "name": "李小广",
+                "weight": 30
+              },
+              {
+                "id": "test003",
+                "name": "杨小凤",
+                "weight": 36
+              }
+            ],
+            "nodeCandidate": {
+              "type": 0
+            },
+            "examineLevel": 1,
+            "examineMode": 4,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "remind": false,
+            "approveSelf": 0,
+            "delayType": 1
+          }
+        },
+        {
+          "nodeName": "包容条件2",
+          "nodeKey": "flk1787280771827",
+          "type": 3,
+          "priorityLevel": 2,
+          "conditionList": [
+            [
+              {
+                "label": "input_7368",
+                "field": "input_7368",
+                "operator": "==",
+                "value": "123",
+                "type": "form"
+              }
+            ]
+          ],
+          "childNode": {
+            "nodeName": "审核人",
+            "nodeKey": "flk1787280823392",
+            "type": 1,
+            "setType": 1,
+            "nodeAssigneeList": [
+              {
+                "id": "test003",
+                "name": "陈小辉"
+              }
+            ],
+            "nodeCandidate": {
+              "type": 0
+            },
+            "examineLevel": 1,
+            "examineMode": 1,
+            "directorLevel": 1,
+            "directorMode": 0,
+            "selectMode": 1,
+            "termAuto": false,
+            "term": 0,
+            "termMode": 1,
+            "typeOfApprove": 1,
+            "rejectStrategy": 2,
+            "rejectStart": 1,
+            "remind": false,
+            "approveSelf": 0,
+            "delayType": 1
+          }
+        },
+        {
+          "nodeName": "包容条件2",
+          "nodeKey": "flk17872807494832",
+          "type": 3,
+          "priorityLevel": 3
+        }
+      ],
+      "childNode": {
+        "nodeName": "结束",
+        "nodeKey": "flk17847987878491",
+        "type": -1
+      }
+    }
+  }
+}

@@ -523,6 +523,20 @@ public class TaskServiceImpl implements TaskService {
         return true;
     }
 
+    @Override
+    public boolean completeOtherVoteSignActiveTasks(Long instanceId, String taskKey, FlowCreator flowCreator) {
+        List<FlwTask> flwTasks = taskDao.selectListByInstanceIdAndTaskKey(instanceId, taskKey);
+        if (ObjectUtils.isNotEmpty(flwTasks)) {
+            for (FlwTask flwTask : flwTasks) {
+                // 迁移任务至历史表，设置任务状态为终止
+                if (!this.moveToHisTask(flwTask, TaskState.terminate, flowCreator)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     /**
      * 更新任务对象的 finishTime、createBy、expireTime、version、variable
      *

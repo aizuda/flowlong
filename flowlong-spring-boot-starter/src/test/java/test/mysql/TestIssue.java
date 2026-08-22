@@ -552,7 +552,7 @@ public class TestIssue extends MysqlTest {
      * <a href="https://gitee.com/aizuda/flowlong/issues/IJU6OD">并行节点中加上抄送问题</a>
      */
     @Test
-    public void issues_IJU6OD() throws InterruptedException {
+    public void issues_IJU6OD() {
         Long processId = flowLongEngine.processService().deployByResource("test/issues_IJU6OD.json", testCreator, false);
         flowLongEngine.startInstanceById(processId, testCreator).ifPresent(instance -> {
             QueryService queryService = this.flowLongEngine.queryService();
@@ -580,6 +580,48 @@ public class TestIssue extends MysqlTest {
                 // 存在抄送任务
                 Assertions.assertTrue(flwHisTasks.stream().anyMatch(t -> Objects.equals("flk1782392490177", t.getTaskKey())));
             });
+        });
+    }
+
+
+    /**
+     * <a href="https://gitee.com/aizuda/flowlong/issues/IK9R33">包容分支票签场景异常问题</a>
+     */
+    @Test
+    public void issues_IK9R33() {
+        Map<String, Object> args = new HashMap<>();
+        args.put("input_7368", "123");
+        Long processId = flowLongEngine.processService().deployByResource("test/issues_IK9R33.json", testCreator, false);
+        flowLongEngine.startInstanceById(processId, testCreator, args).ifPresent(instance -> {
+            QueryService queryService = this.flowLongEngine.queryService();
+            List<FlwTask> flwTaskList = queryService.getTasksByInstanceId(instance.getId());
+            for (FlwTask flwTask: flwTaskList) {
+                if (Objects.equals("flk1787280789918", flwTask.getTaskKey())) {
+                    // 模拟执行，包容分支1 票签： 夏小华，李小广 杨小凤
+                    queryService.getActiveTaskActorsByTaskId(flwTask.getId()).ifPresent(ftaList -> {
+                        if (ftaList.isEmpty()) {
+                            // 被归档的其它
+                            return;
+                        }
+
+                        String actorName = ftaList.get(0).getActorName();
+
+                        // 如果会执行到 杨小凤 说明票签逻辑错误
+                        Assertions.assertNotEquals("杨小凤", actorName);
+
+                        // 执行 夏小华，李小广 操作
+                        if ("夏小华".equals(actorName)) {
+                            flowLongEngine.executeTask(flwTask.getId(), testCreator);
+                        } else if ("李小广".equals(actorName)) {
+                            flowLongEngine.executeTask(flwTask.getId(), test2Creator);
+                        }
+                    });
+                } else {
+                    // 模拟执行，包容分支2 陈小辉
+                    flowLongEngine.executeTask(flwTask.getId(), test3Creator);
+                }
+            }
+
         });
     }
 }

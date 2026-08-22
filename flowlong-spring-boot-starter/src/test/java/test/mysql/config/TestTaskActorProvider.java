@@ -32,7 +32,7 @@ public class TestTaskActorProvider extends GeneralTaskActorProvider {
                 // 测试用例 TestAutoClaimRole 测试自动认领角色审批
                 if ("100200".equals(nodeAssignee.getId())) {
                     return Collections.singletonList(
-                            FlwTaskActor.ofRole(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName())
+                            FlwTaskActor.ofRole(nodeAssignee.getTenantId(), nodeAssignee.getId(), nodeAssignee.getName(), nodeAssignee.getWeight())
                     );
                 }
             }

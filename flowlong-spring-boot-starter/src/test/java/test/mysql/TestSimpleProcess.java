@@ -78,6 +78,8 @@ class TestSimpleProcess extends MysqlTest {
 
             // 测试会签审批人003【审批】
             this.executeTask(instance.getId(), test3Creator, args);
+            // 测试会签审批人001【审批】
+            this.executeTask(instance.getId(), testCreator);
 
             // 年龄审批【审批】
             this.executeTask(instance.getId(), testCreator);
