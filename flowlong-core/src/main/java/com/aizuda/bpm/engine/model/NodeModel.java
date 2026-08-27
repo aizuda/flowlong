@@ -263,6 +263,79 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Integer delayType;
 
+    /**
+     * 按 key 获取扩展配置值。
+     *
+     * @param key 配置 key
+     * @return 配置值，未配置或扩展配置为空时返回 null
+     */
+    public Object getExtendConfig(String key) {
+        return null == extendConfig ? null : extendConfig.get(key);
+    }
+
+    /**
+     * 按 key 获取指定类型的扩展配置值。
+     * <p>
+     * 仅当配置值是指定类型的实例时返回该值；类型不匹配时返回 null。
+     * </p>
+     *
+     * @param key  配置 key
+     * @param type 期望类型
+     * @param <T>  配置值类型
+     * @return 指定类型的配置值，未配置或类型不匹配时返回 null
+     */
+    public <T> T getExtendConfig(String key, Class<T> type) {
+        Objects.requireNonNull(type, "type");
+        Object value = getExtendConfig(key);
+        return type.isInstance(value) ? type.cast(value) : null;
+    }
+
+    /**
+     * 获取扩展配置值，不存在或类型不匹配时返回默认值。
+     *
+     * @param key          配置 key
+     * @param defaultValue 默认值
+     * @param <T>          配置值类型
+     * @return 配置值或默认值
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getExtendConfigOrDefault(String key, T defaultValue) {
+        Object value = getExtendConfig(key);
+        if (null == value) {
+            return defaultValue;
+        }
+        if (null == defaultValue) {
+            @SuppressWarnings("unchecked")
+            T typedValue = (T) value;
+            return typedValue;
+        }
+        return defaultValue.getClass().isInstance(value) ? (T) value : defaultValue;
+    }
+
+    /**
+     * 按指定类型获取扩展配置值，不存在或类型不匹配时返回默认值。
+     *
+     * @param key          配置 key
+     * @param type         期望类型
+     * @param defaultValue 默认值
+     * @param <T>          配置值类型
+     * @return 配置值或默认值
+     */
+    public <T> T getExtendConfigOrDefault(String key, Class<T> type, T defaultValue) {
+        T value = getExtendConfig(key, type);
+        return null == value ? defaultValue : value;
+    }
+
+    /**
+     * 判断是否配置了指定 key。
+     *
+     * @param key 配置 key
+     * @return true 已配置（即使配置值为 null），false 未配置
+     */
+    public boolean hasExtendConfig(String key) {
+        return null != extendConfig && extendConfig.containsKey(key);
+    }
+
     // ==================== AI 配置相关方法 ====================
 
     /**
@@ -748,20 +821,17 @@ public class NodeModel implements ModelInstance, Serializable {
     public boolean executeTrigger(Execution execution, Supplier<Boolean> supplier, Function<Execution, Boolean> callAsync) {
         boolean callSupplier = true;
         boolean flag = false;
-        Map<String, Object> extendConfig = this.getExtendConfig();
-        if (null != extendConfig) {
-            Object _trigger = extendConfig.get("trigger");
-            if (null != _trigger) {
-                try {
-                    callSupplier = false;
-                    Class<?> triggerClass = Class.forName((String) _trigger);
-                    if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
-                        TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
-                        flag = taskTrigger.execute(this, execution, callAsync);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+        String trigger = this.getExtendConfig("trigger", String.class);
+        if (null != trigger) {
+            try {
+                callSupplier = false;
+                Class<?> triggerClass = Class.forName(trigger);
+                if (TaskTrigger.class.isAssignableFrom(triggerClass)) {
+                    TaskTrigger taskTrigger = (TaskTrigger) ObjectUtils.newInstance(triggerClass);
+                    flag = taskTrigger.execute(this, execution, callAsync);
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         // 使用默认触发器

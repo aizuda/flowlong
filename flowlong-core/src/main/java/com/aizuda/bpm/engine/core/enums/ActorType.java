@@ -31,7 +31,11 @@ public enum ActorType {
     /**
      * 部门
      */
-    department(2);
+    department(2),
+    /**
+     * 分组
+     */
+    group(3);
 
     private final int value;
 
