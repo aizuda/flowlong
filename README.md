@@ -13,7 +13,7 @@ FlowLong🐉飞龙工作流
 
 > 使用必须遵守国家法律法规，⛔不允许非法项目使用，后果自负❗
 
-[企业版💎演示地址](https://aizuda.com)
+[官网](https://aizuda.com)   [企业版💎演示地址](https://boot.aizuda.com)
 
 > 打开官方开发文档 [国外](https://doc.flowlong.com)  [国内](https://flowlong.aizuda.com)
 
