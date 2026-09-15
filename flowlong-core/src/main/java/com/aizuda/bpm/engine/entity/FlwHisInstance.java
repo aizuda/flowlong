@@ -67,6 +67,7 @@ public class FlwHisInstance extends FlwInstance {
         his.processId = fi.getProcessId();
         his.parentInstanceId = fi.getParentInstanceId();
         his.priority = fi.getPriority();
+        his.urgent = fi.getUrgent();
         his.instanceNo = fi.getInstanceNo();
         his.businessKey = fi.getBusinessKey();
         his.variable = fi.getVariable();
@@ -92,6 +93,7 @@ public class FlwHisInstance extends FlwInstance {
         fi.setProcessId(this.processId);
         fi.setParentInstanceId(this.parentInstanceId);
         fi.setPriority(this.priority);
+        fi.setUrgent(this.urgent);
         fi.setInstanceNo(this.instanceNo);
         fi.setBusinessKey(this.businessKey);
         fi.setVariable(this.variable);

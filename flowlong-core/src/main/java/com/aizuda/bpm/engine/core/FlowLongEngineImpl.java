@@ -59,6 +59,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
         return this.startProcessInstance(process.checkState(), flowCreator, args, saveAsDraft, checkNodeModel, supplier);
     }
 
+    @Override
+    public Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Integer urgent, boolean saveAsDraft) {
+        return FlowLongEngine.super.startInstanceById(id, flowCreator, args, urgent, saveAsDraft);
+    }
+
     /**
      * 根据流程定义key、版本号、创建人、参数列表启动流程实例
      */
@@ -66,6 +71,11 @@ public class FlowLongEngineImpl implements FlowLongEngine {
     public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier) {
         FlwProcess process = processService().getProcessByVersion(flowCreator.getTenantId(), processKey, version);
         return this.startProcessInstance(process, flowCreator, args, saveAsDraft, checkNodeModel, supplier);
+    }
+
+    @Override
+    public Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Integer urgent, boolean saveAsDraft) {
+        return FlowLongEngine.super.startInstanceByProcessKey(processKey, version, flowCreator, args, urgent, saveAsDraft);
     }
 
     /**

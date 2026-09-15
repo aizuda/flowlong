@@ -93,6 +93,42 @@ public interface FlowLongEngine {
      */
     Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
 
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceById(id, flowCreator, args, saveAsDraft, null, () -> {
+            FlwInstance instance = new FlwInstance();
+            if (null != urgent) {
+                instance.setUrgent(urgent);
+            }
+            return instance;
+        });
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, Integer urgent) {
+        return this.startInstanceById(id, flowCreator, args, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceById(id, flowCreator, (Map<String, Object>) null, urgent, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Integer urgent) {
+        return this.startInstanceById(id, flowCreator, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceById(id, flowCreator, null, saveAsDraft, null, () -> {
+            FlwInstance instance = FlwInstance.of(businessKey);
+            if (null != urgent) {
+                instance.setUrgent(urgent);
+            }
+            return instance;
+        });
+    }
+
+    default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, String businessKey, Integer urgent) {
+        return this.startInstanceById(id, flowCreator, businessKey, urgent, false);
+    }
+
     default Optional<FlwInstance> startInstanceById(Long id, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Supplier<FlwInstance> supplier) {
         return this.startInstanceById(id, flowCreator, args, saveAsDraft, null, supplier);
     }
@@ -135,6 +171,42 @@ public interface FlowLongEngine {
      */
     Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft, Consumer<NodeModel> checkNodeModel, Supplier<FlwInstance> supplier);
 
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, args, saveAsDraft, null, () -> {
+            FlwInstance instance = new FlwInstance();
+            if (null != urgent) {
+                instance.setUrgent(urgent);
+            }
+            return instance;
+        });
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, args, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, (Map<String, Object>) null, urgent, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, null, saveAsDraft, null, () -> {
+            FlwInstance instance = FlwInstance.of(businessKey);
+            if (null != urgent) {
+                instance.setUrgent(urgent);
+            }
+            return instance;
+        });
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, String businessKey, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, version, flowCreator, businessKey, urgent, false);
+    }
+
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, Integer version, FlowCreator flowCreator, Map<String, Object> args, boolean saveAsDraft) {
         return this.startInstanceByProcessKey(processKey, version, flowCreator, args, saveAsDraft, null, null);
     }
@@ -161,6 +233,30 @@ public interface FlowLongEngine {
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, boolean saveAsDraft) {
         return this.startInstanceByProcessKey(processKey, null, flowCreator, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, Map<String, Object> args, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, null, flowCreator, args, urgent, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, Map<String, Object> args, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, flowCreator, args, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, null, flowCreator, urgent, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, flowCreator, urgent, false);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, String businessKey, Integer urgent, boolean saveAsDraft) {
+        return this.startInstanceByProcessKey(processKey, null, flowCreator, businessKey, urgent, saveAsDraft);
+    }
+
+    default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator, String businessKey, Integer urgent) {
+        return this.startInstanceByProcessKey(processKey, flowCreator, businessKey, urgent, false);
     }
 
     default Optional<FlwInstance> startInstanceByProcessKey(String processKey, FlowCreator flowCreator) {

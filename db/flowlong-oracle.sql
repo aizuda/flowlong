@@ -40,25 +40,26 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_his_instance";
 CREATE TABLE "flw_his_instance" (
-                                           "id" NUMBER(20,0) NOT NULL,
-                                           "tenant_id" NVARCHAR2(50),
-                                           "create_id" NVARCHAR2(50) NOT NULL,
-                                           "create_by" NVARCHAR2(50) NOT NULL,
-                                           "create_time" DATE NOT NULL,
-                                           "process_id" NUMBER(20,0) NOT NULL,
-                                           "parent_instance_id" NUMBER(20,0),
-                                           "priority" NUMBER(4,0),
-                                           "instance_no" NVARCHAR2(50),
-                                           "business_key" NVARCHAR2(100),
-                                           "variable" NCLOB,
-                                           "current_node_name" NVARCHAR2(100) NOT NULL,
-                                           "current_node_key" NVARCHAR2(100) NOT NULL,
-                                           "expire_time" DATE,
-                                           "last_update_by" NVARCHAR2(50),
-                                           "last_update_time" DATE,
-                                           "instance_state" NUMBER(4,0) NOT NULL,
-                                           "end_time" DATE,
-                                           "duration" NUMBER(20,0)
+   "id" NUMBER(20,0) NOT NULL,
+   "tenant_id" NVARCHAR2(50),
+   "create_id" NVARCHAR2(50) NOT NULL,
+   "create_by" NVARCHAR2(50) NOT NULL,
+   "create_time" DATE NOT NULL,
+   "process_id" NUMBER(20,0) NOT NULL,
+   "parent_instance_id" NUMBER(20,0),
+   "priority" NUMBER(4,0),
+   "instance_no" NVARCHAR2(50),
+   "business_key" NVARCHAR2(100),
+   "variable" NCLOB,
+   "current_node_name" NVARCHAR2(100) NOT NULL,
+   "current_node_key" NVARCHAR2(100) NOT NULL,
+   "expire_time" DATE,
+   "last_update_by" NVARCHAR2(50),
+   "last_update_time" DATE,
+   "urgent" NUMBER(4,0) NOT NULL,
+   "instance_state" NUMBER(4,0) NOT NULL,
+   "end_time" DATE,
+   "duration" NUMBER(20,0)
 )
     LOGGING
 NOCOMPRESS
@@ -87,6 +88,7 @@ COMMENT ON COLUMN "flw_his_instance"."current_node_key" IS '当前所在节点ke
 COMMENT ON COLUMN "flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_his_instance"."last_update_time" IS '上次更新时间';
+COMMENT ON COLUMN "flw_his_instance"."urgent" IS '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要';
 COMMENT ON COLUMN "flw_his_instance"."instance_state" IS '状态 0，审批中 1，审批通过 2，审批拒绝 3，撤销审批 4，超时结束 5，强制终止';
 COMMENT ON COLUMN "flw_his_instance"."end_time" IS '结束时间';
 COMMENT ON COLUMN "flw_his_instance"."duration" IS '处理耗时';
@@ -103,30 +105,30 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_his_task";
 CREATE TABLE "flw_his_task" (
-                                       "id" NUMBER(20,0) NOT NULL,
-                                       "tenant_id" NVARCHAR2(50),
-                                       "create_id" NVARCHAR2(50) NOT NULL,
-                                       "create_by" NVARCHAR2(50) NOT NULL,
-                                       "create_time" DATE NOT NULL,
-                                       "instance_id" NUMBER(20,0) NOT NULL,
-                                       "parent_task_id" NUMBER(20,0),
-                                       "call_process_id" NUMBER(20,0),
-                                       "call_instance_id" NUMBER(20,0),
-                                       "task_name" NVARCHAR2(100) NOT NULL,
-                                       "task_key" NVARCHAR2(100) NOT NULL,
-                                       "task_type" NUMBER(4,0) NOT NULL,
-                                       "perform_type" NUMBER(4,0),
-                                       "action_url" NVARCHAR2(200),
-                                       "variable" CLOB,
-                                       "assignor_id" NVARCHAR2(100),
-                                       "assignor" NVARCHAR2(255),
-                                       "expire_time" DATE,
-                                       "remind_time" DATE,
-                                       "remind_repeat" NUMBER(4,0) NOT NULL,
-                                       "viewed" NUMBER(4,0) NOT NULL,
-                                       "finish_time" DATE,
-                                       "task_state" NUMBER(4,0) NOT NULL,
-                                       "duration" NUMBER(20,0)
+   "id" NUMBER(20,0) NOT NULL,
+   "tenant_id" NVARCHAR2(50),
+   "create_id" NVARCHAR2(50) NOT NULL,
+   "create_by" NVARCHAR2(50) NOT NULL,
+   "create_time" DATE NOT NULL,
+   "instance_id" NUMBER(20,0) NOT NULL,
+   "parent_task_id" NUMBER(20,0),
+   "call_process_id" NUMBER(20,0),
+   "call_instance_id" NUMBER(20,0),
+   "task_name" NVARCHAR2(100) NOT NULL,
+   "task_key" NVARCHAR2(100) NOT NULL,
+   "task_type" NUMBER(4,0) NOT NULL,
+   "perform_type" NUMBER(4,0),
+   "action_url" NVARCHAR2(200),
+   "variable" CLOB,
+   "assignor_id" NVARCHAR2(100),
+   "assignor" NVARCHAR2(255),
+   "expire_time" DATE,
+   "remind_time" DATE,
+   "remind_repeat" NUMBER(4,0) NOT NULL,
+   "viewed" NUMBER(4,0) NOT NULL,
+   "finish_time" DATE,
+   "task_state" NUMBER(4,0) NOT NULL,
+   "duration" NUMBER(20,0)
 )
     LOGGING
 NOCOMPRESS
@@ -223,22 +225,23 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_instance";
 CREATE TABLE "flw_instance" (
-                                       "id" NUMBER(20,0) NOT NULL,
-                                       "tenant_id" NVARCHAR2(50),
-                                       "create_id" NVARCHAR2(50) NOT NULL,
-                                       "create_by" NVARCHAR2(50) NOT NULL,
-                                       "create_time" DATE NOT NULL,
-                                       "process_id" NUMBER(20,0) NOT NULL,
-                                       "parent_instance_id" NUMBER(20,0),
-                                       "priority" NUMBER(4,0),
-                                       "instance_no" NVARCHAR2(50),
-                                       "business_key" NVARCHAR2(100),
-                                       "variable" NCLOB,
-                                       "current_node_name" NVARCHAR2(100) NOT NULL,
-                                       "current_node_key" NVARCHAR2(100) NOT NULL,
-                                       "expire_time" DATE,
-                                       "last_update_by" NVARCHAR2(50),
-                                       "last_update_time" DATE
+   "id" NUMBER(20,0) NOT NULL,
+   "tenant_id" NVARCHAR2(50),
+   "create_id" NVARCHAR2(50) NOT NULL,
+   "create_by" NVARCHAR2(50) NOT NULL,
+   "create_time" DATE NOT NULL,
+   "process_id" NUMBER(20,0) NOT NULL,
+   "parent_instance_id" NUMBER(20,0),
+   "priority" NUMBER(4,0),
+   "instance_no" NVARCHAR2(50),
+   "business_key" NVARCHAR2(100),
+   "variable" NCLOB,
+   "current_node_name" NVARCHAR2(100) NOT NULL,
+   "current_node_key" NVARCHAR2(100) NOT NULL,
+   "expire_time" DATE,
+   "last_update_by" NVARCHAR2(50),
+   "last_update_time" DATE,
+   "urgent" NUMBER(4,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS
@@ -267,6 +270,7 @@ COMMENT ON COLUMN "flw_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "flw_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_instance"."last_update_time" IS '上次更新时间';
+COMMENT ON COLUMN "flw_instance"."urgent" IS '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要';
 COMMENT ON TABLE "flw_instance" IS '流程实例表';
 
 -- ----------------------------
@@ -280,22 +284,22 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_process";
 CREATE TABLE "flw_process" (
-                                      "id" NUMBER(20,0) NOT NULL,
-                                      "tenant_id" NVARCHAR2(50),
-                                      "create_id" NVARCHAR2(50) NOT NULL,
-                                      "create_by" NVARCHAR2(50) NOT NULL,
-                                      "create_time" DATE NOT NULL,
-                                      "process_key" NVARCHAR2(100) NOT NULL,
-                                      "process_name" NVARCHAR2(100) NOT NULL,
-                                      "process_icon" NVARCHAR2(255),
-                                      "process_type" NVARCHAR2(100),
-                                      "process_version" NUMBER(11,0) NOT NULL,
-                                      "instance_url" NVARCHAR2(200),
-                                      "remark" NVARCHAR2(255),
-                                      "use_scope" NUMBER(4,0) NOT NULL,
-                                      "process_state" NUMBER(4,0) NOT NULL,
-                                      "model_content" NCLOB,
-                                      "sort" NUMBER(4,0)
+  "id" NUMBER(20,0) NOT NULL,
+  "tenant_id" NVARCHAR2(50),
+  "create_id" NVARCHAR2(50) NOT NULL,
+  "create_by" NVARCHAR2(50) NOT NULL,
+  "create_time" DATE NOT NULL,
+  "process_key" NVARCHAR2(100) NOT NULL,
+  "process_name" NVARCHAR2(100) NOT NULL,
+  "process_icon" NVARCHAR2(255),
+  "process_type" NVARCHAR2(100),
+  "process_version" NUMBER(11,0) NOT NULL,
+  "instance_url" NVARCHAR2(200),
+  "remark" NVARCHAR2(255),
+  "use_scope" NUMBER(4,0) NOT NULL,
+  "process_state" NUMBER(4,0) NOT NULL,
+  "model_content" NCLOB,
+  "sort" NUMBER(4,0)
 )
     LOGGING
 NOCOMPRESS
@@ -337,25 +341,25 @@ COMMIT;
 -- ----------------------------
 DROP TABLE "flw_task";
 CREATE TABLE "flw_task" (
-                                   "id" NUMBER(20,0) NOT NULL,
-                                   "tenant_id" NVARCHAR2(50),
-                                   "create_id" NVARCHAR2(50) NOT NULL,
-                                   "create_by" NVARCHAR2(50) NOT NULL,
-                                   "create_time" DATE NOT NULL,
-                                   "instance_id" NUMBER(20,0) NOT NULL,
-                                   "parent_task_id" NUMBER(20,0),
-                                   "task_name" NVARCHAR2(100) NOT NULL,
-                                   "task_key" NVARCHAR2(100) NOT NULL,
-                                   "task_type" NUMBER(4,0) NOT NULL,
-                                   "perform_type" NUMBER(4,0),
-                                   "action_url" NVARCHAR2(200),
-                                   "variable" CLOB,
-                                   "assignor_id" NVARCHAR2(100),
-                                   "assignor" NVARCHAR2(255),
-                                   "expire_time" DATE,
-                                   "remind_time" DATE,
-                                   "remind_repeat" NUMBER(4,0) NOT NULL,
-                                   "viewed" NUMBER(4,0) NOT NULL
+   "id" NUMBER(20,0) NOT NULL,
+   "tenant_id" NVARCHAR2(50),
+   "create_id" NVARCHAR2(50) NOT NULL,
+   "create_by" NVARCHAR2(50) NOT NULL,
+   "create_time" DATE NOT NULL,
+   "instance_id" NUMBER(20,0) NOT NULL,
+   "parent_task_id" NUMBER(20,0),
+   "task_name" NVARCHAR2(100) NOT NULL,
+   "task_key" NVARCHAR2(100) NOT NULL,
+   "task_type" NUMBER(4,0) NOT NULL,
+   "perform_type" NUMBER(4,0),
+   "action_url" NVARCHAR2(200),
+   "variable" CLOB,
+   "assignor_id" NVARCHAR2(100),
+   "assignor" NVARCHAR2(255),
+   "expire_time" DATE,
+   "remind_time" DATE,
+   "remind_repeat" NUMBER(4,0) NOT NULL,
+   "viewed" NUMBER(4,0) NOT NULL
 )
     LOGGING
 NOCOMPRESS

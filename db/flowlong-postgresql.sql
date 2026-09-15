@@ -141,7 +141,8 @@ CREATE TABLE "flw_task" (
     "expire_time" timestamp(6),
     "remind_time" timestamp(6),
     "remind_repeat" int2 NOT NULL DEFAULT 0,
-    "viewed" int2 NOT NULL DEFAULT 0
+    "viewed" int2 NOT NULL DEFAULT 0,
+    "urgent" int2 NOT NULL DEFAULT 0
 )
 ;
 COMMENT ON COLUMN "flw_task"."id" IS '主键ID';
@@ -207,6 +208,7 @@ CREATE TABLE "flw_his_instance" (
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
     "last_update_time" timestamp(6),
+    "urgent" int2 NOT NULL DEFAULT 0,
     "instance_state" int2 NOT NULL DEFAULT 0,
     "end_time" timestamp(6),
     "duration" int8
@@ -228,6 +230,7 @@ COMMENT ON COLUMN "flw_his_instance"."current_node_key" IS '当前所在节点ke
 COMMENT ON COLUMN "flw_his_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_his_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_his_instance"."last_update_time" IS '上次更新时间';
+COMMENT ON COLUMN "flw_his_instance"."urgent" IS '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要';
 COMMENT ON COLUMN "flw_his_instance"."instance_state" IS '状态 0，审批中 1，审批通过 2，审批拒绝 3，撤销审批 4，超时结束 5，强制终止';
 COMMENT ON COLUMN "flw_his_instance"."end_time" IS '结束时间';
 COMMENT ON COLUMN "flw_his_instance"."duration" IS '处理耗时';
@@ -253,7 +256,8 @@ CREATE TABLE "flw_instance" (
     "current_node_key" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
     "expire_time" timestamp(6),
     "last_update_by" varchar(50) COLLATE "pg_catalog"."default",
-    "last_update_time" timestamp(6)
+    "last_update_time" timestamp(6),
+    "urgent" int2 NOT NULL DEFAULT 0
 )
 ;
 COMMENT ON COLUMN "flw_instance"."id" IS '主键ID';
@@ -272,6 +276,7 @@ COMMENT ON COLUMN "flw_instance"."current_node_key" IS '当前所在节点key';
 COMMENT ON COLUMN "flw_instance"."expire_time" IS '期望完成时间';
 COMMENT ON COLUMN "flw_instance"."last_update_by" IS '上次更新人';
 COMMENT ON COLUMN "flw_instance"."last_update_time" IS '上次更新时间';
+COMMENT ON COLUMN "flw_instance"."urgent" IS '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要';
 COMMENT ON TABLE "flw_instance" IS '流程实例表';
 
 -- ----------------------------
