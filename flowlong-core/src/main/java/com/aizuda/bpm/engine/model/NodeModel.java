@@ -201,6 +201,16 @@ public class NodeModel implements ModelInstance, Serializable {
      */
     private Boolean remind;
     /**
+     * 设置为办理人（推进流程实例继续执行、不做具体决策）
+     * <p>
+     * 办理人 = 干事的人，对“把事做完”负责；
+     * </p>
+     * <p>
+     * 审批人 = 定夺的人，对“让不让做”负责。
+     * </p>
+     */
+    private Boolean asHandler;
+    /**
      * 允许发起人自选抄送人
      */
     private Boolean allowSelection;
@@ -901,6 +911,7 @@ public class NodeModel implements ModelInstance, Serializable {
         nodeModel.setRejectStrategy(this.rejectStrategy);
         nodeModel.setRejectStart(this.rejectStart);
         nodeModel.setRemind(this.remind);
+        nodeModel.setAsHandler(this.asHandler);
         nodeModel.setAllowSelection(this.allowSelection);
         nodeModel.setAllowTransfer(this.allowTransfer);
         nodeModel.setAllowAppendNode(this.allowAppendNode);
