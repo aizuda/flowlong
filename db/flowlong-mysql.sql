@@ -56,7 +56,7 @@ CREATE TABLE `flw_his_instance`
     `expire_time`        timestamp NULL DEFAULT NULL COMMENT '期望完成时间',
     `last_update_by`     varchar(50) COMMENT '上次更新人',
     `last_update_time`   timestamp NULL DEFAULT NULL COMMENT '上次更新时间',
-    `urgent`             tinyint(1) NOT NULL DEFAULT 0 COMMENT '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要',
+    `urgent`             tinyint(1) NOT NULL DEFAULT 0 COMMENT '任务紧急程度 0，常规 1，重要不紧急 2，紧急不重要 3，紧急且重要',
     `instance_state`     tinyint(1) NOT NULL DEFAULT 0 COMMENT '状态 -2，已暂停状态 -1，暂存待审 0，审批中 1，审批通过 2，审批拒绝 3，撤销审批 4，超时结束 5，强制终止 6，自动通过 7，自动拒绝',
     `end_time`           timestamp NULL DEFAULT NULL COMMENT '结束时间',
     `duration`           bigint COMMENT '处理耗时',
@@ -144,7 +144,7 @@ CREATE TABLE `flw_instance`
     `expire_time`        timestamp NULL DEFAULT NULL COMMENT '期望完成时间',
     `last_update_by`     varchar(50) COMMENT '上次更新人',
     `last_update_time`   timestamp NULL DEFAULT NULL COMMENT '上次更新时间',
-    `urgent`             tinyint(1) NOT NULL DEFAULT 0 COMMENT '任务紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要',
+    `urgent`             tinyint(1) NOT NULL DEFAULT 0 COMMENT '任务紧急程度 0，常规 1，重要不紧急 2，紧急不重要 3，紧急且重要',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX                `idx_instance_process_id`(`process_id` ASC) USING BTREE,
     CONSTRAINT `fk_instance_process_id` FOREIGN KEY (`process_id`) REFERENCES `flw_process` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT

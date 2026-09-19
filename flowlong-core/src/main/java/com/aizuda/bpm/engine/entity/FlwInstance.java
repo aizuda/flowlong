@@ -77,28 +77,21 @@ public class FlwInstance extends FlowEntity implements Cloneable {
      */
     protected Date lastUpdateTime;
     /**
-     * 流程实例紧急程度 0，常规 1，紧急且重要 2，重要不紧急 3，紧急不重要
+     * 流程实例紧急程度 0，常规 1，重要不紧急 2，紧急不重要 3，紧急且重要
      * <p>
      * 0（常规）：日常例行工作，按排期走。
      * </p>
      * <p>
-     * 1（紧急且重要）：系统故障、线上事故、阻塞他人的任务，必须立即处理。
+     * 1（重要不紧急）：核心业务需求、关键节点任务，当天或当班内完成。
      * </p>
      * <p>
-     * 2（重要不紧急）：核心业务需求、关键节点任务，当天或当班内完成。
+     * 2（紧急不重要）：临时插进来的琐事、他人催办但影响面小的事，可批量集中处理。
      * </p>
      * <p>
-     * 3（紧急不重要）：临时插进来的琐事、他人催办但影响面小的事，可批量集中处理。
+     * 3（紧急且重要）：系统故障、线上事故、阻塞他人的任务，必须立即处理。
      * </p>
      */
     protected Integer urgent;
-
-    public FlwInstance() {
-        // 默认优先级 0
-        this.priority = 0;
-        // 日常例行工作 0
-        this.urgent = 0;
-    }
 
     public static FlwInstance of(String businessKey) {
         FlwInstance flwInstance = new FlwInstance();

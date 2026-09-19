@@ -195,7 +195,6 @@ public class RuntimeServiceImpl implements RuntimeService {
 
         // 保存历史实例设置为活的状态
         FlwHisInstance fhi = FlwHisInstance.of(flwInstance, saveAsDraft ? InstanceState.saveAsDraft : InstanceState.active, false);
-        fhi.setCreateTime(FlowLongContext.getFlowCreateTimeHandler().getCurrentTime(ExecuteType.instance, flwInstance.getId(), null));
         if (hisInstanceDao.insert(fhi)) {
 
             // 保存扩展流程实例
