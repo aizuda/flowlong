@@ -432,32 +432,62 @@ public class RuntimeServiceImpl implements RuntimeService {
 
     @Override
     public void cascadeRemoveByInstanceId(Long instanceId, FlowCreator flowCreator) {
-        instanceDao.selectOptById(instanceId).ifPresent(fi -> {
-
+        Optional<FlwInstance> fiOpt = instanceDao.selectOptById(instanceId);
+        if (fiOpt.isPresent()) {
+            FlwInstance fi = fiOpt.get();
             // 为子流程情况，撤回父流程节点
             if (null != fi.getParentInstanceId()) {
                 taskService.subprocessRollback(fi, flowCreator);
             } else {
                 // 删除所有主流程相关实例
                 FlwInstance parentInstance = this.getTopParentInstance(fi);
-                List<Long> hiIds = this.collectAllHisInstanceIds(parentInstance.getId());
-
-                // 删除活动任务相关信息
-                if (taskService.cascadeRemoveByInstanceIds(hiIds)) {
-                    hiIds.forEach(t -> {
-
-                        // 删除扩展实例
-                        extInstanceDao.deleteById(t);
-
-                        // 删除历史实例
-                        hisInstanceDao.deleteById(t);
-
-                        // 删除实例
-                        instanceDao.deleteById(t);
-                    });
-                }
+                this.cascadeRemoveByInstancePid(parentInstance.getId());
             }
-        });
+        } else {
+            // 删除历史实例情况
+            FlwHisInstance fhi = hisInstanceDao.selectById(instanceId);
+            if (null != fhi) {
+                FlwHisInstance parentHisInstance = this.getTopParentHisInstance(fhi);
+                this.cascadeRemoveByInstancePid(parentHisInstance.getId());
+            }
+        }
+    }
+
+    /**
+     * 级联删除所有实例
+     */
+    protected void cascadeRemoveByInstancePid(Long pid) {
+        List<Long> hiIds = this.collectAllHisInstanceIds(pid);
+
+        // 删除活动任务相关信息
+        if (taskService.cascadeRemoveByInstanceIds(hiIds)) {
+            hiIds.forEach(t -> {
+
+                // 删除扩展实例
+                extInstanceDao.deleteById(t);
+
+                // 删除历史实例
+                hisInstanceDao.deleteById(t);
+
+                // 删除实例
+                instanceDao.deleteById(t);
+            });
+        }
+    }
+
+    /**
+     * 获取最顶部流程实例
+     */
+    protected FlwHisInstance getTopParentHisInstance(FlwHisInstance flwHisInstance) {
+        FlwHisInstance parentHisInstance = flwHisInstance;
+        Long parentHisInstanceId = parentHisInstance.getParentInstanceId();
+        if (null != parentHisInstanceId) {
+            parentHisInstance = hisInstanceDao.selectById(parentHisInstanceId);
+            if (null != parentHisInstance) {
+                return getTopParentHisInstance(parentHisInstance);
+            }
+        }
+        return parentHisInstance;
     }
 
     /**
