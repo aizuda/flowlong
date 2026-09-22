@@ -44,8 +44,8 @@ public interface TaskActorProvider {
             return nodeAssigneeList.stream().anyMatch(t -> Objects.equals(t.getId(), flowCreator.getCreateId()));
         }
 
-        if (TaskType.major.eq(nodeModel.getType()) && !NodeSetType.initiatorSelected.eq(nodeModel.getSetType())) {
-            // 发起人且非自选情况
+        if (TaskType.major.eq(nodeModel.getType()) && null == nodeModel.getSetType()) {
+            // 发起人未设置处理人员情况
             return true;
         }
 
